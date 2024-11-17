@@ -1,0 +1,15 @@
+{
+    "HomePage": {
+      "title": "Hello world!",
+      "about": "Go to the about page"
+    },
+    "Navbar": {
+        "MenuItem": [
+            "Home",
+            "Entrepreneurship",
+            "Business incubators",
+            "Projects",
+            "Contact us"
+        ]
+    }
+}
