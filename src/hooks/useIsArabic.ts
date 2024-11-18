@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import useLanguage from './uselanguage';
 
 const useIsArabic = () => {
+  const lang = useLanguage();
   const [isArabic, setIsArabic] = useState(false);
 
   useEffect(() => {
-    // Get the current path from the window location
-    const path = window.location.pathname;
 
     // Check if the path starts with '/ar'
-    setIsArabic(path.startsWith('/ar'));
-  }, []);
+    setIsArabic(lang == 'ar');
+  }, [lang]);
 
   return isArabic;
 };
