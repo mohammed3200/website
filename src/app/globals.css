@@ -6,6 +6,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -14,7 +15,7 @@ body {
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
+    --primary: 24, 99%, 50%;
     --primary-foreground: 0 0% 98%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
@@ -62,11 +63,84 @@ body {
   }
 }
 
+@font-face {
+  font-family: 'DINNextLT-Bold';
+  src: url('../../public/assets/fonts/DINNextLTArabic-Bold-4.ttf') format('truetype');
+  font-weight: bold;
+  /* Specify the font weight if applicable */
+  font-style: normal;
+  /* Specify the font style if applicable */
+}
+
+@font-face {
+  font-family: 'DINNextLT-Regular';
+  src: url('../../public/assets/fonts/DINNextLTArabic-Regular-4.ttf') format('truetype');
+  font-weight: normal;
+  /* Specify the font weight if applicable */
+  font-style: normal;
+  /* Specify the font style if applicable */
+}
+
+@font-face {
+  font-family: 'SpaceMono-Regular';
+  src: url('../../public/assets/fonts/SpaceMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  /* Specify the font weight if applicable */
+  font-style: normal;
+  /* Specify the font style if applicable */
+}
+
 @layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Remove scrollbar */
+  .remove-scrollbar::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    border-radius: 0px;
+  }
+
+  .remove-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .remove-scrollbar::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 0px;
+  }
+
+  .remove-scrollbar::-webkit-scrollbar-thumb:hover {
+    /* background: #1e2238; */
+    background: transparent;
+  }
+}
+
+@layer utilities {
+
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+  
+  /* Root Layout */
+  .main-content {
+    @apply remove-scrollbar h-full flex-1 overflow-auto px-5 py-7 sm:mr-7 sm:rounded-[30px] md:mb-7 md:px-9 md:py-10 !important;
+  }
+
+  /* Header */
+  .header {
+    @apply hidden items-center justify-between gap-5 p-5 sm:flex lg:py-7 xl:gap-10 !important;
+  }
+
+  .header-wrapper {
+    @apply flex-center min-w-fit !important;
+  }
+
+  /* Mobile Navigation */
+  .mobile-header {
+    @apply flex h-[60px] justify-between px-5 sm:hidden !important;
   }
 }

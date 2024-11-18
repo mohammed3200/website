@@ -1,15 +1,20 @@
 {
     "HomePage": {
       "title": "Hello world!",
-      "about": "Go to the about page"
+      "description": "Welcome to my website! Internationalization (i18n)"
     },
-    "Navbar": {
-        "MenuItem": [
-            "Home",
-            "Entrepreneurship",
-            "Business incubators",
-            "Projects",
-            "Contact us"
-        ]
+    "NotFoundPage": {
+      "title": "Page Not Found",
+      "description": "Oops! It seems like you've stumbled upon a page that doesn't exist."
+    },
+    "Navigation": {
+      "home": "Home",
+      "entrepreneurship": "Entrepreneurship",
+      "incubators": "Incubators", 
+      "projects": "Projects",
+      "contact": "Contact Us"
+    },
+    "Footer": {
+      "copyright": "Copyright 2024 your App. All rights reserved."
     }
-}
+  }
