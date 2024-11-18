@@ -5,7 +5,7 @@ import React, { useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-const locales = ["en","ar"];
+const locales = ["ar","en"];
 
 export const TranslateButton = () => {
   const router = useRouter();

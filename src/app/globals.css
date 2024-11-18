@@ -6,7 +6,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -64,8 +63,9 @@ body {
 }
 
 @font-face {
-  font-family: 'DINNextLT-Bold';
-  src: url('../../public/assets/fonts/DINNextLTArabic-Bold-4.ttf') format('truetype');
+  font-family: "DINNextLT-Bold";
+  src: url("../../public/assets/fonts/DINNextLTArabic-Bold-4.ttf")
+    format("truetype");
   font-weight: bold;
   /* Specify the font weight if applicable */
   font-style: normal;
@@ -73,8 +73,9 @@ body {
 }
 
 @font-face {
-  font-family: 'DINNextLT-Regular';
-  src: url('../../public/assets/fonts/DINNextLTArabic-Regular-4.ttf') format('truetype');
+  font-family: "DINNextLT-Regular";
+  src: url("../../public/assets/fonts/DINNextLTArabic-Regular-4.ttf")
+    format("truetype");
   font-weight: normal;
   /* Specify the font weight if applicable */
   font-style: normal;
@@ -82,8 +83,8 @@ body {
 }
 
 @font-face {
-  font-family: 'SpaceMono-Regular';
-  src: url('../../public/assets/fonts/SpaceMono-Regular.ttf') format('truetype');
+  font-family: "SpaceMono-Regular";
+  src: url("../../public/assets/fonts/SpaceMono-Regular.ttf") format("truetype");
   font-weight: normal;
   /* Specify the font weight if applicable */
   font-style: normal;
@@ -120,11 +121,10 @@ body {
 }
 
 @layer utilities {
-
   .flex-center {
     @apply flex items-center justify-center;
   }
-  
+
   /* Root Layout */
   .main-content {
     @apply remove-scrollbar h-full flex-1 overflow-auto px-5 py-7 sm:mr-7 sm:rounded-[30px] md:mb-7 md:px-9 md:py-10 !important;
@@ -141,6 +141,25 @@ body {
 
   /* Mobile Navigation */
   .mobile-header {
-    @apply flex h-[60px] justify-between px-5 sm:hidden !important;
+    @apply flex h-[60px] justify-between px-4 py-2 sm:hidden !important;
+  }
+
+  .mobile-nav {
+    @apply flex-1 gap-1 pt-12  !important;
+  }
+
+  .mobile-nav-list {
+    @apply flex flex-1 flex-col gap-4 !important;
+  }
+
+  .mobile-nav-item {
+    @apply flex text-light-100 gap-4 w-full justify-center items-center text-[16px] leading-[24px] font-semibold px-6 h-[52px] rounded-full !important;
+  }
+
+  .shad-active {
+    @apply bg-primary text-white !important;
+  }
+  .shad-sheet {
+    @apply pt-0 !important;
   }
 }
