@@ -162,4 +162,9 @@ body {
   .shad-sheet {
     @apply pt-0 !important;
   }
+
+  /* Footer */
+  .footer {
+    @apply items-center justify-between gap-5 p-5 bg-light-100/80 rounded-t-md !important;
+  }
 }
