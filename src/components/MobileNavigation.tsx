@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { TranslateButton } from "./TranslateButton";
-
 export const MobileNavigation = () => {
   const { lang, isArabic } = useLanguage();
   const pathname = usePathname();

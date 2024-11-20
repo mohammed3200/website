@@ -40,7 +40,7 @@ export const News = () => {
         opts={{
           align: "start",
         }}
-        className="w-full mx-auto md:max-w-4xl"
+        className="w-full mx-auto md:max-w-6xl"
         dir="ltr"
         setApi={setApi}
         plugins={[Autoplay({ delay: 7000 })]}
@@ -66,8 +66,8 @@ export const News = () => {
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="hidden lg:block" />
-        <CarouselNext className="hidden lg:block" />
+        <CarouselPrevious />
+        <CarouselNext />
       </Carousel>
       <div dir="ltr" className="flex flex-row gap-2 mt-4">
         {Array.from({ length: count }).map((_, index) => (
