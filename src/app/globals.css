@@ -8,7 +8,7 @@ body {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0, 0%, 95%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
@@ -127,7 +127,7 @@ body {
 
   /* Root Layout */
   .main-content {
-    @apply remove-scrollbar h-full flex-1 overflow-auto px-5 py-7 sm:mr-7 sm:rounded-[30px] md:mb-7 md:px-9 md:py-10 !important;
+    @apply remove-scrollbar h-full flex-1 overflow-auto  px-5 py-7 sm:mr-7 sm:rounded-[30px] md:mb-7 md:px-9 md:py-10 !important;
   }
 
   /* Header */
@@ -165,6 +165,6 @@ body {
 
   /* Footer */
   .footer {
-    @apply items-center justify-between gap-5 p-5 bg-light-100/80 rounded-t-md !important;
+    @apply items-center justify-between gap-5 p-5 md:px-3 md:py-2 md:gap-2 bg-light-100/80 rounded-t-md !important;
   }
 }

@@ -8,7 +8,6 @@ import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
 import useLanguage from "@/hooks/uselanguage";
-import useIsArabic from "@/hooks/useIsArabic";
 
 import { cn } from "@/lib/utils";
 
@@ -23,9 +22,8 @@ import { TranslateButton } from "./TranslateButton";
 import { Footer } from "./Footer";
 
 export const MobileNavigation = () => {
-  const lang = useLanguage();
+  const { lang, isArabic } = useLanguage();
   const pathname = usePathname();
-  const isArabic = useIsArabic();
   const [open, setOpen] = useState(false);
   const t = useTranslations("Navigation");
 

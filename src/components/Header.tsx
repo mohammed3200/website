@@ -3,22 +3,16 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-
-import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { cn } from "@/lib/utils";
 
-import useIsArabic from "@/hooks/useIsArabic";
 import useLanguage from "@/hooks/uselanguage";
 
 import { TranslateButton } from "./TranslateButton";
-
+import { NavBar } from "./NavBar";
 
 export const Header = () => {
-  const lang = useLanguage();
-  const pathname = usePathname();
-  const isArabic = useIsArabic();
+  const { lang, isArabic } = useLanguage();
   const t = useTranslations("Navigation");
 
   const navigationItems = [
@@ -45,42 +39,18 @@ export const Header = () => {
             height={170}
             className="hidden h-auto md:block"
           />
-
           <Image
             src="/assets/icons/logo.svg"
             alt="logo"
-            width={150}
-            height={150}
+            width={80}
+            height={80}
             className="md:hidden"
           />
         </Link>
       </div>
       {/* Menu Items */}
       <div>
-        <ul className="flex space-x-7">
-          {navigationItems.map((item, index) => {
-            const isActive = pathname === item.href;
-            return (
-              <li key={index}>
-                <Link href={item.href}>
-                  <div className="flex flex-col items-center space-y-1">
-                    <p
-                      className={cn(
-                        "font-din-regular",
-                        isActive ? "text-primary" : "text-light-100"
-                      )}
-                    >
-                      {item.title}
-                    </p>
-                    {isActive && (
-                      <div className="w-full h-1 bg-primary rounded-full scale-110" />
-                    )}
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <NavBar navigationItems={navigationItems} />
       </div>
       {/* Translate button */}
       <div>

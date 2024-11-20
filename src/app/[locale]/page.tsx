@@ -1,16 +1,14 @@
 "use client";
 
-import useIsArabic from '@/hooks/useIsArabic';
-import {useTranslations} from 'next-intl';
- 
+import { Hero } from "@/components";
+import useLanguage from "@/hooks/uselanguage";
+
 export default function HomePage() {
-  const isArabic = useIsArabic();
-  const t = useTranslations('HomePage');
-  
+  const { isArabic } = useLanguage();
+
   return (
-    <div dir={isArabic ? 'rtl' : 'ltr'}>
-      <h1>{t('title')}</h1>
-      <p>{t('description')}</p>
+    <div dir={isArabic ? "rtl" : "ltr"}>
+      <Hero />
     </div>
   );
 }
