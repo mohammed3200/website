@@ -40,7 +40,7 @@ export const News = () => {
         opts={{
           align: "start",
         }}
-        className="w-full mx-auto max-w-6xl"
+        className="w-full mx-auto md:max-w-4xl"
         dir="ltr"
         setApi={setApi}
         plugins={[Autoplay({ delay: 7000 })]}
@@ -48,7 +48,7 @@ export const News = () => {
         <CarouselContent>
           {MockNewsData.map((item) => (
             <CarouselItem key={item.title} className="h-auto" dir="rtl">
-              <div className="flex flex-col gap-4 md:flex-row">
+              <div className="flex flex-col gap-4 justify-center md:flex-row md:items-center mx-4">
                 <div>
                   <Image
                     src={item.image}
@@ -59,15 +59,15 @@ export const News = () => {
                   />
                 </div>
                 <div className="flex flex-col justify-center">
-                  <p className="font-din-bold text-black text-lg">{item.title}</p>
-                  <p className="font-din-regular text-light-100 text-base">{item.description}</p>
+                  <p className="font-din-bold text-black text-base md:text-lg break-words">{item.title}</p>
+                  <p className="font-din-regular text-light-100 text-sm md:text-base break-words">{item.description}</p>
                 </div>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious />
-        <CarouselNext />
+        <CarouselPrevious className="hidden lg:block" />
+        <CarouselNext className="hidden lg:block" />
       </Carousel>
       <div dir="ltr" className="flex flex-row gap-2 mt-4">
         {Array.from({ length: count }).map((_, index) => (
@@ -80,8 +80,8 @@ export const News = () => {
             }}
             transition={{
               type: "spring",
-              stiffness: 300,
-              damping: 20,
+              stiffness: 700,
+              damping: 40,
             }}
             className="w-2 h-2 rounded-full cursor-pointer"
             onClick={() => {

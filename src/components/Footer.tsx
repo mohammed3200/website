@@ -11,7 +11,7 @@ export const Footer = () => {
   return (
     <div className="footer" dir={isArabic ? "rtl" : "ltr"}>
       <div>
-        <p className="font-din-regular lg:text-xs text-white">
+        <p className="font-din-regular text-xs text-white md:text-xs">
           {t("copyright")}
         </p>
       </div>

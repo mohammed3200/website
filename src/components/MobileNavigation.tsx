@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { TranslateButton } from "./TranslateButton";
-import { Footer } from "./Footer";
 
 export const MobileNavigation = () => {
   const { lang, isArabic } = useLanguage();
@@ -40,8 +39,8 @@ export const MobileNavigation = () => {
       <Image
         src="./assets/icons/logo.svg"
         alt="logo"
-        width={150}
-        height={150}
+        width={50}
+        height={50}
         className="h-auto"
       />
       <Sheet open={open} onOpenChange={setOpen}>
@@ -77,8 +76,6 @@ export const MobileNavigation = () => {
               })}
             </ul>
           </nav>
-          <Separator className="my-5 bg-light-200/20" />
-          <Footer />
         </SheetContent>
       </Sheet>
     </header>
