@@ -40,7 +40,7 @@ export const News = () => {
         opts={{
           align: "start",
         }}
-        className="w-full mx-auto md:max-w-6xl"
+        className="w-full md:max-w-6xl"
         dir="ltr"
         setApi={setApi}
         plugins={[Autoplay({ delay: 7000 })]}
@@ -48,7 +48,7 @@ export const News = () => {
         <CarouselContent>
           {MockNewsData.map((item) => (
             <CarouselItem key={item.title} className="h-auto" dir="rtl">
-              <div className="flex flex-col gap-4 justify-center md:flex-row md:items-center mx-4">
+              <div className="flex flex-col gap-4 justify-center items-center md:flex-row">
                 <div>
                   <Image
                     src={item.image}
@@ -69,7 +69,7 @@ export const News = () => {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-      <div dir="ltr" className="flex flex-row gap-2 mt-4">
+      <div dir="ltr" className="flex flex-row gap-2 mt-2 md:mt-4">
         {Array.from({ length: count }).map((_, index) => (
           <motion.div
             key={index}

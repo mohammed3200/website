@@ -2,14 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
-
-import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
-
 import useLanguage from "@/hooks/uselanguage";
 
-import { cn } from "@/lib/utils";
 
 import {
   Sheet,
@@ -19,19 +13,10 @@ import {
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { TranslateButton } from "./TranslateButton";
+import { NavBar } from "./NavBar";
 export const MobileNavigation = () => {
-  const { lang, isArabic } = useLanguage();
-  const pathname = usePathname();
+  const { isArabic } = useLanguage();
   const [open, setOpen] = useState(false);
-  const t = useTranslations("Navigation");
-
-  const navigationItems = [
-    { title: t("home"), href: `/${lang}` },
-    { title: t("entrepreneurship"), href: `/${lang}entrepreneurship` },
-    { title: t("incubators"), href: `/${lang}incubators` },
-    { title: t("projects"), href: `/${lang}projects` },
-    { title: t("contact"), href: `/${lang}contact` },
-  ];
 
   return (
     <header className="mobile-header" dir={isArabic ? "rtl" : "ltr"}>
@@ -57,23 +42,7 @@ export const MobileNavigation = () => {
           </SheetTitle>
           <nav className="mobile-nav flex-1">
             <Separator className="mb-4 bg-light-200/20" />
-            <ul className="mobile-nav-list">
-              {navigationItems.map((item, index) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link key={index} href={item.href} className="lg:w-full">
-                    <li
-                      className={cn(
-                        "mobile-nav-item font-din-regular",
-                        isActive && "shad-active"
-                      )}
-                    >
-                      <p>{item.title}</p>
-                    </li>
-                  </Link>
-                );
-              })}
-            </ul>
+            <NavBar />
           </nav>
         </SheetContent>
       </Sheet>
