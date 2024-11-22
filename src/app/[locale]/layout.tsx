@@ -31,15 +31,14 @@ export default async function LocaleLayout({
     <html lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
+          <BackgroundBeams className="-z-10" />
           <main className="flex h-screen">
-            <BackgroundBeams />
             <section className="flex h-full flex-1 flex-col">
               <MobileNavigation />
               <Header />
               <div className="main-content">{children}</div>
               <Footer />
             </section>
-
             <Toaster />
           </main>
         </NextIntlClientProvider>

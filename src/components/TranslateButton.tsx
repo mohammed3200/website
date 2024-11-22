@@ -25,7 +25,7 @@ export const TranslateButton = () => {
           <button
             onClick={() => handleChange(code)}
             className={cn(
-              "font-din-bold",
+              "font-din-bold cursor-pointer",
               pathname.includes(code) ? "text-primary" : "text-light-100"
             )}
           >
