@@ -165,6 +165,6 @@ body {
 
   /* Footer */
   .footer {
-    @apply items-center justify-between px-1 md:p-5  bg-light-100/80 rounded-t-md !important;
+    @apply items-center justify-between p-2 md:p-3 lg:p-5 bg-light-100/80 rounded-t-md !important;
   }
 }

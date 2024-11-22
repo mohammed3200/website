@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-require-imports */
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
-const vanillaRTL = require("tailwindcss-vanilla-rtl");
 import { fontFamily } from "tailwindcss/defaultTheme"; // Import fontFamily
+
+const vanillaRTL = require("tailwindcss-vanilla-rtl");
+const {
+  default: flattenColorPalette,
+} = require("tailwindcss/lib/util/flattenColorPalette");
 
 export default {
   darkMode: ["class"],
@@ -83,20 +88,12 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
@@ -105,8 +102,23 @@ export default {
       },
     },
   },
-  plugins: [vanillaRTL, tailwindcssAnimate],
+  plugins: [
+    vanillaRTL,
+    tailwindcssAnimate,
+    addVariablesForColors,
+  ],
   corePlugins: {
     ...vanillaRTL.disabledCorePlugins,
   },
 } satisfies Config;
+
+function addVariablesForColors({ addBase, theme }: { addBase: any; theme: (key: string) => any }) {
+  const allColors = flattenColorPalette(theme("colors"));
+  const newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+
+  addBase({
+    ":root": newVars,
+  });
+}

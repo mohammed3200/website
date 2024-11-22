@@ -1,15 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Footer, Header, MobileNavigation } from "@/components";
 import { Toaster } from "@/components/ui/toaster";
-
-export const dynamic = "force-dynamic";
+import { BackgroundBeams } from "@/components/ui/background-beams";
 
 interface RootLayoutProps {
   children: React.ReactNode;
-  params: { locale: 'en' | 'ar' }; // Specify the expected locale types
+  params: any; // Specify the expected locale types
 }
 
 export default async function LocaleLayout({
@@ -32,6 +32,7 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider messages={messages}>
           <main className="flex h-screen">
+            <BackgroundBeams />
             <section className="flex h-full flex-1 flex-col">
               <MobileNavigation />
               <Header />
