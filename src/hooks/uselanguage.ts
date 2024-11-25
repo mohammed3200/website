@@ -14,8 +14,9 @@ const useLanguage = () => {
 
   // Determine if the language is Arabic
   const isArabic = lang === "ar";
+  const isEnglish = lang === "en";
 
-  return { lang, isArabic }; // Return the current language and whether it's Arabic
+  return { lang, isArabic, isEnglish }; // Return the current language and whether it's Arabic
 };
 
 export default useLanguage;

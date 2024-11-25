@@ -6,7 +6,15 @@ const withNextIntl = createNextIntlPlugin();
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
   images: {
-    domains: ["picsum.photos"], // Add your desired hostname here
+    remotePatterns: [
+      {
+        // pattern for images from picsum.photos
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**', // Allow any path
+      },
+    ],
   },
 };
 
