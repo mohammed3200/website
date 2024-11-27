@@ -12,7 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import { TranslateButton } from "./TranslateButton";
+import { TranslateButton } from "./buttons";
 import { NavBar } from "./NavBar";
 export const MobileNavigation = () => {
   const { isArabic } = useLanguage();
@@ -21,7 +21,7 @@ export const MobileNavigation = () => {
   return (
     <header className="mobile-header" dir={isArabic ? "rtl" : "ltr"}>
       <Image
-        src="./assets/icons/logo.svg"
+        src="/assets/icons/logo.svg"
         alt="logo"
         width={50}
         height={50}
@@ -30,7 +30,7 @@ export const MobileNavigation = () => {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger>
           <Image
-            src="assets/icons/menu.svg"
+            src="/assets/icons/menu.svg"
             alt="Menu"
             width={30}
             height={30}
