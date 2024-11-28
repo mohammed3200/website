@@ -15,12 +15,18 @@ export const Back = () => {
   return (
     <Button
       variant="secondary"
-      className="flex flex-row items-center justify-center gap-2"
+      className="flex flex-row items-center justify-center max-sm:size-10 md:gap-2"
       onClick={() => router.back()}
       dir={!isArabic ? "rtl" : "ltr"}
     >
-      <p className="font-din-bold text-light-100">{t("back")}</p>
-      {isArabic ? <ChevronRight className="size-4 mr-2" /> : <ChevronLeft className="size-4 mr-2" />}
+      <p className="hidden md:block font-din-bold text-light-100">
+        {t("back")}
+      </p>
+      {isArabic ? (
+        <ChevronRight className="size-4 md:size-8" />
+      ) : (
+        <ChevronLeft className="size-4 md:size-8" />
+      )}
     </Button>
   );
 };
