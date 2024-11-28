@@ -7,6 +7,8 @@ import { Footer, Header, MobileNavigation } from "@/components";
 import { Toaster } from "@/components/ui/toaster";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 
+export const dynamic = "force-dynamic";
+
 interface RootLayoutProps {
   children: React.ReactNode;
   params: any; // Specify the expected locale types
