@@ -7,6 +7,13 @@
       "title": "Page Not Found",
       "description": "Oops! It seems like you've stumbled upon a page that doesn't exist."
     },
+    "News": {
+      "NoNews" : "No news or announcements"
+    },
+    "ui" : {
+      "readMore" : "read more",
+      "back": "Back"
+    },
     "Navigation": {
       "home": "Home",
       "entrepreneurship": "Entrepreneurship",
