@@ -1,82 +1,74 @@
 "use client";
 
-import { details, strategics } from "@/constants";
+import React, { useState } from "react";
 import Image from "next/image";
-import React from "react";
+import { strategics } from "@/constants";
 import useLanguage from "@/hooks/uselanguage";
-
-import { AmazingButton } from "./AmazingButton";
+import { WobbleCard } from "./ui/wobble-card";
+import { useMedia } from "react-use";
 
 export const StrategicPlan = () => {
   const { isArabic } = useLanguage();
+  const [selectedIndex, setSelectedIndex] = useState<number>(0); // Default to the first card
+  const isDesktop = useMedia("min-width: 640px", true);
+
+  const handleCardClick = (index: number) => {
+    if (!isDesktop) {
+      // Only allow click to affect style on mobile
+      setSelectedIndex(index);
+    }
+  };
 
   return (
-    <section>
-      <div className="w-full px-5 sm:px-2">
-        <div
-          className="relative flex md:flex-wrap flex-nowrap border-2 border-primary rounded-3xl 
-          md:overflow-hidden max-md:flex-col max-md:border-none 
-          max-md:rounded-none feature-after max-md:gap-3 
-          md:shadow-gradient-primary-desktop"
-                dir={isArabic ? "rtl" : "ltr"}
-        >
-          {strategics.map(({ id, icon, caption, title, text, button }) => (
-            <div
-              key={id}
-              className="relative z-2 md:px-10 px-5 md:pb-10 pb-5 flex-50
-              max-md:border-2 max-md:border-primary max-md:rounded-3xl
-              max-md:flex-320 max-sm:shadow-gradient-primary-mobile"
-            >
-              <div className="w-full flex justify-start items-center">
-                <div className="-ml-3 mb-12 flex items-center justify-center flex-col">
-                    <div className="w-0.5 h-16 bg-primary"/>
-                  <Image 
-                  src={icon} 
-                  alt={title} 
-                  width={100} 
-                  height={100}
-                  className="size-28 object-contain"
-                  />
-                </div>
-              </div>
-              <p className="caption mb-5 max-md:mb-6" >
-                {caption}
-            </p>
-              <h2 className="max-w-400 mb-7 h3 text-p4 max-md:mb-6 max-md:h5" >
-                {title}
-                </h2>
-                <p className="mb-11 body-1 max-md:mb-8 max-md:body-3">
-                    {text}
-                </p>
-                <AmazingButton icon={button.icon} markerFill="#bebebe">
-                    {button.title}
-                </AmazingButton>
-            </div>
-          ))}
+    <div
+      className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl
+       mx-auto w-full md:border-2 md:border-primary
+        rounded-3xl p-4 overflow-hidden"
+      dir={isArabic ? "rtl" : "ltr"}
+    >
+      {strategics.map((strategic, index) => {
+        const isSelected = selectedIndex === index;
+        const isFirst = index === 0;
 
-          <ul className="relative flex justify-around 
-          flex-grow px-[5%] border-2 border-primary rounded-3xl
-          max-md:hidden"
+        const containerClassName = isDesktop
+          ? isFirst
+            ? "bg-primary text-white shadow-md shadow-primary"
+            : "bg-neutral-200 hover:bg-primary hover:text-white hover:shadow-md hover:shadow-primary"
+          : isSelected
+          ? "bg-primary text-white shadow-md shadow-primary"
+          : "bg-neutral-200 max-md:border-2 max-md:border-primary";
+
+        return (
+          <WobbleCard
+            key={index}
+            onClick={() => handleCardClick(index)}
+            containerClassName={`col-span-1 h-full ${containerClassName}`}
+            className="grid grid-row-1 md:grid-row-2 
+            md:px-10 px-5 max-md:rounded-3xl overflow-hidden"
           >
-            <div className="absolute top-[38%] left-0 right-0 w-full h-[1px] z-10" />
-            {details.map(({ id,icon,title }) => (
-              <li key={id} className="relative pt-16 pb-14">
-                <div className="absolute top-8 bottom-0 left-1/2 bg-primary-foreground w-[1px] h-full z-10" />
-                <div>
-                  <Image
-                  src={icon}
-                  alt={title}
-                  width={100}
-                  height={100}
-                  className="size-24 object-contain z-20"
-                  />
-                </div>
-              </li>
-            ))}
-
-          </ul>
-        </div>
-      </div>
-    </section>
+            <div
+              className="-translate-y-8 row-span-1"
+            >
+              <Image
+                src={strategic.icon}
+                width={100}
+                height={100}
+                className="size-24 object-fill h-auto"
+                alt="Strategic Plan"
+              />
+            </div>
+            <div className="row-span-1">
+            <p className="font-din-bold md:text-base text-sm">
+              {isArabic ? strategic.arabic.caption : strategic.english.caption}
+            </p>
+            <h2 className="font-din-regular max-w-400 md:h5 h6">
+              {isArabic ? strategic.arabic.title : strategic.english.title}
+            </h2>
+            </div>
+            
+          </WobbleCard>
+        );
+      })}
+    </div>
   );
 };

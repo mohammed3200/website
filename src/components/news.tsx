@@ -80,7 +80,7 @@ export const News = () => {
                       >
                         {isEnglish ? item.title_en ?? item.title : item.title}
                       </p>
-                      {(item.description || item.description_en) && (
+                      {item.description || item.description_en ? (
                         <p
                           className="font-din-regular text-light-100 text-sm md:text-base break-words"
                           dir={isEnglish ? "ltr" : "rtl"}
@@ -91,6 +91,8 @@ export const News = () => {
                               truncateString(item.description_en)}
                           <ReadMore href={`${lang}/News/${item.id}`} />
                         </p>
+                      ) : (
+                        <ReadMore href={`${lang}/News/${item.id}`} />
                       )}
                     </div>
                   </div>
