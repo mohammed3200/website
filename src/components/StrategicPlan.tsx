@@ -2,13 +2,21 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { strategics } from "@/constants";
-import useLanguage from "@/hooks/uselanguage";
-import { WobbleCard } from "./ui/wobble-card";
 import { useMedia } from "react-use";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { ArrowUpLeft, ArrowUpRight } from "lucide-react";
+
+import useLanguage from "@/hooks/uselanguage";
+import { strategics } from "@/constants";
+
+import { WobbleCard } from "./ui/wobble-card";
+import { ActiveButton } from "./buttons";
 
 export const StrategicPlan = () => {
-  const { isArabic } = useLanguage();
+  const router = useRouter();
+  const t = useTranslations("ui");
+  const { isArabic, lang } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // Default to the first card
   const isDesktop = useMedia("min-width: 640px", true);
 
@@ -46,9 +54,7 @@ export const StrategicPlan = () => {
             className="grid grid-row-1 md:grid-row-2 
             md:px-10 px-5 max-md:rounded-3xl overflow-hidden"
           >
-            <div
-              className="-translate-y-8 row-span-1"
-            >
+            <div className="-translate-y-8 row-span-1">
               <Image
                 src={strategic.icon}
                 width={100}
@@ -57,15 +63,33 @@ export const StrategicPlan = () => {
                 alt="Strategic Plan"
               />
             </div>
-            <div className="row-span-1">
-            <p className="font-din-bold md:text-base text-sm">
-              {isArabic ? strategic.arabic.caption : strategic.english.caption}
-            </p>
-            <h2 className="font-din-regular max-w-400 md:h5 h6">
-              {isArabic ? strategic.arabic.title : strategic.english.title}
-            </h2>
+            <div className="row-span-1 gap-2 flex flex-col justify-center">
+              <p className="font-din-bold md:text-base text-sm">
+                {isArabic
+                  ? strategic.arabic.caption
+                  : strategic.english.caption}
+              </p>
+              <h2 className="font-din-regular max-w-400 md:h5 h6">
+                {isArabic ? strategic.arabic.title : strategic.english.title}
+              </h2>
+              <div className="w-full mt-2 px-4">
+                <ActiveButton
+                  onClick={() => router.push(`${lang}/StrategicPlan/${strategic.id}`)}
+                  className={`${isArabic ? "ml-auto" : "mr-auto"}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <p className="font-din-bold text-base text-white">
+                      {t("readMore")}
+                    </p>
+                    {isArabic ? (
+                      <ArrowUpLeft className="size-5 text-white" />
+                    ) : (
+                      <ArrowUpRight className="size-5 text-white" />
+                    )}
+                  </div>
+                </ActiveButton>
+              </div>
             </div>
-            
           </WobbleCard>
         );
       })}

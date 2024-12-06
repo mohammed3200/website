@@ -15,7 +15,7 @@ export const Back = () => {
   return (
     <Button
       variant="secondary"
-      className="flex flex-row items-center justify-center max-sm:size-7 md:gap-2 "
+      className="flex flex-row items-center justify-center max-sm:size-7 md:gap-2 bg-transparent"
       onClick={() => router.back()}
       dir={!isArabic ? "rtl" : "ltr"}
     >
