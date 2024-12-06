@@ -1,5 +1,6 @@
 export const MockNewsData = [
     {
+        id:"1",
         title: "مركز الريادة يطلق برنامجًا جديدًا لدعم رواد الأعمال",
         description: "أطلق مركز الريادة برنامجًا جديدًا يهدف إلى تقديم الدعم اللازم للرواد في مجالات متعددة، بما في ذلك التدريب والاستشارات.",
         image: "https://picsum.photos/300/300",
@@ -8,9 +9,15 @@ export const MockNewsData = [
         activated: true,
         important: true,
         title_en: "The Entrepreneurship Center Launches a New Program to Support Entrepreneurs",
-        description_en: "The Entrepreneurship Center has launched a new program aimed at providing necessary support to entrepreneurs in various fields, including training and consulting."
+        description_en: "The Entrepreneurship Center has launched a new program aimed at providing necessary support to entrepreneurs in various fields, including training and consulting.",
+        photoGallery: [
+            "https://picsum.photos/seed/picsum/200/300",
+            "https://picsum.photos/300/300",
+            "https://picsum.photos/seed/300/300",
+        ]
     },
     {
+        id:"2",
         title: "نجاح فعالية يوم الريادة العالمي في المركز",
         description: "استضاف مركز الريادة فعالية يوم الريادة العالمي، حيث اجتمع العديد من رواد الأعمال لمشاركة تجاربهم وأفكارهم.",
         image: "https://picsum.photos/200/300",
@@ -19,9 +26,11 @@ export const MockNewsData = [
         activated: true,
         important: false,
         title_en: "Success of the Global Entrepreneurship Day Event at the Center",
-        description_en: "The Entrepreneurship Center hosted the Global Entrepreneurship Day event, where many entrepreneurs gathered to share their experiences and ideas."
+        description_en: "The Entrepreneurship Center hosted the Global Entrepreneurship Day event, where many entrepreneurs gathered to share their experiences and ideas.",
+        photoGallery: []
     },
     {
+        id:"3",
         title: "مركز الريادة يعلن عن ورشة عمل جديدة لتطوير المهارات",
         description: "ينظم مركز الريادة ورشة عمل جديدة تركز على تطوير المهارات الأساسية للرواد، مع خبراء في هذا المجال.",
         image: "https://picsum.photos/500/500",
@@ -30,9 +39,13 @@ export const MockNewsData = [
         activated: true,
         important: true,
         title_en: "The Entrepreneurship Center Announces a New Workshop to Develop Skills",
-        description_en: "The Entrepreneurship Center organizes a new workshop focusing on developing essential skills for entrepreneurs, with experts in the field."
+        description_en: "The Entrepreneurship Center organizes a new workshop focusing on developing essential skills for entrepreneurs, with experts in the field.",
+        photoGallery: [
+            "https://picsum.photos/500/500",
+        ]
     },
     {
+        id:"4",
         title: "مركز الريادة يطلق مسابقة جديدة للأفكار الابتكارية",
         description: "أعلن مركز الريادة عن إطلاق مسابقة جديدة تهدف إلى تشجيع الابتكار وتطوير الأفكار المبدعة بين رواد الأعمال.",
         image: "https://picsum.photos/400/400",
@@ -41,9 +54,13 @@ export const MockNewsData = [
         activated: false,
         important: true,
         title_en: "The Entrepreneurship Center Launches a New Competition for Innovative Ideas",
-        description_en: "The Entrepreneurship Center announced the launch of a new competition aimed at encouraging innovation and developing creative ideas among entrepreneurs."
+        description_en: "The Entrepreneurship Center announced the launch of a new competition aimed at encouraging innovation and developing creative ideas among entrepreneurs.",
+        photoGallery: [
+            "https://picsum.photos/400/500",
+        ]
     },
     {
+        id:"5",
         title: "ورشة عمل عن التسويق الرقمي في مركز الريادة",
         description: "ينظم مركز الريادة ورشة عمل شاملة حول التسويق الرقمي، تتناول استراتيجيات التسويق عبر الإنترنت.",
         image: "https://picsum.photos/400/300",
@@ -52,6 +69,9 @@ export const MockNewsData = [
         activated: true,
         important: false,
         title_en: "Workshop on Digital Marketing at the Entrepreneurship Center",
-        description_en: "The Entrepreneurship Center organizes a comprehensive workshop on digital marketing, covering online marketing strategies."
+        description_en: "The Entrepreneurship Center organizes a comprehensive workshop on digital marketing, covering online marketing strategies.",
+        photoGallery: [
+            "https://picsum.photos/400/400",
+        ]
     }
 ];
