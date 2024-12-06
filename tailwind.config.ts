@@ -64,6 +64,7 @@ export default {
         blue: "#56B8FF",
         pink: "#EEA8FD",
         orange: "#F9AB72",
+        cyen: "#2EF2FF",
         light: {
           "100": "#333F4E",
           "200": "#A3B2C7",
