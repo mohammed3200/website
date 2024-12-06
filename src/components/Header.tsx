@@ -4,6 +4,8 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { MainLogo } from "@/constants";
+
 import useLanguage from "@/hooks/uselanguage";
 
 import { TranslateButton } from "./buttons/TranslateButton";
@@ -22,8 +24,8 @@ export const Header = () => {
             <Image
               src={
                 isArabic
-                  ? "/assets/icons/logo-full.svg"
-                  : "/assets/icons/logo-english-full.svg"
+                  ? MainLogo.LogoFull
+                  : MainLogo.logoEnglishFull
               }
               alt="logo"
               width={170}
@@ -31,7 +33,7 @@ export const Header = () => {
               className="hidden h-auto md:block"
             />
             <Image
-              src="/assets/icons/logo.svg"
+              src={MainLogo.Logo}
               alt="logo"
               width={60}
               height={60}

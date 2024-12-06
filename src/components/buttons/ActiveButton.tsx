@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { BackGroundEffect } from "@/constants"
 
 import useLanguage from "@/hooks/uselanguage";
 
@@ -30,7 +31,7 @@ export const ActiveButton = ({
         className
       )}
       style={{
-        backgroundImage: "url(/assets/images/GlassBack.png)",
+        backgroundImage: `url(${BackGroundEffect.GlassBackground})`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import useLanguage from "@/hooks/uselanguage";
 
+import { MainLogo, IconsInterface } from "@/constants";
 
 import {
   Sheet,
@@ -14,6 +15,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { TranslateButton } from "./buttons";
 import { NavBar } from "./NavBar";
+
 export const MobileNavigation = () => {
   const { isArabic } = useLanguage();
   const [open, setOpen] = useState(false);
@@ -21,7 +23,7 @@ export const MobileNavigation = () => {
   return (
     <header className="mobile-header" dir={isArabic ? "rtl" : "ltr"}>
       <Image
-        src="/assets/icons/logo.svg"
+        src={MainLogo.Logo}
         alt="logo"
         width={50}
         height={50}
@@ -29,14 +31,12 @@ export const MobileNavigation = () => {
       />
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger>
-          <Image
-            src="/assets/icons/menu.svg"
-            alt="Menu"
-            width={30}
-            height={30}
-          />
+          <Image src={IconsInterface.Menu} alt="Menu" width={30} height={30} />
         </SheetTrigger>
-        <SheetContent className="shad-sheet h-screen px-3 flex flex-col" side={isArabic ? "left" : "right"}>
+        <SheetContent
+          className="shad-sheet h-screen px-3 flex flex-col"
+          side={isArabic ? "left" : "right"}
+        >
           <SheetTitle className="pt-2">
             <TranslateButton />
           </SheetTitle>
