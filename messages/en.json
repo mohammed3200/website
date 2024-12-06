@@ -22,6 +22,8 @@
       "contact": "Contact Us"
     },
     "Footer": {
-      "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators  2024."
+      "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators  2024.",
+      "privacyPolicy" : "Privacy Policy",
+      "termsOfUse" : "Terms of Use"
     }
   }
