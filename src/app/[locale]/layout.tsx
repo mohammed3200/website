@@ -3,7 +3,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { Footer, Header, MobileNavigation } from "@/components";
+import { Header, MobileNavigation } from "@/components";
 import { Toaster } from "@/components/ui/toaster";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 
@@ -39,7 +39,6 @@ export default async function LocaleLayout({
               <MobileNavigation />
               <Header />
               <div className="main-content">{children}</div>
-              <Footer />
             </section>
             <Toaster />
           </main>

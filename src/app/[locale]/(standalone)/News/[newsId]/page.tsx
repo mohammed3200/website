@@ -50,7 +50,7 @@ const NewsIdPage = () => {
         {news?.photoGallery && (
           <div className="w-full md:col-span-1 md:order-1">
             <Gallery>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 md:grid-flow-row gap-2">
                 {news.photoGallery.map((item, index) => (
                   <Item key={index} original={item}>
                     {({ ref, open }) => (

@@ -211,7 +211,7 @@ body {
   }
 
   .g4 {
-    @apply bg-gradient-to-t from-[#f89b04] to-[#fe6601] 
+    @apply bg-gradient-to-l from-transparent via-[#f89b04] to-[#fe6601] 
   }
 
   .g5 {
@@ -303,8 +303,37 @@ body {
   }
   /* END of Feature */
 
-  /* Footer */
-  .footer {
-    @apply items-center justify-between p-2 md:p-3 lg:p-5 bg-light-100/80 rounded-t-md !important;
+  .active-button {
+    outline: none;
+    font-size: 16px;
+    -webkit-transform: translate(0);
+    transform: translate(0);
+    background-image: linear-gradient(45deg, #fe6601, #ef8606);
+    box-shadow: 1px 1px 10px rgba(255, 255, 255, 0.438);
+    -webkit-transition: box-shadow 0.25s;
+    transition: box-shadow 0.7s;
   }
+
+  .active-button:after {
+    content: "";
+    border-radius: 18px;
+    position: absolute;
+    margin: 4px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: -1;
+    background: #0e0e10;
+  }
+  
+  .active-button:hover {
+    background-image: linear-gradient(-45deg, #fe6601, #648d9a);
+    box-shadow: 0 12px 24px rgba(128, 128, 128, 0.1);
+  }
+  
+  .active-button:hover .text {
+    background-image: linear-gradient(-45deg, #fe6601, #648d9a);
+  }
+
 }
