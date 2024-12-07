@@ -1,8 +1,4 @@
 {
-    "HomePage": {
-      "title": "Hello world!",
-      "description": "Welcome to my website! Internationalization (i18n)"
-    },
     "NotFoundPage": {
       "title": "Page Not Found",
       "description": "Oops! It seems like you've stumbled upon a page that doesn't exist."
@@ -20,6 +16,10 @@
       "incubators": "Incubators", 
       "projects": "Projects",
       "contact": "Contact Us"
+    },
+    "Faq": {
+      "title": "Inquiry fosters understanding, it leads to valuable insights.",
+      "subtitle": "You've got questions, we've got answers."
     },
     "Footer": {
       "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators  2024.",
