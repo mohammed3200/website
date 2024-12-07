@@ -8,8 +8,7 @@ import { MainLogo } from "@/constants";
 
 import useLanguage from "@/hooks/uselanguage";
 
-import { TranslateButton } from "./buttons/TranslateButton";
-import { NavBar } from "./NavBar";
+import { TranslateButton, NavBar } from "@/components";
 
 export const Header = () => {
   const { isArabic } = useLanguage();
@@ -22,11 +21,7 @@ export const Header = () => {
         <div className="">
           <Link href="/">
             <Image
-              src={
-                isArabic
-                  ? MainLogo.LogoFull
-                  : MainLogo.logoEnglishFull
-              }
+              src={isArabic ? MainLogo.LogoFull : MainLogo.logoEnglishFull}
               alt="logo"
               width={170}
               height={170}

@@ -1,7 +1,5 @@
 import React from "react";
-import { News } from "./news";
-import { StrategicPlan } from "./StrategicPlan";
-import { Footer } from "@/components";
+import { Footer, StrategicPlan, News, Faq } from "@/components";
 
 export const Hero = () => {
   return (
@@ -9,6 +7,7 @@ export const Hero = () => {
       <div className="container mx-auto space-y-5 sm:space-y-10">
         <News />
         <StrategicPlan />
+        <Faq />
         <Footer />
       </div>
     </section>

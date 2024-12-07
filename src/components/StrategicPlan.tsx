@@ -11,7 +11,7 @@ import useLanguage from "@/hooks/uselanguage";
 import { strategics } from "@/constants";
 
 import { WobbleCard } from "./ui/wobble-card";
-import { ActiveButton } from "./buttons";
+import { ActiveButton } from "@/components";
 
 export const StrategicPlan = () => {
   const router = useRouter();
@@ -28,7 +28,7 @@ export const StrategicPlan = () => {
   };
 
   return (
-    <div
+    <section
       className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl
        mx-auto w-full md:border-2 md:border-primary
         rounded-3xl p-4 overflow-hidden"
@@ -93,6 +93,6 @@ export const StrategicPlan = () => {
           </WobbleCard>
         );
       })}
-    </div>
+    </section>
   );
 };

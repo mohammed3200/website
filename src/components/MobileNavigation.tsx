@@ -6,6 +6,8 @@ import useLanguage from "@/hooks/uselanguage";
 
 import { MainLogo, IconsInterface } from "@/constants";
 
+import { NavBar,TranslateButton } from "@/components";
+
 import {
   Sheet,
   SheetContent,
@@ -13,8 +15,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import { TranslateButton } from "./buttons";
-import { NavBar } from "./NavBar";
 
 export const MobileNavigation = () => {
   const { isArabic } = useLanguage();

@@ -1,8 +1,13 @@
+export * from "./buttons";
+
 export * from "./Header";
 export * from "./MobileNavigation";
-export * from "./buttons/TranslateButton";
-export * from "./Hero";
 export * from "./NavBar";
+
+export * from "./Hero";
+
 export * from "./Footer";
+
 export * from "./news";
 export * from "./StrategicPlan";
+export * from "./Faq";

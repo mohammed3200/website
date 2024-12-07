@@ -2,10 +2,12 @@
 
 import React from "react";
 import Image from "next/image";
+
 import { cn } from "@/lib/utils";
+import useLanguage from "@/hooks/uselanguage";
+
 import { BackGroundEffect } from "@/constants"
 
-import useLanguage from "@/hooks/uselanguage";
 
 
 interface ActiveButtonProps {

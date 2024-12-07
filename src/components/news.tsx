@@ -2,12 +2,19 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { MockNewsData } from "@/mock";
-import { type CarouselApi } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
+import Autoplay from "embla-carousel-autoplay";
+
+import { MockNewsData } from "@/mock";
+
 import useLanguage from "@/hooks/uselanguage";
 
+import { truncateString } from "@/lib/utils";
+
+import { ReadMore } from "@/components";
+
+import { type CarouselApi } from "@/components/ui/carousel";
 import {
   Carousel,
   CarouselContent,
@@ -16,10 +23,10 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { CircleOff } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { Card } from "./ui/card";
-import { ReadMore } from "./buttons";
-import { truncateString } from "@/lib/utils";
+
+import { Card } from "@/components/ui/card";
+
+
 
 export const News = () => {
   const { isEnglish, lang } = useLanguage();
@@ -43,7 +50,7 @@ export const News = () => {
   }, [api]);
 
   return (
-    <div className="flex flex-col items-center mx-auto">
+    <section className="flex flex-col items-center mx-auto">
       {MockNewsData.length > 0 ? (
         <>
           {" "}
@@ -144,6 +151,6 @@ export const News = () => {
           </div>
         </Card>
       )}
-    </div>
+    </section>
   );
 };

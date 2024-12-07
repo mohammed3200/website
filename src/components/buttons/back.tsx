@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+import { useTranslations } from "next-intl";
 import useLanguage from "@/hooks/uselanguage";
+
 import { Button } from "../ui/button";
 
 export const Back = () => {
