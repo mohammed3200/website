@@ -29,7 +29,7 @@ export const FaqItem = ({ item, index }: FaqItemProps) => {
           </div>
           <div>
             <Accordion type="single" collapsible>
-              <AccordionItem>
+              <AccordionItem value="item-1">
                 <AccordionTrigger className="font-din-bold text-sm md:text-base break-words">
                   {item.question}
                 </AccordionTrigger>
