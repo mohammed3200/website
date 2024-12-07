@@ -75,3 +75,83 @@ export const MockNewsData = [
         ]
     }
 ];
+
+export const MockFaqData = [
+    {
+      id: "0",
+      question_en: "How can I start my own business?",
+      answer_en: "Starting your own business involves identifying a business idea, conducting market research, and developing a business plan.",
+      question_ar: "كيف يمكنني بدء عملي الخاص؟",
+      answer_ar: "بدء عملك الخاص يتضمن تحديد فكرة العمل، إجراء أبحاث السوق، وتطوير خطة عمل.",
+    },
+    {
+      id: "1",
+      question_en: "What resources do incubators provide?",
+      answer_en: "Incubators typically offer mentorship, funding, networking opportunities, and access to workspace.",
+      question_ar: "ما الموارد التي توفرها الحاضنات؟",
+      answer_ar: "عادةً ما تقدم الحاضنات التوجيه، التمويل، فرص التواصل، والوصول إلى مساحة العمل.",
+    },
+    {
+      id: "2",
+      question_en: "How long can I stay in an incubator?",
+      answer_en: "The duration varies, but most incubators offer programs that last from a few months to a couple of years.",
+      question_ar: "ما مدة بقائي في الحاضنة؟",
+      answer_ar: "تختلف المدة، لكن معظم الحاضنات تقدم برامج تستمر من عدة أشهر إلى بضع سنوات.",
+    },
+    {
+      id: "3",
+      question_en: "What are the benefits of joining an incubator?",
+      answer_en: "Joining an incubator can provide valuable support, resources, and guidance that increase your chances of success.",
+      question_ar: "ما فوائد الانضمام إلى حاضنة؟",
+      answer_ar: "يمكن أن يوفر الانضمام إلى حاضنة دعمًا قيمًا، موارد، وإرشادات تزيد من فرص نجاحك.",
+    },
+    {
+      id: "4",
+      question_en: "Do I need to give up equity to join an incubator?",
+      answer_en: "Some incubators require equity in exchange for their support, while others may charge a fee.",
+      question_ar: "هل يجب علي التخلي عن حقوق الملكية للانضمام إلى حاضنة؟",
+      answer_ar: "بعض الحاضنات تتطلب حقوق ملكية مقابل دعمها، بينما قد تفرض أخرى رسومًا.",
+    },
+    {
+      id: "5",
+      question_en: "How do I apply for an incubator program?",
+      answer_en: "Applications usually involve submitting a business plan and attending an interview or pitch session.",
+      question_ar: "كيف أقدم طلبًا لبرنامج حاضنة؟",
+      answer_ar: "عادةً ما تتضمن الطلبات تقديم خطة عمل وحضور مقابلة أو جلسة عرض.",
+    },
+    {
+      id: "6",
+      question_en: "Can incubators help with funding?",
+      answer_en: "Yes, many incubators have connections with investors and can help you secure funding for your business.",
+      question_ar: "هل يمكن أن تساعد الحاضنات في التمويل؟",
+      answer_ar: "نعم، العديد من الحاضنات لديها اتصالات مع مستثمرين ويمكن أن تساعدك في تأمين التمويل لعملك.",
+    },
+    {
+      id: "7",
+      question_en: "What types of businesses can join an incubator?",
+      answer_en: "Incubators often focus on specific industries, such as tech, healthcare, or social enterprises, but many accept a variety of business types.",
+      question_ar: "ما أنواع الأعمال التي يمكن أن تنضم إلى حاضنة؟",
+      answer_ar: "غالبًا ما تركز الحاضنات على صناعات محددة، مثل التكنولوجيا أو الرعاية الصحية، ولكن العديد منها يقبل أنواعًا متنوعة من الأعمال.",
+    },
+    {
+      id: "8",
+      question_en: "Do incubators offer training programs?",
+      answer_en: "Yes, most incubators provide workshops and training sessions to help entrepreneurs develop their skills.",
+      question_ar: "هل تقدم الحاضنات برامج تدريب؟",
+      answer_ar: "نعم، تقدم معظم الحاضنات ورش عمل وجلسات تدريب لمساعدة رواد الأعمال على تطوير مهاراتهم.",
+    },
+    {
+      id: "9",
+      question_en: "What happens after the incubation period?",
+      answer_en: "After the incubation period, businesses typically continue on their own or may join an accelerator for further growth.",
+      question_ar: "ماذا يحدث بعد فترة الحضانة؟",
+      answer_ar: "بعد فترة الحضانة، عادة ما تستمر الأعمال بمفردها أو قد تنضم إلى مسرع لنمو إضافي.",
+    },
+    {
+      id: "10",
+      question_en: "How can I measure the success of my startup?",
+      answer_en: "Success can be measured through various metrics, including revenue growth, customer acquisition, and market impact.",
+      question_ar: "كيف يمكنني قياس نجاح شركتي الناشئة؟",
+      answer_ar: "يمكن قياس النجاح من خلال مقاييس متنوعة، بما في ذلك نمو الإيرادات، اكتساب العملاء، وتأثير السوق.",
+    },
+  ];
