@@ -297,11 +297,21 @@ body {
     @apply pt-0 !important;
   }
 
-  /* START of Feature */
-  .feature-after {
-    @apply after:g1 after:absolute after:right-0 after:top-0 after:h-full after:w-1/2 after:mix-blend-soft-light after:content-[''] max-md:after:hidden;
+  /* START of FAQ */
+  .faq-line_after {
+    @apply after:absolute after:-top-1.5 after:left-[calc(50%-5px)] after:z-10 after:size-2.5 after:rounded-md after:border-2 after:border-primary after:bg-orange after:content-[''];
   }
-  /* END of Feature */
+
+  .faq-glow_before {
+    @apply before:absolute before:left-[calc(50%-160px)] before:top-[-160px] before:size-[320px] before:bg-orange before:mix-blend-soft-light before:blur-[200px] before:content-[''];
+  }
+
+  .faq-icon {
+    @apply before:absolute before:h-0.5 before:w-3 before:bg-gray-200 before:content-[''] after:absolute after:h-0.5 after:w-3 after:rotate-90 after:bg-gray-500 after:transition-all after:duration-500 after:content-[''];
+  }
+
+  /* END of FAQ */
+
 
   .active-button {
     outline: none;
