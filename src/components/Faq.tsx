@@ -10,8 +10,8 @@ export const Faq = () => {
   const { isArabic } = useLanguage();
 
   return (
-    <section dir={isArabic ? "rtl" : "ltr"} className="flex flex-col">
-      <div className="container relative z-2 py-10">
+    <section dir={isArabic ? "rtl" : "ltr"} className="flex flex-col px-4">
+      <div className="container relative z-2 py-10 ">
         <div>
           <h3 className="font-din-bold h4 max-md:h5 max-w-640 max-w-md mb-7">
             {t("title")}
