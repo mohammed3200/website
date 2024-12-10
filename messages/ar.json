@@ -1,9 +1,10 @@
 {
   "Navigation": {
     "home":"الصفحة الرئيسية",
-    "entrepreneurship": "ريادة",
+    "entrepreneurship": "الريادة",
     "incubators": "الحاضنات",
     "projects": "المشاريع",
+    "collaboratingCompanies": "الشركات المتعاونة",
     "contact": "تواصل معنا"
   },
   "News": {
