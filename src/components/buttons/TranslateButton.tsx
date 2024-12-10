@@ -37,7 +37,7 @@ export const TranslateButton = () => {
           <button
             onClick={() => handleChange(locale.code)}
             className={cn(
-              "font-din-bold cursor-pointer",
+              "font-din-bold cursor-pointer text-xs md:text-base",
               currentLocale() === locale.code ? "text-primary" : "text-light-100"
             )}
           >
