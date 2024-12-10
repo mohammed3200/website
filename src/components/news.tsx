@@ -25,8 +25,7 @@ import {
 import { CircleOff } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
-
-
+import { DefaultImage } from "@/constants";
 
 export const News = () => {
   const { isEnglish, lang } = useLanguage();
@@ -68,14 +67,36 @@ export const News = () => {
                 <CarouselItem key={item.id} className="h-auto" dir="rtl">
                   <div className="flex flex-col gap-4 justify-center items-center md:flex-row">
                     <div>
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        width={300} // Default width
-                        height={300} // Default height
-                        sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw" // Responsive sizes for mobile and desktop
-                        className="h-auto object-cover rounded-md"
-                      />
+                      {item.image ? (
+                        <Image
+                          src={item.image}
+                          alt={item.title}
+                          width={300} // Default width
+                          height={300} // Default height
+                          sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw" // Responsive sizes for mobile and desktop
+                          className="h-auto object-cover rounded-md"
+                        />
+                      ) : 
+                        item.photoGallery.length > 0 ? (
+                          <Image
+                          src={item.photoGallery[0]}
+                          alt={item.title}
+                          width={300} // Default width
+                          height={300} // Default height
+                          sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw" // Responsive sizes for mobile and desktop
+                          className="h-auto object-cover rounded-md"
+                        />
+                        ): (
+                          <Image
+                          src={DefaultImage.NewsDefault}
+                          alt={item.title}
+                          width={150} // Default width
+                          height={150} // Default height
+                          sizes="(max-width: 640px) 90vw, (min-width: 641px) 45vw" // Responsive sizes for mobile and desktop
+                          className="h-auto w-full object-cover rounded-lg"
+                        />
+                        )
+                      }
                     </div>
                     <div
                       className="flex flex-col justify-center px-5"

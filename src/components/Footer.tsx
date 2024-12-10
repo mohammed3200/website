@@ -38,7 +38,7 @@ export const Footer = () => {
                 <li key={id}>
                   <Link
                     href={url}
-                    className="flex size-10 items-center justify-center rounded-full border-2 border-primary bg-transparent"
+                    className="flex size-7 md:size-10 items-center justify-center rounded-full border-2 border-primary bg-transparent"
                   >
                     <Image
                       src={icon}

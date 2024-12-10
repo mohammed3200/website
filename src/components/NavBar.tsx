@@ -1,61 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useMedia } from "react-use";
-import { useTranslations } from "next-intl";
-
 import { motion } from "framer-motion";
 
-import useLanguage from "@/hooks/uselanguage";
-
 import { cn } from "@/lib/utils";
+import { useNavigationItems } from "@/constants";
 
 export const NavBar = () => {
-  const { lang } = useLanguage();
   const pathname = usePathname();
-  const t = useTranslations("Navigation");
-  const isDesktopOrTablet = useMedia("(min-width: 640px)", true);
+  const isDesktop = useMedia("(min-width: 640px)", true);
 
-  const navigationItems = useMemo(
-    () => [
-      { title: t("home"), href: `/${lang}` },
-      { title: t("entrepreneurship"), href: `/${lang}/entrepreneurship` },
-      { title: t("incubators"), href: `/${lang}/incubators` },
-      { title: t("projects"), href: `/${lang}/projects` },
-      { title: t("contact"), href: `/${lang}/contact` },
-    ],
-    [lang, t]
-  );
+  const navigationItems = useNavigationItems();
 
   const [position, setPosition] = useState({
     left: 0,
     top: 0,
     width: 0,
-    opacity: isDesktopOrTablet ? 0 : 1,
+    opacity: isDesktop ? 0 : 1,
   });
-
-  // Effect to set initial top position of the first item
-  useEffect(() => {
-    if (navigationItems.length > 0) {
-      const firstItem = document.querySelector("li");
-      if (firstItem && !isDesktopOrTablet) {
-        const { top } = firstItem.getBoundingClientRect();
-        setPosition((prev) => ({
-          ...prev,
-          top,
-        }));
-      }
-    }
-  }, [navigationItems, isDesktopOrTablet]);
 
   const handleClick = (ref: HTMLLIElement | null) => {
     if (!ref) return;
     const { width } = ref.getBoundingClientRect();
     setPosition({
-      left: isDesktopOrTablet ? ref.offsetLeft : 0,
-      top: isDesktopOrTablet ? 0 : ref.offsetTop,
+      left: isDesktop ? ref.offsetLeft : 0,
+      top: isDesktop ? 0 : ref.offsetTop,
       width,
       opacity: 1,
     });
@@ -66,12 +38,12 @@ export const NavBar = () => {
       onMouseLeave={() =>
         setPosition((pv) => ({
           ...pv,
-          opacity: isDesktopOrTablet ? 0 : pv.opacity,
+          opacity: isDesktop ? 0 : pv.opacity,
         }))
       } // Update opacity only for desktop
       className={cn(
         "relative mx-auto flex flex-col sm:flex-row w-fit border-none p-1",
-        !isDesktopOrTablet && "items-center justify-center"
+        !isDesktop && "items-center justify-center"
       )}
     >
       {navigationItems.map((item, index) => (
@@ -79,20 +51,20 @@ export const NavBar = () => {
           key={index}
           href={item.href}
           onClick={handleClick}
-          isDesktop={isDesktopOrTablet}
+          isDesktop={isDesktop}
         >
           <p
             className={cn(
               "font-din-bold text-sm",
               pathname === item.href &&
-                `sm:text-primary ${!isDesktopOrTablet && "text-white"}`
+                `sm:text-primary ${!isDesktop && "text-white"}`
             )}
           >
             {item.title}
           </p>
         </Tab>
       ))}
-      {isDesktopOrTablet ? (
+      {isDesktop ? (
         <CursorDesktop position={position} />
       ) : (
         <CursorMobile position={position} />
