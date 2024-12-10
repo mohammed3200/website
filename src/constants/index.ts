@@ -1,8 +1,11 @@
 export * from "./icons";
 export * from "./images";
 
+import useLanguage from "@/hooks/uselanguage";
 import { socialsIcons } from "./icons";
 import { strategicsImage } from "./images";
+import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 
 export const strategics = [
   {
@@ -556,3 +559,20 @@ export const socials = [
     url: "#",
   },
 ];
+
+export const useNavigationItems = () => {
+  const { lang } = useLanguage();
+  const t = useTranslations("Navigation");
+
+  return useMemo(
+    () => [
+      { title: t("home"), href: `/${lang}` },
+      { title: t("entrepreneurship"), href: `/${lang}/entrepreneurship` },
+      { title: t("incubators"), href: `/${lang}/incubators` },
+      { title: t("projects"), href: `/${lang}/projects` },
+      { title: t("collaboratingCompanies"), href: `/${lang}/companies` },
+      { title: t("contact"), href: `/${lang}/contact` },
+    ],
+    [lang, t]
+  );
+};
