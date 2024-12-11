@@ -2,29 +2,34 @@
   "Navigation": {
     "home": "Home",
     "entrepreneurship": "Entrepreneurship",
-    "incubators": "Incubators", 
+    "incubators": "Incubators",
     "projects": "Projects",
     "collaboratingCompanies": "Collaborating companies",
     "contact": "Contact Us"
   },
   "News": {
-    "NoNews" : "No news or announcements"
+    "NoNews": "No news or announcements"
   },
-  "ui" : {
-    "readMore" : "read more",
+  "ui": {
+    "readMore": "read more",
     "back": "Back"
   },
-    "NotFoundPage": {
-      "title": "Page Not Found",
-      "description": "Oops! It seems like you've stumbled upon a page that doesn't exist."
-    },
-    "Faq": {
-      "title": "Inquiry fosters understanding, it leads to valuable insights.",
-      "subtitle": "You've got questions, we've got answers."
-    },
-    "Footer": {
-      "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators  2024.",
-      "privacyPolicy" : "Privacy Policy",
-      "termsOfUse" : "Terms of Use"
-    }
+  "NotFoundPage": {
+    "title": "Page Not Found",
+    "description": "Oops! It seems like you've stumbled upon a page that doesn't exist."
+  },
+  "Faq": {
+    "title": "Inquiry fosters understanding, it leads to valuable insights.",
+    "subtitle": "You've got questions, we've got answers."
+  },
+  "collaboratingCompanies": {
+    "title": "Be part of a thriving entrepreneurial community. Collaborate with us to create a sustainable future.",
+    "subtitle": "Together, we can make a difference.",
+    "registration": "Join Us"
+  },
+  "Footer": {
+    "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators  2024.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfUse": "Terms of Use"
   }
+}
