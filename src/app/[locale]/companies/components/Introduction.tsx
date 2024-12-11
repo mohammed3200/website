@@ -19,14 +19,14 @@ export const Introduction = () => {
       className="w-full h-full flex flex-col md:px-8 px-2"
       dir={isArabic ? "rtl" : "ltr"}
     >
-      <div className="w-full h-full grid grid-cols-2 items-center md:flex-row ">
+      <div className="w-full h-full grid grid-row-2 md:grid-cols-2 items-center md:flex-row ">
         <div
           dir={isArabic ? "rtl" : "ltr"}
-          className="w-full gap-2 col-span-1 justify-center px-5 space-y-2"
+          className="w-full gap-2 row-span-1 max-md:order-last md:col-span-1 justify-center px-5 space-y-2"
         >
 
-          <p className="font-din-regular h5 max-md:h4">{t("title")}</p>
-          <p className="font-din-regular text-light-100 body-1 max-lg:max-w-sm">
+          <p className="font-din-regular h4 max-md:h5">{t("title")}</p>
+          <p className="font-din-regular text-light-100 body-1 max-md:body-2 max-lg:max-w-sm">
             {t("subtitle")}
               </p>
           <ActiveButton 
@@ -50,13 +50,13 @@ export const Introduction = () => {
             </div>
           </ActiveButton>
         </div>
-        <div className="col-span-1 flex justify-center">
+        <div className="row-span-1 max-md:order-first md:col-span-1 flex justify-center">
           <Image
             src={InterfaceImage.InnovationRafiki}
             alt="interface image item1"
             width={400}
             height={400}
-            sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw"
+            sizes="(max-width: 640px) 100vw, (min-width: 641px) 40vw"
             className="object-cover h-auto "
           />
         </div>
