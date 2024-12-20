@@ -37,3 +37,5 @@ export const getImageDimensions = async (
 
   return imageDetails;
 };
+
+export const convertFileToUrl = (file: File) => URL.createObjectURL(file);
