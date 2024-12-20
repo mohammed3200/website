@@ -25,7 +25,33 @@
   "collaboratingCompanies": {
     "title": "Be part of a thriving entrepreneurial community. Collaborate with us to create a sustainable future.",
     "subtitle": "Together, we can make a difference.",
-    "registration": "Join Us"
+    "registration": "Join Us",
+    "submit" : "Submit an application",
+    "form": {
+      "title": "Together We Can Achieve More",
+      "subtitle": "Collaborate with others to maximize potential and create lasting impact.",
+      "CompanyNameField": "Company Name (Organization)",
+      "MainImage": "Choose or select your main image",
+      "PrimaryPhone": "Primary phone number",
+      "OptionalPhone": "Additional phone number (optional)",
+      "Email" : "Email (optional)",
+      "Location" : "Location",
+      "Website": "Your website link (optional)",
+      "IndustrialSector" : "Industrial sector",
+      "Specialization": "Specialization",
+      "ExperienceProvided" : "Experience provided",
+      "AvailableMaterials" : "Available Materials",
+      "TypeOfCooperation" : "Type of cooperation offered",
+      "CooperationInterests" : "Collaboration Interests (Optional)",
+      "TermsOfUse" : "I agree to the terms of use"
+    }
+  },
+  "Form": {
+    "RequiredField": "Field is required",
+    "InvalidPhoneNumber": "Invalid phone number",
+    "InvalidEmail": "Invalid email",
+    "InvalidURL": "Invalid URL",
+    "TermsOfUse": "Terms of Use must be agreed to"
   },
   "Footer": {
     "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators  2024.",
