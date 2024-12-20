@@ -15,6 +15,9 @@ export default {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/hooks/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -83,9 +86,9 @@ export default {
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
-        'din-bold': ['DINNextLT-Bold', 'sans-serif'],
-        'din-regular': ['DINNextLT-Regular', 'sans-serif'],
-        'space-mono': ['SpaceMono-Regular', 'monospace'],
+        "din-bold": ["DINNextLT-Bold", "sans-serif"],
+        "din-regular": ["DINNextLT-Regular", "sans-serif"],
+        "space-mono": ["SpaceMono-Regular", "monospace"],
       },
       keyframes: {
         "accordion-down": {
@@ -101,6 +104,14 @@ export default {
             transform: "translate(calc(-50% - 0.5rem))",
           },
         },
+        "fly-1": {
+          from: {
+            transform: "translateY(0.1em)",
+          },
+          to: {
+            transform: "translateY(-0.1em)",
+          },
+        },
       },
       animation: {
         scroll:
@@ -110,17 +121,19 @@ export default {
       },
     },
   },
-  plugins: [
-    vanillaRTL,
-    tailwindcssAnimate,
-    addVariablesForColors,
-  ],
+  plugins: [vanillaRTL, tailwindcssAnimate, addVariablesForColors],
   corePlugins: {
     ...vanillaRTL.disabledCorePlugins,
   },
 } satisfies Config;
 
-function addVariablesForColors({ addBase, theme }: { addBase: any; theme: (key: string) => any }) {
+function addVariablesForColors({
+  addBase,
+  theme,
+}: {
+  addBase: any;
+  theme: (key: string) => any;
+}) {
   const allColors = flattenColorPalette(theme("colors"));
   const newVars = Object.fromEntries(
     Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
@@ -129,4 +142,4 @@ function addVariablesForColors({ addBase, theme }: { addBase: any; theme: (key: 
   addBase({
     ":root": newVars,
   });
-};
+}
