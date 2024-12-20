@@ -4,7 +4,7 @@ import React from 'react';
 
 import useLanguage from '@/hooks/uselanguage';
 
-import { Hero } from './components';
+import { Hero } from '@/features/companies/components';
 
 const Page = () => {
     const { isArabic } = useLanguage();
