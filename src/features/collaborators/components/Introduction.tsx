@@ -15,7 +15,7 @@ import { InterfaceImage } from "@/constants";
 export const Introduction = () => {
   const router =  useRouter();
   const { isArabic,lang } = useLanguage();
-  const t = useTranslations("collaboratingCompanies");
+  const t = useTranslations("collaboratingPartners");
   return (
     <div
       className="w-full h-full flex flex-col md:px-8 px-2"
@@ -32,7 +32,7 @@ export const Introduction = () => {
             {t("subtitle")}
               </p>
           <ActiveButton 
-          onClick={() => router.push(`/${lang}/companies/registration`)} 
+          onClick={() => router.push(`/${lang}/collaborators/registration`)} 
           className=""
           >
             <div 

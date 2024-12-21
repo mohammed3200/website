@@ -40,7 +40,7 @@ export const CollaboratorJoiningForm = ({
   onCancel,
 }: CollaboratorJoiningFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
-  const t = useTranslations("collaboratingCompanies");
+  const t = useTranslations("collaboratingPartners");
   const tForm = useTranslations("Form");
   const { isArabic, isEnglish } = useLanguage();
 
