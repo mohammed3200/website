@@ -4,7 +4,7 @@
     "entrepreneurship": "الريادة",
     "incubators": "الحاضنات",
     "projects": "المشاريع",
-    "collaboratingCompanies": "الشركات المتعاونة",
+    "collaboratingPartners": "الشركاء المتعاونين",
     "contact": "تواصل معنا"
   },
   "News": {
@@ -22,7 +22,7 @@
     "title": "الاستفسار يعزز الفهم، فهو يؤدي إلى رؤى قيمة.",
     "subtitle": "لديك أسئلة، ولدينا إجابات."
   },
-  "collaboratingCompanies":{
+  "collaboratingPartners":{
     "title":"كن جزءًا من مجتمع ريادة مزدهر. تعاون معنا لبناء مستقبل مستدام.",
     "subtitle":"معًا، يمكننا إحداث فرق.",
     "registration":"انضم إلينا",

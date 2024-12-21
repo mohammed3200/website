@@ -4,7 +4,7 @@
     "entrepreneurship": "Entrepreneurship",
     "incubators": "Incubators",
     "projects": "Projects",
-    "collaboratingCompanies": "Collaborating companies",
+    "collaboratingPartners": "Collaborating Partners",
     "contact": "Contact Us"
   },
   "News": {
@@ -22,7 +22,7 @@
     "title": "Inquiry fosters understanding, it leads to valuable insights.",
     "subtitle": "You've got questions, we've got answers."
   },
-  "collaboratingCompanies": {
+  "collaboratingPartners": {
     "title": "Be part of a thriving entrepreneurial community. Collaborate with us to create a sustainable future.",
     "subtitle": "Together, we can make a difference.",
     "registration": "Join Us",
