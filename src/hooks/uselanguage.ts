@@ -1,6 +1,7 @@
 "use client";
-import { usePathname } from "next/navigation";
+
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 const useLanguage = () => {
   const [lang, setLang] = useState("");
