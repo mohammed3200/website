@@ -4,14 +4,15 @@ import { zValidator } from "@hono/zod-validator";
 import { v4 as uuidv4 } from "uuid";
 import { createJoiningCompaniesCollaboratorSchema } from "../schemas";
 
-
-
 const app = new Hono().post(
   "/",
-  zValidator("form", createJoiningCompaniesCollaboratorSchema((t) => t)),
+  zValidator(
+    "form",
+    createJoiningCompaniesCollaboratorSchema((t) => t)
+  ),
   async (c) => {
     const formData = await c.req.formData();
-    
+
     console.log("Received Form Data:", formData); // Log form data for debugging
     // const formValid = await c.req.valid("form");
     // console.log("form valid" ,formValid);
@@ -33,27 +34,35 @@ const app = new Hono().post(
         image: formData.get("image")
           ? {
               create: {
-                data: Buffer.from(await (formData.get("image") as File).arrayBuffer()),
+                data: Buffer.from(
+                  await (formData.get("image") as File).arrayBuffer()
+                ),
               },
             }
           : undefined,
         experienceProvidedMedia: formData.getAll("experienceProvidedMedia")
           ? {
               create: await Promise.all(
-                (formData.getAll("experienceProvidedMedia") as File[]).map(async (file) => ({
-                  data: Buffer.from(await file.arrayBuffer()),
-                  type: file.type,
-                }))
+                (formData.getAll("experienceProvidedMedia") as File[]).map(
+                  async (file) => ({
+                    data: Buffer.from(await file.arrayBuffer()),
+                    type: file.type,
+                  })
+                )
               ),
             }
           : undefined,
-        machineryAndEquipmentMedia: formData.getAll("machineryAndEquipmentMedia")
+        machineryAndEquipmentMedia: formData.getAll(
+          "machineryAndEquipmentMedia"
+        )
           ? {
               create: await Promise.all(
-                (formData.getAll("machineryAndEquipmentMedia") as File[]).map(async (file) => ({
-                  data: Buffer.from(await file.arrayBuffer()),
-                  type: file.type,
-                }))
+                (formData.getAll("machineryAndEquipmentMedia") as File[]).map(
+                  async (file) => ({
+                    data: Buffer.from(await file.arrayBuffer()),
+                    type: file.type,
+                  })
+                )
               ),
             }
           : undefined,
