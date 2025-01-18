@@ -93,9 +93,9 @@ const RenderField = ({
       return (
         <FormControl>
           <Textarea
-            placeholder={placeholder}
             {...field}
-            className="placeholder:text-gray-400 font-din-regular focus-visible:ring-0 focus-visible:ring-offset-0"
+            placeholder={placeholder}
+            className="placeholder:text-gray-400 font-din-regular focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base text-sm"
             disabled={props.disabled}
           />
         </FormControl>
@@ -190,7 +190,7 @@ export const CustomFormField = (props: CustomProps) => {
 
           <RenderField field={field} props={props} isEnglish={isEnglish} />
 
-          <FormMessage className="" />
+          <FormMessage className="font-din-regular" />
         </FormItem>
       )}
     />
