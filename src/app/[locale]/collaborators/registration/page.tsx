@@ -1,9 +1,9 @@
-import { CollaboratorJoiningForm } from '@/features/collaborators/components';
 import React from 'react';
+import { CollaboratorJoiningForm } from '@/features/collaborators/components';
 
 const Registration = () => {
     return (
-        <div>
+        <div className="overflow-hidden">
             <CollaboratorJoiningForm />
         </div>
     );
