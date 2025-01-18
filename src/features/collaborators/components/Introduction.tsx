@@ -26,7 +26,6 @@ export const Introduction = () => {
           dir={isArabic ? "rtl" : "ltr"}
           className="w-full gap-2 row-span-1 max-md:order-last md:col-span-1 justify-center px-5 space-y-2"
         >
-
           <p className="font-din-regular h4 max-md:h5">{t("title")}</p>
           <p className="font-din-regular text-light-100 body-1 max-md:body-2 max-lg:max-w-sm">
             {t("subtitle")}
@@ -52,9 +51,9 @@ export const Introduction = () => {
             </div>
           </ActiveButton>
         </div>
-        <div className="row-span-1 max-md:order-first md:col-span-1 flex justify-center">
+        <div className="row-span-1 max-md:order-first md:col-span-1 flex justify-center py-4">
           <Image
-            src={InterfaceImage.InnovationRafiki}
+            src={InterfaceImage.AnalysisPana}
             alt="interface image item1"
             width={400}
             height={400}
