@@ -1,11 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
+  engineType = "library" // Change this to "library"
 }
 
 datasource db {
@@ -13,10 +8,31 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model admin {
+model Admin {
   id       String @id @default(cuid())
   username String
   password String
+}
+
+model Image {
+  id           String       @id @default(cuid())
+  data         Bytes        @db.MediumBlob // Store image binary data
+  collaborator Collaborator? @relation // One-to-one relationship
+  collaboratorId String? @unique // Optional to enable relationship
+  newsImageId   Int?   @unique
+  newsGalleryId String?
+  newsImage     News?      @relation("NewsImage") // One-to-one relationship for News main image
+  newsGallery   News[]     @relation("NewsGallery") // One-to-many relationship for News gallery images
+}
+
+model Media {
+  id                        String @id @default(cuid())
+  data                      Bytes  @db.LongBlob
+  type                      String // e.g., "PDF", "Video", etc.
+  collaboratorId            String? // Reference to Collaborator
+  machineryCollaboratorId   String?
+  collaborator              Collaborator? @relation("ExperienceMedia", fields: [collaboratorId], references: [id], onDelete: Cascade) // One-to-many relationship
+  machineryCollaborator      Collaborator? @relation("MachineryMedia", fields: [machineryCollaboratorId], references: [id], onDelete: Cascade)
 }
 
 model News {
@@ -25,6 +41,31 @@ model News {
   content   String
   Duration  String
   Active    Boolean
+  imageId   String?   @unique
+  galleryId String?
+  imageMain     Image?    @relation("NewsImage", fields: [imageId], references: [id]) // One-to-one relationship for main image
+  galleryImages Image[] @relation("NewsGallery") // One-to-many relationship for gallery images
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Collaborator {
+  id                       String    @id @default(cuid())
+  companyName              String
+  primaryPhoneNumber       String
+  optionalPhoneNumber      String?
+  email                    String?
+  location                 String?
+  site                     String?
+  industrialSector         String
+  specialization           String
+  experienceProvided       String?
+  machineryAndEquipment    String?
+  TermsOfUse               Boolean
+  imageId                  String?   @unique
+  image                    Image?    @relation(fields: [imageId], references: [id]) // One-to-one relationship
+  experienceProvidedMedia   Media[]   @relation("ExperienceMedia") // One-to-many relationship
+  machineryAndEquipmentMedia Media[]   @relation("MachineryMedia") // One-to-many relationship
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
 }
