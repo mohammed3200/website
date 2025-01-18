@@ -29,6 +29,7 @@ export const InterfaceImage = {
   NoData: "/assets/images/NoData.svg",
   Online: "/assets/images/Online-world-bro.svg",
   Warning: "/assets/images/Warning.svg",
+  UploadFiles: "/assets/images/Uploading-files.svg",
 };
 
 export const CorporateCompanies = {
