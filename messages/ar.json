@@ -5,6 +5,7 @@
     "incubators": "الحاضنات",
     "projects": "المشاريع",
     "collaboratingPartners": "الشركاء المتعاونين",
+    "CreatorsAndInnovators": "المبدعون والمبتكرون",
     "contact": "تواصل معنا"
   },
   "News": {
@@ -14,22 +15,22 @@
     "readMore" : "اقرأ المزيد",
     "back" : "عودة"
   },
-  "NotFoundPage": {
-    "title": "لم يتم العثور على الصفحة",
-    "description": "عفواً! يبدو أنك عثرت على صفحة غير موجودة."
+  "Error" : {
+    "title": "حدث خطأ ما",
+    "message": "نحن نواجه مشكلة مؤقتة. يرجى المحاولة مرة أخرى لاحقًا."
   },
   "Faq": {
     "title": "الاستفسار يعزز الفهم، فهو يؤدي إلى رؤى قيمة.",
     "subtitle": "لديك أسئلة، ولدينا إجابات."
   },
   "collaboratingPartners":{
-    "title":"كن جزءًا من مجتمع ريادة مزدهر. تعاون معنا لبناء مستقبل مستدام.",
-    "subtitle":"معًا، يمكننا إحداث فرق.",
+    "title" : "شعارنا.",
+    "subtitle": "دمج الخبرات الأكاديمية و العملية أساس التقدم.",
     "registration":"انضم إلينا",
     "submit": "ارسال طلب",
     "form" : {
-      "title" : "معًا يمكننا تحقيق المزيد",
-      "subtitle": "التعاون مع الآخرين لتحقيق أقصى قدر من الإمكانات وخلق تأثير دائم.",
+      "title":"الهدف من الشراكة.",
+      "subtitle":"دمج الخبرات الأكاديمية مع الخبرات العملية و التعاون في تطوير الصناعة المحلية.",
       "CompanyNameField": "اسم الشركة (المؤسسة)",
       "MainImage":"اختر أو حدد صورتك الرئيسية",
       "PrimaryPhone" : "رقم الهاتف الأساسي ",
@@ -39,18 +40,28 @@
       "Website" : "رابط موقعك (اختياري)",
       "IndustrialSector" : "القطاع الصناعي",
       "Specialization" : "المجال التخصصي",
-      "ExperienceProvided" : "الخبرة المقدمة",
-      "AvailableMaterials" : "(اختياري) المواد المتاحة",
-      "TypeOfCooperation" : "نوع التعاون المقدم",
-      "CooperationInterests" : "اهتمامات التعاون (اختياري)",
-      "TermsOfUse" : "أوافق على شروط الاستخدام"
+      "SharedResources" : "الموارد المشتركة",
+      "ExperienceProvided" : "الخبرة المقدمة (اختياري)",
+      "ExperienceProvidedMedia" : "ملفات ،صور ،فيديوهات ... (اختياري)",
+      "MachineryAndEquipment":"الالآت و المعدات (اختياري)",
+      "MachineryAndEquipmentMedia":"ملفات ،صور ،فيديوهات ... (اختياري)",
+      "TermsOfUse" : "أوافق على شروط الاستخدام",
+      "RequestSuccess" : "تم إرسال طلب التعاون بنجاح",
+      "RequestFailed" : "فشل إرسال طلب التعاون"
     }
+  },
+  "CreatorsAndInnovators" : {
+    "title" : "من الفكرة إلى الإبداع: أطلق العنان لإمكاناتك",
+    "subtitle":"انضم إلينا في مركز ريادة الأعمال وحاضنات الأعمال لتحويل أفكارك إلى مشاريع ناجحة",
+    "registration":"ابتكر معنا"
   },
   "Form" : {
     "RequiredField":"الحقل مطلوب",
     "InvalidPhoneNumber" : "رقم الهاتف غير صحيح",
     "InvalidEmail" : "البريد الإلكتروني غير صحيح",
     "InvalidURL" : "عنوان URL غير صالح",
+    "InvalidMediaType" :"غير مسموح بهذا النوع من الملفات",
+    "InvalidFileSize" : "حجم الملف أكبر من 50 ميجا بايت",
     "TermsOfUse" : "يجب الموافقة على شروط الاستخدام"
   },
   "Footer": {

@@ -5,6 +5,7 @@
     "incubators": "Incubators",
     "projects": "Projects",
     "collaboratingPartners": "Collaborating Partners",
+    "CreatorsAndInnovators": "Creators and Innovators",
     "contact": "Contact Us"
   },
   "News": {
@@ -14,22 +15,22 @@
     "readMore": "read more",
     "back": "Back"
   },
-  "NotFoundPage": {
-    "title": "Page Not Found",
-    "description": "Oops! It seems like you've stumbled upon a page that doesn't exist."
-  },
   "Faq": {
     "title": "Inquiry fosters understanding, it leads to valuable insights.",
     "subtitle": "You've got questions, we've got answers."
   },
+  "Error" : {
+    "title": "Something Went Wrong.",
+    "message": "We're experiencing a temporary issue. Please try again later."
+  },
   "collaboratingPartners": {
-    "title": "Be part of a thriving entrepreneurial community. Collaborate with us to create a sustainable future.",
-    "subtitle": "Together, we can make a difference.",
+    "title": "Our slogan",
+    "subtitle": "Integrating academic and practical experiences is the basis for progress.",
     "registration": "Join Us",
     "submit" : "Submit an application",
     "form": {
-      "title": "Together We Can Achieve More",
-      "subtitle": "Collaborate with others to maximize potential and create lasting impact.",
+      "title": "The purpose of the partnership.",
+      "subtitle": "Integrating academic expertise with practical experience and cooperating in developing local industry.",
       "CompanyNameField": "Company Name (Organization)",
       "MainImage": "Choose or select your main image",
       "PrimaryPhone": "Primary phone number",
@@ -39,18 +40,28 @@
       "Website": "Your website link (optional)",
       "IndustrialSector" : "Industrial sector",
       "Specialization": "Specialization",
-      "ExperienceProvided" : "Experience provided",
-      "AvailableMaterials" : "Available Materials",
-      "TypeOfCooperation" : "Type of cooperation offered",
-      "CooperationInterests" : "Collaboration Interests (Optional)",
-      "TermsOfUse" : "I agree to the terms of use"
+      "SharedResources" : "Shared Resources",
+      "ExperienceProvided": "Experience Provided (Optional)",
+      "ExperienceProvidedMedia": "Files, Images, Videos... (Optional)",
+      "MachineryAndEquipment":"Machinery and Equipment (Optional)",
+      "MachineryAndEquipmentMedia":"Files, Images, Videos... (Optional)",
+      "TermsOfUse" : "I agree to the terms of use",
+      "RequestSuccess": "Collaboration request sent successfully",
+      "RequestFailed": "Collaboration request sent failed"
     }
+  },
+  "CreatorsAndInnovators" : {
+  "title" : "From Idea to Creativity: Unleash Your Potential",
+  "subtitle":"Join Us at the Entrepreneurship and Business Incubators Center to Transform Your Ideas into Successful Projects",
+  "registration":"Innovate with us"
   },
   "Form": {
     "RequiredField": "Field is required",
     "InvalidPhoneNumber": "Invalid phone number",
     "InvalidEmail": "Invalid email",
     "InvalidURL": "Invalid URL",
+    "InvalidMediaType": "This file type is not allowed",
+    "InvalidFileSize": "File size is larger than 50MB",
     "TermsOfUse": "Terms of Use must be agreed to"
   },
   "Footer": {
