@@ -571,8 +571,42 @@ export const useNavigationItems = () => {
       { title: t("incubators"), href: `/${lang}/incubators` },
       { title: t("projects"), href: `/${lang}/projects` },
       { title: t("collaboratingPartners"), href: `/${lang}/collaborators` },
+      { title: t("CreatorsAndInnovators") , href: `/${lang}/innovators`},
       { title: t("contact"), href: `/${lang}/contact` },
     ],
     [lang, t]
   );
 };
+
+export const MAX_FILE_SIZE = 50 * 1024 * 1024 * 1024; // 50MB
+
+export const mediaTypes = [
+  // Document types
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  
+  // Image types
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",               // New: WebP image format
+  "image/bmp",                // New: BMP image format
+  "image/tiff",               // New: TIFF image format
+  "image/svg+xml",            // New: SVG image format
+  
+  // Video types
+  "video/mp4",
+  "video/x-msvideo",          // New: AVI video format
+  "video/x-flv",              // New: FLV video format
+  "video/webm",               // New: WebM video format
+  "video/ogg",                // New: OGG video format
+  
+  // Audio types
+  "audio/mpeg",
+  "audio/wav",
+  "audio/ogg",                // New: OGG audio format
+  "audio/mp3",                // New: MP3 audio format
+  "audio/aac",                // New: AAC audio format
+  "audio/flac",               // New: FLAC audio format
+];
