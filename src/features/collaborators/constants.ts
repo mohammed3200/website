@@ -1,97 +1,4 @@
-import { ListOfIndustrialSectors, TypesOfCooperation } from "./types";
-
-export const SectorTranslations = {
-  [ListOfIndustrialSectors.Technology]: { en: "Technology", ar: "التكنولوجيا" },
-  [ListOfIndustrialSectors.RenewableEnergy]: {
-    en: "Renewable Energy",
-    ar: "الطاقة المتجددة",
-  },
-  [ListOfIndustrialSectors.Manufacturing]: {
-    en: "Manufacturing",
-    ar: "التصنيع",
-  },
-  [ListOfIndustrialSectors.Mining]: { en: "Mining", ar: "التعدين" },
-  [ListOfIndustrialSectors.FinanceAndInvestment]: {
-    en: "Finance & Investment",
-    ar: "التمويل والاستثمار",
-  },
-  [ListOfIndustrialSectors.TransportationAndLogistics]: {
-    en: "Transportation & Logistics",
-    ar: "النقل واللوجستيات",
-  },
-  [ListOfIndustrialSectors.EducationAndTraining]: {
-    en: "Education & Training",
-    ar: "التعليم والتدريب",
-  },
-  [ListOfIndustrialSectors.FoodIndustries]: {
-    en: "Food Industries",
-    ar: "الصناعات الغذئية",
-  },
-  [ListOfIndustrialSectors.ECommerce]: {
-    en: "E-Commerce",
-    ar: "التجارة الإلكترونية",
-  },
-  [ListOfIndustrialSectors.ConstructionAndRealEstate]: {
-    en: "Construction & Real Estate",
-    ar: "البناء والعقارات",
-  },
-  [ListOfIndustrialSectors.Telecommunications]: {
-    en: "Telecommunications",
-    ar: "الاتصالات",
-  },
-  [ListOfIndustrialSectors.TourismAndHospitality]: {
-    en: "Tourism & Hospitality",
-    ar: "السياحة والضيافة",
-  },
-  [ListOfIndustrialSectors.HeavyIndustries]: {
-    en: "Heavy Industries",
-    ar: "الصناعات الثقيلة",
-  },
-};
-
-// Create a mapping of cooperation types with translations
-export const CooperationTranslations = {
-  [TypesOfCooperation.FinancialSupport]: {
-    en: "Financial Support",
-    ar: "الدعم المالي",
-  },
-  [TypesOfCooperation.MentoringAndAdvisory]: {
-    en: "Mentoring and Advisory",
-    ar: "الإرشاد والاستشارات",
-  },
-  [TypesOfCooperation.TrainingAndDevelopment]: {
-    en: "Training and Development",
-    ar: "التدريب والتطوير",
-  },
-  [TypesOfCooperation.ResourceSharing]: {
-    en: "Resource Sharing",
-    ar: "مشاركة الموارد",
-  },
-  [TypesOfCooperation.MarketAccess]: {
-    en: "Market Access",
-    ar: "الوصول إلى السوق",
-  },
-  [TypesOfCooperation.ResearchAndDevelopment]: {
-    en: "Research and Development",
-    ar: "البحث والتطوير",
-  },
-  [TypesOfCooperation.ProductDevelopment]: {
-    en: "Product Development",
-    ar: "تطوير المنتجات",
-  },
-  [TypesOfCooperation.MarketingAndPromotion]: {
-    en: "Marketing and Promotion",
-    ar: "التسويق والترويج",
-  },
-  [TypesOfCooperation.RegulatoryAssistance]: {
-    en: "Regulatory and Compliance Assistance",
-    ar: "المساعدة في الامتثال والتنظيم",
-  },
-  [TypesOfCooperation.CommunityEngagement]: {
-    en: "Community Engagement",
-    ar: "المشاركة المجتمعية",
-  },
-};
+import { ListOfIndustrialSectors, sharedResources as sharedResource } from "./types";
 
 export const EntranceNamePlaceholders = {
   en: [
@@ -109,3 +16,68 @@ export const EntranceNamePlaceholders = {
     "أو حتي اسم منصتك",
   ],
 };
+
+export const SectorTranslations = {
+  [ListOfIndustrialSectors.IronIndustriesManufacturing]: {
+    en: "Iron Industries Manufacturing",
+    ar: "الصناعات الحديدية (تصنيع)",
+  },
+  [ListOfIndustrialSectors.IronIndustriesMaintenance]: {
+    en: "Iron Industries Maintenance",
+    ar: "الصناعات الحديدية (صيانة)",
+  },
+  [ListOfIndustrialSectors.PlasticIndustries]: {
+    en: "Plastic Industries",
+    ar: "الصناعات البلاستيكية",
+  },
+  [ListOfIndustrialSectors.ChemicalIndustries]: {
+    en: "Chemical Industries",
+    ar: "الصناعات الكيميائية",
+  },
+  [ListOfIndustrialSectors.ElectricalIndustriesManufacturing]: {
+    en: "Electrical Industries Manufacturing",
+    ar: "الصناعات الكهربائية (تصنيع)",
+  },
+  [ListOfIndustrialSectors.ElectricalIndustriesMaintenance]: {
+    en: "Electrical Industries Maintenance",
+    ar: "الصناعات الكهربائية (صيانة)",
+  },
+  [ListOfIndustrialSectors.Electronics]: {
+    en: "Electronics",
+    ar: "الإلكترونيات",
+  },
+  [ListOfIndustrialSectors.Control]: { en: "Control", ar: "التحكم" },
+  [ListOfIndustrialSectors.HeavyIndustries]: {
+    en: "Heavy Industries",
+    ar: "الصناعات الثقيلة",
+  },
+  [ListOfIndustrialSectors.Manufacturing]: {
+    en: "Manufacturing",
+    ar: "التصنيع",
+  },
+  [ListOfIndustrialSectors.Mining]: { en: "Mining", ar: "التعدين" },
+  [ListOfIndustrialSectors.FoodIndustries]: {
+    en: "Food Industries",
+    ar: "الصناعات الغذائية",
+  },
+  [ListOfIndustrialSectors.Telecommunications]: {
+    en: "Telecommunications",
+    ar: "الاتصالات",
+  },
+  [ListOfIndustrialSectors.Technology]: { en: "Technology", ar: "التكنولوجيا" },
+  [ListOfIndustrialSectors.RenewableEnergy]: {
+    en: "Renewable Energy",
+    ar: "الطاقة المتجددة",
+  },
+};
+
+export const sharedResources = {
+  [sharedResource.machines] : {
+    en: "Machines",
+    ar: "الآلات",
+  },
+  [sharedResource.experiences] : {
+    en: "Experiences",
+    ar: "الخبرات",
+  }
+}
