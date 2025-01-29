@@ -26,12 +26,12 @@ import {
   FormFieldType,
   SubmitButton,
   UploadFiles,
+  Back,
 } from "@/components";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { InterfaceImage, IconsInterface } from "@/constants";
-import { Back } from "@/components";
 
 import { EntranceNamePlaceholders, SectorTranslations } from "../constants";
 import { createJoiningCompaniesCollaboratorSchema } from "../schemas";
@@ -40,15 +40,13 @@ import { useJoiningCollaborators } from "../api";
 export const CollaboratorJoiningForm = () => {
   const router = useRouter();
   const { isArabic, isEnglish, lang } = useLanguage();
-  const { mutate, isPending } = useJoiningCollaborators();
   const tForm = useTranslations("Form");
+  const { mutate, isPending } = useJoiningCollaborators();
   const t = useTranslations("collaboratingPartners");
   const [isLoading, setIsLoading] = useState(isPending);
   const [experienceFiles, setExperienceFiles] = useState<File[]>([]);
   const [machineryFiles, setMachineryFiles] = useState<File[]>([]);
   const [fileName, setFileName] = useState<string | null>(null);
-
-  // State to store files for both tabs
 
   const JoiningCompaniesCollaboratorSchema =
     createJoiningCompaniesCollaboratorSchema(tForm);
@@ -74,8 +72,6 @@ export const CollaboratorJoiningForm = () => {
 
   const onSubmit = async (values: z.infer<typeof JoiningCompaniesCollaboratorSchema>) => {
     setIsLoading(true);
-  
-    console.log("client : ", values); // Log form values for debugging
   
     try {
       const newCollaborators = {
