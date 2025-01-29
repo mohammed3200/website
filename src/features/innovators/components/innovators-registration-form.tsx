@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { z } from "zod";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -23,8 +23,8 @@ import { createCreativeRegistrationSchema } from "../schemas";
 import { StagesDevelopment } from "../constants";
 
 export const InnovatorsRegistrationForm = () => {
-  const router = useRouter();
-  const { isArabic, isEnglish, lang } = useLanguage();
+  // const router = useRouter();
+  const { isArabic, isEnglish } = useLanguage();
   const t = useTranslations("CreatorsAndInnovators");
   const tForm = useTranslations("Form");
   const [isLoading, setIsLoading] = useState(false);
