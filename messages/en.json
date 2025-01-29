@@ -19,7 +19,7 @@
     "title": "Inquiry fosters understanding, it leads to valuable insights.",
     "subtitle": "You've got questions, we've got answers."
   },
-  "Error" : {
+  "Error": {
     "title": "Something Went Wrong.",
     "message": "We're experiencing a temporary issue. Please try again later."
   },
@@ -27,7 +27,7 @@
     "title": "Our slogan",
     "subtitle": "Integrating academic and practical experiences is the basis for progress.",
     "registration": "Join Us",
-    "submit" : "Submit an application",
+    "submit": "Submit an application",
     "form": {
       "title": "The purpose of the partnership.",
       "subtitle": "Integrating academic expertise with practical experience and cooperating in developing local industry.",
@@ -35,28 +35,40 @@
       "MainImage": "Choose or select your main image",
       "PrimaryPhone": "Primary phone number",
       "OptionalPhone": "Additional phone number (optional)",
-      "Email" : "Email (optional)",
-      "Location" : "Location",
+      "Email": "Email (optional)",
+      "Location": "Location",
       "Website": "Your website link (optional)",
-      "IndustrialSector" : "Industrial sector",
+      "IndustrialSector": "Industrial sector",
       "Specialization": "Specialization",
-      "SharedResources" : "Shared Resources",
+      "SharedResources": "Shared Resources",
       "ExperienceProvided": "Experience Provided (Optional)",
       "ExperienceProvidedMedia": "Files, Images, Videos... (Optional)",
-      "MachineryAndEquipment":"Machinery and Equipment (Optional)",
-      "MachineryAndEquipmentMedia":"Files, Images, Videos... (Optional)",
-      "TermsOfUse" : "I agree to the terms of use",
+      "MachineryAndEquipment": "Machinery and Equipment (Optional)",
+      "MachineryAndEquipmentMedia": "Files, Images, Videos... (Optional)",
+      "TermsOfUse": "I agree to the terms of use",
       "RequestSuccess": "Collaboration request sent successfully",
       "RequestFailed": "Collaboration request sent failed"
     }
   },
-  "CreatorsAndInnovators" : {
-  "title" : "From Idea to Creativity: Unleash Your Potential",
-  "subtitle":"Join Us at the Entrepreneurship and Business Incubators Center to Transform Your Ideas into Successful Projects",
-  "registration":"Innovate with us"
+  "CreatorsAndInnovators": {
+    "title": "From Idea to Creativity: Unleash Your Potential",
+    "subtitle": "Join Us at the Entrepreneurship and Business Incubators Center to Transform Your Ideas into Successful Projects",
+    "registration": "Innovate with us",
+    "submit": "Submit an application",
+    "form": {
+      "name": "Full Name",
+      "phone": "Phone Number",
+      "email": "Email Address",
+      "projectTitle": "Project or Idea Title",
+      "projectDescription": "Project Description",
+      "objective": "Project Objectives",
+      "stageDevelopment": "Project progress",
+      "TermsOfUse": "I agree to the terms of use"
+    }
   },
   "Form": {
     "RequiredField": "Field is required",
+    "MaximumFieldSize": "Exceeded available size",
     "InvalidPhoneNumber": "Invalid phone number",
     "InvalidEmail": "Invalid email",
     "InvalidURL": "Invalid URL",
