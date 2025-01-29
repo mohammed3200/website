@@ -20,4 +20,6 @@ export const IconsInterface = {
     File: "/assets/icons/file.svg",
     Trash: "/assets/icons/trash.svg",
     Send : "/assets/icons/send.svg",
+    User : "/assets/icons/user.svg",
+    Text : "/assets/icons/text.svg",
 }
