@@ -11,9 +11,9 @@ export const Faqs = ({ listOfFaq }: FaqProps) => {
   const { isArabic } = useLanguage();
 
   return (
-    <div className="faq-container grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="faq-container grid grid-cols-1 md:grid-cols-2 gap-8">
       {listOfFaq.map((item, index) => (
-        <div key={index} className="faq-item relative z-10 mb-10">
+        <div key={index} className="faq-item relative z-10">
           <FaqItem
             item={
               isArabic

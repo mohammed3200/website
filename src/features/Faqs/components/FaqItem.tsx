@@ -17,15 +17,15 @@ interface FaqItemProps {
 
 export const FaqItem = ({ item, index }: FaqItemProps) => {
   return (
-    <div className="relative z-[2] mb-16">
+    <div className="relative z-[2]">
       <div
         className="group relative flex cursor-pointer items-center justify-between gap-10 px-7"
         onClick={() => {}}
       >
         <div className="flex-1 gap-2">
-          <div className="small-compact -mb-2 text-p3 max-lg:hidden">
+          <div className="md:small-compact base-bold max-md:font-din-regular -mb-3 md:-mb-2">
             {index + 1 < 10 ? "0" : ""}
-            {index + 1}
+            {index + 1}{" "}.
           </div>
           <div>
             <Accordion type="single" collapsible>
