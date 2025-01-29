@@ -49,24 +49,23 @@ export const News = () => {
   }, [api]);
 
   return (
-    <section className="flex flex-col items-center mx-auto">
+    <section className="flex flex-col items-center">
       {MockNewsData.length > 0 ? (
         <>
-          {" "}
           <Carousel
             opts={{
               align: "start",
             }}
-            className="max-w-[75vw] lg:max-w-6xl"
+            className="max-w-[75vw] lg:max-w-6xl max-md:max-w-[70vw]"
             dir="ltr"
             setApi={setApi}
             plugins={[Autoplay({ delay: 7000 })]}
           >
             <CarouselContent>
               {MockNewsData.map((item) => (
-                <CarouselItem key={item.id} className="h-auto" dir="rtl">
-                  <div className="flex flex-col gap-4 justify-center items-center md:flex-row">
-                    <div>
+                <CarouselItem key={item.id} className="max-md:w-[80vw] h-auto" dir="rtl">
+                  <div className="grid grid-cols-1 items-center md:grid-cols-5">
+                    <div className="col-span-2 w-[90%]">
                       {item.image ? (
                         <Image
                           src={item.image}
@@ -99,7 +98,7 @@ export const News = () => {
                       }
                     </div>
                     <div
-                      className="flex flex-col justify-center px-5"
+                      className="flex flex-col justify-center col-span-1 md:col-span-3 w-[90%]"
                       dir={isEnglish ? "ltr" : "rtl"}
                     >
                       <p

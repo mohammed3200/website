@@ -44,7 +44,7 @@ export const StrategicPlan = () => {
             : "bg-neutral-200 hover:bg-primary hover:text-white hover:shadow-md hover:shadow-primary"
           : isSelected
           ? "bg-primary text-white shadow-md shadow-primary"
-          : "bg-neutral-200 max-md:border-2 max-md:border-primary";
+          : "bg-neutral-200 max-md:border-2 max-md:shadow-md max-md:shadow-[#e99]";
 
         return (
           <WobbleCard
