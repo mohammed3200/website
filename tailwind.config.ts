@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-require-imports */
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
 import { fontFamily } from "tailwindcss/defaultTheme"; // Import fontFamily
@@ -12,12 +11,11 @@ const {
 export default {
   darkMode: ["class"],
   content: [
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/hooks/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -67,7 +65,6 @@ export default {
         blue: "#56B8FF",
         pink: "#EEA8FD",
         orange: "#F9AB72",
-        cyen: "#2EF2FF",
         light: {
           "100": "#333F4E",
           "200": "#A3B2C7",
@@ -104,6 +101,11 @@ export default {
             transform: "translate(calc(-50% - 0.5rem))",
           },
         },
+        "scroll-vertical": {
+          to: {
+            transform: "translateY(calc(-50% - 0.5rem))",
+          },
+        },
         "fly-1": {
           from: {
             transform: "translateY(0.1em)",
@@ -116,6 +118,8 @@ export default {
       animation: {
         scroll:
           "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
+        "scroll-vertical":
+          "scroll-vertical var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
