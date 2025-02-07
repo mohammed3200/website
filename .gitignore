@@ -40,3 +40,7 @@ yarn-error.log*
 next-env.d.ts
 
 .codegpt
+
+.gitignore
+
+.vscode

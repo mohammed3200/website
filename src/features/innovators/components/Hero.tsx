@@ -1,5 +1,5 @@
 import React from "react";
-import { Introduction } from "./introduction";
+import { Introduction } from "@/features/innovators/components";
 
 export const Hero = () => {
   return (
