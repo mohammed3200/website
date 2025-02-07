@@ -8,10 +8,12 @@ import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import { useNavigationItems } from "@/constants";
+import useLanguage from "@/hooks/uselanguage";
 
 export const NavBar = () => {
   const pathname = usePathname();
   const isDesktop = useMedia("(min-width: 640px)", true);
+  const { isEnglish } = useLanguage()
 
   const navigationItems = useNavigationItems();
 
@@ -57,7 +59,9 @@ export const NavBar = () => {
             className={cn(
               "font-din-bold text-sm",
               pathname === item.href &&
-                `sm:text-primary ${!isDesktop && "text-white"}`
+              "sm:text-primary max-md:text-white",
+              // TODO: Fix page titles in English
+              isEnglish && "md:text-[0.8rem]"
             )}
           >
             {item.title}
@@ -67,6 +71,7 @@ export const NavBar = () => {
       {isDesktop ? (
         <CursorDesktop position={position} />
       ) : (
+        // FIXME: Fix cursor position issue
         <CursorMobile position={position} />
       )}
     </ul>
