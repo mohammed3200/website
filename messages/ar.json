@@ -63,7 +63,9 @@
       "projectDescription":"وصف المشروع",
       "objective":"أهداف المشروع...(اختياري)",
       "stageDevelopment" : "تقدم المشروع",
-      "TermsOfUse" : "أوافق على شروط الاستخدام"
+      "TermsOfUse" : "أوافق على شروط الاستخدام",
+      "RequestSuccess" : "تم إرسال طلبك بنجاح",
+      "RequestFailed" : "فشل إرسال طلبك"
     }
   },
   "Form" : {

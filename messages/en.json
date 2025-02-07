@@ -63,7 +63,9 @@
       "projectDescription": "Project Description",
       "objective": "Project Objectives",
       "stageDevelopment": "Project progress",
-      "TermsOfUse": "I agree to the terms of use"
+      "TermsOfUse": "I agree to the terms of use",
+      "RequestSuccess": "Your request was sent successfully",
+      "RequestFailed": "Failed to send your request"
     }
   },
   "Form": {
