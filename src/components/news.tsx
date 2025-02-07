@@ -113,9 +113,9 @@ export const News = () => {
                           dir={isEnglish ? "ltr" : "rtl"}
                         >
                           {isEnglish && item.description_en
-                            ? truncateString(item.description_en,97,100)
-                            : truncateString(item.description,97,100) ||
-                              truncateString(item.description_en,97,100)}
+                            ? truncateString(item.description_en,97)
+                            : truncateString(item.description,97) ||
+                              truncateString(item.description_en,97)}
                           <ReadMore href={`${lang}/News/${item.id}`} />
                         </p>
                       ) : (
