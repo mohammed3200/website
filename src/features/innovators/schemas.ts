@@ -39,3 +39,38 @@ export const createCreativeRegistrationSchema = (
       }),
   });
 };
+
+export const createCreativeRegistrationSchemaServer = z.object({
+    // ====== Basic information ======
+    name: z.string().min(1, { message: "RequiredField" }),
+    phoneNumber: z
+      .string()
+      .min(1, { message: "RequiredField" })
+      .refine(
+        (phone) => typeof phone === "string" && /^\+[\d\s-]{6,15}$/.test(phone),
+        { message: "InvalidPhoneNumber" }
+      ),
+    email: z
+      .string()
+      .min(1, { message: "RequiredField" })
+      .email({
+        message: "InvalidEmail",
+      }),
+
+    // ======= Project Details ======
+    projectTitle: z.string().min(1, { message: "RequiredField" }),
+    projectDescription: z
+      .string()
+      .min(1, { message: "RequiredField" })
+      .max(1000, { message: "MaximumFieldSize 1000" }),
+    objective: z.string().optional(),
+    stageDevelopment: z.nativeEnum(StageDevelopment).optional(),
+
+    // ======== Center Policies ========
+    TermsOfUse: z
+      .string()
+      .default("false")
+      .refine((value) => value === "true", {
+        message: "TermsOfUse",
+      }),
+  });
