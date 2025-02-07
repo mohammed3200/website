@@ -157,7 +157,7 @@ export const MockFaqData = [
       answer_ar: "يمكن قياس النجاح من خلال مقاييس متنوعة، بما في ذلك نمو الإيرادات، اكتساب العملاء، وتأثير السوق.",
     },
 ];
-
+// FIXME: Re -writing the Mock to comply with the new data for collaborators
 export const MockCompaniesData = [
   {
     id: "1",
