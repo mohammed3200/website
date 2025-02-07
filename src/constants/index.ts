@@ -583,30 +583,46 @@ export const MAX_FILE_SIZE = 50 * 1024 * 1024 * 1024; // 50MB
 export const mediaTypes = [
   // Document types
   "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  
+  "application/msword", // .doc
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+  "application/vnd.ms-excel", // .xls
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+  "application/vnd.ms-powerpoint", // .ppt
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .pptx
+  "application/rtf", // Rich Text Format
+  "text/plain", // .txt
+
   // Image types
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",               // New: WebP image format
-  "image/bmp",                // New: BMP image format
-  "image/tiff",               // New: TIFF image format
-  "image/svg+xml",            // New: SVG image format
-  
+  "image/jpeg", // .jpg, .jpeg
+  "image/png", // .png
+  "image/gif", // .gif
+  "image/webp", // .webp
+  "image/bmp", // .bmp
+  "image/tiff", // .tiff
+  "image/svg+xml", // .svg
+  "image/vnd.adobe.photoshop", // .psd
+
   // Video types
-  "video/mp4",
-  "video/x-msvideo",          // New: AVI video format
-  "video/x-flv",              // New: FLV video format
-  "video/webm",               // New: WebM video format
-  "video/ogg",                // New: OGG video format
-  
+  "video/mp4", // .mp4
+  "video/x-msvideo", // .avi
+  "video/x-flv", // .flv
+  "video/webm", // .webm
+  "video/ogg", // .ogv
+  "video/quicktime", // .mov
+  "video/x-matroska", // .mkv
+  "video/x-ms-wmv", // .wmv
+  "video/x-m4v", // .m4v
+
   // Audio types
-  "audio/mpeg",
-  "audio/wav",
-  "audio/ogg",                // New: OGG audio format
-  "audio/mp3",                // New: MP3 audio format
-  "audio/aac",                // New: AAC audio format
-  "audio/flac",               // New: FLAC audio format
+  "audio/mpeg", // .mp3
+  "audio/wav", // .wav
+  "audio/ogg", // .ogg
+  "audio/aac", // .aac
+  "audio/flac", // .flac
+  "audio/x-m4a", // .m4a
+  "audio/x-ms-wma", // .wma
+  "audio/webm", // .weba
+  "audio/midi", // .midi
+  "audio/x-aiff", // .aiff
+  "audio/x-wav", // .wav (alternative)
 ];
