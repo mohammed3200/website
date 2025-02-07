@@ -7,9 +7,12 @@ import useLanguage from "@/hooks/uselanguage";
 interface CardCompaniesProps {
   className?: string;
   CompaniesName: string;
+  // FIXME: Experience Provided Incomplete
   ExperienceProvided: string;
+  // FIXME: company Image Incomplete
   companyImage: string;
 }
+// FIXME: Reform and amend the cooperative partners card, and because the partner's image and recipe is not repeated
 export const CardCompanies = ({
   className,
   CompaniesName,
