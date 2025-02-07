@@ -59,38 +59,52 @@ export const createJoiningCompaniesCollaboratorSchema = (
 
     // ======= Shared Resources =======
     experienceProvided: z.string().optional(),
-    experienceProvidedMedia: z.custom<File[]>()
-    .refine(
-      (files) => Array.isArray(files) && (files.length === 0 || files.every((file) => mediaTypes.includes(file.type))),
-      {
-        message: t("InvalidMediaType"),
-      }
-    )
-    .refine(
-      (files) => Array.isArray(files) && (files.length === 0 || files.every((file) => file.size <= 50 * 1024 * 1024)),
-      {
-        message: t("InvalidFileSize"),
-      }
-    )
-    .optional()
-    .default([]), // Default to an empty array if no files are provided
+    experienceProvidedMedia: z
+      .custom<File[]>()
+      .refine(
+        (files) =>
+          Array.isArray(files) &&
+          (files.length === 0 ||
+            files.every((file) => mediaTypes.includes(file.type))),
+        {
+          message: t("InvalidMediaType"),
+        }
+      )
+      .refine(
+        (files) =>
+          Array.isArray(files) &&
+          (files.length === 0 ||
+            files.every((file) => file.size <= 50 * 1024 * 1024)),
+        {
+          message: t("InvalidFileSize"),
+        }
+      )
+      .optional()
+      .default([]), // Default to an empty array if no files are provided
 
     machineryAndEquipment: z.string().optional(),
-    machineryAndEquipmentMedia: z.custom<File[]>()
-  .refine(
-    (files) => Array.isArray(files) && (files.length === 0 || files.every((file) => mediaTypes.includes(file.type))),
-    {
-      message: t("InvalidMediaType"),
-    }
-  )
-  .refine(
-    (files) => Array.isArray(files) && (files.length === 0 || files.every((file) => file.size <= 50 * 1024 * 1024)),
-    {
-      message: t("InvalidFileSize"),
-    }
-  )
-  .optional()
-  .default([]), // Default to an empty array if no files are provided
+    machineryAndEquipmentMedia: z
+      .custom<File[]>()
+      .refine(
+        (files) =>
+          Array.isArray(files) &&
+          (files.length === 0 ||
+            files.every((file) => mediaTypes.includes(file.type))),
+        {
+          message: t("InvalidMediaType"),
+        }
+      )
+      .refine(
+        (files) =>
+          Array.isArray(files) &&
+          (files.length === 0 ||
+            files.every((file) => file.size <= 50 * 1024 * 1024)),
+        {
+          message: t("InvalidFileSize"),
+        }
+      )
+      .optional()
+      .default([]), // Default to an empty array if no files are provided
 
     // ======== Center Policies ========
     TermsOfUse: z
@@ -101,3 +115,119 @@ export const createJoiningCompaniesCollaboratorSchema = (
       }),
   });
 };
+
+export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
+  // ====== Basic information ======
+  companyName: z.string().min(1, { message: "RequiredField" }),
+  primaryPhoneNumber: z
+    .string()
+    .min(1, { message: "RequiredField" })
+    .refine(
+      (phone) => typeof phone === "string" && /^\+[\d\s-]{6,15}$/.test(phone),
+      { message: "InvalidPhoneNumber" }
+    ),
+  optionalPhoneNumber: z
+    .string()
+    .optional()
+    .refine(
+      (phone) =>
+        !phone || /^\+[\d\s-]{6,15}$/.test(phone),
+      {
+        message: "InvalidPhoneNumber",
+      }
+    ),
+  email: z
+    .string()
+    .optional()
+    .refine(
+      (email) =>
+        !email ||
+        /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email),
+      {
+        message: "InvalidEmail",
+      }
+    ),
+  image: z
+    .union([
+      z.instanceof(File),
+      z.string().transform((value) => (value === "" ? undefined : value)),
+    ])
+    .optional(),
+  site: z
+    .string()
+    .optional()
+    .refine(
+      (url) =>
+        !url ||
+        /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(url),
+      {
+        message: "InvalidURL",
+      }
+    ),
+  location: z.string().optional(),
+
+  // ====== Industrial Information ======
+  industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
+    required_error: "RequiredField",
+  }),
+  specialization: z.string().min(1, "RequiredField"),
+
+  // ======= Shared Resources =======
+  experienceProvided: z.string().optional(),
+  experienceProvidedMedia: z
+    .custom<File[]>()
+    .refine(
+      (files) =>
+        Array.isArray(files) &&
+        (files.length === 0 ||
+          files.every((file) => mediaTypes.includes(file.type))),
+      {
+        message: "InvalidMediaType",
+      }
+    )
+    .refine(
+      (files) =>
+        Array.isArray(files) &&
+        (files.length === 0 ||
+          files.every((file) => file.size <= 50 * 1024 * 1024)),
+      {
+        message: "InvalidFileSize",
+      }
+    )
+    .optional()
+    .default([]), // Default to an empty array if no files are provided
+
+  machineryAndEquipment: z.string().optional(),
+  machineryAndEquipmentMedia: z
+    .custom<File[]>()
+    .refine(
+      (files) =>
+        Array.isArray(files)
+          ? files.length === 0 ||
+            files.every((file) => mediaTypes.includes(file.type))
+          : Array(files as File).map((file) => mediaTypes.includes(file.type)),
+      {
+        message: "InvalidMediaType",
+      }
+    )
+    .refine(
+      (files) =>
+        Array.isArray(files)
+          ? files.length === 0 ||
+            files.every((file) => file.size <= 50 * 1024 * 1024)
+          : Array(files as File).map((file) => mediaTypes.includes(file.type)),
+      {
+        message: "InvalidFileSize",
+      }
+    )
+    .optional()
+    .default([]), // Default to an empty array if no files are provided
+
+  // ======== Center Policies ========
+  TermsOfUse: z
+    .string()
+    .default("false")
+    .refine((value) => value === "true", {
+      message: "TermsOfUse",
+    }),
+});
