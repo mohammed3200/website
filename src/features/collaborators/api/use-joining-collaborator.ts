@@ -1,5 +1,5 @@
-import { toast } from "sonner";
 import { useTranslations } from "next-intl";
+import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { InferRequestType, InferResponseType } from "hono";
 
@@ -12,6 +12,7 @@ type ResponseType = InferResponseType<
 type RequestType = InferRequestType<(typeof client.api.collaborator)["$post"]>;
 
 export const useJoiningCollaborators = () => {
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const t = useTranslations("collaboratingPartners");
 
@@ -24,15 +25,20 @@ export const useJoiningCollaborators = () => {
         throw new Error("Failed to join collaborators");
       }
 
-      const data = await response.json();
-      return data as ResponseType;
+      return await response.json() as ResponseType;
     },
     onSuccess: () => {
-      toast.success(t("form.RequestSuccess"));
+      toast({ 
+        title: t("form.RequestSuccess"),
+        success:true
+        });
       queryClient.invalidateQueries({ queryKey: ["collaborator"] });
     },
     onError: () => {
-      toast.error(t("form.RequestFailed"));
+      toast({ 
+        title: t("form.RequestFailed"),
+        error:true
+      });
     },
   });
 
