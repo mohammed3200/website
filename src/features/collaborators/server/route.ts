@@ -1,81 +1,97 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { v4 as uuidv4 } from "uuid";
-import { createJoiningCompaniesCollaboratorSchema } from "../schemas";
+import { createJoiningCompaniesCollaboratorSchemaServer } from "../schemas";
 
 const app = new Hono().post(
   "/",
-  zValidator(
-    "form",
-    createJoiningCompaniesCollaboratorSchema((t) => t)
-  ),
+  zValidator("form", createJoiningCompaniesCollaboratorSchemaServer),
   async (c) => {
-    const formData = await c.req.formData();
-
-    console.log("Received Form Data:", formData); // Log form data for debugging
-    // const formValid = await c.req.valid("form");
-    // console.log("form valid" ,formValid);
+    const formValid = c.req.valid("form");
+    console.log("form valid", formValid);
 
     try {
+      // Ensure machineryAndEquipmentMedia is an array
+      const machineryAndEquipmentMedia = Array.isArray(
+        formValid.machineryAndEquipmentMedia
+      )
+        ? formValid.machineryAndEquipmentMedia
+        : [];
+
+      // Ensure experienceProvidedMedia is an array
+      const experienceProvidedMedia = Array.isArray(
+        formValid.experienceProvidedMedia
+      )
+        ? formValid.experienceProvidedMedia
+        : [];
+
       const data = {
         id: uuidv4(),
-        companyName: formData.get("companyName") as string,
-        primaryPhoneNumber: formData.get("primaryPhoneNumber") as string,
-        optionalPhoneNumber: formData.get("optionalPhoneNumber") as string,
-        email: formData.get("email") as string,
-        location: formData.get("location") as string,
-        site: formData.get("site") as string,
-        industrialSector: formData.get("industrialSector") as string,
-        specialization: formData.get("specialization") as string,
-        experienceProvided: formData.get("experienceProvided") as string,
-        machineryAndEquipment: formData.get("machineryAndEquipment") as string,
-        TermsOfUse: formData.get("TermsOfUse") === "true",
-        image: formData.get("image")
+        companyName: formValid.companyName,
+        primaryPhoneNumber: formValid.primaryPhoneNumber,
+        optionalPhoneNumber: formValid.optionalPhoneNumber || "",
+        email: formValid.email || "",
+        location: formValid.location || "",
+        site: formValid.site || "",
+        industrialSector: formValid.industrialSector,
+        specialization: formValid.specialization,
+        experienceProvided: formValid.experienceProvided || "",
+        machineryAndEquipment: formValid.machineryAndEquipment || "",
+        image: formValid.image
           ? {
               create: {
                 data: Buffer.from(
-                  await (formData.get("image") as File).arrayBuffer()
+                  await (formValid.image as File).arrayBuffer()
                 ),
               },
             }
           : undefined,
-        experienceProvidedMedia: formData.getAll("experienceProvidedMedia")
-          ? {
-              create: await Promise.all(
-                (formData.getAll("experienceProvidedMedia") as File[]).map(
-                  async (file) => ({
-                    data: Buffer.from(await file.arrayBuffer()),
-                    type: file.type,
+        experienceProvidedMedia:
+          experienceProvidedMedia.length > 0
+            ? {
+                create: await Promise.all(
+                  experienceProvidedMedia.map(async (file) => {
+                    if (file instanceof File) {
+                      return {
+                        data: Buffer.from(await file.arrayBuffer()),
+                        type: file.type,
+                      };
+                    } else {
+                      throw new Error(
+                        "Invalid file type in machineryAndEquipmentMedia"
+                      );
+                    }
                   })
-                )
-              ),
-            }
-          : undefined,
-        machineryAndEquipmentMedia: formData.getAll(
-          "machineryAndEquipmentMedia"
-        )
-          ? {
-              create: await Promise.all(
-                (formData.getAll("machineryAndEquipmentMedia") as File[]).map(
-                  async (file) => ({
-                    data: Buffer.from(await file.arrayBuffer()),
-                    type: file.type,
+                ),
+              }
+            : undefined,
+        machineryAndEquipmentMedia:
+          machineryAndEquipmentMedia.length > 0
+            ? {
+                create: await Promise.all(
+                  machineryAndEquipmentMedia.map(async (file) => {
+                    if (file instanceof File) {
+                      return {
+                        data: Buffer.from(await file.arrayBuffer()),
+                        type: file.type,
+                      };
+                    } else {
+                      throw new Error(
+                        "Invalid file type in machineryAndEquipmentMedia"
+                      );
+                    }
                   })
-                )
-              ),
-            }
-          : undefined,
+                ),
+              }
+            : undefined,
       };
-      // console.log("server : ",  data );
+
       console.log({ data });
 
-      return c.json(
-        {
-          message: "Collaborator created successfully",
-        },
-        201
-      );
+      // FIXME: Fix prisma usage problem
+      return c.json({
+        message: "Collaborator created successfully",
+      });
     } catch (error) {
       console.error("Error creating collaborator:", error);
       return c.json({ message: "Failed to create collaborator" }, 500);
