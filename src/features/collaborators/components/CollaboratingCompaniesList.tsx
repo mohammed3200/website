@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -9,11 +7,6 @@ import { MockCompaniesData } from "@/mock";
 import useLanguage from "@/hooks/uselanguage";
 
 interface CollaboratingCompaniesListProps {
-  items?: {
-    quote: string;
-    name: string;
-    title: string;
-  }[];
   direction?: "left" | "right";
   speed?: "fast" | "normal" | "slow";
   pauseOnHover?: boolean;
@@ -21,7 +14,6 @@ interface CollaboratingCompaniesListProps {
 }
 
 export const CollaboratingCompaniesList = ({
-  items,
   direction = "left",
   speed = "fast",
   pauseOnHover = true,
