@@ -43,7 +43,6 @@ export const CollaboratorJoiningForm = () => {
   const tForm = useTranslations("Form");
   const { mutate, isPending } = useJoiningCollaborators();
   const t = useTranslations("collaboratingPartners");
-  const [isLoading, setIsLoading] = useState(isPending);
   const [experienceFiles, setExperienceFiles] = useState<File[]>([]);
   const [machineryFiles, setMachineryFiles] = useState<File[]>([]);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -70,9 +69,7 @@ export const CollaboratorJoiningForm = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onSubmit = async (values: z.infer<typeof JoiningCompaniesCollaboratorSchema>) => {
-    setIsLoading(true);
-  
+  const onSubmit = async (values: z.infer<typeof JoiningCompaniesCollaboratorSchema>) => {  
     try {
       const newCollaborators = {
         companyName: values.companyName,
@@ -88,6 +85,7 @@ export const CollaboratorJoiningForm = () => {
         experienceProvidedMedia: values.experienceProvidedMedia || [], // Ensure it's an array
         machineryAndEquipment: values.machineryAndEquipment,
         machineryAndEquipmentMedia: values.machineryAndEquipmentMedia || [], // Ensure it's an array
+        // TODO: TermsOfUse boolean
         TermsOfUse: values.TermsOfUse ? "true" : "false",
       };
   
@@ -105,8 +103,6 @@ export const CollaboratorJoiningForm = () => {
       );
     } catch (error) {
       console.error("Error submitting form:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -353,7 +349,7 @@ export const CollaboratorJoiningForm = () => {
                       <CustomFormField
                         fieldType={FormFieldType.INPUT}
                         control={form.control}
-                        name="optionalPhoneNumber"
+                        name="site"
                         label={t("form.Website")}
                         placeholder="www."
                         iconSrc={IconsInterface.Site}
@@ -547,7 +543,7 @@ export const CollaboratorJoiningForm = () => {
               </section>
               <div dir={isArabic ? "rtl" : "ltr"}>
                 <SubmitButton
-                  isLoading={isLoading}
+                  isLoading={isPending}
                   dir={isArabic ? "rtl" : "ltr"}
                   classNameContent={`max-md:items-center ${
                     isArabic ? "flex-row-reverse" : "flex-row"
