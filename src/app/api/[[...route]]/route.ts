@@ -2,13 +2,15 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import collaborator from "@/features/collaborators/server/route";
+import innovators from "@/features/innovators/server/route";
 
 export const runtime = "edge";
 
 const app = new Hono().basePath("/api");
 
 const routes = app
-    .route("/collaborator", collaborator)
+  .route("/collaborator", collaborator)
+  .route("/innovators", innovators);
 
 export const GET = handle(app);
 export const POST = handle(app);
