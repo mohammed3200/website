@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { z } from "zod";
 import Image from "next/image";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -21,13 +21,15 @@ import { Back, CustomFormField, FormFieldType, SubmitButton } from "@/components
 
 import { createCreativeRegistrationSchema } from "../schemas";
 import { StagesDevelopment } from "../constants";
+import { useJoiningInnovators } from "../api/use-joining-innovators";
+import { StageDevelopment } from "../types";
 
 export const InnovatorsRegistrationForm = () => {
-  // const router = useRouter();
-  const { isArabic, isEnglish } = useLanguage();
+  const router = useRouter();
+  const { mutate, isPending } = useJoiningInnovators()
+  const { isArabic, isEnglish, lang } = useLanguage();
   const t = useTranslations("CreatorsAndInnovators");
   const tForm = useTranslations("Form");
-  const [isLoading, setIsLoading] = useState(false);
 
   const creativeRegistrationSchema = createCreativeRegistrationSchema(tForm);
 
@@ -40,14 +42,12 @@ export const InnovatorsRegistrationForm = () => {
       projectTitle: "",
       projectDescription: "",
       objective: "",
-      stageDevelopment: undefined,
+      stageDevelopment: StageDevelopment.STAGE,
       TermsOfUse: false,
     },
   });
 
   const onSubmit = async (values: z.infer<typeof creativeRegistrationSchema>) => {
-    setIsLoading(true);
-      
     try {
       const newInnovators = {
         name: values.name,
@@ -57,17 +57,31 @@ export const InnovatorsRegistrationForm = () => {
         projectDescription: values.projectDescription,
         objective: values.objective,
         stageDevelopment: values.stageDevelopment,
+        // TODO: TermsOfUse boolean
+        TermsOfUse: values.TermsOfUse ? "true" : "false",
       };
   
       console.log("====================================");
       console.log(newInnovators);
       console.log("====================================");
+
+      mutate(
+        {
+          form: newInnovators,
+        },
+        {
+          onSuccess: () => {
+            form.reset();
+            router.push(`/${lang}/innovators`);
+          },
+        }
+      );
+
     } catch (error) {
       console.error("Error submitting form:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
+
   return (
     <div className="w-full md:px-4 px-6 md:py-2">
       <div className="relative w-full flex md:flex-col items-center">
@@ -203,12 +217,10 @@ export const InnovatorsRegistrationForm = () => {
                 </div>
                 <div dir={isArabic ? "rtl" : "ltr"} className="">
                   <SubmitButton
-                    isLoading={isLoading}
+                    isLoading={isPending}
                     dir={isArabic ? "rtl" : "ltr"}
-                    classNameContent={`max-md:items-center ${isArabic ? "flex-row-reverse" : "flex-row"
-                      }`}
+                    classNameContent={`max-md:items-center ${isArabic ? "flex-row-reverse" : "flex-row"}`}
                     className="max-md:w-full max-md:h-1/2"
-                    type="submit" // Ensure this is set
                   >
                     <p className="font-din-regular text-white">{t("submit")}</p>
                   </SubmitButton>
