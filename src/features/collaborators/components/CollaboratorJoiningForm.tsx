@@ -135,6 +135,7 @@ export const CollaboratorJoiningForm = () => {
                 >
                   <Back className="max-md:scale-150 scale-125" />
                 </div>
+                {/* change title to امكانيات الشركة  */}
                 <p className="font-din-bold h4 max-md:h5">{t("form.title")}</p>
                 <p className="font-din-regular text-light-100 body-1 max-md:body-2 max-lg:max-w-sm">
                   {t("form.subtitle")}
@@ -450,8 +451,8 @@ export const CollaboratorJoiningForm = () => {
                             label={t("form.ExperienceProvided")}
                             placeholder={
                               isArabic
-                                ? "وصف بسيط للقدرات والإمكانات التي تتمتع بها مؤسستك."
-                                : "A simple description of your organization's capabilities and potential."
+                                ? "وصف بسيط للخبرات للكادر الوظيفي بالشركة مثل فني صيانة كهربائية ، تحكم..."
+                                : "A simple description of the experience of the company's staff, such as electrical maintenance technician, control..."
                             }
                           />
                         </div>
@@ -532,6 +533,7 @@ export const CollaboratorJoiningForm = () => {
                 </div>
               </section>
               <section className="space-y-3">
+                {/* FIXME: remove */}
                 <div dir={isArabic ? "rtl" : "ltr"}>
                   <CustomFormField
                     fieldType={FormFieldType.CHECKBOX}
