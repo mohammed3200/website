@@ -2,6 +2,8 @@ import { z } from "zod";
 import { ListOfIndustrialSectors } from "./types";
 import { mediaTypes } from "@/constants";
 
+// TODO: remove TermsOfUse from all schemas
+
 export const createJoiningCompaniesCollaboratorSchema = (
   t: (key: string) => string
 ) => {
@@ -107,12 +109,12 @@ export const createJoiningCompaniesCollaboratorSchema = (
       .default([]), // Default to an empty array if no files are provided
 
     // ======== Center Policies ========
-    TermsOfUse: z
-      .boolean()
-      .default(false)
-      .refine((value) => value === true, {
-        message: t("TermsOfUse"),
-      }),
+    // TermsOfUse: z
+    //   .boolean()
+    //   .default(false)
+    //   .refine((value) => value === true, {
+    //     message: t("TermsOfUse"),
+    //   }),
   });
 };
 
@@ -224,10 +226,10 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
     .default([]), // Default to an empty array if no files are provided
 
   // ======== Center Policies ========
-  TermsOfUse: z
-    .string()
-    .default("false")
-    .refine((value) => value === "true", {
-      message: "TermsOfUse",
-    }),
+  // TermsOfUse: z
+  //   .string()
+  //   .default("false")
+  //   .refine((value) => value === "true", {
+  //     message: "TermsOfUse",
+  //   }),
 });

@@ -63,7 +63,8 @@ export const CollaboratorJoiningForm = () => {
       specialization: "",
       experienceProvided: "",
       machineryAndEquipment: "",
-      TermsOfUse: false,
+      // TODO: remove TermsOfUse
+      // TermsOfUse: false,
     },
   });
 
@@ -86,7 +87,8 @@ export const CollaboratorJoiningForm = () => {
         machineryAndEquipment: values.machineryAndEquipment,
         machineryAndEquipmentMedia: values.machineryAndEquipmentMedia || [], // Ensure it's an array
         // TODO: TermsOfUse boolean
-        TermsOfUse: values.TermsOfUse ? "true" : "false",
+        // TODO: remove TermsOfUse
+        // TermsOfUse: values.TermsOfUse ? "true" : "false",
       };
   
       mutate(
@@ -533,15 +535,15 @@ export const CollaboratorJoiningForm = () => {
                 </div>
               </section>
               <section className="space-y-3">
-                {/* FIXME: remove */}
-                <div dir={isArabic ? "rtl" : "ltr"}>
+                {/* TODO: remove */}
+                {/* <div dir={isArabic ? "rtl" : "ltr"}>
                   <CustomFormField
                     fieldType={FormFieldType.CHECKBOX}
                     control={form.control}
                     name="TermsOfUse"
                     label={t("form.TermsOfUse")}
                   />
-                </div>
+                </div> */}
               </section>
               <div dir={isArabic ? "rtl" : "ltr"}>
                 <SubmitButton
