@@ -26,6 +26,7 @@ export const Introduction = () => {
           dir={isArabic ? "rtl" : "ltr"}
           className="w-full gap-2 row-span-1 max-md:order-last md:col-span-1 justify-center px-5 space-y-2"
         >
+          {/* TODO: change subtitle*/}
           <p className="font-din-regular h4 max-md:h5">{t("title")}</p>
           <p className="font-din-regular text-light-100 body-1 max-md:body-2 max-lg:max-w-sm">
             {t("subtitle")}
