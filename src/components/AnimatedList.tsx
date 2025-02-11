@@ -1,41 +1,36 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import { CardInnovators } from "./card-innovators";
-import { MockCompaniesData } from "@/mock";
 import useLanguage from "@/hooks/uselanguage";
 
-interface VerticalScrollingCompaniesListProps {
-  items?: {
-    quote: string;
-    name: string;
-    title: string;
-  }[];
-  direction?: "top" | "bottom";
+interface AnimatedListProps<T> {
+  direction?: "left" | "right" | "up" | "down";
   speed?: "fast" | "normal" | "slow";
   pauseOnHover?: boolean;
   className?: string;
+  layout?: "horizontal" | "vertical";
+  items: T[];
+  renderItem: (item: T, index: number) => React.ReactNode;
 }
 
-export const VerticalScrollingCompaniesList = ({
-  items,
-  direction = "top",
+export const AnimatedList = <T,>({
+  direction = "left",
   speed = "fast",
   pauseOnHover = true,
   className,
-}: VerticalScrollingCompaniesListProps) => {
+  layout = "horizontal",
+  items,
+  renderItem,
+}: AnimatedListProps<T>) => {
   const { isArabic } = useLanguage();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const scrollerRef = React.useRef<HTMLUListElement>(null);
+  const [start, setStart] = useState(false);
 
   useEffect(() => {
     addAnimation();
   }, []);
-
-  const [start, setStart] = useState(false);
 
   function addAnimation() {
     if (containerRef.current && scrollerRef.current) {
@@ -61,12 +56,22 @@ export const VerticalScrollingCompaniesList = ({
 
   const getDirection = () => {
     if (containerRef.current) {
-      if (direction === "top") {
+      if (direction === "left") {
         containerRef.current.style.setProperty(
           "--animation-direction",
           "forwards"
         );
-      } else {
+      } else if (direction === "right") {
+        containerRef.current.style.setProperty(
+          "--animation-direction",
+          "reverse"
+        );
+      } else if (direction === "up") {
+        containerRef.current.style.setProperty(
+          "--animation-direction",
+          "forwards"
+        );
+      } else if (direction === "down") {
         containerRef.current.style.setProperty(
           "--animation-direction",
           "reverse"
@@ -78,11 +83,11 @@ export const VerticalScrollingCompaniesList = ({
   const getSpeed = () => {
     if (containerRef.current) {
       if (speed === "fast") {
-        containerRef.current.style.setProperty("--animation-duration", "15s");
+        containerRef.current.style.setProperty("--animation-duration", "20s");
       } else if (speed === "normal") {
         containerRef.current.style.setProperty("--animation-duration", "40s");
       } else {
-        containerRef.current.style.setProperty("--animation-duration", "60s");
+        containerRef.current.style.setProperty("--animation-duration", "80s");
       }
     }
   };
@@ -91,34 +96,31 @@ export const VerticalScrollingCompaniesList = ({
     <div
       ref={containerRef}
       className={cn(
-        "scroller h-full relative z-20 max-h-7xl overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,white_20%,white_80%,transparent)]",
+        "scroller relative z-20 overflow-hidden",
+        layout === "horizontal"
+          ? "max-md:w-svw max-w-7xl [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]"
+          : "h-[500px] [mask-image:linear-gradient(to_bottom,transparent,white_20%,white_80%,transparent)]",
         className
       )}
     >
       <ul
         ref={scrollerRef}
         className={cn(
-          "flex flex-col min-w-full shrink-0 gap-4 px-4 flex-nowrap",
-          start && "animate-scroll-vertical",
+          "flex min-w-full shrink-0 gap-4 py-10 w-max flex-nowrap",
+          layout === "vertical" && "flex-col h-max",
+          start && layout === "vertical" ? "animate-scroll-vertical" : "animate-scroll ",
           pauseOnHover && "hover:[animation-play-state:paused]"
         )}
       >
-        {MockCompaniesData.map((item, index) => (
-          <li className="relative px-2" key={item.id}>
-            {/* <CardInnovators
-              CompaniesName={
-                isArabic ? item.company_name_ar : item.company_name_en
-              }
-              ExperienceProvided={
-                isArabic
-                  ? item.experience_provided_ar
-                  : item.experience_provided_en
-              }
-              companyImage={item.company_image}
-            /> */}
-            <div className="w-44 max-md:w-36 h-36 rounded-md items-center text-black text-base bg-red-500">
-              {index + 1}
-            </div>
+        {items.map((item, index) => (
+          <li
+            className={cn(
+              "relative md:px-7 px-4",
+              layout === "vertical" && "w-full"
+            )}
+            key={index}
+          >
+            {renderItem(item,index)}
           </li>
         ))}
       </ul>

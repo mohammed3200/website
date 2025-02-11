@@ -8,18 +8,19 @@ import { CircleArrowLeft, CircleArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import useLanguage from "@/hooks/uselanguage";
 
-import { ActiveButton } from "@/components";
+import { ActiveButton, AnimatedList } from "@/components";
 
 import { InterfaceImage } from "@/constants";
-import { VerticalScrollingCompaniesList } from "./vertical-scrolling-companies-list";
+import { MockCompaniesData } from "@/mock";
 
 export const Introduction = () => {
   const router = useRouter();
   const { isArabic, lang } = useLanguage();
   const t = useTranslations("CreatorsAndInnovators");
+
   return (
     <div
-      className="w-full h-full grid grid-row-2 md:grid-cols-8 items-center md:px-8 px-6  overflow-hidden"
+      className="w-full h-full grid grid-row-2 md:grid-cols-8 items-center md:px-8 px-6 overflow-hidden"
       dir={isArabic ? "rtl" : "ltr"}
     >
       <div
@@ -67,15 +68,29 @@ export const Introduction = () => {
         dir={isArabic ? "rtl" : "ltr"}
         className="row-span-1 md:col-span-3 items-center h-[50dvh] max-md:my-8 flex max-md:flex-row overflow-hidden"
       >
-        <VerticalScrollingCompaniesList
-          direction="top"
+        <AnimatedList
+          direction="down"
           speed="fast"
           pauseOnHover={true}
+          layout="vertical"
+          items={MockCompaniesData}
+          renderItem={(item, index) => ( // Corrected: Pass item and index as separate arguments
+            <div className="w-44 max-md:w-36 h-36 rounded-md items-center text-black text-base bg-red-500">
+              {index + 1}
+            </div>
+          )}
         />
-        <VerticalScrollingCompaniesList
-          direction="bottom"
+        <AnimatedList
+          direction="up"
           speed="normal"
           pauseOnHover={true}
+          layout="vertical"
+          items={MockCompaniesData}
+          renderItem={(item, index) => ( // Corrected: Pass item and index as separate arguments
+            <div className="w-44 max-md:w-36 h-36 rounded-md items-center text-black text-base bg-red-500">
+              {index + 1}
+            </div>
+          )}
         />
       </div>
     </div>
