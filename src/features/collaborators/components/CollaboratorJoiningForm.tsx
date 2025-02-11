@@ -137,7 +137,6 @@ export const CollaboratorJoiningForm = () => {
                 >
                   <Back className="max-md:scale-150 scale-125" />
                 </div>
-                {/* change title to امكانيات الشركة  */}
                 <p className="font-din-bold h4 max-md:h5">{t("form.title")}</p>
                 <p className="font-din-regular text-light-100 body-1 max-md:body-2 max-lg:max-w-sm">
                   {t("form.subtitle")}
@@ -408,8 +407,9 @@ export const CollaboratorJoiningForm = () => {
                     className="w-full h-full overflow-hidden"
                     dir={isArabic ? "rtl" : "ltr"}
                   >
+                    {/* TODO: change SharedResources to CompanyCapabilities */}
                     <h2 className="font-din-regular h5 md:h6 my-4 md:my-2">
-                      {t("form.SharedResources")}
+                      {t("form.CompanyCapabilities")}
                     </h2>
                     <TabsList className="">
                       <TabsTrigger value="experiences">
@@ -497,8 +497,8 @@ export const CollaboratorJoiningForm = () => {
                             label={t("form.MachineryAndEquipment")}
                             placeholder={
                               isArabic
-                                ? "توفير معلومات حول الآلات والمعدات الخاصة بك، مثل الأنواع والنماذج. يساعد هذا في تقييم فرص التعاون."
-                                : "Provide information about your machinery and equipment, such as types and models. This helps in evaluating cooperation opportunities."
+                                ? "توفير معلومات حول الآلات والمعدات الخاصة بك، يساعد هذا في تقييم فرص التعاون."
+                                : "Provide information about your machinery and equipment, this helps in evaluating cooperation opportunities."
                             }
                           />
                         </div>
