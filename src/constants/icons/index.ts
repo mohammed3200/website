@@ -7,8 +7,23 @@ export const socialsIcons = {
 
 export const MainLogo = {
     Logo: "/assets/icons/logo.svg",
-    LogoFull : "/assets/icons/logo-full.svg",
-    logoEnglishFull : "/assets/icons/logo-english-full.svg",
+    
+    // Leadership Center Logos Large Size
+    CenterLogoLarge : "/assets/icons/Leadership-Center-Logo-Arabic-For-the-big-screen.svg",
+    CenterLogoLargeEnglish : "/assets/icons/Leadership-Center-Logo-English-For-the-big-screen.svg",
+
+    // Leadership Center Logo Small Size
+    CenterLogoSmall : "/assets/icons/Leadership-Center-Logo-Arabic-For-the-small-screen.svg",
+    CenterLogoSmallEngligh: "/assets/icons/Leadership-Center-Logo-English-For-the-small-screen.svg",
+
+    // College Logos Large Size
+    CollegeLogoLarge : "/assets/icons/Industrial-Technology-College-Logo-Arabic-For-the-big-screen.svg",
+    CollegeLogoLargeEnglish : "/assets/icons/Industrial-Technology-College-Logo-English-For-the-big-screen.svg",
+
+    // College Logos
+    CollegeLogoSmall:"assets/icons/Industrial-Technology-College-Logo-Arabic-For-the-small-screen.svg",
+    CollegeLogoSmallEnglish:"assets/icons/Industrial-Technology-College-Logo-English-For-the-small-screen.svg",
+
 };
 
 export const IconsInterface = {
