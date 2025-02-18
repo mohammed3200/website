@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
-import useLanguage from "@/hooks/uselanguage";
 
 interface AnimatedListProps<T> {
   direction?: "left" | "right" | "up" | "down";
@@ -23,7 +22,6 @@ export const AnimatedList = <T,>({
   items,
   renderItem,
 }: AnimatedListProps<T>) => {
-  const { isArabic } = useLanguage();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const scrollerRef = React.useRef<HTMLUListElement>(null);
   const [start, setStart] = useState(false);
