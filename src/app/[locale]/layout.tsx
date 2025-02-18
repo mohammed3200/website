@@ -38,6 +38,7 @@ export default async function LocaleLayout({
             <section className="flex h-full flex-1 flex-col">
               <MobileNavigation />
               <Header />
+              {/* FIXME: Build and design a news ticker */}
               <div className="main-content">{children}</div>
             </section>
             <Toaster />
