@@ -569,7 +569,6 @@ export const useNavigationItems = () => {
       { title: t("home"), href: `/${lang}` },
       { title: t("entrepreneurship"), href: `/${lang}/entrepreneurship` },
       { title: t("incubators"), href: `/${lang}/incubators` },
-      { title: t("projects"), href: `/${lang}/projects` },
       { title: t("collaboratingPartners"), href: `/${lang}/collaborators` },
       { title: t("CreatorsAndInnovators") , href: `/${lang}/innovators`},
       { title: t("contact"), href: `/${lang}/contact` },
