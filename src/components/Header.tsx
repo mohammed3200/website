@@ -12,7 +12,7 @@ import { TranslateButton, NavBar } from "@/components";
 
 export const Header = () => {
   const { isArabic } = useLanguage();
-  // FIXME: Add college logo
+  // TODO: Add college logo
   return (
     <header className="header " dir={isArabic ? "rtl" : "ltr"}>
       <div className="mx-auto flex flex-row justify-between items-center w-[90%]">
