@@ -275,7 +275,7 @@ body {
 
   /* Mobile Navigation */
   .mobile-header {
-    @apply flex h-[60px] justify-between px-4 py-2 sm:hidden !important;
+    @apply flex h-fit justify-between px-4 py-2 sm:hidden !important;
   }
 
   .mobile-nav {
