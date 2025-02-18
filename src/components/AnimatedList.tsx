@@ -28,7 +28,7 @@ export const AnimatedList = <T,>({
 
   useEffect(() => {
     addAnimation();
-  }, []);
+  },);
 
   function addAnimation() {
     if (containerRef.current && scrollerRef.current) {
