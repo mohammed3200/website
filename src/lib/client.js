@@ -1,7 +1,7 @@
-import { PrismaClient } from '@prisma/client/edge';
+import { PrismaClient } from "@prisma/client/edge";
 
 // Force Node.js runtime
-export const runtime = 'edge';
+export const runtime = "edge";
 
 const prisma = new PrismaClient();
 
