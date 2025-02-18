@@ -44,7 +44,7 @@ export const NavBar = () => {
         }))
       } // Update opacity only for desktop
       className={cn(
-        "relative mx-auto flex flex-col sm:flex-row w-fit border-none p-1",
+        "relative mx-auto flex flex-col sm:flex-row w-fit border-none py-2",
         !isDesktop && "items-center justify-center"
       )}
     >
@@ -57,11 +57,11 @@ export const NavBar = () => {
         >
           <p
             className={cn(
-              "font-din-bold text-sm",
+              "font-din-bold text-[1rem]",
               pathname === item.href &&
               "sm:text-primary max-md:text-white",
               // TODO: Fix page titles in English
-              isEnglish && "md:text-[0.8rem]"
+              isEnglish && "md:text-[0.86rem]"
             )}
           >
             {item.title}
@@ -92,7 +92,7 @@ const Tab = ({ href, children, onClick, isDesktop }: TabProps) => {
       ref={ref}
       onMouseEnter={isDesktop ? () => onClick(ref.current) : undefined} // Use onMouseEnter for desktop
       onClick={!isDesktop ? () => onClick(ref.current) : undefined} // Use onClick for mobile
-      className="relative z-10 block cursor-pointer px-3 py-1.5 uppercase text-light-100 md:px-5 md:py-3 md:text-base"
+      className="relative z-10 block cursor-pointer py-1.5 uppercase text-light-100 md:px-5 md:py-3 md:text-base"
     >
       <Link href={href}>{children}</Link>
     </li>

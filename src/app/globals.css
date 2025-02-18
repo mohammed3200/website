@@ -266,7 +266,7 @@ body {
 
   /* Header */
   .header {
-    @apply w-full hidden items-center justify-between sm:flex xl:gap-10 !important;
+    @apply w-full hidden items-center sm:flex py-8 px-6 !important;
   }
 
   .header-wrapper {

@@ -12,38 +12,46 @@ import { TranslateButton, NavBar } from "@/components";
 
 export const Header = () => {
   const { isArabic } = useLanguage();
-
+  // FIXME: Add college logo
   return (
-    <header className="header" dir={isArabic ? "rtl" : "ltr"}>
-      <div className="container mx-auto flex flex-row justify-between items-center sm:py-4">
+    <header className="header " dir={isArabic ? "rtl" : "ltr"}>
+      <div className="mx-auto flex flex-row justify-between items-center w-[90%]">
         {/* Logo */}
-
-        <div className="">
-          <Link href="/">
-            <Image
-              src={isArabic ? MainLogo.LogoFull : MainLogo.logoEnglishFull}
-              alt="logo"
-              width={170}
-              height={170}
-              className="hidden h-auto md:block"
-            />
-            <Image
-              src={MainLogo.Logo}
-              alt="logo"
-              width={60}
-              height={60}
-              className="md:hidden"
-            />
-          </Link>
-        </div>
+        <Link href="/">
+          <Image
+            src={
+              isArabic
+                ? MainLogo.CenterLogoLarge
+                : MainLogo.CenterLogoLargeEnglish
+            }
+            alt="Center logo"
+            width={170}
+            height={170}
+            className="hidden h-auto md:block"
+          />
+        </Link>
         {/* Menu Items */}
         <div>
           <NavBar />
         </div>
-        {/* Translate button */}
-        <div>
-          <TranslateButton />
-        </div>
+        {/* College Logo */}
+        <Link href="https://cit.edu.ly/">
+          <Image
+            src={
+              isArabic
+                ? MainLogo.CollegeLogoLarge
+                : MainLogo.CollegeLogoLargeEnglish
+            }
+            alt="college logo"
+            width={200}
+            height={200}
+            className="hidden h-auto md:block"
+          />
+        </Link>
+      </div>
+      {/* Translate button */}
+      <div className="">
+        <TranslateButton />
       </div>
     </header>
   );
