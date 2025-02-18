@@ -6,6 +6,7 @@ export * from "./MobileNavigation";
 export * from "./NavBar";
 export * from "./separator-gradients";
 export * from "./CustomFormField";
+export * from "./AnimatedList";
 export * from "./upload-files";
 export * from "./Thumbnail";
 
