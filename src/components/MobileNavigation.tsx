@@ -22,8 +22,8 @@ export const MobileNavigation = () => {
 
   return (
     <header className="mobile-header" dir={isArabic ? "rtl" : "ltr"}>
-      {/* FIXME: Add college logo
-       FIXME: Change the center's logo to show the name of the Entrepreneurship Center and Business Incubators */}
+      {/* TODO: Add college logo
+       TODO: Change the center's logo to show the name of the Entrepreneurship Center and Business Incubators */}
       <div className="flex justify-between items-center p-2 w-[90%]">
         <Image
           src={
