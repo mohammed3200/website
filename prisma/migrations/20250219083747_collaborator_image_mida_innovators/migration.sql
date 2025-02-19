@@ -60,7 +60,6 @@ CREATE TABLE `Collaborator` (
     `specialization` VARCHAR(191) NOT NULL,
     `experienceProvided` VARCHAR(191) NULL,
     `machineryAndEquipment` VARCHAR(191) NULL,
-    `TermsOfUse` BOOLEAN NOT NULL,
     `imageId` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,

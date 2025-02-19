@@ -1,6 +1,11 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
-  engineType = "library" // Change this to "library"
 }
 
 datasource db {
@@ -61,7 +66,6 @@ model Collaborator {
   specialization           String
   experienceProvided       String?
   machineryAndEquipment    String?
-  TermsOfUse               Boolean
   imageId                  String?   @unique
   image                    Image?    @relation(fields: [imageId], references: [id]) // One-to-one relationship
   experienceProvidedMedia   Media[]   @relation("ExperienceMedia") // One-to-many relationship

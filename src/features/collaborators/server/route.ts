@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { v4 as uuidv4 } from "uuid";
 import { createJoiningCompaniesCollaboratorSchemaServer } from "../schemas";
+import prisma from "@/lib/client";
 
 const app = new Hono().post(
   "/",
@@ -58,7 +59,7 @@ const app = new Hono().post(
                       };
                     } else {
                       throw new Error(
-                        "Invalid file type in machineryAndEquipmentMedia"
+                        "Invalid file type in experienceProvidedMedia"
                       );
                     }
                   })
@@ -88,10 +89,16 @@ const app = new Hono().post(
 
       console.log({ data });
 
-      // FIXME: Fix prisma usage problem
+      // Create the collaborator in the database
+      const collaborator = await prisma.collaborator.create({
+        data,
+      });
+
       return c.json({
         message: "Collaborator created successfully",
+        collaborator,
       });
+
     } catch (error) {
       console.error("Error creating collaborator:", error);
       return c.json({ message: "Failed to create collaborator" }, 500);
