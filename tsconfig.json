@@ -36,7 +36,7 @@
     "next-env.d.ts",
     "src/components/SlideTabs.js",
     "dist/types/**/*.ts"
-, "src/lib/client.js"  ],
+, "src/lib/client.ts"  ],
   "exclude": [
     "node_modules"
   ]
