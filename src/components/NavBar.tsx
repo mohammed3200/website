@@ -115,7 +115,7 @@ const CursorDesktop = ({ position }: CursorProps) => (
       width: position.width,
       opacity: position.opacity,
     }}
-    className="absolute z-0 h-1 rounded-full bg-primary sm:translate-y-9 scale-80"
+    className="absolute z-0 h-1 rounded-full bg-primary sm:translate-y-10 scale-80"
   />
 );
 
