@@ -4,8 +4,6 @@ import { handle } from "hono/vercel";
 import collaborator from "@/features/collaborators/server/route";
 import innovators from "@/features/innovators/server/route";
 
-export const runtime = "edge";
-
 const app = new Hono().basePath("/api");
 
 const routes = app
