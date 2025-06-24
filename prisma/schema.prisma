@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  engineType = "library" // Add this line
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -23,22 +23,15 @@ model Admin {
 model Image {
   id           String       @id @default(cuid())
   data         Bytes        @db.MediumBlob // Store image binary data
-  collaborator Collaborator? @relation // One-to-one relationship
-  collaboratorId String? @unique // Optional to enable relationship
-  newsImageId   Int?   @unique
-  newsGalleryId String?
-  newsImage     News?      @relation("NewsImage") // One-to-one relationship for News main image
-  newsGallery   News[]     @relation("NewsGallery") // One-to-many relationship for News gallery images
+  type         String       // e.g., "image/jpeg", "image/png"
+  size         Int          // Size of the image in bytes
 }
 
 model Media {
   id                        String @id @default(cuid())
   data                      Bytes  @db.LongBlob
   type                      String // e.g., "PDF", "Video", etc.
-  collaboratorId            String? // Reference to Collaborator
-  machineryCollaboratorId   String?
-  collaborator              Collaborator? @relation("ExperienceMedia", fields: [collaboratorId], references: [id], onDelete: Cascade) // One-to-many relationship
-  machineryCollaborator      Collaborator? @relation("MachineryMedia", fields: [machineryCollaboratorId], references: [id], onDelete: Cascade)
+  size                      Int    // Size of the media in bytes
 }
 
 model News {
@@ -48,9 +41,7 @@ model News {
   Duration  String
   Active    Boolean
   imageId   String?   @unique
-  galleryId String?
-  imageMain     Image?    @relation("NewsImage", fields: [imageId], references: [id]) // One-to-one relationship for main image
-  galleryImages Image[] @relation("NewsGallery") // One-to-many relationship for gallery images
+  galleryId String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -68,9 +59,27 @@ model Collaborator {
   experienceProvided       String?
   machineryAndEquipment    String?
   imageId                  String?   @unique
-  image                    Image?    @relation(fields: [imageId], references: [id]) // One-to-one relationship
-  experienceProvidedMedia   Media[]   @relation("ExperienceMedia") // One-to-many relationship
-  machineryAndEquipmentMedia Media[]   @relation("MachineryMedia") // One-to-many relationship
   createdAt                DateTime  @default(now())
   updatedAt                DateTime  @updatedAt
+}
+
+model Innovator {
+  id                String   @id @default(uuid())
+  name              String
+  email             String
+  phone             String
+  projectTitle      String
+  projectDescription String?
+  objective         String?
+  stageDevelopment         StageDevelopment
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+}
+
+enum StageDevelopment {
+  STAGE
+  PROTOTYPE
+  DEVELOPMENT
+  TESTING
+  RELEASED
 }

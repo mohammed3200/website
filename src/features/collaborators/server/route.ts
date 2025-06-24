@@ -2,14 +2,13 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { v4 as uuidv4 } from "uuid";
 import { createJoiningCompaniesCollaboratorSchemaServer } from "../schemas";
-import prisma from "@/lib/client";
+import { db } from "@/lib/db";
 
 const app = new Hono().post(
   "/",
   zValidator("form", createJoiningCompaniesCollaboratorSchemaServer),
   async (c) => {
     const formValid = c.req.valid("form");
-    console.log("form valid", formValid);
 
     try {
       // Ensure machineryAndEquipmentMedia is an array
@@ -26,6 +25,15 @@ const app = new Hono().post(
         ? formValid.experienceProvidedMedia
         : [];
 
+      // Check if formValid.image is a File before calling arrayBuffer()
+      const imageData = formValid.image instanceof File
+        ? {
+            create: {
+              data: Buffer.from(await formValid.image.arrayBuffer()),
+            },
+          }
+        : undefined;
+
       const data = {
         id: uuidv4(),
         companyName: formValid.companyName,
@@ -38,15 +46,7 @@ const app = new Hono().post(
         specialization: formValid.specialization,
         experienceProvided: formValid.experienceProvided || "",
         machineryAndEquipment: formValid.machineryAndEquipment || "",
-        image: formValid.image
-          ? {
-              create: {
-                data: Buffer.from(
-                  await (formValid.image as File).arrayBuffer()
-                ),
-              },
-            }
-          : undefined,
+        image: imageData, // Use the checked image data
         experienceProvidedMedia:
           experienceProvidedMedia.length > 0
             ? {
@@ -87,7 +87,7 @@ const app = new Hono().post(
             : undefined,
       };
 
-      console.log({ data });
+      console.log("Data being sent to Prisma:", JSON.stringify(data, null, 2));
 
       // Create the collaborator in the database
       const collaborator = await prisma.collaborator.create({
@@ -98,7 +98,6 @@ const app = new Hono().post(
         message: "Collaborator created successfully",
         collaborator,
       });
-
     } catch (error) {
       console.error("Error creating collaborator:", error);
       return c.json({ message: "Failed to create collaborator" }, 500);
