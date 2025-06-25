@@ -70,7 +70,7 @@ export const Introduction = () => {
       >
         <AnimatedList
           direction="down"
-          speed="fast"
+          speed="normal"
           pauseOnHover={true}
           layout="vertical"
           items={MockCompaniesData}
@@ -82,7 +82,7 @@ export const Introduction = () => {
         />
         <AnimatedList
           direction="up"
-          speed="normal"
+          speed="slow"
           pauseOnHover={true}
           layout="vertical"
           items={MockCompaniesData}
