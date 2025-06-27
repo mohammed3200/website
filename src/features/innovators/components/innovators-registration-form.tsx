@@ -11,13 +11,16 @@ import useLanguage from "@/hooks/uselanguage";
 
 import { cn } from "@/lib/utils";
 
-import {
-  Form,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { SelectItem } from "@/components/ui/select";
 
 import { InterfaceImage, IconsInterface } from "@/constants";
-import { Back, CustomFormField, FormFieldType, SubmitButton } from "@/components";
+import {
+  Back,
+  CustomFormField,
+  FormFieldType,
+  SubmitButton,
+} from "@/components";
 
 import { createCreativeRegistrationSchema } from "../schemas";
 import { StagesDevelopment } from "../constants";
@@ -26,7 +29,7 @@ import { StageDevelopment } from "../types";
 
 export const InnovatorsRegistrationForm = () => {
   const router = useRouter();
-  const { mutate, isPending } = useJoiningInnovators()
+  const { mutate, isPending } = useJoiningInnovators();
   const { isArabic, isEnglish, lang } = useLanguage();
   const t = useTranslations("CreatorsAndInnovators");
   const tForm = useTranslations("Form");
@@ -47,7 +50,9 @@ export const InnovatorsRegistrationForm = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof creativeRegistrationSchema>) => {
+  const onSubmit = async (
+    values: z.infer<typeof creativeRegistrationSchema>
+  ) => {
     try {
       const newInnovators = {
         name: values.name,
@@ -60,7 +65,7 @@ export const InnovatorsRegistrationForm = () => {
         // TODO: TermsOfUse boolean
         TermsOfUse: values.TermsOfUse ? "true" : "false",
       };
-  
+
       console.log("====================================");
       console.log(newInnovators);
       console.log("====================================");
@@ -76,7 +81,6 @@ export const InnovatorsRegistrationForm = () => {
           },
         }
       );
-
     } catch (error) {
       console.error("Error submitting form:", error);
     }
@@ -88,10 +92,16 @@ export const InnovatorsRegistrationForm = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
             <div className="w-full grid grid-cols-1 md:grid-cols-5 items-center gap-4">
-
-              <div className={cn("w-full row-span-1 md:col-span-3 max-md:order-last", isEnglish && "order-last")}>
-                <section className="space-y-2 flex flex-col md:w-[90%] mr-auto"
-                  dir={isArabic ? "rtl" : "ltr"}>
+              <div
+                className={cn(
+                  "w-full row-span-1 md:col-span-3 max-md:order-last",
+                  isEnglish && "order-last"
+                )}
+              >
+                <section
+                  className="space-y-2 flex flex-col md:w-[90%] mr-auto"
+                  dir={isArabic ? "rtl" : "ltr"}
+                >
                   <CustomFormField
                     fieldType={FormFieldType.INPUT}
                     control={form.control}
@@ -121,7 +131,10 @@ export const InnovatorsRegistrationForm = () => {
 
               <div
                 dir={isArabic ? "rtl" : "ltr"}
-                className={cn("w-full gap-2 row-span-1 md:col-span-2 justify-center px-5 space-y-2 max-md:order-first", isEnglish && "order-first")}
+                className={cn(
+                  "w-full gap-2 row-span-1 md:col-span-2 justify-center px-5 space-y-2 max-md:order-first",
+                  isEnglish && "order-first"
+                )}
               >
                 <div
                   className={cn(
@@ -138,18 +151,14 @@ export const InnovatorsRegistrationForm = () => {
                     width={350}
                     height={350}
                     sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw"
-                    className={cn(
-                      "object-cover h-auto scale-90 md:scale-110",
-                    )}
+                    className={cn("object-cover h-auto scale-90 md:scale-110")}
                   />
                 </div>
               </div>
-
             </div>
-            <div
-              className="w-full flex max-md:items-center flex-col md:px-20 max-md:mt-4"
-            >
-              <div dir={isArabic ? "rtl" : "ltr"}
+            <div className="w-full flex max-md:items-center flex-col md:px-20 max-md:mt-4">
+              <div
+                dir={isArabic ? "rtl" : "ltr"}
                 className="md:w-[70%] md:-mt-10 md:ml-auto w-full"
               >
                 <CustomFormField
@@ -159,20 +168,29 @@ export const InnovatorsRegistrationForm = () => {
                   label={t("form.projectTitle")}
                   iconSrc={IconsInterface.Text}
                   iconAlt="text"
-                  placeholder={isArabic ? "عنوان تصف به فكرتك" : "A title to describe your idea"}
+                  placeholder={
+                    isArabic
+                      ? "عنوان تصف به فكرتك"
+                      : "A title to describe your idea"
+                  }
                 />
               </div>
 
               <div
                 dir={isArabic ? "rtl" : "ltr"}
-                className="w-full grid grid-cols-1 md:grid-cols-5 items-center gap-4 pt-4">
+                className="w-full grid grid-cols-1 md:grid-cols-5 items-center gap-4 pt-4"
+              >
                 <div className="md:col-span-3 col-span-1 w-full">
                   <CustomFormField
                     fieldType={FormFieldType.TEXTAREA}
                     control={form.control}
                     name="projectDescription"
                     label={t("form.projectDescription")}
-                    placeholder={isArabic ? "وصف بسيط بما لا يتجاوز 250 كلمة" : "A simple description of no more than 250 words"}
+                    placeholder={
+                      isArabic
+                        ? "وصف بسيط بما لا يتجاوز 250 كلمة"
+                        : "A simple description of no more than 250 words"
+                    }
                   />
                 </div>
                 <div className="md:col-span-2 col-span-1 w-full">
@@ -181,12 +199,19 @@ export const InnovatorsRegistrationForm = () => {
                     control={form.control}
                     name="objective"
                     label={t("form.objective")}
-                    placeholder={isArabic ? "ما هي أهداف فكرتك؟ وما هي المشكلة التي تحلها؟" : "What are the goals of the idea? What problem does it solve?"}
+                    placeholder={
+                      isArabic
+                        ? "ما هي أهداف فكرتك؟ وما هي المشكلة التي تحلها؟"
+                        : "What are the goals of the idea? What problem does it solve?"
+                    }
                   />
                 </div>
               </div>
 
-              <div dir={isArabic ? "rtl" : "ltr"} className="w-full max-md:pt-2">
+              <div
+                dir={isArabic ? "rtl" : "ltr"}
+                className="w-full max-md:pt-2"
+              >
                 <CustomFormField
                   fieldType={FormFieldType.SELECT}
                   control={form.control}
@@ -196,7 +221,7 @@ export const InnovatorsRegistrationForm = () => {
                   {Object.entries(StagesDevelopment).map(([key, value]) => (
                     <SelectItem
                       key={key}
-                      value={key}
+                      value={key} // Use enum key instead of value
                       dir={isArabic ? "rtl" : "ltr"}
                     >
                       <p className="font-din-regular base max-md:base-small">
@@ -219,7 +244,9 @@ export const InnovatorsRegistrationForm = () => {
                   <SubmitButton
                     isLoading={isPending}
                     dir={isArabic ? "rtl" : "ltr"}
-                    classNameContent={`max-md:items-center ${isArabic ? "flex-row-reverse" : "flex-row"}`}
+                    classNameContent={`max-md:items-center ${
+                      isArabic ? "flex-row-reverse" : "flex-row"
+                    }`}
                     className="max-md:w-full max-md:h-1/2"
                   >
                     <p className="font-din-regular text-white">{t("submit")}</p>
