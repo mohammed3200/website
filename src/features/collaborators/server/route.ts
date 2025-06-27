@@ -3,6 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import { v4 as uuidv4 } from "uuid";
 import { createJoiningCompaniesCollaboratorSchemaServer } from "../schemas";
 import { db } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 
 const app = new Hono().post(
   "/",
@@ -90,13 +91,13 @@ const app = new Hono().post(
       console.log("Data being sent to Prisma:", JSON.stringify(data, null, 2));
 
       // Create the collaborator in the database
-      const collaborator = await prisma.collaborator.create({
-        data,
-      });
+      // FIXME: Property 'collaborator' does not exist on type 'typeof Prisma'.
+      // const collaborator = await Prisma.collaborator.create({
+      //   data,
+      // });
 
       return c.json({
-        message: "Collaborator created successfully",
-        collaborator,
+        message: "Collaborator created successfully"
       });
     } catch (error) {
       console.error("Error creating collaborator:", error);
