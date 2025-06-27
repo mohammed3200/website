@@ -1,70 +1,96 @@
 import { Hono } from "hono";
 import { v4 as uuidv4 } from "uuid";
 import { zValidator } from "@hono/zod-validator";
-import { createCreativeRegistrationSchemaServer } from "../schemas";
 import { db } from "@/lib/db";
+
+import { createCreativeRegistrationSchemaServer } from "../schemas";
+import { StageDevelopment } from "@prisma/client";
 
 const app = new Hono().post(
   "/",
-  zValidator(
-    "form",
-    createCreativeRegistrationSchemaServer
-  ),
+  zValidator("form", createCreativeRegistrationSchemaServer),
   async (c) => {
-    const formValid = c.req.valid("form");
 
-    if (!formValid) return c.json({ message: "Invalid form data" }, 400);
-    
+    const {
+      name,
+      email,
+      phoneNumber,
+      projectTitle,
+      projectDescription,
+      objective,
+      stageDevelopment
+    } = c.req.valid("form");
 
     const existingUser = await db.innovator.findFirst({
       where: {
-        name: formValid.name,
-      }
+        name,
+      },
     });
 
     if (existingUser) return c.json({ message: "User already exists" }, 400);
 
     const existingEmail = await db.innovator.findFirst({
       where: {
-        email: formValid.email,
-      }
+        email,
+      },
     });
 
     if (existingEmail) return c.json({ message: "Email already exists" }, 400);
 
-    const existingPhone = await db.innovator.find({
+    const existingPhone = await db.innovator.findFirst({
       where: {
-        phone: formValid.phoneNumber,
-      }
+        phone: phoneNumber,
+      },
     });
 
-    if (existingPhone) return c.json({ message: "Phone number already exists" }, 400);
+    if (existingPhone)
+      return c.json({ message: "Phone number already exists" }, 400);
+
+    const mapStageDevelopment = (stage: string): StageDevelopment => {
+      switch (stage) {
+        case "STAGE": return StageDevelopment.STAGE;
+        case "PROTOTYPE": return StageDevelopment.PROTOTYPE;
+        case "DEVELOPMENT": return StageDevelopment.DEVELOPMENT;
+        case "TESTING": return StageDevelopment.TESTING;
+        case "RELEASED": return StageDevelopment.RELEASED;
+        default: return StageDevelopment.STAGE;
+      }
+    };
 
     try {
       const data = {
         id: uuidv4(),
-        name: formValid.name,
-        email: formValid.email,
-        phone: formValid.phoneNumber,
-        ProjectTitle: formValid.projectTitle,
-        ProjectDescription: formValid.projectDescription || "",
-        objective: formValid.objective || "",
-        stageDevelopment: formValid.stageDevelopment || "",
+        name,
+        email,
+        phone: phoneNumber,
+        projectTitle,
+        projectDescription,
+        objective,
+        stageDevelopment: mapStageDevelopment(stageDevelopment as string),
+      } as {
+        id: string,
+        name: string,
+        email: string,
+        phone: string,
+        projectTitle: string,
+        projectDescription: string,
+        objective?: string,
+        stageDevelopment: StageDevelopment
       };
 
-      // FIXME: Fix prisma usage problem
-      
-      console.log("data", data);
 
-      
-      return c.json(
-        {
-          message: "The innovator has been successfully created",
-        },
-      );
+
+      // TODO: Insert data into Innovator table
+      await db.innovator.create({
+        data,
+      });
+
+      return c.json({
+        message: "The innovator has been successfully created",
+      });
     } catch (error) {
-      console.log("Error Creating Innovators:", error);
-      return c.json({ message: "Failed to create Innovators" }, 500);
+      console.log("Error Creating innovators:", error);
+      return c.json({ message: "Failed to create innovators" }, 500);
     }
   }
 );
