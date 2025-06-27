@@ -1,5 +1,6 @@
 import { CorporateCompanies } from "@/constants";
 
+// FIXME: Remove feck data and create dashboard for control new, ads
 export const MockNewsData = [
     {
         id:"1",
