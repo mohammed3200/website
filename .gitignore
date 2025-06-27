@@ -17,10 +17,12 @@
 /.next/
 /out/
 
-# production
-/build
+# Build output  🏗️
+dist/
+build/
 
-# misc
+# IDE + OS files  💻
+.vscode/
 .DS_Store
 *.pem
 
@@ -39,9 +41,30 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# codegpt
+# This is a generated file, do not edit manually.
+# It is used by CodeGPT to store its configuration and state.
+# If you need to reset CodeGPT, delete this file.
 .codegpt
 
+# gitIgnore
 .gitignore
 
-.vscode
+# prisma
+# Ignore the Prisma schema file if you don't want to commit it.
+# If you want to commit it, remove the line below.
 /generated/prisma
+
+# Ignore everything under migrations? No—keep them versioned!
+prisma/migrations/
+
+# sql files
+# If you want to commit SQL files, remove the line below.
+# If you want to keep them, you can specify which ones to ignore.
+# For example, to ignore all SQL files except for those in the prisma directory:
+# !prisma/**/*.sql
+*.sql
+
+# Local SQLite DB  🗄️
+dev.db
+prisma/dev.db
