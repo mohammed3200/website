@@ -178,27 +178,15 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
   experienceProvided: z.string().optional(),
   experienceProvidedMedia: z
     .custom<File[]>()
-    .refine(
-      (files) =>
-        Array.isArray(files) &&
-        (files.length === 0 ||
-          files.every((file) => mediaTypes.includes(file.type))),
-      {
-        message: "InvalidMediaType",
-      }
-    )
-    .refine(
-      (files) =>
-        Array.isArray(files) &&
-        (files.length === 0 ||
-          files.every((file) => file.size <= 50 * 1024 * 1024)),
-      {
-        message: "InvalidFileSize",
-      }
-    )
     .optional()
-    .default([]), // Default to an empty array if no files are provided
-
+    .default([])
+    .refine(files =>
+      files.every(file =>
+        mediaTypes.includes(file.type) &&
+        file.size <= 50 * 1024 * 1024
+      ), {
+      message: "InvalidMediaType",
+    }),
   machineryAndEquipment: z.string().optional(),
   machineryAndEquipmentMedia: z
     .custom<File[]>()
@@ -206,7 +194,7 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
       (files) =>
         Array.isArray(files)
           ? files.length === 0 ||
-            files.every((file) => mediaTypes.includes(file.type))
+          files.every((file) => mediaTypes.includes(file.type))
           : Array(files as File).map((file) => mediaTypes.includes(file.type)),
       {
         message: "InvalidMediaType",
@@ -216,7 +204,7 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
       (files) =>
         Array.isArray(files)
           ? files.length === 0 ||
-            files.every((file) => file.size <= 50 * 1024 * 1024)
+          files.every((file) => file.size <= 50 * 1024 * 1024)
           : Array(files as File).map((file) => mediaTypes.includes(file.type)),
       {
         message: "InvalidFileSize",
