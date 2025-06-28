@@ -581,7 +581,7 @@ export const MAX_FILE_SIZE = 50 * 1024 * 1024 * 1024; // 50MB
 
 export const mediaTypes = [
   // Document types
-  "application/pdf",
+  "application/pdf", // .pdf
   "application/msword", // .doc
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
   "application/vnd.ms-excel", // .xls

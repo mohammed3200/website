@@ -70,27 +70,24 @@ export const CollaboratorJoiningForm = () => {
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onSubmit = async (values: z.infer<typeof JoiningCompaniesCollaboratorSchema>) => {  
+  const onSubmit = async (
+    values: z.infer<typeof JoiningCompaniesCollaboratorSchema>
+  ) => {
     try {
       const newCollaborators = {
-        companyName: values.companyName,
-        image: values.image,
-        primaryPhoneNumber: values.primaryPhoneNumber,
-        optionalPhoneNumber: values.optionalPhoneNumber,
-        email: values.email,
-        location: values.location,
-        site: values.site,
-        industrialSector: values.industrialSector,
-        specialization: values.specialization,
-        experienceProvided: values.experienceProvided,
-        experienceProvidedMedia: values.experienceProvidedMedia || [], // Ensure it's an array
-        machineryAndEquipment: values.machineryAndEquipment,
-        machineryAndEquipmentMedia: values.machineryAndEquipmentMedia || [], // Ensure it's an array
-        // TODO: TermsOfUse boolean
-        // TODO: remove TermsOfUse
+        ...values,
+        experienceProvidedMedia: Array.isArray(values.experienceProvidedMedia)
+          ? values.experienceProvidedMedia
+          : [],
+        machineryAndEquipmentMedia: Array.isArray(
+          values.machineryAndEquipmentMedia
+        )
+          ? values.machineryAndEquipmentMedia
+          : [],
+        // TODO: remove Terms Of Use
         // TermsOfUse: values.TermsOfUse ? "true" : "false",
       };
-  
+
       mutate(
         { form: newCollaborators },
         {
