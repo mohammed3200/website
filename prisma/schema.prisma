@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -20,17 +14,17 @@ model Admin {
 }
 
 model Image {
-  id           String       @id @default(cuid())
-  data         Bytes        @db.MediumBlob // Store image binary data
-  type         String       // e.g., "image/jpeg", "image/png"
-  size         Int          // Size of the image in bytes
+  id   String @id @default(cuid())
+  data Bytes  @db.MediumBlob // Store image binary data
+  type String // e.g., "image/jpeg", "image/png"
+  size Int // Size of the image in bytes
 }
 
 model Media {
-  id                        String @id @default(cuid())
-  data                      Bytes  @db.LongBlob
-  type                      String // e.g., "PDF", "Video", etc.
-  size                      Int    // Size of the media in bytes
+  id   String @id @default(cuid())
+  data Bytes  @db.LongBlob
+  type String // e.g., "PDF", "Video", etc.
+  size Int // Size of the media in bytes
 }
 
 model News {
@@ -39,40 +33,56 @@ model News {
   content   String
   Duration  String
   Active    Boolean
-  imageId   String?   @unique
+  imageId   String?  @unique
   galleryId String?  @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Collaborator {
-  id                       String    @id @default(cuid())
-  companyName              String
-  primaryPhoneNumber       String
-  optionalPhoneNumber      String?
-  email                    String?
-  location                 String?
-  site                     String?
-  industrialSector         String
-  specialization           String
-  experienceProvided       String?
-  machineryAndEquipment    String?
-  imageId                  String?   @unique
-  createdAt                DateTime  @default(now())
-  updatedAt                DateTime  @updatedAt
+  id                         String                       @id @default(cuid())
+  companyName                String
+  primaryPhoneNumber         String
+  optionalPhoneNumber        String?
+  email                      String?
+  location                   String?
+  site                       String?
+  industrialSector           String
+  specialization             String
+  experienceProvided         String?
+  machineryAndEquipment      String?
+  imageId                    String?                      @unique
+  experienceProvidedMedia    ExperienceProvidedMedia[]
+  machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
+  createdAt                  DateTime                     @default(now())
+  updatedAt                  DateTime                     @updatedAt
 }
 
 model Innovator {
-  id                String   @id @default(uuid())
-  name              String
-  email             String
-  phone             String
-  projectTitle      String
+  id                 String           @id @default(uuid())
+  name               String
+  email              String
+  phone              String
+  projectTitle       String
   projectDescription String?
-  objective         String?
-  stageDevelopment         StageDevelopment
-  createdAt                DateTime  @default(now())
-  updatedAt                DateTime  @updatedAt
+  objective          String?
+  stageDevelopment   StageDevelopment
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+}
+
+model ExperienceProvidedMedia {
+  id    String @id @default(cuid())
+  media String
+  collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
+  collaboratorId String?
+}
+
+model MachineryAndEquipmentMedia {
+  id             String        @id @default(cuid())
+  media          String
+  collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
+  collaboratorId String?
 }
 
 enum StageDevelopment {
