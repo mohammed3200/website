@@ -38,7 +38,7 @@ export const convertFileSize = (sizeInBytes: number, digits?: number) => {
 
 export const getFileIcon = (
   extension: string | undefined,
-  // eslint-disable-next-line no-undef
+
   type: FileType | string
 ) => {
   switch (extension) {

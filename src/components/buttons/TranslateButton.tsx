@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 "use client";
 
 import React, { useTransition } from "react";
@@ -13,6 +13,7 @@ const locales = [
 export const TranslateButton = () => {
   const router = useRouter();
   const pathname = usePathname();
+  // eslint-disable-next-line unused-imports/no-unused-vars
   const [isPending, startTransition] = useTransition();
 
   const handleChange = (localeCode: string) => {

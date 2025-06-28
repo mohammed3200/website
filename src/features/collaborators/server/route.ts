@@ -2,8 +2,6 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { v4 as uuidv4 } from "uuid";
 import { createJoiningCompaniesCollaboratorSchemaServer } from "../schemas";
-import { db } from "@/lib/db";
-import { Prisma } from "@prisma/client";
 
 const app = new Hono().post(
   "/",
