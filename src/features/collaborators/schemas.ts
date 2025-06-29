@@ -131,13 +131,9 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
   optionalPhoneNumber: z
     .string()
     .optional()
-    .refine(
-      (phone) =>
-        !phone || /^\+[\d\s-]{6,15}$/.test(phone),
-      {
-        message: "InvalidPhoneNumber",
-      }
-    ),
+    .refine((phone) => !phone || /^\+[\d\s-]{6,15}$/.test(phone), {
+      message: "InvalidPhoneNumber",
+    }),
   email: z
     .string()
     .optional()
@@ -177,41 +173,29 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
   // ======= Shared Resources =======
   experienceProvided: z.string().optional(),
   experienceProvidedMedia: z
-    .custom<File[]>()
+    .custom<File | File[]>() // Accept single File or array
     .optional()
     .default([])
-    .refine(files =>
-      files.every(file =>
-        mediaTypes.includes(file.type) &&
-        file.size <= 50 * 1024 * 1024
-      ), {
+    .transform((files) => (Array.isArray(files) ? files : [files])) // Ensure array
+    .refine((files) => files.every((file) => mediaTypes.includes(file.type)), {
       message: "InvalidMediaType",
+    })
+    .refine((files) => files.every((file) => file.size <= 50 * 1024 * 1024), {
+      message: "InvalidFileSize",
     }),
+
   machineryAndEquipment: z.string().optional(),
   machineryAndEquipmentMedia: z
-    .custom<File[]>()
-    .refine(
-      (files) =>
-        Array.isArray(files)
-          ? files.length === 0 ||
-          files.every((file) => mediaTypes.includes(file.type))
-          : Array(files as File).map((file) => mediaTypes.includes(file.type)),
-      {
-        message: "InvalidMediaType",
-      }
-    )
-    .refine(
-      (files) =>
-        Array.isArray(files)
-          ? files.length === 0 ||
-          files.every((file) => file.size <= 50 * 1024 * 1024)
-          : Array(files as File).map((file) => mediaTypes.includes(file.type)),
-      {
-        message: "InvalidFileSize",
-      }
-    )
+    .custom<File | File[]>() // Accept single File or array
     .optional()
-    .default([]), // Default to an empty array if no files are provided
+    .default([])
+    .transform((files) => (Array.isArray(files) ? files : [files])) // Ensure array
+    .refine((files) => files.every((file) => mediaTypes.includes(file.type)), {
+      message: "InvalidMediaType",
+    })
+    .refine((files) => files.every((file) => file.size <= 50 * 1024 * 1024), {
+      message: "InvalidFileSize",
+    }),
 
   // ======== Center Policies ========
   // TermsOfUse: z
