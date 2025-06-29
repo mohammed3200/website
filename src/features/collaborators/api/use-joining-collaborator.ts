@@ -15,6 +15,7 @@ export const useJoiningCollaborators = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const t = useTranslations("collaboratingPartners");
+  const tForm = useTranslations("Form"); // Add this for form error translations
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async ({ form }) => {
@@ -22,23 +23,41 @@ export const useJoiningCollaborators = () => {
         form,
       });
       if (!response.ok) {
-        throw new Error("Failed to join collaborators");
+        // Parse the error response to get the error code
+        const errorData = await response.json();
+        throw new Error(errorData.code || "UNKNOWN_ERROR");
       }
 
       return await response.json() as ResponseType;
     },
     onSuccess: () => {
-      toast({ 
+      toast({
         title: t("form.RequestSuccess"),
-        success:true
-        });
+        success: true
+      });
       queryClient.invalidateQueries({ queryKey: ["collaborator"] });
     },
-    onError: () => {
-      toast({ 
-        title: t("form.RequestFailed"),
-        error:true
-      });
+    onError: (error) => {
+      // Handle specific error codes with translations
+      switch (error.message) {
+        case "EMAIL_EXISTS":
+          toast({
+            title: tForm("EmailExists"), // New translation key
+            error: true
+          });
+          break;
+        case "PHONE_EXISTS":
+          toast({
+            title: tForm("PhoneExists"), // New translation key
+            error: true
+          });
+          break;
+        default:
+          toast({
+            title: t("form.RequestFailed"),
+            error: true
+          });
+      }
     },
   });
 

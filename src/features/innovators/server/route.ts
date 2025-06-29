@@ -2,7 +2,6 @@ import { Hono } from "hono";
 import { v4 as uuidv4 } from "uuid";
 import { zValidator } from "@hono/zod-validator";
 import { db } from "@/lib/db";
-
 import { createCreativeRegistrationSchemaServer } from "../schemas";
 import { StageDevelopment } from "@prisma/client";
 
@@ -10,7 +9,6 @@ const app = new Hono().post(
   "/",
   zValidator("form", createCreativeRegistrationSchemaServer),
   async (c) => {
-
     const {
       name,
       email,
@@ -21,43 +19,39 @@ const app = new Hono().post(
       stageDevelopment
     } = c.req.valid("form");
 
-    const existingUser = await db.innovator.findFirst({
-      where: {
-        name,
-      },
-    });
-
-    if (existingUser) return c.json({ message: "User already exists" }, 400);
-
-    const existingEmail = await db.innovator.findFirst({
-      where: {
-        email,
-      },
-    });
-
-    if (existingEmail) return c.json({ message: "Email already exists" }, 400);
-
-    const existingPhone = await db.innovator.findFirst({
-      where: {
-        phone: phoneNumber,
-      },
-    });
-
-    if (existingPhone)
-      return c.json({ message: "Phone number already exists" }, 400);
-
-    const mapStageDevelopment = (stage: string): StageDevelopment => {
-      switch (stage) {
-        case "STAGE": return StageDevelopment.STAGE;
-        case "PROTOTYPE": return StageDevelopment.PROTOTYPE;
-        case "DEVELOPMENT": return StageDevelopment.DEVELOPMENT;
-        case "TESTING": return StageDevelopment.TESTING;
-        case "RELEASED": return StageDevelopment.RELEASED;
-        default: return StageDevelopment.STAGE;
-      }
-    };
-
     try {
+
+      // Check for existing email
+      const existingEmail = await db.innovator.findFirst({
+        where: { email },
+      });
+      if (existingEmail)
+        return c.json({
+          code: "EMAIL_EXISTS",
+          message: "Email already exists"
+        }, 400);
+
+      // Check for existing phone number
+      const existingPhone = await db.innovator.findFirst({
+        where: { phone: phoneNumber },
+      });
+      if (existingPhone)
+        return c.json({
+          code: "PHONE_EXISTS",
+          message: "Phone number already exists"
+        }, 400);
+
+      const mapStageDevelopment = (stage: string): StageDevelopment => {
+        switch (stage) {
+          case "STAGE": return StageDevelopment.STAGE;
+          case "PROTOTYPE": return StageDevelopment.PROTOTYPE;
+          case "DEVELOPMENT": return StageDevelopment.DEVELOPMENT;
+          case "TESTING": return StageDevelopment.TESTING;
+          case "RELEASED": return StageDevelopment.RELEASED;
+          default: return StageDevelopment.STAGE;
+        }
+      };
+
       const data = {
         id: uuidv4(),
         name,
@@ -78,19 +72,17 @@ const app = new Hono().post(
         stageDevelopment: StageDevelopment
       };
 
-
-
-      // TODO: Insert data into Innovator table
-      await db.innovator.create({
-        data,
-      });
+      await db.innovator.create({ data });
 
       return c.json({
         message: "The innovator has been successfully created",
       });
     } catch (error) {
       console.log("Error Creating innovators:", error);
-      return c.json({ message: "Failed to create innovators" }, 500);
+      return c.json({
+        code: "SERVER_ERROR",
+        message: "Failed to create innovators"
+      }, 500);
     }
   }
 );

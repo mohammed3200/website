@@ -31,14 +31,20 @@ const app = new Hono().post(
         where: { email },
       });
       if (existingEmail)
-        return c.json({ message: "Email already exists" }, 400);
+        return c.json({
+          code: "EMAIL_EXISTS",
+          message: "Email already exists"
+        }, 400);
 
       // Check for existing phone number
       const existingPhone = await db.collaborator.findFirst({
         where: { primaryPhoneNumber },
       });
       if (existingPhone)
-        return c.json({ message: "Phone number already exists" }, 400);
+        return c.json({
+          code: "PHONE_EXISTS",
+          message: "Phone number already exists"
+        }, 400);
 
       // Create image record if image exists
       let imageId: string | null = null;
@@ -83,7 +89,7 @@ const app = new Hono().post(
                 size: file.size,
               },
             });
-            
+
             // Create relation record based on type
             if (type === 'experience') {
               return db.experienceProvidedMedia.create({
@@ -119,7 +125,10 @@ const app = new Hono().post(
       return c.json({ message: "Collaborator created successfully" }, 201);
     } catch (error) {
       console.error("Error creating collaborator:", error);
-      return c.json({ message: "Failed to create collaborator" }, 500);
+      return c.json({
+        code: "SERVER_ERROR",
+        message: "Failed to create collaborator"
+      }, 500);
     }
   }
 );

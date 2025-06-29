@@ -76,7 +76,9 @@
     "InvalidURL": "Invalid URL",
     "InvalidMediaType": "This file type is not allowed",
     "InvalidFileSize": "File size is larger than 50MB",
-    "TermsOfUse": "Terms of Use must be agreed to"
+    "TermsOfUse": "Terms of Use must be agreed to",
+    "EmailExists": "Email already exists",
+    "PhoneExists": "Phone number already exists"
   },
   "Footer": {
     "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators  2024.",

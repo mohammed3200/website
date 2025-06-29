@@ -15,6 +15,7 @@ export const useJoiningInnovators = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const t = useTranslations("CreatorsAndInnovators");
+  const tForm = useTranslations("Form");
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async ({ form }) => {
@@ -22,25 +23,42 @@ export const useJoiningInnovators = () => {
         form,
       });
       if (!response.ok) {
-        throw new Error("Failed to join innovators");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "UNKNOWN_ERROR");
       }
 
       return await response.json();
     },
     onSuccess: () => {
-      toast({ 
+      toast({
         title: t("form.RequestSuccess"),
-        success:true
-        });
+        success: true
+      });
       queryClient.invalidateQueries({ queryKey: ["innovators"] });
     },
-    onError: () => {
-      toast({ 
-        title: t("form.RequestFailed"),
-        error:true
-      });
+    onError: (error) => {
+      switch (error.message) {
+        case "EMAIL_EXISTS":
+          toast({
+            title: tForm("EmailExists"),
+            error: true
+          });
+          break;
+        case "PHONE_EXISTS":
+          toast({
+            title: tForm("PhoneExists"),
+            error: true
+          });
+          break;
+        default:
+          toast({
+            title: t("form.RequestFailed"),
+            error: true
+          });
+      }
     },
   });
+
 
   return mutation;
 };
