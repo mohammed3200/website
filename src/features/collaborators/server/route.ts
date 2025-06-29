@@ -53,22 +53,23 @@ const app = new Hono().post(
         imageId = imageRecord.id;
       }
 
-      // Create collaborator first to get ID for media relations
-      const collaboratorId = uuidv4();
-      const collaboratorData = {
-        id: collaboratorId,
-        companyName,
-        primaryPhoneNumber,
-        optionalPhoneNumber: optionalPhoneNumber || null,
-        email: email || null,
-        location: location || null,
-        site: site || null,
-        industrialSector,
-        specialization,
-        experienceProvided: experienceProvided || null,
-        machineryAndEquipment: machineryAndEquipment || null,
-        imageId,
-      };
+      // FIRST: Create the collaborator
+      const collaborator = await db.collaborator.create({
+        data: {
+          id: uuidv4(),
+          companyName,
+          primaryPhoneNumber,
+          optionalPhoneNumber: optionalPhoneNumber || null,
+          email: email || null,
+          location: location || null,
+          site: site || null,
+          industrialSector,
+          specialization,
+          experienceProvided: experienceProvided || null,
+          machineryAndEquipment: machineryAndEquipment || null,
+          imageId,
+        }
+      });
 
       // Create media records helper
       const createMediaRecords = async (files: File[], type: 'experience' | 'machinery') => {
@@ -89,7 +90,7 @@ const app = new Hono().post(
                 data: {
                   id: uuidv4(),
                   media: mediaRecord.id,  // Reference media ID
-                  collaboratorId,
+                  collaboratorId: collaborator.id, // Use the created collaborator ID
                 },
               });
             } else {
@@ -97,7 +98,7 @@ const app = new Hono().post(
                 data: {
                   id: uuidv4(),
                   media: mediaRecord.id,  // Reference media ID
-                  collaboratorId,
+                  collaboratorId: collaborator.id, // Use the created collaborator ID
                 },
               });
             }
@@ -105,20 +106,15 @@ const app = new Hono().post(
         );
       };
 
-      // Process experience media
+      // Process experience media AFTER creating collaborator
       if (experienceProvidedMedia.length > 0) {
         await createMediaRecords(experienceProvidedMedia, 'experience');
       }
 
-      // Process machinery media
+      // Process machinery media AFTER creating collaborator
       if (machineryAndEquipmentMedia.length > 0) {
         await createMediaRecords(machineryAndEquipmentMedia, 'machinery');
       }
-
-      // Create collaborator
-      await db.collaborator.create({
-        data: collaboratorData
-      });
 
       return c.json({ message: "Collaborator created successfully" }, 201);
     } catch (error) {
