@@ -3,9 +3,74 @@ import { zValidator } from "@hono/zod-validator";
 import { v4 as uuidv4 } from "uuid";
 import { createJoiningCompaniesCollaboratorSchemaServer } from "../schemas";
 import { db } from "@/lib/db";
-
+import { RecordStatus } from "../types";
 
 const app = new Hono()
+  // Public endpoint - only approved and visible collaborators
+  .get("/public", async (c) => {
+    try {
+      const collaborators = await db.collaborator.findMany({
+        where: {
+          status: RecordStatus.APPROVED,
+          isVisible: true
+        },
+        select: {
+          id: true,
+          companyName: true,
+          imageId: true,
+          location: true,
+          site: true,
+          industrialSector: true,
+          specialization: true,
+        }
+      });
+
+      // Collect all image IDs
+      const imageIds: string[] = collaborators
+        .map(collaborator => collaborator.imageId)
+        .filter((id): id is string => !!id);
+
+      // Fetch all related images in bulk
+      const images = await db.image.findMany({
+        where: { id: { in: imageIds } }
+      });
+
+      // Create lookup map for quick access
+      const imageMap = new Map(images.map(img => [img.id, img]));
+
+      // Transform the data
+      const transformedCollaborators = collaborators.map(collaborator => {
+        const image = collaborator.imageId
+          ? imageMap.get(collaborator.imageId)
+          : null;
+
+        return {
+          id: collaborator.id,
+          companyName: collaborator.companyName,
+          image: image ? {
+            data: Buffer.isBuffer(image.data) ? image.data.toString("base64") : "",
+            type: image.type,
+            size: image.size
+          } : null,
+          location: collaborator.location,
+          site: collaborator.site,
+          industrialSector: collaborator.industrialSector,
+          specialization: collaborator.specialization
+        };
+      });
+
+      return c.json({ data: transformedCollaborators }, 200);
+    } catch (error) {
+      console.error("Error fetching collaborators:", error);
+      return c.json(
+        {
+          code: "SERVER_ERROR",
+          message: "Failed to fetch collaborators",
+        },
+        500
+      );
+    }
+  })
   .post(
     "/",
     zValidator("form", createJoiningCompaniesCollaboratorSchemaServer),
