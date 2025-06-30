@@ -68,3 +68,9 @@ prisma/migrations/
 # Local SQLite DB  🗄️
 dev.db
 prisma/dev.db
+
+
+# structure
+# Ignore the structure file if you don't want to commit it.
+# If you want to commit it, remove the line below.
+structure.txt
