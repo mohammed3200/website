@@ -38,6 +38,20 @@ model News {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+model Innovator {
+  id                 String           @id @default(uuid())
+  name               String
+  email              String
+  phone              String
+  projectTitle       String
+  projectDescription String?
+  objective          String?
+  stageDevelopment   StageDevelopment
+  status             RecordStatus     @default(PENDING)
+  isVisible          Boolean          @default(false)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+}
 
 model Collaborator {
   id                         String                       @id @default(cuid())
@@ -54,21 +68,10 @@ model Collaborator {
   imageId                    String?                      @unique
   experienceProvidedMedia    ExperienceProvidedMedia[]
   machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
+  status                     RecordStatus                 @default(PENDING)
+  isVisible                  Boolean                      @default(false)
   createdAt                  DateTime                     @default(now())
   updatedAt                  DateTime                     @updatedAt
-}
-
-model Innovator {
-  id                 String           @id @default(uuid())
-  name               String
-  email              String
-  phone              String
-  projectTitle       String
-  projectDescription String?
-  objective          String?
-  stageDevelopment   StageDevelopment
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
 }
 
 model ExperienceProvidedMedia {
@@ -91,4 +94,11 @@ enum StageDevelopment {
   DEVELOPMENT
   TESTING
   RELEASED
+}
+
+enum RecordStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ARCHIVED
 }
