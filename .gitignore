@@ -74,3 +74,6 @@ prisma/dev.db
 # Ignore the structure file if you don't want to commit it.
 # If you want to commit it, remove the line below.
 structure.txt
+
+# sh file
+*.sh
