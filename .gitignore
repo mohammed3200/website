@@ -72,3 +72,7 @@ prisma/dev.db
 
 # sh file
 *.sh
+
+# issues files
+# If you want to commit issues files, remove the line below.
+*.github-issues
