@@ -14,7 +14,7 @@ export const MainLogo = {
 
     // Leadership Center Logo Small Size
     CenterLogoSmall : "/assets/icons/Leadership-Center-Logo-Arabic-For-the-small-screen.svg",
-    CenterLogoSmallEngligh: "/assets/icons/Leadership-Center-Logo-English-For-the-small-screen.svg",
+    CenterLogoSmallEnglish: "/assets/icons/Leadership-Center-Logo-English-For-the-small-screen.svg",
 
     // College Logos Large Size
     CollegeLogoLarge : "/assets/icons/Industrial-Technology-College-Logo-Arabic-For-the-big-screen.svg",

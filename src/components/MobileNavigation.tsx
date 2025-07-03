@@ -29,7 +29,7 @@ export const MobileNavigation = () => {
           src={
             isArabic
               ? MainLogo.CenterLogoSmall
-              : MainLogo.CenterLogoSmallEngligh
+              : MainLogo.CenterLogoSmallEnglish
           }
           alt="Center Logo"
           width={80}
