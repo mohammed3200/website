@@ -20,9 +20,9 @@ export const MainLogo = {
     CollegeLogoLarge : "/assets/icons/Industrial-Technology-College-Logo-Arabic-For-the-big-screen.svg",
     CollegeLogoLargeEnglish : "/assets/icons/Industrial-Technology-College-Logo-English-For-the-big-screen.svg",
 
-    // College Logos
-    CollegeLogoSmall:"assets/icons/Industrial-Technology-College-Logo-Arabic-For-the-small-screen.svg",
-    CollegeLogoSmallEnglish:"assets/icons/Industrial-Technology-College-Logo-English-For-the-small-screen.svg",
+    // College Logos Small Size
+    CollegeLogoSmall : "/assets/icons/Industrial-Technology-College-Logo-Arabic-For-the-small-screen.svg",
+    CollegeLogoSmallEnglish : "/assets/icons/Industrial-Technology-College-Logo-English-For-the-small-screen.svg",
 
 };
 

@@ -96,7 +96,7 @@ export const InnovatorsRegistrationForm = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="w-full md:space-y-10"
           >
-            <div className="w-[90%] flex flex-col md:flex-row items-center gap-8 ml-8 pl-12">
+            <div className="w-[90%] flex flex-col md:flex-row items-center gap-8 ml-8 md:pl-12">
               <div
                 className={cn(
                   "w-full row-span-1 md:col-span-3 max-md:order-last",
@@ -104,7 +104,7 @@ export const InnovatorsRegistrationForm = () => {
                 )}
               >
                 <section
-                  className="grid grid-cols-6 gap-8"
+                  className="grid md:grid-cols-6 flex-col gap-8"
                   dir={isArabic ? "rtl" : "ltr"}
                 >
                   <div className="col-span-2">
