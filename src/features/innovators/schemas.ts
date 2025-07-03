@@ -21,6 +21,12 @@ export const createCreativeRegistrationSchema = (
       .email({
         message: t("InvalidEmail"),
       }),
+    image: z
+      .union([
+        z.instanceof(File),
+        z.string().transform((value) => (value === "" ? undefined : value)),
+      ])
+      .optional(),
 
     // ======= Project Details ======
     projectTitle: z.string().min(1, { message: t("RequiredField") }),
@@ -57,6 +63,12 @@ export const createCreativeRegistrationSchemaServer = z.object({
     .email({
       message: "InvalidEmail",
     }),
+  image: z
+    .union([
+      z.instanceof(File),
+      z.string().transform((value) => (value === "" ? undefined : value)),
+    ])
+    .optional(),
 
   // ======= Project Details ======
   projectTitle: z.string().min(1, { message: "RequiredField" }),

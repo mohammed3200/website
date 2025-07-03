@@ -41,6 +41,7 @@ model News {
 model Innovator {
   id                 String           @id @default(uuid())
   name               String
+  imageId            String?          @unique
   email              String
   phone              String
   projectTitle       String
@@ -75,8 +76,8 @@ model Collaborator {
 }
 
 model ExperienceProvidedMedia {
-  id    String @id @default(cuid())
-  media String
+  id             String        @id @default(cuid())
+  media          String
   collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
   collaboratorId String?
 }

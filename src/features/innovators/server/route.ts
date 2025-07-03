@@ -12,6 +12,7 @@ const app = new Hono().post(
     const {
       name,
       email,
+      image,
       phoneNumber,
       projectTitle,
       projectDescription,
@@ -41,6 +42,19 @@ const app = new Hono().post(
           message: "Phone number already exists"
         }, 400);
 
+      // Create image record if image exists
+        let imageId: string | null = null;
+        if (image instanceof File) {
+          const imageRecord = await db.image.create({
+            data: {
+              data: Buffer.from(await image.arrayBuffer()),
+              type: image.type,
+              size: image.size,
+            },
+          });
+          imageId = imageRecord.id;
+        }
+
       const mapStageDevelopment = (stage: string): StageDevelopment => {
         switch (stage) {
           case "STAGE": return StageDevelopment.STAGE;
@@ -56,6 +70,7 @@ const app = new Hono().post(
         id: uuidv4(),
         name,
         email,
+        imageId,
         phone: phoneNumber,
         projectTitle,
         projectDescription,
@@ -65,6 +80,7 @@ const app = new Hono().post(
         id: string,
         name: string,
         email: string,
+        imageId?: string,
         phone: string,
         projectTitle: string,
         projectDescription: string,

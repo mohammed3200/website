@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState } from "react";
+import { Trash2 } from "lucide-react";
 import { z } from "zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -11,7 +12,7 @@ import useLanguage from "@/hooks/uselanguage";
 
 import { cn } from "@/lib/utils";
 
-import { Form } from "@/components/ui/form";
+import { Form, FormControl } from "@/components/ui/form";
 import { SelectItem } from "@/components/ui/select";
 
 import { InterfaceImage, IconsInterface } from "@/constants";
@@ -31,8 +32,19 @@ export const InnovatorsRegistrationForm = () => {
   const router = useRouter();
   const { mutate, isPending } = useJoiningInnovators();
   const { isArabic, isEnglish, lang } = useLanguage();
+  const [fileName, setFileName] = useState<string | null>(null);
   const t = useTranslations("CreatorsAndInnovators");
   const tForm = useTranslations("Form");
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      form.setValue("image", file);
+      setFileName(file.name);
+    }
+  };
 
   const creativeRegistrationSchema = createCreativeRegistrationSchema(tForm);
 
@@ -55,20 +67,10 @@ export const InnovatorsRegistrationForm = () => {
   ) => {
     try {
       const newInnovators = {
-        name: values.name,
-        phoneNumber: values.phoneNumber,
-        email: values.email,
-        projectTitle: values.projectTitle,
-        projectDescription: values.projectDescription,
-        objective: values.objective,
-        stageDevelopment: values.stageDevelopment,
+        ...values,
         // TODO: TermsOfUse boolean
         TermsOfUse: values.TermsOfUse ? "true" : "false",
       };
-
-      console.log("====================================");
-      console.log(newInnovators);
-      console.log("====================================");
 
       mutate(
         {
@@ -90,8 +92,11 @@ export const InnovatorsRegistrationForm = () => {
     <div className="w-full md:px-4 px-6 md:py-2">
       <div className="relative w-full flex md:flex-col items-center">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-            <div className="w-full grid grid-cols-1 md:grid-cols-5 items-center gap-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="w-full md:space-y-10"
+          >
+            <div className="w-[90%] flex flex-col md:flex-row items-center gap-8 ml-8 pl-12">
               <div
                 className={cn(
                   "w-full row-span-1 md:col-span-3 max-md:order-last",
@@ -99,40 +104,139 @@ export const InnovatorsRegistrationForm = () => {
                 )}
               >
                 <section
-                  className="space-y-2 flex flex-col md:w-[90%] mr-auto"
+                  className="grid grid-cols-6 gap-8"
                   dir={isArabic ? "rtl" : "ltr"}
                 >
-                  <CustomFormField
-                    fieldType={FormFieldType.INPUT}
-                    control={form.control}
-                    name="name"
-                    label={t("form.name")}
-                    iconSrc={IconsInterface.User}
-                    iconAlt="user"
-                  />
-                  <CustomFormField
-                    fieldType={FormFieldType.PHONE_INPUT}
-                    control={form.control}
-                    name="phoneNumber"
-                    label={t("form.phone")}
-                  />
-                  <CustomFormField
-                    fieldType={FormFieldType.INPUT}
-                    control={form.control}
-                    name="email"
-                    label={t("form.email")}
-                    placeholder="example@example.com"
-                    iconSrc={IconsInterface.Email}
-                    iconAlt="email"
-                    isEnglish
-                  />
+                  <div className="col-span-2">
+                    <CustomFormField
+                      fieldType={FormFieldType.SKELETON}
+                      control={form.control}
+                      name="image"
+                      label={t("form.Image")}
+                      renderSkeleton={(field) => (
+                        <FormControl className="h-full overflow-hidden">
+                          <div className="flex flex-col items-center gap-y-2 overflow-hidden h-full ">
+                            {field.value ? (
+                              <div className="w-full h-full flex items-center justify-center py-2 rounded-lg overflow-hidden border-gray-300 border-dashed border-2 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] ">
+                                <Image
+                                  src={
+                                    field.value instanceof File
+                                      ? URL.createObjectURL(field.value)
+                                      : field.value
+                                  }
+                                  width={250}
+                                  height={250}
+                                  alt="Image"
+                                  sizes="(max-width: 640px) 90vw, (min-width: 641px) 45vw"
+                                  className="object-content rounded-md"
+                                />
+                              </div>
+                            ) : (
+                              <div className="flex-1 w-full">
+                                <input
+                                  className="hidden"
+                                  type="file"
+                                  accept="image/*"
+                                  ref={inputRef}
+                                  onChange={handleImageChange}
+                                />
+                                <button
+                                  className="bg-transparent font-din-regular gap-2 px-12 py-2 w-full flex cursor-pointer flex-col items-center justify-center rounded-lg border-gray-300 border-dashed border-2 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)]"
+                                  type="button"
+                                  onClick={() => inputRef.current?.click()}
+                                >
+                                  <Image
+                                    src={IconsInterface.Upload}
+                                    width={100}
+                                    height={100}
+                                    sizes="(max-width: 640px) 90vw, (min-width: 641px) 45vw"
+                                    alt="upload"
+                                  />
+                                  <div
+                                    className="flex flex-col justify-center gap-2 text-center text-black"
+                                    dir={isArabic ? "rtl" : "ltr"}
+                                  >
+                                    <p className="font-din-regular text-base">
+                                      <span className="">
+                                        {isArabic
+                                          ? "انقر للتحميل"
+                                          : "Click to upload"}{" "}
+                                      </span>
+                                      {isArabic
+                                        ? "أو اسحب وأفلِت"
+                                        : "or drag and drop"}
+                                    </p>
+                                    <p className="font-din-regular text-sm">
+                                      SVG, PNG, JPG or GIF (max. 800x400px)
+                                    </p>
+                                  </div>
+                                </button>
+                              </div>
+                            )}
+                            <div
+                              className="bg-gray-200  w-full h-10 rounded-xl cursor-pointer flex items-center gap-4 px-2 border-none"
+                              dir={isArabic ? "rtl" : "ltr"}
+                            >
+                              <button
+                                className="cursor-pointer"
+                                onClick={() => {
+                                  field.onChange(null);
+                                  if (inputRef.current) {
+                                    inputRef.current.value = "";
+                                    setFileName(null);
+                                  }
+                                }}
+                              >
+                                <Trash2
+                                  color="#fe6601"
+                                  className="size-8 rounded-full p-1 cursor-pointer"
+                                />
+                              </button>
+                              <p className="font-din-regular truncate max-md:text-sm">
+                                {fileName ? fileName : "Not selected file"}
+                              </p>
+                            </div>
+                          </div>
+                        </FormControl>
+                      )}
+                    />
+                  </div>
+                  <div
+                    className="col-span-4 flex flex-col"
+                    dir={isArabic ? "rtl" : "ltr"}
+                  >
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="name"
+                      label={t("form.name")}
+                      iconSrc={IconsInterface.User}
+                      iconAlt="user"
+                    />
+                    <CustomFormField
+                      fieldType={FormFieldType.PHONE_INPUT}
+                      control={form.control}
+                      name="phoneNumber"
+                      label={t("form.phone")}
+                    />
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="email"
+                      label={t("form.email")}
+                      placeholder="example@example.com"
+                      iconSrc={IconsInterface.Email}
+                      iconAlt="email"
+                      isEnglish
+                    />
+                  </div>
                 </section>
               </div>
 
               <div
                 dir={isArabic ? "rtl" : "ltr"}
                 className={cn(
-                  "w-full gap-2 row-span-1 md:col-span-2 justify-center px-5 space-y-2 max-md:order-first",
+                  "w-fit gap-2 row-span-1 md:col-span-2 justify-center space-y-2 max-md:order-first",
                   isEnglish && "order-first"
                 )}
               >
@@ -156,6 +260,7 @@ export const InnovatorsRegistrationForm = () => {
                 </div>
               </div>
             </div>
+
             <div className="w-full flex max-md:items-center flex-col md:px-20 max-md:mt-4">
               <div
                 dir={isArabic ? "rtl" : "ltr"}
