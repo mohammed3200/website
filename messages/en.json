@@ -57,6 +57,7 @@
     "submit": "Submit an application",
     "form": {
       "name": "Full Name",
+      "Image": "Choose or select a profile picture",
       "phone": "Phone Number",
       "email": "Email Address",
       "projectTitle": "Project or Idea Title",
