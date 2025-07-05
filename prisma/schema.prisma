@@ -8,9 +8,12 @@ datasource db {
 }
 
 model Admin {
-  id       String @id @default(cuid())
-  username String
-  password String
+  id        String     @id @default(cuid())
+  username  String     @unique
+  password  String
+  role      AdminRole  @default(REQUEST_REVIEWER)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Image {
@@ -102,4 +105,12 @@ enum RecordStatus {
   APPROVED
   REJECTED
   ARCHIVED
+}
+
+enum AdminRole {
+  GENERAL_MANAGER
+  NEWS_EDITOR
+  REQUEST_REVIEWER
+  COLLABORATOR
+  SALES_INNOVATOR
 }
