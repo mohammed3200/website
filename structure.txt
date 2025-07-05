@@ -1,25 +1,29 @@
 📦src
  ┣ 📂app
- ┃ ┣ 📂(admin)
- ┃ ┃ ┣ 📂dashboard
- ┃ ┃ ┃ ┗ 📜page.tsx          # Analytics overview
- ┃ ┃ ┣ 📂 content
- ┃ ┃ ┃ ┣ 📂 news             # CRUD news
- ┃ ┃ ┃ ┣ 📂 strategic-plans  # Manage plans
- ┃ ┃ ┃ ┗ 📂 faqs             # Edit Q&A
- ┃ ┃ ┣ 📂 submissions
- ┃ ┃ ┃ ┣ 📂 innovators       # Review projects
- ┃ ┃ ┃ ┗ 📂 collaborators    # Manage partners
- ┃ ┃ ┣ 📂 settings
- ┃ ┃ ┃ ┣ 📜 users.tsx         # Admin management
- ┃ ┃ ┃ ┗  📜 email-templates  # Customize notifications
- ┃ ┃ ┗  📜 layout.tsx            # Admin navigation
- ┃ ┣ 📂(auth)       
- ┃ ┃ ┣ 📂 login
- ┃ ┃ ┃ ┗  📜 page.tsx
- ┃ ┃ ┗ 📂 callback 
- ┃ ┃   ┗  📜 page.tsx
+ ┃ ┣ 📂(auth)
+ ┃ ┃ ┣ 📂callback
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┗ 📂login
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┣ 📂admin
+ ┃ ┃ ┣ 📂content
+ ┃ ┃ ┃ ┣ 📂faqs
+ ┃ ┃ ┃ ┣ 📂news
+ ┃ ┃ ┃ ┗ 📂strategic-plans
+ ┃ ┃ ┣ 📂dashborad
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂settings
+ ┃ ┃ ┃ ┣ 📂email-templates
+ ┃ ┃ ┃ ┃ ┗ 📜layout.tsx
+ ┃ ┃ ┃ ┗ 📜users.tsx
+ ┃ ┃ ┣ 📂submissions
+ ┃ ┃ ┃ ┣ 📂collaborators
+ ┃ ┃ ┃ ┗ 📂innovators
+ ┃ ┃ ┗ 📜layout.tsx
  ┃ ┣ 📂api
+ ┃ ┃ ┣ 📂auth
+ ┃ ┃ ┃ ┗ 📂[...auth]
+ ┃ ┃ ┃ ┃ ┗ 📜route.ts
  ┃ ┃ ┗ 📂[[...route]]
  ┃ ┃ ┃ ┗ 📜route.ts
  ┃ ┣ 📂[locale]
@@ -68,6 +72,8 @@
  ┃ ┣ 📜layout.tsx
  ┃ ┗ 📜not-found.tsx
  ┣ 📂components
+ ┃ ┣ 📂auth
+ ┃ ┃ ┗ 📜withAdminGuard.tsx
  ┃ ┣ 📂buttons
  ┃ ┃ ┣ 📜ActiveButton.tsx
  ┃ ┃ ┣ 📜back.tsx
@@ -194,16 +200,11 @@
  ┃ ┣ 📜request.ts
  ┃ ┗ 📜routing.ts
  ┣ 📂lib
- ┃ ┣ 📂email
- ┃ ┃ ┣ 📂 templates
- ┃ ┃ ┃ ┣ 📜 approval-email.tsx
- ┃ ┃ ┃ ┗ 📜 rejection-email.tsx
- ┃ ┃ ┗ 📜sendEmail.ts
+ ┃ ┣ 📜auth.ts
+ ┃ ┣ 📜cache.ts
  ┃ ┣ 📜db.ts
  ┃ ┣ 📜rpc.ts
  ┃ ┣ 📜security.ts
- ┃ ┣ 📜auth.ts
- ┃ ┣ 📜cache.ts
  ┃ ┗ 📜utils.ts
  ┣ 📂mock
  ┃ ┗ 📜index.ts
