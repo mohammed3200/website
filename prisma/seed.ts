@@ -1,3 +1,4 @@
+// prisma/seed.ts
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
@@ -9,11 +10,11 @@ async function main() {
     10
   );
 
-  await prisma.admin.upsert({
-    where: { username: process.env.INIT_ADMIN_USERNAME! },
+  await prisma.user.upsert({
+    where: { email: process.env.INIT_ADMIN_EMAIL! },
     update: {},
     create: {
-      username: process.env.INIT_ADMIN_USERNAME!,
+      email: process.env.INIT_ADMIN_EMAIL!,
       password: passwordHash,
       role: "GENERAL_MANAGER",
     },
