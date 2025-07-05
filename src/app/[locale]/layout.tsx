@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+import { SessionProvider } from "next-auth/react";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { Header, MobileNavigation } from "@/components";
@@ -32,18 +33,20 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <body>
-        <NextIntlClientProvider messages={messages}>
-          <BackgroundBeams className="-z-10" />
-          <main className="flex h-screen">
-            <section className="flex h-full flex-1 flex-col">
-              <MobileNavigation />
-              <Header />
-              {/* FIXME: Build and design a news ticker */}
-              <div className="main-content">{children}</div>
-            </section>
-            <Toaster />
-          </main>
-        </NextIntlClientProvider>
+        <SessionProvider>
+          <NextIntlClientProvider messages={messages}>
+            <BackgroundBeams className="-z-10" />
+            <main className="flex h-screen">
+              <section className="flex h-full flex-1 flex-col">
+                <MobileNavigation />
+                <Header />
+                {/* FIXME: Build and design a news ticker */}
+                <div className="main-content">{children}</div>
+              </section>
+              <Toaster />
+            </main>
+          </NextIntlClientProvider>
+        </SessionProvider>
       </body>
     </html>
   );
