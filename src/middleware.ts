@@ -1,42 +1,50 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
-import { verifyToken } from './lib/security'; // Correct import name
 
 const intlMiddleware = createIntlMiddleware(routing);
+const PUBLIC_PATHS = ['/auth/login', '/auth/error'];
+const ADMIN_ROLES = ['GENERAL_MANAGER', 'NEWS_EDITOR', 'REQUEST_REVIEWER'];
 
 export async function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  
-  // Handle admin route protection
+  const { nextUrl } = req;
+  const pathname = nextUrl.pathname;
+
+  // Skip authentication for public paths
+  const isPublicPath = PUBLIC_PATHS.some(path =>
+    pathname === path || pathname.startsWith(`${path}/`)
+  );
+
+  if (isPublicPath) {
+    return intlMiddleware(req);
+  }
+
+  // Handle admin routes
   if (pathname.startsWith('/admin')) {
-    const token = req.cookies.get('token')?.value;
-    
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+
     if (!token) {
-      return NextResponse.redirect(new URL('/auth/login', req.url));
+      const loginUrl = new URL('/auth/login', req.url);
+      loginUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(loginUrl);
     }
 
-    try {
-      const payload = verifyToken(token); // Use verifyToken instead of verifyJwt
-      // Allow only specific admin roles
-      if (!['GENERAL_MANAGER', 'NEWS_EDITOR'].includes(payload.role)) {
-        return new NextResponse('Forbidden', { status: 403 });
-      }
-      return NextResponse.next();
-    } catch {
-      return NextResponse.redirect(new URL('/auth/login', req.url));
+    // Check admin roles
+    if (!token.role || !ADMIN_ROLES.includes(token.role as string)) {
+      return new NextResponse('Forbidden', { status: 403 });
     }
   }
-  
-  // Handle public routes with internationalization
+
+  // Handle all other routes with i18n
   return intlMiddleware(req);
 }
 
 export const config = {
-  // Combined matcher for both i18n and admin routes
   matcher: [
-    '/', 
+    '/',
     '/(ar|en)/:path*',
-    '/admin/:path*'
+    '/admin/:path*',
+    '/auth/:path*'
   ]
 };
