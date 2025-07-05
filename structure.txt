@@ -295,7 +295,7 @@
  ┃ ┃ ┣ 📜whatsapp.svg
  ┃ ┃ ┗ 📜x.svg
 
- 📦prisma
+📦prisma
  ┣ 📂migrations
  ┃ ┣ 📂20250625181203_all_tables
  ┃ ┃ ┗ 📜migration.sql
@@ -303,5 +303,10 @@
  ┃ ┃ ┗ 📜migration.sql
  ┃ ┣ 📂20250630161804_add_status_and_visibility
  ┃ ┃ ┗ 📜migration.sql
+ ┃ ┣ 📂20250703174010_add_image_id
+ ┃ ┃ ┗ 📜migration.sql
+ ┃ ┣ 📂20250704123050_add_admin_role
+ ┃ ┃ ┗ 📜migration.sql
  ┃ ┗ 📜migration_lock.toml
- ┗ 📜schema.prisma
+ ┣ 📜schema.prisma
+ ┗ 📜seed.ts
