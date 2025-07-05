@@ -7,13 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Admin {
-  id        String     @id @default(cuid())
-  username  String     @unique
-  password  String
-  role      AdminRole  @default(REQUEST_REVIEWER)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  password      String    // Hashed password
+  role          AdminRole @default(REQUEST_REVIEWER)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("users")
 }
 
 model Image {
@@ -111,6 +114,4 @@ enum AdminRole {
   GENERAL_MANAGER
   NEWS_EDITOR
   REQUEST_REVIEWER
-  COLLABORATOR
-  SALES_INNOVATOR
 }
