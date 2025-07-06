@@ -32,9 +32,9 @@ This is the official web platform for the Misurata Center for Entrepreneurship a
 - An interactive Q&A module
 - Submission portals for innovators and creators
 - A sponsorship channel for collaborators and supporters
+- **Automatic Arabic-English translation** for all user-facing content
 
-Built with Next.js (App Router), TypeScript, Tailwind CSS, and Prisma, the platform emphasizes performance, modularity, and internationalization (i18n).
-
+Built with Next.js (App Router), TypeScript, Tailwind CSS, and Prisma, the platform emphasizes performance, modularity, and comprehensive internationalization (i18n) with real-time translation capabilities.
 ---
 
 ## Features & Core Services
@@ -43,6 +43,7 @@ Built with Next.js (App Router), TypeScript, Tailwind CSS, and Prisma, the platf
 3. **Quick Q&A**: Instant answers for FAQs and knowledge base.
 4. **Innovators & Creators**: Project submission and approval workflow.
 5. **Collaborators & Supporters**: Registration for sponsors, experts, and donors.
+6. **Automatic Translation**: Seamless real-time translation between Arabic and English for all platform content.
 
 ---
 
@@ -52,6 +53,7 @@ Built with Next.js (App Router), TypeScript, Tailwind CSS, and Prisma, the platf
 - **Database**: MySql (managed via Prisma migrations)
 - **Authentication**: NextAuth.js (Credential & OAuth support)
 - **Email & Queue**: BullMQ (Redis) + Nodemailer / SendGrid
+- **i18n**: Next.js built-in internationalization with automatic translation routing
 - **Testing**: Jest + React Testing Library
 - **CI/CD**: GitHub Actions
 
@@ -72,8 +74,8 @@ src/
 
 ## Prerequisites
 - Node.js (v18+)
-- npm or Yarn
-- PostgreSQL (v13+)
+- bun or npm
+- Mysql
 - Redis (for queue workers)
 
 ---
@@ -104,26 +106,6 @@ src/
    npm run seed
    # or bun run seed
    ```
-
----
-
-## Environment Variables
-Create a `.env` file based on `.env.example`:
-```
-DATABASE_URL=postgresql://user:password@localhost:3306/dbname
-
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-
-NEXTAUTH_SECRET=your_nextauth_secret
-
-NEXTAUTH_URL=http://localhost:3000
-
-REDIS_URL=redis://localhost:6379
-
-EMAIL_PROVIDER_API_KEY=your_email_api_key
-
-EMAIL_FROM=no-reply@misurata-ci.com
-```
 
 ---
 
@@ -187,7 +169,7 @@ Transactional emails for approval/rejection:
 3. BullMQ enqueues email job
 4. Worker sends localized email via SendGrid/Nodemailer
 
-Templates are stored in `/src/lib/email/templates` using Handlebars.
+Templates are stored in `src\app\admin\settings\email-templates` using Handlebars.
 
 ---
 

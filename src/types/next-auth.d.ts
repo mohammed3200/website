@@ -18,14 +18,4 @@ declare module "next-auth/jwt" {
     id: string;
     role: string;
   }
-
-  interface JWTToken {
-    name?: string | null;
-    email?: string | null;
-    picture?: string | null;
-    sub?: string;
-    id: string;
-    role: string;
-  }
-  
 }
