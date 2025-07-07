@@ -7,15 +7,15 @@ import { useMedia } from "react-use";
 import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
-import { useNavigationItems } from "@/constants";
 import useLanguage from "@/hooks/uselanguage";
+import { useNavigationItems } from "@/hooks/useNavigation"; // Update this import
 
 export const NavBar = () => {
   const pathname = usePathname();
   const isDesktop = useMedia("(min-width: 640px)", true);
   const { isEnglish } = useLanguage()
 
-  const navigationItems = useNavigationItems();
+  const navigationItems = useNavigationItems(); // Now using the client-side hook
 
   const [position, setPosition] = useState({
     left: 0,

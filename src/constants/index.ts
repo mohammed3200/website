@@ -1,11 +1,9 @@
 export * from "./icons";
 export * from "./images";
 
-import useLanguage from "@/hooks/uselanguage";
 import { socialsIcons } from "./icons";
 import { strategicsImage } from "./images";
-import { useTranslations } from "next-intl";
-import { useMemo } from "react";
+
 
 export const strategics = [
   {
@@ -559,23 +557,6 @@ export const socials = [
     url: "#",
   },
 ];
-
-export const useNavigationItems = () => {
-  const { lang } = useLanguage();
-  const t = useTranslations("Navigation");
-
-  return useMemo(
-    () => [
-      { title: t("home"), href: `/${lang}` },
-      { title: t("entrepreneurship"), href: `/${lang}/entrepreneurship` },
-      { title: t("incubators"), href: `/${lang}/incubators` },
-      { title: t("collaboratingPartners"), href: `/${lang}/collaborators` },
-      { title: t("CreatorsAndInnovators") , href: `/${lang}/innovators`},
-      { title: t("contact"), href: `/${lang}/contact` },
-    ],
-    [lang, t]
-  );
-};
 
 export const MAX_FILE_SIZE = 50 * 1024 * 1024 * 1024; // 50MB
 
