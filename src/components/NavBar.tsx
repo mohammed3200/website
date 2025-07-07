@@ -61,7 +61,7 @@ export const NavBar = () => {
               pathname === item.href &&
               "sm:text-primary max-md:text-white",
               // TODO: Fix page titles in English
-              isEnglish && "md:text-[0.86rem]"
+              isEnglish && "md:text-[0.84rem]"
             )}
           >
             {item.title}
