@@ -2,21 +2,34 @@ import { NextResponse, NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
+import { publicRoutes, authRoutes, DEFAULT_LOGIN_REDIRECT } from './routes';
 
 const intlMiddleware = createIntlMiddleware(routing);
-const PUBLIC_PATHS = ['/auth/login', '/auth/error'];
 const ADMIN_ROLES = ['GENERAL_MANAGER', 'NEWS_EDITOR', 'REQUEST_REVIEWER'];
 
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req;
   const pathname = nextUrl.pathname;
 
-  // Skip authentication for public paths
-  const isPublicPath = PUBLIC_PATHS.some(path =>
-    pathname === path || pathname.startsWith(`${path}/`)
+  // Combine public and auth routes
+  const nonProtectedRoutes = [...publicRoutes, ...authRoutes];
+  const isNonProtectedRoute = nonProtectedRoutes.some(route => 
+    pathname === route || pathname.startsWith(`${route}/`)
+  );
+  
+  const isAuthRoute = authRoutes.some(route => 
+    pathname === route || pathname.startsWith(`${route}/`)
   );
 
-  if (isPublicPath) {
+  // Handle non-protected routes
+  if (isNonProtectedRoute) {
+    // Redirect logged-in users away from auth routes
+    if (isAuthRoute) {
+      const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+      if (token) {
+        return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
+      }
+    }
     return intlMiddleware(req);
   }
 
