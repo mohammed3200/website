@@ -8,29 +8,102 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  password      String?    // Hashed password
-  role          AdminRole @default(REQUEST_REVIEWER)
-  emailVerified DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                    String                 @id @default(cuid())
+  name                  String?
+  email                 String?                @unique
+  emailVerified         DateTime?
+  image                 String?
+  password              String?
+  role                  UserRole               @default(GENERAL_MANAGER)
+  accounts              Account[]
+  isTwoFactorEnabled    Boolean                @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 
-  @@map("users")
+  @@index([email, role])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model VerificationToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([email, token])
+}
+
+model PasswordResetToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([email, token])
+}
+
+model TwoFactorToken {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+  id String @id @default(cuid())
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId])
 }
 
 model Image {
   id   String @id @default(cuid())
-  data Bytes  @db.MediumBlob // Store image binary data
-  type String // e.g., "image/jpeg", "image/png"
-  size Int // Size of the image in bytes
+  data Bytes  @db.MediumBlob
+  type String
+  size Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Media {
   id   String @id @default(cuid())
   data Bytes  @db.LongBlob
-  type String // e.g., "PDF", "Video", etc.
-  size Int // Size of the media in bytes
+  type String
+  size Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model News {
@@ -44,10 +117,11 @@ model News {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 model Innovator {
-  id                 String           @id @default(uuid())
+  id                 String           @id @default(cuid()) // Fixed for MySQL
   name               String
-  imageId            String?          @unique
+  imageId            String?
   email              String
   phone              String
   projectTitle       String
@@ -61,7 +135,7 @@ model Innovator {
 }
 
 model Collaborator {
-  id                         String                       @id @default(cuid())
+  id                         String       @id @default(cuid())
   companyName                String
   primaryPhoneNumber         String
   optionalPhoneNumber        String?
@@ -72,13 +146,13 @@ model Collaborator {
   specialization             String
   experienceProvided         String?
   machineryAndEquipment      String?
-  imageId                    String?                      @unique
+  imageId                    String?
+  status                     RecordStatus @default(PENDING)
+  isVisible                  Boolean      @default(false)
+  createdAt                  DateTime     @default(now())
+  updatedAt                  DateTime     @updatedAt
   experienceProvidedMedia    ExperienceProvidedMedia[]
   machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
-  status                     RecordStatus                 @default(PENDING)
-  isVisible                  Boolean                      @default(false)
-  createdAt                  DateTime                     @default(now())
-  updatedAt                  DateTime                     @updatedAt
 }
 
 model ExperienceProvidedMedia {
@@ -86,6 +160,8 @@ model ExperienceProvidedMedia {
   media          String
   collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
   collaboratorId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 model MachineryAndEquipmentMedia {
@@ -93,14 +169,16 @@ model MachineryAndEquipmentMedia {
   media          String
   collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
   collaboratorId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 enum StageDevelopment {
-  STAGE
+  IDEA
   PROTOTYPE
   DEVELOPMENT
   TESTING
-  RELEASED
+  LAUNCHED
 }
 
 enum RecordStatus {
@@ -110,7 +188,7 @@ enum RecordStatus {
   ARCHIVED
 }
 
-enum AdminRole {
+enum UserRole {
   GENERAL_MANAGER
   NEWS_EDITOR
   REQUEST_REVIEWER
