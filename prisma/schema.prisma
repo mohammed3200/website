@@ -174,11 +174,11 @@ model MachineryAndEquipmentMedia {
 }
 
 enum StageDevelopment {
-  IDEA
+  STAGE
   PROTOTYPE
   DEVELOPMENT
   TESTING
-  LAUNCHED
+  RELEASED
 }
 
 enum RecordStatus {
