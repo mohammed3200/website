@@ -1,16 +1,13 @@
 📦src
  ┣ 📂app
- ┃ ┣ 📂(auth)
- ┃ ┃ ┣ 📂callback
- ┃ ┃ ┃ ┗ 📜page.tsx
- ┃ ┃ ┗ 📂login
- ┃ ┃ ┃ ┗ 📜page.tsx
  ┃ ┣ 📂admin
  ┃ ┃ ┣ 📂content
  ┃ ┃ ┃ ┣ 📂faqs
  ┃ ┃ ┃ ┣ 📂news
  ┃ ┃ ┃ ┗ 📂strategic-plans
- ┃ ┃ ┣ 📂dashborad
+ ┃ ┃ ┣ 📂dashboard
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂notifications
  ┃ ┃ ┃ ┗ 📜page.tsx
  ┃ ┃ ┣ 📂settings
  ┃ ┃ ┃ ┣ 📂email-templates
@@ -22,10 +19,18 @@
  ┃ ┃ ┗ 📜layout.tsx
  ┃ ┣ 📂api
  ┃ ┃ ┣ 📂auth
- ┃ ┃ ┃ ┗ 📂[...auth]
+ ┃ ┃ ┃ ┗ 📂[...nextauth]
  ┃ ┃ ┃ ┃ ┗ 📜route.ts
  ┃ ┃ ┗ 📂[[...route]]
  ┃ ┃ ┃ ┗ 📜route.ts
+ ┃ ┣ 📂auth
+ ┃ ┃ ┣ 📂callback
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂error
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┣ 📂login
+ ┃ ┃ ┃ ┗ 📜page.tsx
+ ┃ ┃ ┗ 📜layout.tsx
  ┃ ┣ 📂[locale]
  ┃ ┃ ┣ 📂(standalone)
  ┃ ┃ ┃ ┣ 📂News
@@ -72,8 +77,6 @@
  ┃ ┣ 📜layout.tsx
  ┃ ┗ 📜not-found.tsx
  ┣ 📂components
- ┃ ┣ 📂auth
- ┃ ┃ ┗ 📜withAdminGuard.tsx
  ┃ ┣ 📂buttons
  ┃ ┃ ┣ 📜ActiveButton.tsx
  ┃ ┃ ┣ 📜back.tsx
@@ -81,6 +84,8 @@
  ┃ ┃ ┣ 📜read-more.tsx
  ┃ ┃ ┣ 📜SubmitButton.tsx
  ┃ ┃ ┗ 📜TranslateButton.tsx
+ ┃ ┣ 📂providers
+ ┃ ┃ ┗ 📜app-providers.tsx
  ┃ ┣ 📂ui
  ┃ ┃ ┣ 📜accordion.tsx
  ┃ ┃ ┣ 📜alert-dialog.tsx
@@ -122,6 +127,7 @@
  ┃ ┣ 📜MobileNavigation.tsx
  ┃ ┣ 📜NavBar.tsx
  ┃ ┣ 📜news.tsx
+ ┃ ┣ 📜providers.tsx
  ┃ ┣ 📜query-provider.tsx
  ┃ ┣ 📜separator-gradients.tsx
  ┃ ┣ 📜StrategicPlan.tsx
@@ -133,8 +139,27 @@
  ┃ ┣ 📂images
  ┃ ┃ ┗ 📜index.ts
  ┃ ┗ 📜index.ts
+ ┣ 📂data
+ ┃ ┣ 📜account.ts
+ ┃ ┣ 📜password-reset-token.ts
+ ┃ ┣ 📜two-factor-confirmation.ts
+ ┃ ┣ 📜two-factor-token.ts
+ ┃ ┣ 📜user.ts
+ ┃ ┗ 📜verification-token.ts
  ┣ 📂features
  ┃ ┣ 📂auth
+ ┃ ┃ ┣ 📂api
+ ┃ ┃ ┣ 📂components
+ ┃ ┃ ┃ ┣ 📜callback-component.tsx
+ ┃ ┃ ┃ ┣ 📜card-wrapper.tsx
+ ┃ ┃ ┃ ┣ 📜credentials-signin.tsx
+ ┃ ┃ ┃ ┣ 📜error-card.tsx
+ ┃ ┃ ┃ ┣ 📜header.tsx
+ ┃ ┃ ┃ ┣ 📜login-form.tsx
+ ┃ ┃ ┃ ┗ 📜social.tsx
+ ┃ ┃ ┣ 📂server
+ ┃ ┃ ┣ 📜auth.ts
+ ┃ ┃ ┗ 📜schemas.ts
  ┃ ┣ 📂collaborators
  ┃ ┃ ┣ 📂api
  ┃ ┃ ┃ ┣ 📜index.ts
@@ -195,7 +220,8 @@
  ┃ ┃ ┗ 📜index.ts
  ┣ 📂hooks
  ┃ ┣ 📜use-toast.ts
- ┃ ┗ 📜uselanguage.ts
+ ┃ ┣ 📜uselanguage.ts
+ ┃ ┗ 📜useNavigation.ts
  ┣ 📂i18n
  ┃ ┣ 📜request.ts
  ┃ ┗ 📜routing.ts
@@ -208,7 +234,10 @@
  ┃ ┗ 📜utils.ts
  ┣ 📂mock
  ┃ ┗ 📜index.ts
- ┗ 📜middleware.ts
+ ┣ 📂types
+ ┃ ┗ 📜next-auth.d.ts
+ ┣ 📜middleware.ts
+ ┗ 📜routes.ts
 
  📦messages
  ┣ 📜ar.json
