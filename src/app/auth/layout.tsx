@@ -2,20 +2,16 @@
 "use client";
 
 
-export default function AdminLayout({
+export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex h-screen">
-      {/* Admin sidebar/navigation */}
-      <nav className="w-64 bg-gray-800 text-white p-4">
-        {/* Navigation items */}
-      </nav>
-
-      {/* Main content */}
-      <main className="flex-1 p-6 overflow-auto">{children}</main>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="w-full max-w-md">
+        {children}
+      </div>
     </div>
   );
 }
