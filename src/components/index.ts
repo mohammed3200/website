@@ -1,4 +1,4 @@
-export * from "./query-provider";
+export * from "./providers";
 export * from "./buttons";
 
 export * from "./Header";
