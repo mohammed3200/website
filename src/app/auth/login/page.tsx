@@ -1,8 +1,6 @@
 "use client";
 
-import { LoginForm } from "@/components/auth/login-form";
-
-export const dynamic = 'force-dynamic'; // Disable prerendering
+import { LoginForm } from "@/features/auth/components/login-form";
 
 export default function LoginPage() {
   return <LoginForm />;

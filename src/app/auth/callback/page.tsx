@@ -1,9 +1,19 @@
-"use client";
+import { redirect } from "next/navigation";
+// import { getServerSession } from "next-auth";
 
-import { CallbackComponent } from "@/components/auth/callback-component";
 
-export const dynamic = 'force-dynamic'; // Disable prerendering
+export default async function CallbackPage() {
+  const session = true;
+  
+  if (session) {
+    return redirect("/");
+  }
 
-export default function CallbackPage() {
-  return <CallbackComponent />;
+  return (
+    <div className="flex justify-center items-center h-screen bg-dark-100">
+      <div className="font-mono text-sm animate-pulse">
+        Processing authentication...
+      </div>
+    </div>
+  );
 }
