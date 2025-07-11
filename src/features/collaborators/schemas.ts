@@ -55,7 +55,7 @@ export const createJoiningCompaniesCollaboratorSchema = (
 
     // ====== Industrial Information ======
     industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
-      required_error: t("RequiredField"),
+      message: t("RequiredField"),
     }),
     specialization: z.string().min(1, t("RequiredField")),
 
@@ -166,7 +166,7 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
 
   // ====== Industrial Information ======
   industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
-    required_error: "RequiredField",
+    message: "RequiredField",
   }),
   specialization: z.string().min(1, "RequiredField"),
 
