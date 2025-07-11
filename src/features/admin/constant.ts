@@ -1,0 +1,1 @@
+export const adminRoles = ['GENERAL_MANAGER', 'NEWS_EDITOR', 'REQUEST_REVIEWER'];
