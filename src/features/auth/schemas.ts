@@ -47,7 +47,7 @@ export const RegisterSchema = z.object({
         message: "Name is required",
     }),
     role: z.enum([UserRole.NEWS_EDITOR, UserRole.REQUEST_REVIEWER], {
-        errorMap: () => ({ message: "Invalid role" }),
+        message: "Invalid role",
     }),
 });
 
