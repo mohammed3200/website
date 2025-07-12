@@ -77,6 +77,9 @@
  ┃ ┣ 📜layout.tsx
  ┃ ┗ 📜not-found.tsx
  ┣ 📂components
+ ┃ ┣ 📂admin
+ ┃ ┃ ┣ 📜admin-header.tsx
+ ┃ ┃ ┗ 📜admin-sidebar.tsx
  ┃ ┣ 📂buttons
  ┃ ┃ ┣ 📜ActiveButton.tsx
  ┃ ┃ ┣ 📜back.tsx
@@ -85,7 +88,9 @@
  ┃ ┃ ┣ 📜SubmitButton.tsx
  ┃ ┃ ┗ 📜TranslateButton.tsx
  ┃ ┣ 📂providers
- ┃ ┃ ┗ 📜app-providers.tsx
+ ┃ ┃ ┣ 📜app-providers.tsx
+ ┃ ┃ ┣ 📜index.ts
+ ┃ ┃ ┗ 📜query-provider.tsx
  ┃ ┣ 📂ui
  ┃ ┃ ┣ 📜accordion.tsx
  ┃ ┃ ┣ 📜alert-dialog.tsx
@@ -127,8 +132,6 @@
  ┃ ┣ 📜MobileNavigation.tsx
  ┃ ┣ 📜NavBar.tsx
  ┃ ┣ 📜news.tsx
- ┃ ┣ 📜providers.tsx
- ┃ ┣ 📜query-provider.tsx
  ┃ ┣ 📜separator-gradients.tsx
  ┃ ┣ 📜StrategicPlan.tsx
  ┃ ┣ 📜Thumbnail.tsx
@@ -147,13 +150,18 @@
  ┃ ┣ 📜user.ts
  ┃ ┗ 📜verification-token.ts
  ┣ 📂features
+ ┃ ┣ 📂admin
+ ┃ ┃ ┗ 📜constant.ts
  ┃ ┣ 📂auth
- ┃ ┃ ┣ 📂api
+ ┃ ┃ ┣ 📂actions
+ ┃ ┃ ┃ ┗ 📜login.ts
  ┃ ┃ ┣ 📂components
  ┃ ┃ ┃ ┣ 📜callback-component.tsx
  ┃ ┃ ┃ ┣ 📜card-wrapper.tsx
  ┃ ┃ ┃ ┣ 📜credentials-signin.tsx
  ┃ ┃ ┃ ┣ 📜error-card.tsx
+ ┃ ┃ ┃ ┣ 📜form-error.tsx
+ ┃ ┃ ┃ ┣ 📜form-success.tsx
  ┃ ┃ ┃ ┣ 📜header.tsx
  ┃ ┃ ┃ ┣ 📜login-form.tsx
  ┃ ┃ ┃ ┗ 📜social.tsx
@@ -229,8 +237,10 @@
  ┃ ┣ 📜auth.ts
  ┃ ┣ 📜cache.ts
  ┃ ┣ 📜db.ts
+ ┃ ┣ 📜mail.ts
  ┃ ┣ 📜rpc.ts
  ┃ ┣ 📜security.ts
+ ┃ ┣ 📜tokens.ts
  ┃ ┗ 📜utils.ts
  ┣ 📂mock
  ┃ ┗ 📜index.ts
@@ -239,6 +249,10 @@
  ┣ 📜middleware.ts
  ┗ 📜routes.ts
 
+📦components
+ ┗ 📂motion-primitives
+ ┃ ┗ 📜text-shimmer.tsx
+ 
  📦messages
  ┣ 📜ar.json
  ┗ 📜en.json
