@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { StageDevelopment } from "./types";
 
-// FIXME: Remove Terms of user 
+// TODO: Remove Terms of user 
 export const createCreativeRegistrationSchema = (
   t: (key: string) => string
 ) => {

@@ -338,7 +338,7 @@ export const InnovatorsRegistrationForm = () => {
               </div>
               <section className="space-y-3 my-4 max-md:w-full">
                 <div dir={isArabic ? "rtl" : "ltr"}>
-                  {/* FIXME: Remove Terms of user */}
+                  {/* TODO: Remove Terms of user */}
                   <CustomFormField
                     fieldType={FormFieldType.CHECKBOX}
                     control={form.control}
