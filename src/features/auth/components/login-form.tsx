@@ -10,7 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { LoginSchema } from "../schemas";
 import { login } from "../actions/login";
-import { TextShimmer } from "components/motion-primitives/text-shimmer";
+import { TextShimmer } from "@/components/motion-primitives/text-shimmer";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

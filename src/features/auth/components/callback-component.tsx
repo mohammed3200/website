@@ -1,6 +1,6 @@
 "use client";
 
-import { TextShimmer } from "components/motion-primitives/text-shimmer";
+import { TextShimmer } from "@/components/motion-primitives/text-shimmer";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
