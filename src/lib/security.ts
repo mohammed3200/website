@@ -1,4 +1,5 @@
 // FIXME: Create rateLimit with hono.js
+// src/lib/security.ts
 // import { rateLimit } from 'express-rate-limit';
 import jwt from "jsonwebtoken";
 
