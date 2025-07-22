@@ -82,7 +82,7 @@ export function LoginForm() {
   if (!isClient || status === "loading") {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <TextShimmer className="font-mono text-sm" duration={1}>
+        <TextShimmer className="font-mono text-xl" duration={1}>
           Loading...
         </TextShimmer>
       </div>
@@ -91,7 +91,6 @@ export function LoginForm() {
 
   return (
     <CardWrapper
-      headerLabel="Welcome back"
       backButtonLabel="Don't have an account?"
       backButtonHref="/auth/register"
       showSocial
