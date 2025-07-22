@@ -7,9 +7,15 @@ import { publicRoutes, authRoutes, DEFAULT_LOGIN_REDIRECT } from './routes';
 const intlMiddleware = createIntlMiddleware(routing);
 const ADMIN_ROLES = ['GENERAL_MANAGER', 'NEWS_EDITOR', 'REQUEST_REVIEWER'];
 
+// Add this helper function to detect if a route is localized
+const isLocalizedRoute = (pathname: string) => 
+  /^\/(ar|en)(\/|$)/.test(pathname);
+
+
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req;
   const pathname = nextUrl.pathname;
+  const isLocalized = isLocalizedRoute(pathname);
 
   // Combine public and auth routes
   const nonProtectedRoutes = [...publicRoutes, ...authRoutes];
@@ -30,6 +36,11 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
       }
     }
+    // Skip intlMiddleware for non-localized routes
+    if (!isLocalized) {
+      return NextResponse.next();
+    }
+
     return intlMiddleware(req);
   }
 
@@ -38,6 +49,7 @@ export async function middleware(req: NextRequest) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
 
     if (!token) {
+      // Use non-localized auth route
       const loginUrl = new URL('/auth/login', req.url);
       loginUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(loginUrl);
@@ -47,6 +59,10 @@ export async function middleware(req: NextRequest) {
     if (!token.role || !ADMIN_ROLES.includes(token.role as string)) {
       return new NextResponse('Forbidden', { status: 403 });
     }
+  }
+  // Handle other routes with i18n only if they're localized
+  if (isLocalized) {
+    return intlMiddleware(req);
   }
 
   // Handle all other routes with i18n
