@@ -7,7 +7,8 @@ export const socialsIcons = {
 
 export const MainLogo = {
     Logo: "/assets/icons/logo.svg",
-    
+    LogoCollege: "/assets/icons/college.png",
+
     // Leadership Center Logos Large Size
     CenterLogoLarge : "/assets/icons/Leadership-Center-Logo-Arabic-For-the-big-screen.svg",
     CenterLogoLargeEnglish : "/assets/icons/Leadership-Center-Logo-English-For-the-big-screen.svg",

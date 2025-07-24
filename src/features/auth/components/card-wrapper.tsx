@@ -14,7 +14,7 @@ import { Social } from "@/features/auth/components/social";
 
 interface CardWrapperProps {
   children: React.ReactNode;
-  headerLabel: string;
+  headerLabel?: string;
   backButtonLabel: string;
   backButtonHref: string;
   showSocial?: boolean;
