@@ -2,7 +2,7 @@ import { z } from "zod";
 import { ListOfIndustrialSectors } from "./types";
 import { mediaTypes } from "@/constants";
 
-// TODO: remove TermsOfUse from all schemas
+// FIXME: rMake email required
 
 export const createJoiningCompaniesCollaboratorSchema = (
   t: (key: string) => string

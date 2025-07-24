@@ -11,7 +11,7 @@ export interface JwtPayload {
  * Sign a token for an admin
  */
 export function signToken(payload: JwtPayload) {
-  return jwt.sign(payload, process.env.JWT_SECRET!, {
+  return jwt.sign(payload, process.env.NEXTAUTH_SECRET!, {
     expiresIn: "2h",
   });
 }
@@ -21,7 +21,7 @@ export function signToken(payload: JwtPayload) {
  * Throws if invalid/expired.
  */
 export function verifyToken(token: string): JwtPayload {
-  return jwt.verify(token, process.env.JWT_SECRET!, {
+  return jwt.verify(token, process.env.NEXTAUTH_SECRET!, {
     algorithms: ["HS256"],
   }) as JwtPayload;
 }
