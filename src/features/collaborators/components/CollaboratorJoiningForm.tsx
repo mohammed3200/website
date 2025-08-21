@@ -208,7 +208,9 @@ export const CollaboratorJoiningForm = () => {
                                   src={
                                     field.value instanceof File
                                       ? URL.createObjectURL(field.value)
-                                      : field.value
+                                      : Array.isArray(field.value)
+                                      ? '#' // Fallback for File arrays
+                                      : field.value || ''
                                   }
                                   width={250}
                                   height={250}
