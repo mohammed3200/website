@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React from "react";
@@ -10,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "./ui/input";
-import { Control } from "react-hook-form";
+import { Control, FieldValues, ControllerRenderProps } from "react-hook-form";
 import Image from "next/image";
 import PhoneInput from "react-phone-number-input";
 import { E164Number } from "libphonenumber-js/core";
@@ -30,8 +29,8 @@ export enum FormFieldType {
   SKELETON = "skeleton",
 }
 
-interface CustomProps {
-  control: Control<any>;
+interface CustomProps<T extends FieldValues = FieldValues> {
+  control: Control<T>;
   fieldType: FormFieldType;
   name: string;
   label?: string;
@@ -42,17 +41,17 @@ interface CustomProps {
   dateFormat?: string;
   showTimeSelect?: boolean;
   children?: React.ReactNode;
-  renderSkeleton?: (field: any) => React.ReactNode;
+  renderSkeleton?: (field: ControllerRenderProps<T>) => React.ReactNode;
   isEnglish?: boolean;
 }
 
-const RenderField = ({
+const RenderField = <T extends FieldValues = FieldValues>({
   field,
   props,
   isEnglish,
 }: {
-  field: any;
-  props: CustomProps;
+  field: ControllerRenderProps<T>;
+  props: CustomProps<T>;
   isEnglish?: boolean;
 }) => {
   const {
@@ -83,7 +82,7 @@ const RenderField = ({
             <Input
               {...field}
               placeholder={placeholder}
-              dir={isEnglish && "ltr"}
+              dir={isEnglish ? "ltr" : "rtl"}
               className="placeholder:text-dark-600 h-12 focus-visible:ring-0 focus-visible:ring-offset-0 border-none shadow-none"
             />
           </FormControl>
@@ -174,12 +173,13 @@ const RenderField = ({
   }
 };
 
-export const CustomFormField = (props: CustomProps) => {
+export const CustomFormField = <T extends FieldValues = FieldValues>(props: CustomProps<T>) => {
   const { control, fieldType, name, label, isEnglish } = props;
   return (
     <FormField
       control={control}
-      name={name}
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      name={name as any}
       render={({ field }) => (
         <FormItem className="flex-1">
           {fieldType !== FormFieldType.CHECKBOX && label && (
