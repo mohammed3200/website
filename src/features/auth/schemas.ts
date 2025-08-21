@@ -1,11 +1,10 @@
 import z from "zod";
-import { UserRole } from "@prisma/client";
 
 export const SettingsSchema = z
     .object({
         name: z.optional(z.string()),
         isTwoFactorEnabled: z.optional(z.boolean()),
-        role: z.enum([UserRole.GENERAL_MANAGER, UserRole.NEWS_EDITOR, UserRole.REQUEST_REVIEWER]),
+        roleId: z.optional(z.string()),
         email: z.optional(z.string().email()),
         password: z.optional(z.string().min(6)),
         newPassword: z.optional(z.string().min(6)),
@@ -46,9 +45,7 @@ export const RegisterSchema = z.object({
     name: z.string().min(1, {
         message: "Name is required",
     }),
-    role: z.enum([UserRole.NEWS_EDITOR, UserRole.REQUEST_REVIEWER], {
-        message: "Invalid role",
-    }),
+    roleId: z.optional(z.string()),
 });
 
 export const ResetSchema = z.object({

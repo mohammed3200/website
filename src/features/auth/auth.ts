@@ -7,10 +7,11 @@ import Google from "next-auth/providers/google";
 
 import { db } from "@/lib/db";
 import { LoginSchema } from "@/features/auth/schemas"; // Use consistent import path
-import { getUserByEmail, getUserById } from "@/data/user";
+import { getUserByEmail } from "@/data/user";
 import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { getAccountByUserId } from "@/data/account";
 import { comparePassword } from "@/lib/auth"; // Use your custom compare function
+import { getUserPermissions } from "@/lib/rbac";
 
 export const {
   handlers,
@@ -72,7 +73,12 @@ export const {
       }
 
       if (token.role && session.user) {
-        session.user.role = token.role;
+        session.user.role = token.role as string;
+        session.user.roleName = token.roleName as string;
+      }
+
+      if (token.permissions && session.user) {
+        session.user.permissions = token.permissions;
       }
 
       if (session.user) {
@@ -83,31 +89,51 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email || "";
         session.user.isOAuth = token.isOAuth as boolean;
+        session.user.isActive = token.isActive as boolean;
       }
 
       return session;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       // Handle initial sign in
       if (user && user.id !== undefined) {
         token.id = user.id;
-        token.role = user.role;
       }
 
       if (!token.sub) return token;
 
-      const existingUser = await getUserById(token.sub);
+      // Always fetch fresh user data
+      const existingUser = await db.user.findUnique({
+        where: { id: token.sub },
+        include: {
+          role: true,
+        },
+      });
 
       if (!existingUser) return token;
 
       const existingAccount = await getAccountByUserId(existingUser.id);
 
+      // Get user permissions
+      const permissions = await getUserPermissions(existingUser.id);
+
       token.isOAuth = !!existingAccount;
       token.name = existingUser.name;
       token.email = existingUser.email;
-      token.role = existingUser.role;
+      token.roleId = existingUser.roleId;
+      token.roleName = existingUser.role?.name;
+      token.permissions = permissions;
       token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
+      token.isActive = existingUser.isActive;
+
+      // Update last login time on sign in
+      if (trigger === "signIn") {
+        await db.user.update({
+          where: { id: existingUser.id },
+          data: { lastLoginAt: new Date() },
+        });
+      }
 
       return token;
     },
@@ -116,10 +142,20 @@ export const {
       // Allow OAuth without email verification
       if (account?.provider !== "credentials") return true;
 
-      const existingUser = await getUserById(user.id);
+      const existingUser = await db.user.findUnique({
+        where: { id: user.id },
+        include: { role: true },
+      });
+
+      if (!existingUser) return false;
+
+      // Check if user is active
+      if (!existingUser.isActive) {
+        throw new Error("Your account has been deactivated. Please contact an administrator.");
+      }
 
       // Prevent sign in without email verification
-      if (!existingUser?.emailVerified) return false; 
+      if (!existingUser.emailVerified) return false; 
 
       if (existingUser.isTwoFactorEnabled) {
         const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
