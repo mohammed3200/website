@@ -28,7 +28,7 @@
         "./src/*"
       ]
     },
-  "baseUrl": ".",
+    "baseUrl": "."
   },
   "include": [
     "**/*.ts",
@@ -36,8 +36,9 @@
     ".next/types/**/*.ts",
     "next-env.d.ts",
     "src/components/SlideTabs.js",
-    "dist/types/**/*.ts"
-, "src/lib/client.ts"  ],
+    "dist/types/**/*.ts",
+    "src/lib/client.ts"
+  ],
   "exclude": [
     "node_modules"
   ]
