@@ -25,7 +25,7 @@ export default function AdminLayout({
     redirect("/auth/login");
   }
 
-  if (!adminRoles.includes(session.user.role)) {
+  if (!session.user.role || !adminRoles.includes(session.user.role)) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
