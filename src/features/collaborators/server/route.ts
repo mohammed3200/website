@@ -1,18 +1,19 @@
-import { Hono } from "hono";
-import { zValidator } from "@hono/zod-validator";
-import { v4 as uuidv4 } from "uuid";
-import { createJoiningCompaniesCollaboratorSchemaServer } from "../schemas";
-import { db } from "@/lib/db";
-import { RecordStatus } from "../types";
+import { Hono } from 'hono';
+import { zValidator } from '@hono/zod-validator';
+import { v4 as uuidv4 } from 'uuid';
+import { createJoiningCompaniesCollaboratorSchemaServer } from '../schemas';
+import { db } from '@/lib/db';
+import { RecordStatus } from '../types';
+import { emailService } from '@/lib/email/service';
 
 const app = new Hono()
   // Public endpoint - only approved and visible collaborators
-  .get("/public", async (c) => {
+  .get('/public', async (c) => {
     try {
       const collaborators = await db.collaborator.findMany({
         where: {
           status: RecordStatus.APPROVED,
-          isVisible: true
+          isVisible: true,
         },
         select: {
           id: true,
@@ -22,24 +23,24 @@ const app = new Hono()
           site: true,
           industrialSector: true,
           specialization: true,
-        }
+        },
       });
 
       // Collect all image IDs
       const imageIds: string[] = collaborators
-        .map(collaborator => collaborator.imageId)
+        .map((collaborator) => collaborator.imageId)
         .filter((id): id is string => !!id);
 
       // Fetch all related images in bulk
       const images = await db.image.findMany({
-        where: { id: { in: imageIds } }
+        where: { id: { in: imageIds } },
       });
 
       // Create lookup map for quick access
-      const imageMap = new Map(images.map(img => [img.id, img]));
+      const imageMap = new Map(images.map((img) => [img.id, img]));
 
       // Transform the data
-      const transformedCollaborators = collaborators.map(collaborator => {
+      const transformedCollaborators = collaborators.map((collaborator) => {
         const image = collaborator.imageId
           ? imageMap.get(collaborator.imageId)
           : null;
@@ -47,33 +48,37 @@ const app = new Hono()
         return {
           id: collaborator.id,
           companyName: collaborator.companyName,
-          image: image ? {
-            data: Buffer.isBuffer(image.data) ? image.data.toString("base64") : "",
-            type: image.type,
-            size: image.size
-          } : null,
+          image: image
+            ? {
+                data: Buffer.isBuffer(image.data)
+                  ? image.data.toString('base64')
+                  : '',
+                type: image.type,
+                size: image.size,
+              }
+            : null,
           location: collaborator.location,
           site: collaborator.site,
           industrialSector: collaborator.industrialSector,
-          specialization: collaborator.specialization
+          specialization: collaborator.specialization,
         };
       });
 
       return c.json({ data: transformedCollaborators }, 200);
     } catch (error) {
-      console.error("Error fetching collaborators:", error);
+      console.error('Error fetching collaborators:', error);
       return c.json(
         {
-          code: "SERVER_ERROR",
-          message: "Failed to fetch collaborators",
+          code: 'SERVER_ERROR',
+          message: 'Failed to fetch collaborators',
         },
-        500
+        500,
       );
     }
   })
   .post(
-    "/",
-    zValidator("form", createJoiningCompaniesCollaboratorSchemaServer),
+    '/',
+    zValidator('form', createJoiningCompaniesCollaboratorSchemaServer),
     async (c) => {
       try {
         // Destructure form data
@@ -91,27 +96,33 @@ const app = new Hono()
           image,
           experienceProvidedMedia,
           machineryAndEquipmentMedia,
-        } = c.req.valid("form");
+        } = c.req.valid('form');
 
         // Check for existing email
         const existingEmail = await db.collaborator.findFirst({
           where: { email },
         });
         if (existingEmail)
-          return c.json({
-            code: "EMAIL_EXISTS",
-            message: "Email already exists"
-          }, 400);
+          return c.json(
+            {
+              code: 'EMAIL_EXISTS',
+              message: 'Email already exists',
+            },
+            400,
+          );
 
         // Check for existing phone number
         const existingPhone = await db.collaborator.findFirst({
           where: { primaryPhoneNumber },
         });
         if (existingPhone)
-          return c.json({
-            code: "PHONE_EXISTS",
-            message: "Phone number already exists"
-          }, 400);
+          return c.json(
+            {
+              code: 'PHONE_EXISTS',
+              message: 'Phone number already exists',
+            },
+            400,
+          );
 
         // Create image record if image exists
         let imageId: string | null = null;
@@ -133,7 +144,7 @@ const app = new Hono()
             companyName,
             primaryPhoneNumber,
             optionalPhoneNumber: optionalPhoneNumber || null,
-            email: email || null,
+            email,
             location: location || null,
             site: site || null,
             industrialSector,
@@ -141,11 +152,14 @@ const app = new Hono()
             experienceProvided: experienceProvided || null,
             machineryAndEquipment: machineryAndEquipment || null,
             imageId,
-          }
+          },
         });
 
         // Create media records helper
-        const createMediaRecords = async (files: File[], type: 'experience' | 'machinery') => {
+        const createMediaRecords = async (
+          files: File[],
+          type: 'experience' | 'machinery',
+        ) => {
           return Promise.all(
             files.map(async (file) => {
               // Create media record
@@ -162,7 +176,7 @@ const app = new Hono()
                 return db.experienceProvidedMedia.create({
                   data: {
                     id: uuidv4(),
-                    media: mediaRecord.id,  // Reference media ID
+                    media: mediaRecord.id, // Reference media ID
                     collaboratorId: collaborator.id, // Use the created collaborator ID
                   },
                 });
@@ -170,12 +184,12 @@ const app = new Hono()
                 return db.machineryAndEquipmentMedia.create({
                   data: {
                     id: uuidv4(),
-                    media: mediaRecord.id,  // Reference media ID
+                    media: mediaRecord.id, // Reference media ID
                     collaboratorId: collaborator.id, // Use the created collaborator ID
                   },
                 });
               }
-            })
+            }),
           );
         };
 
@@ -189,15 +203,42 @@ const app = new Hono()
           await createMediaRecords(machineryAndEquipmentMedia, 'machinery');
         }
 
-        return c.json({ message: "Collaborator created successfully" }, 201);
+        const url = new URL(c.req.url);
+        const pathSegments = url.pathname.split('/');
+        const lang =
+          pathSegments[1] === 'ar' || pathSegments[1] === 'en'
+            ? pathSegments[1]
+            : 'en';
+
+        // Send confirmation emails
+        try {
+          await emailService.sendSubmissionConfirmation(
+            'collaborator',
+            {
+              id: collaborator.id,
+              companyName: collaborator.companyName,
+              email: collaborator.email,
+              createdAt: collaborator.createdAt,
+            },
+            lang as 'ar' | 'en', // You can make this dynamic based on user preference
+          );
+        } catch (emailError) {
+          // Log email error but don't fail the submission
+          console.error('Failed to send confirmation email:', emailError);
+        }
+
+        return c.json({ message: 'Collaborator created successfully' }, 201);
       } catch (error) {
-        console.error("Error creating collaborator:", error);
-        return c.json({
-          code: "SERVER_ERROR",
-          message: "Failed to create collaborator"
-        }, 500);
+        console.error('Error creating collaborator:', error);
+        return c.json(
+          {
+            code: 'SERVER_ERROR',
+            message: 'Failed to create collaborator',
+          },
+          500,
+        );
       }
-    }
+    },
   );
 
 export default app;
