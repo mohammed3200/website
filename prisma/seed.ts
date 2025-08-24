@@ -10,17 +10,31 @@ async function main() {
     10
   );
 
+  // First create or find the role
+  const adminRole = await prisma.role.upsert({
+    where: { name: "GENERAL_MANAGER" },
+    update: {},
+    create: {
+      name: "GENERAL_MANAGER",
+      description: "General Manager role with administrative privileges",
+      isSystem: true,
+    },
+  });
+
   await prisma.user.upsert({
     where: { email: process.env.INIT_ADMIN_EMAIL! },
     update: {},
     create: {
       email: process.env.INIT_ADMIN_EMAIL!,
       password: passwordHash,
-      role: "GENERAL_MANAGER",
+      name: "Admin User",
+      emailVerified: new Date(),
+      roleId: adminRole.id,
+      isActive: true,
     },
   });
 
-  console.log("✅ Seeded initial admin");
+  console.log("✅ Seeded initial admin with role");
 }
 
 main()

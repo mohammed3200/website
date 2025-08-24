@@ -14,14 +14,23 @@ model User {
   emailVerified         DateTime?
   image                 String?
   password              String?
-  role                  UserRole               @default(GENERAL_MANAGER)
+  roleId                String?
+  role                  Role?                  @relation(fields: [roleId], references: [id])
   accounts              Account[]
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
+  invitedBy             String?                // ID of user who invited this user
+  invitedByUser         User?                  @relation("UserInvitations", fields: [invitedBy], references: [id])
+  invitedUsers          User[]                 @relation("UserInvitations")
+  userInvitations       UserInvitation[]       @relation("InvitedBy")
+  receivedInvitations   UserInvitation[]       @relation("InvitedUser")
+  lastLoginAt           DateTime?
+  isActive              Boolean                @default(true)
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
 
-  @@index([email, role])
+  @@index([email])
+  @@index([roleId])
 }
 
 model Account {
@@ -132,6 +141,7 @@ model Innovator {
   isVisible          Boolean          @default(false)
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
+  emailLogs          EmailLog[]       @relation("InnovatorEmails")
 }
 
 model Collaborator {
@@ -139,13 +149,13 @@ model Collaborator {
   companyName                String
   primaryPhoneNumber         String
   optionalPhoneNumber        String?
-  email                      String?
+  email                      String       // Made required
   location                   String?
   site                       String?
   industrialSector           String
   specialization             String
-  experienceProvided         String?
-  machineryAndEquipment      String?
+  experienceProvided         String?      @db.Text
+  machineryAndEquipment      String?      @db.Text
   imageId                    String?
   status                     RecordStatus @default(PENDING)
   isVisible                  Boolean      @default(false)
@@ -153,6 +163,7 @@ model Collaborator {
   updatedAt                  DateTime     @updatedAt
   experienceProvidedMedia    ExperienceProvidedMedia[]
   machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
+  emailLogs                  EmailLog[]   @relation("CollaboratorEmails")
 }
 
 model ExperienceProvidedMedia {
@@ -188,8 +199,165 @@ enum RecordStatus {
   ARCHIVED
 }
 
-enum UserRole {
-  GENERAL_MANAGER
-  NEWS_EDITOR
-  REQUEST_REVIEWER
+// Role-based access control models
+model Role {
+  id              String             @id @default(cuid())
+  name            String             @unique
+  description     String?
+  isSystem        Boolean            @default(false) // System roles cannot be deleted
+  users           User[]
+  permissions     RolePermission[]
+  userInvitations UserInvitation[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([name])
+}
+
+model Permission {
+  id          String             @id @default(cuid())
+  name        String             @unique
+  resource    String             // e.g., "news", "users", "collaborators"
+  action      String             // e.g., "create", "read", "update", "delete"
+  description String?
+  roles       RolePermission[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@unique([resource, action])
+  @@index([resource])
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+}
+
+model UserInvitation {
+  id          String            @id @default(cuid())
+  email       String
+  token       String            @unique
+  roleId      String
+  role        Role              @relation(fields: [roleId], references: [id])
+  invitedBy   String
+  inviter     User              @relation("InvitedBy", fields: [invitedBy], references: [id])
+  acceptedBy  String?
+  acceptedUser User?            @relation("InvitedUser", fields: [acceptedBy], references: [id])
+  status      InvitationStatus  @default(PENDING)
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([email])
+  @@index([token])
+  @@index([status])
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  CANCELLED
+}
+
+// Email tracking models
+model EmailLog {
+  id             String           @id @default(cuid())
+  to             String
+  from           String
+  subject        String
+  template       String
+  status         EmailStatus      @default(PENDING)
+  errorMessage   String?          @db.Text
+  metadata       Json?
+  sentAt         DateTime?
+  openedAt       DateTime?
+  clickedAt      DateTime?
+  bouncedAt      DateTime?
+  complaintAt    DateTime?
+  messageId      String?          @unique
+  collaboratorId String?
+  collaborator   Collaborator?    @relation("CollaboratorEmails", fields: [collaboratorId], references: [id])
+  innovatorId    String?
+  innovator      Innovator?       @relation("InnovatorEmails", fields: [innovatorId], references: [id])
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  @@index([to])
+  @@index([status])
+  @@index([template])
+  @@index([sentAt])
+}
+
+model EmailTemplate {
+  id          String               @id @default(cuid())
+  name        String               @unique
+  subject     String
+  body        String               @db.Text
+  variables   Json?                // JSON array of required variables
+  isActive    Boolean              @default(true)
+  category    EmailTemplateCategory
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([name])
+  @@index([category])
+}
+
+model EmailQueue {
+  id          String         @id @default(cuid())
+  to          String
+  subject     String
+  template    String
+  data        Json
+  priority    Int            @default(0)
+  attempts    Int            @default(0)
+  maxAttempts Int            @default(3)
+  status      QueueStatus    @default(PENDING)
+  error       String?        @db.Text
+  processedAt DateTime?
+  scheduledFor DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([status])
+  @@index([priority])
+  @@index([scheduledFor])
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  BOUNCED
+  COMPLAINT
+  FAILED
+}
+
+enum QueueStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum EmailTemplateCategory {
+  SUBMISSION_CONFIRMATION
+  ADMIN_NOTIFICATION
+  APPROVAL_NOTIFICATION
+  REJECTION_NOTIFICATION
+  SYSTEM
+  MARKETING
 }
