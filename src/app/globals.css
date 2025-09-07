@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -299,11 +301,11 @@ body {
 
   /* START of FAQ */
   .faq-line_after {
-    @apply after:absolute after:-top-1.5 after:left-[calc(50%-5px)] after:z-10 after:size-2.5 after:rounded-md after:border-2 after:border-primary after:bg-orange after:content-[''];
+    @apply after:absolute after:-top-1.5 after:left-[calc(50%-5px)] after:z-10 after:size-2.5 after:rounded-md after:border-2 after:border-primary after:bg-orange-300 after:content-[''];
   }
 
   .faq-glow_before {
-    @apply before:absolute before:left-[calc(50%-160px)] before:top-[-160px] before:size-[320px] before:bg-orange before:mix-blend-soft-light before:blur-[200px] before:content-[''];
+    @apply before:absolute before:left-[calc(50%-160px)] before:top-[-160px] before:size-[320px] before:bg-orange-300 before:mix-blend-soft-light before:blur-[200px] before:content-[''];
   }
 
   .faq-icon {
