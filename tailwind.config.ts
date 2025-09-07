@@ -65,7 +65,6 @@ export default {
         green: "#3DD9B3",
         blue: "#56B8FF",
         pink: "#EEA8FD",
-        orange: "#F9AB72",
         light: {
           "100": "#333F4E",
           "200": "#A3B2C7",
@@ -87,6 +86,7 @@ export default {
         "din-bold": ["DINNextLT-Bold", "sans-serif"],
         "din-regular": ["DINNextLT-Regular", "sans-serif"],
         "space-mono": ["SpaceMono-Regular", "monospace"],
+        "outfit": ["Outfit", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
