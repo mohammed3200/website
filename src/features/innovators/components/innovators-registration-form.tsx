@@ -122,7 +122,9 @@ export const InnovatorsRegistrationForm = () => {
                                   src={
                                     field.value instanceof File
                                       ? URL.createObjectURL(field.value)
-                                      : field.value
+                                      : typeof field.value === "string"
+                                      ? field.value
+                                      : ""
                                   }
                                   width={250}
                                   height={250}
