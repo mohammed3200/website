@@ -1,6 +1,5 @@
 "use client";
 
-import { Back } from "@/components";
 import {
   Card,
   CardContent,
@@ -38,9 +37,6 @@ export const CardWrapper = ({
           <Social />
         </CardFooter>
       )}
-      <CardFooter>
-        <Back />
-      </CardFooter>
     </Card>
   );
 };
