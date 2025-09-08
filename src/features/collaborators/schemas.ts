@@ -190,3 +190,11 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
   //     message: "TermsOfUse",
   //   }),
 });
+
+// Validation schema for status update
+export const statusUpdateSchema = z.object({
+  status: z.enum(['APPROVED', 'REJECTED']),
+  reason: z.string().optional(),
+  nextSteps: z.array(z.string()).optional(),
+  locale: z.enum(['ar', 'en']).optional().default('en'),
+});

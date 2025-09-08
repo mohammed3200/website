@@ -1,10 +1,15 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { v4 as uuidv4 } from 'uuid';
-import { createJoiningCompaniesCollaboratorSchemaServer } from '../schemas';
+import {
+  createJoiningCompaniesCollaboratorSchemaServer,
+  statusUpdateSchema,
+} from '../schemas';
 import { db } from '@/lib/db';
 import { RecordStatus } from '../types';
 import { emailService } from '@/lib/email/service';
+import { auth } from '@/auth';
+import z from 'zod';
 
 const app = new Hono()
   // Public endpoint - only approved and visible collaborators
@@ -237,6 +242,96 @@ const app = new Hono()
           },
           500,
         );
+      }
+    },
+  )
+  .patch(
+    '/:collaboratorId',
+    zValidator('json', statusUpdateSchema),
+    async (c) => {
+      try {
+        const { collaboratorId } = c.req.param();
+        const validatedData = c.req.valid('json');
+
+        // Check authentication and authorization
+        const session = await auth();
+
+        if (!session?.user) {
+          return c.json({ error: 'Unauthorized' }, 401);
+        }
+
+        // Check if user has permission to manage collaborators
+        const userPermissions = session.user.permissions || [];
+        const hasPermission = userPermissions.some(
+          (p) =>
+            p.resource === 'collaborators' &&
+            (p.action === 'update' || p.action === 'manage'),
+        );
+
+        if (!hasPermission) {
+          return c.json({ error: 'Insufficient permissions' }, 403);
+        }
+
+        // Get the collaborator
+        const collaborator = await db.collaborator.findUnique({
+          where: { id: collaboratorId },
+        });
+
+        if (!collaborator) {
+          return c.json({ error: 'Collaborator not found' }, 404);
+        }
+
+        // Update the collaborator status
+        const updatedCollaborator = await db.collaborator.update({
+          where: { id: collaboratorId },
+          data: {
+            status: validatedData.status,
+            isVisible: validatedData.status === 'APPROVED', // Make visible if approved
+            updatedAt: new Date(),
+          },
+        });
+
+        // Send status update email
+        try {
+          await emailService.sendStatusUpdate(
+            'collaborator',
+            {
+              id: collaborator.id,
+              companyName: collaborator.companyName,
+              email: collaborator.email,
+            },
+            validatedData.status === 'APPROVED' ? 'approved' : 'rejected',
+            {
+              reason: validatedData.reason,
+              nextSteps: validatedData.nextSteps,
+              locale: validatedData.locale,
+            },
+          );
+        } catch (emailError) {
+          console.error('Failed to send status update email:', emailError);
+          // Continue even if email fails
+        }
+
+        return c.json({
+          success: true,
+          message: `Collaborator ${validatedData.status.toLowerCase()} successfully`,
+          data: {
+            id: updatedCollaborator.id,
+            companyName: updatedCollaborator.companyName,
+            status: updatedCollaborator.status,
+            isVisible: updatedCollaborator.isVisible,
+          },
+        });
+      } catch (error) {
+        if (error instanceof z.ZodError) {
+          return c.json(
+            { error: 'Validation error', details: error.issues },
+            400,
+          );
+        }
+
+        console.error('Status update error:', error);
+        return c.json({ error: 'Failed to update collaborator status' }, 500);
       }
     },
   );
