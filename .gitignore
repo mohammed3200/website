@@ -74,3 +74,7 @@ prisma/dev.db
 # issues files
 # If you want to commit issues files, remove the line below.
 *.github-issues
+
+# AI 
+.continue
+.qodo

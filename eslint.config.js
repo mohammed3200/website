@@ -36,12 +36,12 @@ export default [
         },
       ],
 
-      // You can disable the default ESLint rule to avoid duplication:
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': 'off',
-      
-      // Temporarily allow any types for build success
-      '@typescript-eslint/no-explicit-any': 'warn',
+  // You can disable the default ESLint rule to avoid duplication and use TypeScript variant
+  'no-unused-vars': 'off',
+  '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+
+  // Disallow `any` to improve type safety
+  '@typescript-eslint/no-explicit-any': 'error',
     },
   },
 ];
