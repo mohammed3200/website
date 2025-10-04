@@ -2,13 +2,15 @@ import { Hono } from "hono";
 import { handle } from "hono/vercel";
 import collaborator from "@/features/collaborators/server/route";
 import innovators from "@/features/innovators/server/route";
+import email from "@/features/email/server/route";
 
 const app = new Hono().basePath("/api");
 
 // eslint-disable-next-line unused-imports/no-unused-vars
 const routes = app
   .route("/collaborator", collaborator)
-  .route("/innovators", innovators);
+  .route("/innovators", innovators)
+  .route("/email", email);
 
 export const GET = handle(app);
 export const POST = handle(app);
