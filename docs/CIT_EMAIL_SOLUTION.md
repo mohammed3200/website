@@ -50,12 +50,11 @@ Replace the password in your `.env` file:
 # -----------------------------------------------
 # 4. EMAIL SYSTEM - CIT.EDU.LY (GOOGLE WORKSPACE)
 # -----------------------------------------------
-EMAIL_PROVIDER="gmail"
-SMTP_HOST="smtp.gmail.com"
+SMTP_HOST="cit.edu.ly"
 SMTP_PORT="587"
 SMTP_SECURE="false"
 SMTP_USER="ebic@cit.edu.ly"
-SMTP_PASS="xxxx xxxx xxxx xxxx"  # <-- Put your new App Password here (without spaces)
+SMTP_PASS="zpvauhxpatovxjju"
 EMAIL_FROM="ebic@cit.edu.ly"
 ```
 

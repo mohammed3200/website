@@ -175,7 +175,6 @@
     "SMTP_USER",
     "SMTP_PASS",
     "EMAIL_FROM",
-    "EMAIL_PROVIDER",
     "REDIS_HOST",
     "REDIS_PORT",
     "REDIS_PASSWORD",
@@ -186,18 +185,17 @@
     "EMAIL_WORKER_POLL_INTERVAL"
   ],
   "envConfigured": {
-    "EMAIL_PROVIDER": "gmail",
-    "SMTP_HOST": "smtp.gmail.com",
+    "SMTP_HOST": "cit.edu.ly",
     "SMTP_PORT": "587",
     "SMTP_SECURE": "false",
     "SMTP_USER": "ebic@cit.edu.ly",
-    "SMTP_PASS": "Configured (needs Google App Password)",
+    "SMTP_PASS": "zpvauhxpatovxjju",
     "EMAIL_FROM": "ebic@cit.edu.ly",
     "REDIS_HOST": "localhost",
     "REDIS_PORT": "6379",
     "DATABASE_URL": "Configured (MySQL)",
     "NEXTAUTH_SECRET": "Configured",
-    "EMAIL_TOKEN_SECRET": "MISSING - Must generate",
+    "EMAIL_TOKEN_SECRET": "47fadbc3afcba1be26e0545dbacebfd69ef48a79bff50dbc26b5358ddb5868b8",
     "EMAIL_TOKEN_TTL": "MISSING - Add default 3600"
   },
   "suggestedModels": [
