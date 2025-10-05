@@ -81,8 +81,7 @@ Setting up `ebic@cit.edu.ly` email with proper SMTP configuration.
 2. **Update .env with working configuration**:
    The script will output the working configuration. Update your `.env`:
    ```env
-   EMAIL_PROVIDER="smtp"
-   SMTP_HOST="mail.cit.edu.ly"  # Or whichever works
+   SMTP_HOST="cit.edu.ly"  # Or whichever works
    SMTP_PORT="587"
    SMTP_SECURE="false"
    SMTP_USER="ebic@cit.edu.ly"
