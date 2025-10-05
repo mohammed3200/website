@@ -329,9 +329,29 @@ model EmailQueue {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
+  emailActions EmailAction[]
+
   @@index([status])
   @@index([priority])
   @@index([scheduledFor])
+}
+
+model EmailAction {
+  id             String      @id @default(cuid())
+  emailQueueId   String
+  emailQueue     EmailQueue  @relation(fields: [emailQueueId], references: [id], onDelete: Cascade)
+  tokenHash      String      @unique
+  actionTypes    Json
+  used           Boolean     @default(false)
+  usedAt         DateTime?
+  expiresAt      DateTime
+  data           Json?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([tokenHash])
+  @@index([used])
+  @@index([expiresAt])
 }
 
 enum EmailStatus {
