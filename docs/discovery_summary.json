@@ -1,0 +1,392 @@
+{
+  "discoveryDate": "2025-10-05",
+  "projectName": "Misurata Entrepreneurship Center",
+  "runtime": "Next.js 15 App Router (Node.js + Edge optional)",
+  "framework": {
+    "name": "Next.js",
+    "version": "15.1.2",
+    "routing": "App Router",
+    "language": "TypeScript 5.8.3"
+  },
+  "db": {
+    "type": "Prisma",
+    "version": "6.11.1",
+    "schemaPath": "prisma/schema.prisma",
+    "provider": "MySQL",
+    "connectionString": "DATABASE_URL (configured)",
+    "existingModels": [
+      "User",
+      "Account",
+      "Role",
+      "Permission",
+      "RolePermission",
+      "UserInvitation",
+      "Collaborator",
+      "Innovator",
+      "News",
+      "EmailLog",
+      "EmailQueue",
+      "EmailTemplate",
+      "VerificationToken",
+      "PasswordResetToken",
+      "TwoFactorToken",
+      "TwoFactorConfirmation"
+    ],
+    "migrationStatus": "Up to date",
+    "seedScripts": ["prisma/seed.ts", "prisma/seed-rbac.ts"]
+  },
+  "apiRoutes": [
+    "src/app/api/[[...route]]/route.ts",
+    "src/app/api/auth/[...nextauth]/route.ts",
+    "src/features/collaborators/server/route.ts",
+    "src/features/innovators/server/route.ts",
+    "src/features/email/server/route.ts"
+  ],
+  "apiFramework": {
+    "name": "Hono.js",
+    "version": "4.8.3",
+    "adapter": "hono/vercel",
+    "middleware": ["cors", "logger", "zod-validator"]
+  },
+  "existingEmailInfrastructure": {
+    "nodemailer": {
+      "installed": true,
+      "version": "7.0.5",
+      "configured": true,
+      "setupFile": "src/lib/mail.ts",
+      "transport": "Gmail SMTP",
+      "currentUsage": "Auth emails (verification, 2FA, password reset)"
+    },
+    "emailModels": {
+      "EmailLog": {
+        "exists": true,
+        "fields": [
+          "id",
+          "to",
+          "from",
+          "subject",
+          "template",
+          "status",
+          "errorMessage",
+          "metadata",
+          "sentAt",
+          "openedAt",
+          "clickedAt",
+          "bouncedAt",
+          "messageId",
+          "collaboratorId",
+          "innovatorId"
+        ]
+      },
+      "EmailQueue": {
+        "exists": true,
+        "fields": [
+          "id",
+          "to",
+          "subject",
+          "template",
+          "data",
+          "priority",
+          "attempts",
+          "maxAttempts",
+          "status",
+          "error",
+          "processedAt",
+          "scheduledFor"
+        ]
+      },
+      "EmailTemplate": {
+        "exists": true,
+        "fields": [
+          "id",
+          "name",
+          "subject",
+          "body",
+          "variables",
+          "isActive",
+          "category"
+        ]
+      },
+      "EmailAction": {
+        "exists": false,
+        "required": true,
+        "purpose": "Store hashed tokens for 2FA and action links"
+      }
+    },
+    "emailRoute": {
+      "exists": true,
+      "path": "src/features/email/server/route.ts",
+      "endpoints": [
+        "POST /api/email/test",
+        "GET /api/email/monitor",
+        "POST /api/email/monitor/action",
+        "PATCH /api/email/status"
+      ],
+      "features": [
+        "Test email sending",
+        "Email monitoring/statistics",
+        "Queue management actions",
+        "Status update with email notification"
+      ]
+    },
+    "reactEmailHooks": {
+      "exists": true,
+      "path": "src/features/email/api/use-email-hooks.ts",
+      "hooks": [
+        "useTestEmail",
+        "useEmailMonitor",
+        "useEmailMonitorAction",
+        "useStatusUpdate",
+        "useBatchStatusUpdate",
+        "useEmailHealthCheck"
+      ]
+    },
+    "queue": {
+      "bullmq": {
+        "installed": true,
+        "version": "5.58.0"
+      },
+      "redis": {
+        "installed": true,
+        "version": "5.7.0",
+        "configured": true
+      },
+      "workerImplemented": false
+    },
+    "templates": {
+      "reactEmail": {
+        "installed": true,
+        "version": "4.2.8"
+      },
+      "components": {
+        "installed": true,
+        "version": "0.5.0"
+      },
+      "templatesCreated": false,
+      "templateStoragePath": "src/app/admin/settings/email-templates"
+    }
+  },
+  "envNeeded": [
+    "EMAIL_TOKEN_SECRET",
+    "EMAIL_TOKEN_TTL",
+    "SMTP_HOST",
+    "SMTP_PORT",
+    "SMTP_SECURE",
+    "SMTP_USER",
+    "SMTP_PASS",
+    "EMAIL_FROM",
+    "EMAIL_PROVIDER",
+    "REDIS_HOST",
+    "REDIS_PORT",
+    "REDIS_PASSWORD",
+    "DATABASE_URL",
+    "NODE_ENV",
+    "NEXTAUTH_SECRET",
+    "EMAIL_QUEUE_CONCURRENCY",
+    "EMAIL_WORKER_POLL_INTERVAL"
+  ],
+  "envConfigured": {
+    "EMAIL_PROVIDER": "gmail",
+    "SMTP_HOST": "smtp.gmail.com",
+    "SMTP_PORT": "587",
+    "SMTP_SECURE": "false",
+    "SMTP_USER": "ebic@cit.edu.ly",
+    "SMTP_PASS": "Configured (needs Google App Password)",
+    "EMAIL_FROM": "ebic@cit.edu.ly",
+    "REDIS_HOST": "localhost",
+    "REDIS_PORT": "6379",
+    "DATABASE_URL": "Configured (MySQL)",
+    "NEXTAUTH_SECRET": "Configured",
+    "EMAIL_TOKEN_SECRET": "MISSING - Must generate",
+    "EMAIL_TOKEN_TTL": "MISSING - Add default 3600"
+  },
+  "suggestedModels": [
+    {
+      "name": "EmailAction",
+      "purpose": "Store hashed tokens for action emails and 2FA",
+      "fields": {
+        "id": "String @id @default(cuid())",
+        "emailQueueId": "String (FK to EmailQueue)",
+        "tokenHash": "String @unique (SHA-256 hash of token)",
+        "actionTypes": "Json (array of allowed actions: approve/reject/confirm)",
+        "used": "Boolean @default(false)",
+        "usedAt": "DateTime?",
+        "expiresAt": "DateTime",
+        "data": "Json? (additional context)",
+        "createdAt": "DateTime @default(now())",
+        "updatedAt": "DateTime @updatedAt"
+      },
+      "indexes": ["tokenHash", "used", "expiresAt"],
+      "relations": [
+        "emailQueue: EmailQueue @relation(fields: [emailQueueId], references: [id], onDelete: Cascade)"
+      ]
+    }
+  ],
+  "missingImplementations": {
+    "rpcDispatcher": {
+      "exists": false,
+      "required": true,
+      "path": "src/app/api/rpc/route.ts",
+      "purpose": "JSON-RPC 2.0 endpoint for email.sendActionEmail method"
+    },
+    "rpcRegistry": {
+      "exists": false,
+      "required": true,
+      "path": "src/lib/email/rpc/registry.ts",
+      "purpose": "Map RPC method names to handler functions"
+    },
+    "tokenUtils": {
+      "exists": false,
+      "required": true,
+      "path": "src/lib/email/utils/token.ts",
+      "features": ["HMAC signing", "Token verification", "SHA-256 hashing"]
+    },
+    "emailService": {
+      "exists": false,
+      "required": true,
+      "path": "src/lib/email/service.ts",
+      "purpose": "Transport-agnostic email sending service"
+    },
+    "transports": {
+      "nodemailer": {
+        "exists": false,
+        "path": "src/lib/email/transports/nodemailer.ts"
+      },
+      "test": {
+        "exists": false,
+        "path": "src/lib/email/transports/test.ts"
+      }
+    },
+    "emailWorker": {
+      "exists": false,
+      "required": true,
+      "path": "services/email-worker/worker.ts",
+      "purpose": "BullMQ worker to process email queue"
+    },
+    "reactEmailTemplates": {
+      "exists": false,
+      "required": true,
+      "templates": [
+        "src/lib/email/templates/action-email.en.tsx",
+        "src/lib/email/templates/action-email.ar.tsx",
+        "src/lib/email/templates/2fa-email.en.tsx",
+        "src/lib/email/templates/2fa-email.ar.tsx"
+      ]
+    }
+  },
+  "testStrategy": {
+    "framework": "Jest 29.7.0",
+    "testingLibrary": "@testing-library/react 16.3.0",
+    "existingTests": ["tests/admin-middleware.test.ts"],
+    "testTransportStrategy": "File-based JSON output to tests/outgoing/",
+    "integrationTestApproach": "RPC call → DB assertion → File output verification",
+    "ciIntegration": "GitHub Actions (needs email test job)"
+  },
+  "dependencies": {
+    "installed": {
+      "nodemailer": "7.0.5",
+      "bullmq": "5.58.0",
+      "ioredis": "5.7.0",
+      "react-email": "4.2.8",
+      "@react-email/components": "0.5.0",
+      "jsonwebtoken": "9.0.2",
+      "uuid": "11.1.0",
+      "zod": "4.0.3",
+      "hono": "4.8.3",
+      "@hono/zod-validator": "0.4.3",
+      "handlebars": "4.7.8"
+    },
+    "toInstall": []
+  },
+  "i18n": {
+    "framework": "next-intl 3.26.5",
+    "locales": ["en", "ar"],
+    "messageFiles": ["messages/en.json", "messages/ar.json"],
+    "rtlSupport": true,
+    "routingStrategy": "Domain-based with [locale] folder"
+  },
+  "authentication": {
+    "provider": "NextAuth.js 5.0.0-beta.25",
+    "adapter": "@auth/prisma-adapter",
+    "features": [
+      "Credential authentication",
+      "OAuth providers (Google, GitHub)",
+      "2FA support (TwoFactorToken model)",
+      "Email verification",
+      "Password reset",
+      "RBAC (Role-based access control)"
+    ],
+    "existingTokenGeneration": "src/lib/tokens.ts (UUID-based)"
+  },
+  "codeStyle": {
+    "typescript": {
+      "strict": true,
+      "version": "5.8.3",
+      "tsconfig": "tsconfig.json"
+    },
+    "linting": {
+      "eslint": "9.30.0",
+      "config": "eslint.config.js",
+      "plugins": ["@typescript-eslint", "unused-imports"]
+    },
+    "formatting": {
+      "rules": "Consistent with existing codebase",
+      "importStyle": "Relative imports for local files, @ alias for src/"
+    }
+  },
+  "deployment": {
+    "platform": "Likely Vercel (Next.js + Vercel adapter for Hono)",
+    "serverless": true,
+    "edgeRuntime": "Optional (middleware can use Edge)"
+  },
+  "recommendations": {
+    "immediate": [
+      "Generate EMAIL_TOKEN_SECRET with: openssl rand -hex 32",
+      "Add EMAIL_TOKEN_TTL=3600 to .env",
+      "Create EmailAction Prisma model",
+      "Run migration: npx prisma migrate dev --name add_email_action",
+      "Verify Google App Password for SMTP_PASS"
+    ],
+    "beforeImplementation": [
+      "Confirm Redis is running: redis-cli ping",
+      "Test SMTP connection with existing test endpoint",
+      "Review existing email/server/route.ts for integration patterns",
+      "Ensure MySQL database is accessible"
+    ],
+    "architecture": [
+      "Use existing Hono.js patterns for RPC router",
+      "Follow feature module structure (api/, server/, components/)",
+      "Integrate with existing React Query hooks in features/email/api/",
+      "Maintain consistent error handling (return c.json with error codes)"
+    ]
+  },
+  "potentialIssues": {
+    "smtpCredentials": {
+      "issue": "SMTP_PASS needs Google App Password",
+      "resolution": "Follow CIT_EMAIL_SOLUTION.md instructions",
+      "documentation": "CIT.EDU.LY uses Google Workspace"
+    },
+    "redisNotRunning": {
+      "issue": "BullMQ requires Redis server",
+      "resolution": "Install and start Redis before running worker",
+      "fallback": "Use test transport for development without Redis"
+    },
+    "migrationConflicts": {
+      "issue": "Existing migrations may conflict",
+      "resolution": "Use prisma migrate dev to create new migration",
+      "backup": "Database should be backed up before migration"
+    }
+  },
+  "readyForImplementation": true,
+  "blockers": [],
+  "notes": [
+    "Repo uses pnpm as package manager (packageManager: pnpm@10.4.1)",
+    "Existing email infrastructure is partially implemented",
+    "React Email templates should use existing patterns from admin/settings/email-templates",
+    "BullMQ worker should be added as new npm script in package.json",
+    "Test files should follow existing Jest setup in tests/ directory",
+    "All email functionality should support both Arabic (RTL) and English (LTR)",
+    "Existing email hooks in features/email/api/ can be reused/extended",
+    "Token generation should be separate from UUID-based auth tokens in lib/tokens.ts"
+  ]
+}
