@@ -36,7 +36,7 @@ describe('middleware', () => {
     mockedGetToken.mockResolvedValue({
       sub: '1',
       role: 'GENERAL_MANAGER',
-    } as any);
+    } as { sub: string; role: string });
     const req = createMockRequest('/auth/login');
     const response = await middleware(req);
     expect(response?.status).toBe(307);
@@ -61,7 +61,7 @@ describe('middleware', () => {
   });
 
   it('returns 403 for unauthorized admin role', async () => {
-    mockedGetToken.mockResolvedValue({ sub: '1', role: 'COLLABORATOR' } as any);
+    mockedGetToken.mockResolvedValue({ sub: '1', role: 'COLLABORATOR' } as { sub: string; role: string });
     const req = createMockRequest('/admin/dashboard');
     const response = await middleware(req);
     expect(response?.status).toBe(403);
@@ -71,7 +71,7 @@ describe('middleware', () => {
     mockedGetToken.mockResolvedValue({
       sub: '1',
       role: 'GENERAL_MANAGER',
-    } as any);
+    } as { sub: string; role: string });
     const req = createMockRequest('/admin/dashboard');
     const response = await middleware(req);
     expect(response).toEqual(NextResponse.next());
