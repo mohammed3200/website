@@ -78,3 +78,10 @@ prisma/dev.db
 # AI 
 .continue
 .qodo
+
+# Email test outputs
+tests/outgoing/*.json
+!tests/outgoing/.gitkeep
+
+# Keep the .gitkeep file
+tests/outgoing/.gitkeep
