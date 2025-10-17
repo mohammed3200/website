@@ -1,4 +1,9 @@
 ├── components/
+├── docs/
+│   └── email/
+│       ├── discovery_summary.json (11.3 KB)
+│       ├── email_integration_plan.md (27.3 KB)
+│       └── email_readme.md (6.8 KB)
 ├── messages/
 │   ├── ar.json (4.5 KB)
 │   └── en.json (3.5 KB)
@@ -20,9 +25,11 @@
 │   │   │   └── migration.sql (0.7 KB)
 │   │   ├── 20250708215942_initial_migration/
 │   │   │   └── migration.sql (5.4 KB)
+│   │   ├── 20251006192103_add_email_tables/
+│   │   │   └── migration.sql (8.5 KB)
 │   │   └── migration_lock.toml (0.1 KB)
 │   ├── schema.dev.prisma.txt (11.3 KB)
-│   ├── schema.prisma (10.1 KB)
+│   ├── schema.prisma (10.6 KB)
 │   ├── seed-rbac.ts (5.1 KB)
 │   └── seed.ts (1.0 KB)
 ├── public/
@@ -104,9 +111,6 @@
 │           ├── telegram.svg (1.2 KB)
 │           ├── whatsapp.svg (1.5 KB)
 │           └── x.svg (0.7 KB)
-├── scripts/
-│   ├── test-cit-email-v2.cjs (11.8 KB)
-│   └── test-google-workspace.cjs (9.0 KB)
 ├── src/
 │   ├── app/
 │   │   ├── [locale]/
@@ -169,7 +173,7 @@
 │   │   │   └── page.tsx (0.4 KB)
 │   │   ├── api/
 │   │   │   ├── [[...route]]/
-│   │   │   │   └── route.ts (0.6 KB)
+│   │   │   │   └── route.ts (1.6 KB)
 │   │   │   └── auth/
 │   │   │       └── [...nextauth]/
 │   │   │           └── route.ts (0.1 KB)
@@ -296,15 +300,15 @@
 │   │   │   ├── hooks/
 │   │   │   │   └── use-collaborator-id.ts (0.2 KB)
 │   │   │   ├── server/
-│   │   │   │   └── route.ts (10.6 KB)
+│   │   │   │   └── route.ts (11.0 KB)
 │   │   │   ├── constants.ts (2.6 KB)
 │   │   │   ├── schemas.ts (6.0 KB)
 │   │   │   └── types.ts (2.1 KB)
 │   │   ├── email/
 │   │   │   ├── api/
-│   │   │   │   └── use-email-hooks.ts (8.0 KB)
+│   │   │   │   └── use-email-hooks.ts (0.0 KB)
 │   │   │   └── server/
-│   │   │       └── route.ts (14.5 KB)
+│   │   │       └── route.ts (0.0 KB)
 │   │   ├── Faqs/
 │   │   │   ├── components/
 │   │   │   │   ├── FaqItem.tsx (1.3 KB)
@@ -355,10 +359,13 @@
 │   │   ├── request.ts (0.7 KB)
 │   │   └── routing.ts (0.5 KB)
 │   ├── lib/
+│   │   ├── email/
+│   │   │   ├── transports/
+│   │   │   │   └── nodemailer.ts (1.0 KB)
+│   │   │   └── service.ts (17.7 KB)
 │   │   ├── auth.ts (1.0 KB)
 │   │   ├── cache.ts (0.3 KB)
 │   │   ├── db.ts (0.3 KB)
-│   │   ├── mail.ts (1.9 KB)
 │   │   ├── rbac.ts (9.8 KB)
 │   │   ├── rpc.ts (0.2 KB)
 │   │   ├── security.ts (0.8 KB)
@@ -372,21 +379,21 @@
 │   ├── middleware.ts (3.4 KB)
 │   └── routes.ts (1.8 KB)
 ├── tests/
-│   ├── admin-middleware.test.ts (2.5 KB)
-│   ├── jest.config.ts (0.4 KB)
-│   ├── jest.setup.ts (0.1 KB)
-│   └── tsconfig.jest.json (0.2 KB)
-├── bun.lock (317.9 KB)
-├── CIT_EMAIL_SOLUTION.md (5.1 KB)
+│   ├── email/
+│   │   └── email-service.test.ts (8.9 KB)
+│   ├── outgoing/
+│   └── admin-middleware.test.ts (2.5 KB)
+├── bun.lock (370.8 KB)
 ├── components.json (0.4 KB)
 ├── CONTRIBUTING.md (2.6 KB)
 ├── eslint.config.js (1.4 KB)
-├── jest.config.cjs (0.3 KB)
+├── jest.config.ts (6.5 KB)
+├── jest.setup.ts (0.0 KB)
 ├── LICENSE (0.8 KB)
 ├── MIGRATION_GUIDE.md (8.1 KB)
 ├── next-env.d.ts (0.2 KB)
 ├── next.config.ts (0.4 KB)
-├── package.json (3.9 KB)
+├── package.json (4.0 KB)
 ├── postcss.config.mjs (0.1 KB)
 ├── project-structure.txt (18.1 KB)
 ├── README.md (5.8 KB)
