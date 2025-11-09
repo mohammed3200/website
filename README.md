@@ -1,4 +1,4 @@
-# Misurata Center for Entrepreneurship & Business Incubators
+# Center for Entrepreneurship & Business Incubators - Misurata
 
 **Affiliated with Misurata College of Industrial Technology**
 
@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="./public/assets/icons/college.png" alt="Misurata College Logo" width="150" />
-  <img src="./public/assets/icons/logo.svg" alt="Misurata Center for Entrepreneurship & Business Incubators Logo" width="150" />
+  <img src="./public/assets/icons/logo.svg" alt="Center for Entrepreneurship & Business Incubators - Misurata Logo" width="150" />
 </p>
 
 ## Table of Contents
