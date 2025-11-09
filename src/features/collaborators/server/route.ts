@@ -1,15 +1,18 @@
+import z from 'zod';
 import { Hono } from 'hono';
-import { zValidator } from '@hono/zod-validator';
 import { v4 as uuidv4 } from 'uuid';
+import { zValidator } from '@hono/zod-validator';
+
+import { auth } from '@/auth';
+import { db } from '@/lib/db';
+
+import { RecordStatus } from '@/features/collaborators/types';
 import {
   createJoiningCompaniesCollaboratorSchemaServer,
   statusUpdateSchema,
-} from '../schemas';
-import { db } from '@/lib/db';
-import { RecordStatus } from '../types';
-import { emailService } from '@/lib/email/service';
-import { auth } from '@/auth';
-import z from 'zod';
+} from '@/features/collaborators/schemas';
+
+import { emailService } from '@/lib/email/service'; 
 
 const app = new Hono()
   // Public endpoint - only approved and visible collaborators
@@ -142,24 +145,7 @@ const app = new Hono()
           imageId = imageRecord.id;
         }
 
-        // FIRST: Create the collaborator
-        const collaborator = await db.collaborator.create({
-          data: {
-            id: uuidv4(),
-            companyName,
-            primaryPhoneNumber,
-            optionalPhoneNumber: optionalPhoneNumber || null,
-            email,
-            location: location || null,
-            site: site || null,
-            industrialSector,
-            specialization,
-            experienceProvided: experienceProvided || null,
-            machineryAndEquipment: machineryAndEquipment || null,
-            imageId,
-          },
-        });
-
+        
         // Create media records helper
         const createMediaRecords = async (
           files: File[],
@@ -181,16 +167,16 @@ const app = new Hono()
                 return db.experienceProvidedMedia.create({
                   data: {
                     id: uuidv4(),
-                    media: mediaRecord.id, // Reference media ID
-                    collaboratorId: collaborator.id, // Use the created collaborator ID
+                    media: mediaRecord.id,
+                    collaboratorId: collaborator.id,
                   },
                 });
               } else {
                 return db.machineryAndEquipmentMedia.create({
                   data: {
                     id: uuidv4(),
-                    media: mediaRecord.id, // Reference media ID
-                    collaboratorId: collaborator.id, // Use the created collaborator ID
+                    media: mediaRecord.id,
+                    collaboratorId: collaborator.id,
                   },
                 });
               }
@@ -208,6 +194,24 @@ const app = new Hono()
           await createMediaRecords(machineryAndEquipmentMedia, 'machinery');
         }
 
+        // FIRST: Create the collaborator
+        const collaborator = await db.collaborator.create({
+          data: {
+            id: uuidv4(),
+            companyName,
+            primaryPhoneNumber,
+            optionalPhoneNumber: optionalPhoneNumber || null,
+            email,
+            location: location || null,
+            site: site || null,
+            industrialSector,
+            specialization,
+            experienceProvided: experienceProvided || null,
+            machineryAndEquipment: machineryAndEquipment || null,
+            imageId,
+          },
+        });
+
         const url = new URL(c.req.url);
         const pathSegments = url.pathname.split('/');
         const lang =
@@ -215,18 +219,24 @@ const app = new Hono()
             ? pathSegments[1]
             : 'en';
 
-        // Send confirmation emails
+        // Send confirmation email using new email service
         try {
-          await emailService.sendSubmissionConfirmation(
+          const emailResult = await emailService.sendSubmissionConfirmation(
             'collaborator',
             {
               id: collaborator.id,
               companyName: collaborator.companyName,
               email: collaborator.email,
-              createdAt: collaborator.createdAt,
             },
-            lang as 'ar' | 'en', // You can make this dynamic based on user preference
+            lang as 'ar' | 'en',
           );
+
+          // FIXME: create table for log email
+          if (emailResult.success) {
+            console.log('✅ Confirmation email sent successfully:', emailResult.messageId);
+          } else {
+            console.error('❌ Failed to send confirmation email:', emailResult.error);
+          }
         } catch (emailError) {
           // Log email error but don't fail the submission
           console.error('Failed to send confirmation email:', emailError);
@@ -286,14 +296,14 @@ const app = new Hono()
           where: { id: collaboratorId },
           data: {
             status: validatedData.status,
-            isVisible: validatedData.status === 'APPROVED', // Make visible if approved
+            isVisible: validatedData.status === 'APPROVED',
             updatedAt: new Date(),
           },
         });
 
-        // Send status update email
+        // ✅ Send status update email using new email service
         try {
-          await emailService.sendStatusUpdate(
+          const emailResult = await emailService.sendStatusUpdate(
             'collaborator',
             {
               id: collaborator.id,
@@ -307,6 +317,12 @@ const app = new Hono()
               locale: validatedData.locale,
             },
           );
+
+          if (emailResult.success) {
+            console.log('✅ Status update email sent successfully:', emailResult.messageId);
+          } else {
+            console.error('❌ Failed to send status update email:', emailResult.error);
+          }
         } catch (emailError) {
           console.error('Failed to send status update email:', emailError);
           // Continue even if email fails
