@@ -3,6 +3,18 @@ import nodemailer from 'nodemailer';
 import { createNodemailerTransport } from "@/lib/email/transports/nodemailer";
 import { db } from '@/lib/db';
 import { EmailStatus } from '@prisma/client';
+import {
+  renderSubmissionConfirmation,
+  renderStatusUpdate,
+  renderPasswordReset,
+  renderWelcome,
+  renderTwoFactorAuth,
+  getSubmissionConfirmationSubject,
+  getStatusUpdateSubject,
+  getPasswordResetSubject,
+  getWelcomeSubject,
+  getTwoFactorAuthSubject,
+} from './templates';
 
 export interface EmailOptions {
   to: string;
@@ -121,8 +133,46 @@ class EmailService {
     },
     locale: 'ar' | 'en' = 'en'
   ): Promise<SendResult> {
+    try {
+      const recipientName = type === 'collaborator' ? data.companyName : data.name;
+
+      // Render template using React Email
+      const html = await renderSubmissionConfirmation({
+        name: recipientName || (locale === 'ar' ? 'شريك عزيز' : 'Valued Partner'),
+        type,
+        locale,
+        submissionId: data.id,
+      });
+
+      const subject = getSubmissionConfirmationSubject(type, locale);
+
+      return this.sendEmail({
+        to: data.email,
+        subject,
+        html,
+        locale,
+      });
+    } catch (error) {
+      console.error('Error rendering submission confirmation:', error);
+      // Fallback to old method if React Email fails
+      return this.sendSubmissionConfirmationFallback(type, data, locale);
+    }
+  }
+
+  /**
+   * Fallback method using old HTML generation
+   */
+  private async sendSubmissionConfirmationFallback(
+    type: 'collaborator' | 'innovator',
+    data: {
+      id: string;
+      name?: string;
+      companyName?: string;
+      email: string;
+    },
+    locale: 'ar' | 'en' = 'en'
+  ): Promise<SendResult> {
     const isArabic = locale === 'ar';
-    
     const subject = isArabic
       ? type === 'collaborator'
         ? 'تم استلام طلب التعاون'
@@ -132,7 +182,6 @@ class EmailService {
         : 'Innovation Request Received';
 
     const recipientName = type === 'collaborator' ? data.companyName : data.name;
-
     const html = this.generateSubmissionConfirmationHTML(
       recipientName || 'Valued Partner',
       type,
@@ -151,6 +200,54 @@ class EmailService {
    * Send status update email (approval/rejection)
    */
   async sendStatusUpdate(
+    type: 'collaborator' | 'innovator',
+    data: {
+      id: string;
+      name?: string;
+      companyName?: string;
+      email: string;
+    },
+    status: 'approved' | 'rejected',
+    options?: {
+      reason?: string;
+      nextSteps?: string[];
+      locale?: 'ar' | 'en';
+    }
+  ): Promise<SendResult> {
+    const locale = options?.locale || 'en';
+    
+    try {
+      const recipientName = type === 'collaborator' ? data.companyName : data.name;
+
+      // Render template using React Email
+      const html = await renderStatusUpdate({
+        name: recipientName || (locale === 'ar' ? 'شريك عزيز' : 'Valued Partner'),
+        type,
+        status,
+        locale,
+        reason: options?.reason,
+        nextSteps: options?.nextSteps,
+      });
+
+      const subject = getStatusUpdateSubject(status, locale);
+
+      return this.sendEmail({
+        to: data.email,
+        subject,
+        html,
+        locale,
+      });
+    } catch (error) {
+      console.error('Error rendering status update:', error);
+      // Fallback to old method if React Email fails
+      return this.sendStatusUpdateFallback(type, data, status, options);
+    }
+  }
+
+  /**
+   * Fallback method for status update
+   */
+  private async sendStatusUpdateFallback(
     type: 'collaborator' | 'innovator',
     data: {
       id: string;
@@ -193,6 +290,117 @@ class EmailService {
       html,
       locale,
     });
+  }
+
+  /**
+   * Send password reset email
+   */
+  async sendPasswordReset(
+    data: {
+      name: string;
+      email: string;
+      resetLink: string;
+    },
+    locale: 'ar' | 'en' = 'en',
+    expiresIn?: string
+  ): Promise<SendResult> {
+    try {
+      const html = await renderPasswordReset({
+        name: data.name,
+        resetLink: data.resetLink,
+        locale,
+        expiresIn: expiresIn || (locale === 'ar' ? 'ساعة واحدة' : '1 hour'),
+      });
+
+      const subject = getPasswordResetSubject(locale);
+
+      return this.sendEmail({
+        to: data.email,
+        subject,
+        html,
+        locale,
+      });
+    } catch (error) {
+      console.error('Error sending password reset:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to send password reset',
+      };
+    }
+  }
+
+  /**
+   * Send welcome email
+   */
+  async sendWelcome(
+    data: {
+      name: string;
+      email: string;
+      role?: string;
+      loginLink?: string;
+    },
+    locale: 'ar' | 'en' = 'en'
+  ): Promise<SendResult> {
+    try {
+      const html = await renderWelcome({
+        name: data.name,
+        role: data.role,
+        loginLink: data.loginLink,
+        locale,
+      });
+
+      const subject = getWelcomeSubject(locale);
+
+      return this.sendEmail({
+        to: data.email,
+        subject,
+        html,
+        locale,
+      });
+    } catch (error) {
+      console.error('Error sending welcome email:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to send welcome email',
+      };
+    }
+  }
+
+  /**
+   * Send 2FA code email
+   */
+  async send2FA(
+    data: {
+      name: string;
+      email: string;
+      code: string;
+    },
+    locale: 'ar' | 'en' = 'en',
+    expiresIn?: string
+  ): Promise<SendResult> {
+    try {
+      const html = await renderTwoFactorAuth({
+        name: data.name,
+        code: data.code,
+        locale,
+        expiresIn: expiresIn || (locale === 'ar' ? '10 دقائق' : '10 minutes'),
+      });
+
+      const subject = getTwoFactorAuthSubject(locale);
+
+      return this.sendEmail({
+        to: data.email,
+        subject,
+        html,
+        locale,
+      });
+    } catch (error) {
+      console.error('Error sending 2FA code:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to send 2FA code',
+      };
+    }
   }
 
   /**
