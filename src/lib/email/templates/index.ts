@@ -4,6 +4,7 @@ import StatusUpdate from './StatusUpdate';
 import PasswordReset from './PasswordReset';
 import Welcome from './Welcome';
 import TwoFactorAuth from './TwoFactorAuth';
+import EmailVerification from './EmailVerification';
 
 export interface SubmissionConfirmationData {
   name: string;
@@ -38,6 +39,13 @@ export interface WelcomeData {
 export interface TwoFactorAuthData {
   name: string;
   code: string;
+  locale?: 'ar' | 'en';
+  expiresIn?: string;
+}
+
+export interface EmailVerificationData {
+  name: string;
+  verificationLink: string;
   locale?: 'ar' | 'en';
   expiresIn?: string;
 }
@@ -83,6 +91,15 @@ export async function renderTwoFactorAuth(
   data: TwoFactorAuthData,
 ): Promise<string> {
   return render(TwoFactorAuth(data));
+}
+
+/**
+ * Render email verification template
+ */
+export async function renderEmailVerification(
+  data: EmailVerificationData,
+): Promise<string> {
+  return render(EmailVerification(data));
 }
 
 /**
@@ -152,10 +169,20 @@ export function getTwoFactorAuthSubject(locale: 'ar' | 'en' = 'en'): string {
     : '🔐 Your Verification Code';
 }
 
+/**
+ * Get email subject for email verification
+ */
+export function getEmailVerificationSubject(locale: 'ar' | 'en' = 'en'): string {
+  return locale === 'ar'
+    ? '✉️ تأكيد البريد الإلكتروني'
+    : '✉️ Email Verification';
+}
+
 export {
   SubmissionConfirmation,
   StatusUpdate,
   PasswordReset,
   Welcome,
   TwoFactorAuth,
+  EmailVerification,
 };

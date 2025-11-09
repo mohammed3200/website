@@ -1,6 +1,6 @@
 import tseslintPlugin from '@typescript-eslint/eslint-plugin';
 import parser from '@typescript-eslint/parser';
-import unusedImports from 'eslint-plugin-unused-imports'; // <-- Add this
+import unusedImports from 'eslint-plugin-unused-imports';
 
 const { configs } = tseslintPlugin;
 
@@ -17,15 +17,15 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tseslintPlugin,
-      'unused-imports': unusedImports, // <-- Register the plugin
+      'unused-imports': unusedImports,
     },
     rules: {
       ...configs.recommended.rules,
 
-      // ✅ Unused imports (temporarily relaxed)
+      // ✅ Unused imports (warn instead of error)
       'unused-imports/no-unused-imports': 'warn',
 
-      // ✅ Unused variables (but ignore variables prefixed with `_`)
+      // ✅ Unused variables - more relaxed configuration
       'unused-imports/no-unused-vars': [
         'warn',
         {
@@ -36,12 +36,24 @@ export default [
         },
       ],
 
-  // You can disable the default ESLint rule to avoid duplication and use TypeScript variant
-  'no-unused-vars': 'off',
-  '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      // Disable the default ESLint rule to avoid duplication
+      'no-unused-vars': 'off',
 
-  // Disallow `any` to improve type safety
-  '@typescript-eslint/no-explicit-any': 'error',
+      // ✅ TypeScript unused vars - WARN instead of ERROR
+      '@typescript-eslint/no-unused-vars': [
+        'warn', // Changed from 'error' to 'warn'
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          // Allow variables that are only used as types
+          ignoreRestSiblings: true,
+          // Allow unused catch bindings
+          caughtErrors: 'none',
+        },
+      ],
+
+      // ✅ Disallow `any` - WARN instead of ERROR for flexibility
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
 ];

@@ -1,6 +1,6 @@
 // src/lib/email/service.ts
 import nodemailer from 'nodemailer';
-import { createNodemailerTransport } from "@/lib/email/transports/nodemailer";
+import { createNodemailerTransport } from '@/lib/email/transports/nodemailer';
 import { db } from '@/lib/db';
 import { EmailStatus } from '@prisma/client';
 import {
@@ -9,11 +9,13 @@ import {
   renderPasswordReset,
   renderWelcome,
   renderTwoFactorAuth,
+  renderEmailVerification,
   getSubmissionConfirmationSubject,
   getStatusUpdateSubject,
   getPasswordResetSubject,
   getWelcomeSubject,
   getTwoFactorAuthSubject,
+  getEmailVerificationSubject,
 } from './templates';
 
 export interface EmailOptions {
@@ -41,10 +43,8 @@ class EmailService {
 
   private initializeTransport() {
     // Check if SMTP credentials are available
-    const hasSmtpCredentials = 
-      process.env.SMTP_HOST && 
-      process.env.SMTP_USER && 
-      process.env.SMTP_PASS;
+    const hasSmtpCredentials =
+      process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
 
     if (hasSmtpCredentials) {
       try {
@@ -52,7 +52,9 @@ class EmailService {
         this.isTestMode = false;
         console.log('✅ Email service initialized with SMTP transport');
       } catch (error) {
-        console.warn('⚠️ Failed to initialize SMTP transport, falling back to test mode');
+        console.warn(
+          '⚠️ Failed to initialize SMTP transport, falling back to test mode',
+        );
         console.error('SMTP Error:', error);
         this.isTestMode = true;
       }
@@ -69,7 +71,7 @@ class EmailService {
     if (!this.transporter) {
       return {
         success: false,
-        error: 'Email transport not initialized'
+        error: 'Email transport not initialized',
       };
     }
 
@@ -99,8 +101,9 @@ class EmailService {
         messageId: info.messageId,
       };
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+
       console.error('❌ Email send error:', errorMessage);
 
       // Log failed email to database
@@ -131,14 +134,16 @@ class EmailService {
       companyName?: string;
       email: string;
     },
-    locale: 'ar' | 'en' = 'en'
+    locale: 'ar' | 'en' = 'en',
   ): Promise<SendResult> {
     try {
-      const recipientName = type === 'collaborator' ? data.companyName : data.name;
+      const recipientName =
+        type === 'collaborator' ? data.companyName : data.name;
 
       // Render template using React Email
       const html = await renderSubmissionConfirmation({
-        name: recipientName || (locale === 'ar' ? 'شريك عزيز' : 'Valued Partner'),
+        name:
+          recipientName || (locale === 'ar' ? 'شريك عزيز' : 'Valued Partner'),
         type,
         locale,
         submissionId: data.id,
@@ -160,6 +165,46 @@ class EmailService {
   }
 
   /**
+   * Send email verification
+   */
+  async sendEmailVerification(
+    data: {
+      name: string;
+      email: string;
+      verificationLink: string;
+    },
+    locale: 'ar' | 'en' = 'en',
+    expiresIn?: string,
+  ): Promise<SendResult> {
+    try {
+      const html = await renderEmailVerification({
+        name: data.name,
+        verificationLink: data.verificationLink,
+        locale,
+        expiresIn: expiresIn || (locale === 'ar' ? '24 ساعة' : '24 hours'),
+      });
+
+      const subject = getEmailVerificationSubject(locale);
+
+      return this.sendEmail({
+        to: data.email,
+        subject,
+        html,
+        locale,
+      });
+    } catch (error) {
+      console.error('Error sending email verification:', error);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to send email verification',
+      };
+    }
+  }
+
+  /**
    * Fallback method using old HTML generation
    */
   private async sendSubmissionConfirmationFallback(
@@ -170,7 +215,7 @@ class EmailService {
       companyName?: string;
       email: string;
     },
-    locale: 'ar' | 'en' = 'en'
+    locale: 'ar' | 'en' = 'en',
   ): Promise<SendResult> {
     const isArabic = locale === 'ar';
     const subject = isArabic
@@ -181,11 +226,12 @@ class EmailService {
         ? 'Collaboration Request Received'
         : 'Innovation Request Received';
 
-    const recipientName = type === 'collaborator' ? data.companyName : data.name;
+    const recipientName =
+      type === 'collaborator' ? data.companyName : data.name;
     const html = this.generateSubmissionConfirmationHTML(
       recipientName || 'Valued Partner',
       type,
-      locale
+      locale,
     );
 
     return this.sendEmail({
@@ -212,16 +258,18 @@ class EmailService {
       reason?: string;
       nextSteps?: string[];
       locale?: 'ar' | 'en';
-    }
+    },
   ): Promise<SendResult> {
     const locale = options?.locale || 'en';
-    
+
     try {
-      const recipientName = type === 'collaborator' ? data.companyName : data.name;
+      const recipientName =
+        type === 'collaborator' ? data.companyName : data.name;
 
       // Render template using React Email
       const html = await renderStatusUpdate({
-        name: recipientName || (locale === 'ar' ? 'شريك عزيز' : 'Valued Partner'),
+        name:
+          recipientName || (locale === 'ar' ? 'شريك عزيز' : 'Valued Partner'),
         type,
         status,
         locale,
@@ -260,11 +308,11 @@ class EmailService {
       reason?: string;
       nextSteps?: string[];
       locale?: 'ar' | 'en';
-    }
+    },
   ): Promise<SendResult> {
     const locale = options?.locale || 'en';
     const isArabic = locale === 'ar';
-    
+
     const subject = isArabic
       ? status === 'approved'
         ? '✅ تمت الموافقة على طلبك'
@@ -273,7 +321,8 @@ class EmailService {
         ? '✅ Your Request Has Been Approved'
         : '❌ Your Request Has Been Rejected';
 
-    const recipientName = type === 'collaborator' ? data.companyName : data.name;
+    const recipientName =
+      type === 'collaborator' ? data.companyName : data.name;
 
     const html = this.generateStatusUpdateHTML(
       recipientName || 'Valued Partner',
@@ -281,7 +330,7 @@ class EmailService {
       type,
       options?.reason,
       options?.nextSteps,
-      locale
+      locale,
     );
 
     return this.sendEmail({
@@ -302,7 +351,7 @@ class EmailService {
       resetLink: string;
     },
     locale: 'ar' | 'en' = 'en',
-    expiresIn?: string
+    expiresIn?: string,
   ): Promise<SendResult> {
     try {
       const html = await renderPasswordReset({
@@ -324,7 +373,10 @@ class EmailService {
       console.error('Error sending password reset:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to send password reset',
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to send password reset',
       };
     }
   }
@@ -339,7 +391,7 @@ class EmailService {
       role?: string;
       loginLink?: string;
     },
-    locale: 'ar' | 'en' = 'en'
+    locale: 'ar' | 'en' = 'en',
   ): Promise<SendResult> {
     try {
       const html = await renderWelcome({
@@ -361,7 +413,10 @@ class EmailService {
       console.error('Error sending welcome email:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to send welcome email',
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to send welcome email',
       };
     }
   }
@@ -376,7 +431,7 @@ class EmailService {
       code: string;
     },
     locale: 'ar' | 'en' = 'en',
-    expiresIn?: string
+    expiresIn?: string,
   ): Promise<SendResult> {
     try {
       const html = await renderTwoFactorAuth({
@@ -398,7 +453,8 @@ class EmailService {
       console.error('Error sending 2FA code:', error);
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Failed to send 2FA code',
+        error:
+          error instanceof Error ? error.message : 'Failed to send 2FA code',
       };
     }
   }
@@ -406,18 +462,22 @@ class EmailService {
   /**
    * Test connection to SMTP server
    */
-  async testConnection(): Promise<{ success: boolean; error?: string; provider?: string }> {
+  async testConnection(): Promise<{
+    success: boolean;
+    error?: string;
+    provider?: string;
+  }> {
     if (this.isTestMode) {
       return {
         success: true,
-        provider: 'test-transport'
+        provider: 'test-transport',
       };
     }
 
     if (!this.transporter) {
       return {
         success: false,
-        error: 'Transport not initialized'
+        error: 'Transport not initialized',
       };
     }
 
@@ -425,13 +485,13 @@ class EmailService {
       await this.transporter.verify();
       return {
         success: true,
-        provider: process.env.EMAIL_PROVIDER || 'smtp'
+        provider: process.env.EMAIL_PROVIDER || 'smtp',
       };
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Connection failed',
-        provider: process.env.EMAIL_PROVIDER || 'smtp'
+        provider: process.env.EMAIL_PROVIDER || 'smtp',
       };
     }
   }
@@ -472,11 +532,11 @@ class EmailService {
   private generateSubmissionConfirmationHTML(
     name: string,
     type: 'collaborator' | 'innovator',
-    locale: 'ar' | 'en'
+    locale: 'ar' | 'en',
   ): string {
     const isArabic = locale === 'ar';
     const dir = isArabic ? 'rtl' : 'ltr';
-    
+
     if (isArabic) {
       return `
 <!DOCTYPE html>
@@ -583,12 +643,12 @@ class EmailService {
     type: 'collaborator' | 'innovator',
     reason?: string,
     nextSteps?: string[],
-    locale: 'ar' | 'en' = 'en'
+    locale: 'ar' | 'en' = 'en',
   ): string {
     const isArabic = locale === 'ar';
     const dir = isArabic ? 'rtl' : 'ltr';
     const isApproved = status === 'approved';
-    
+
     if (isArabic) {
       return `
 <!DOCTYPE html>
@@ -617,18 +677,23 @@ class EmailService {
       <h2>عزيزي/عزيزتي ${name}،</h2>
       <div class="highlight">
         <p><strong>${isApproved ? '🎉 تمت الموافقة على طلبك!' : '😔 نأسف لإبلاغك'}</strong></p>
-        <p>${isApproved 
-          ? `يسرنا إبلاغكم بأنه تمت الموافقة على ${type === 'collaborator' ? 'طلب التعاون الخاص بكم' : 'مشروعكم الابتكاري'}!`
-          : `بعد المراجعة الدقيقة، لم نتمكن من قبول ${type === 'collaborator' ? 'طلب التعاون' : 'المشروع'} في هذا الوقت.`
+        <p>${
+          isApproved
+            ? `يسرنا إبلاغكم بأنه تمت الموافقة على ${type === 'collaborator' ? 'طلب التعاون الخاص بكم' : 'مشروعكم الابتكاري'}!`
+            : `بعد المراجعة الدقيقة، لم نتمكن من قبول ${type === 'collaborator' ? 'طلب التعاون' : 'المشروع'} في هذا الوقت.`
         }</p>
       </div>
       ${reason ? `<p><strong>السبب:</strong> ${reason}</p>` : ''}
-      ${nextSteps && nextSteps.length > 0 ? `
+      ${
+        nextSteps && nextSteps.length > 0
+          ? `
         <p><strong>الخطوات القادمة:</strong></p>
         <ul>
-          ${nextSteps.map(step => `<li>${step}</li>`).join('')}
+          ${nextSteps.map((step) => `<li>${step}</li>`).join('')}
         </ul>
-      ` : ''}
+      `
+          : ''
+      }
       <p>نقدر اهتمامكم ونتطلع ${isApproved ? 'للعمل معكم' : 'لفرص تعاون مستقبلية'}!</p>
       <p>مع أطيب التحيات،<br><strong>فريق مركز مصراتة لريادة الأعمال</strong></p>
     </div>
@@ -667,18 +732,23 @@ class EmailService {
       <h2>Dear ${name},</h2>
       <div class="highlight">
         <p><strong>${isApproved ? '🎉 Your Request Has Been Approved!' : '😔 We Regret to Inform You'}</strong></p>
-        <p>${isApproved 
-          ? `We are pleased to inform you that your ${type === 'collaborator' ? 'collaboration request' : 'innovative project'} has been approved!`
-          : `After careful review, we were unable to accept your ${type === 'collaborator' ? 'collaboration request' : 'project'} at this time.`
+        <p>${
+          isApproved
+            ? `We are pleased to inform you that your ${type === 'collaborator' ? 'collaboration request' : 'innovative project'} has been approved!`
+            : `After careful review, we were unable to accept your ${type === 'collaborator' ? 'collaboration request' : 'project'} at this time.`
         }</p>
       </div>
       ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
-      ${nextSteps && nextSteps.length > 0 ? `
+      ${
+        nextSteps && nextSteps.length > 0
+          ? `
         <p><strong>Next Steps:</strong></p>
         <ul>
-          ${nextSteps.map(step => `<li>${step}</li>`).join('')}
+          ${nextSteps.map((step) => `<li>${step}</li>`).join('')}
         </ul>
-      ` : ''}
+      `
+          : ''
+      }
       <p>We appreciate your interest and look forward to ${isApproved ? 'working with you' : 'future collaboration opportunities'}!</p>
       <p>Best regards,<br><strong>Misurata Entrepreneurship Center Team</strong></p>
     </div>

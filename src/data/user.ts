@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import { db } from "@/lib/db";
+import { db } from '@/lib/db';
 
 export const getUserByEmail = async (email: string) => {
   try {
