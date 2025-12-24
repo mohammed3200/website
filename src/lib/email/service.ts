@@ -33,7 +33,7 @@ export interface SendResult {
   error?: string;
 }
 
-class EmailService {
+export class EmailService {
   private transporter: nodemailer.Transporter | null = null;
   private isTestMode: boolean = false;
 
