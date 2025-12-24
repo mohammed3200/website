@@ -4,11 +4,12 @@ import { getToken } from 'next-auth/jwt';
 import { middleware } from '../src/middleware';
 // Mock with type safety
 jest.mock('next-auth/jwt', () => ({
+  __esModule: true,
   getToken: jest.fn(),
 }));
 
 // Get the mocked function with proper typing
-const mockedGetToken = jest.mocked(getToken);
+const mockedGetToken = getToken as jest.Mock;
 
 // Helper function to create a mock NextRequest
 const createMockRequest = (
@@ -36,7 +37,8 @@ describe('middleware', () => {
     mockedGetToken.mockResolvedValue({
       sub: '1',
       role: 'GENERAL_MANAGER',
-    } as { sub: string; role: string });
+      permissions: [{ resource: 'dashboard', action: 'manage' }],
+    } as any);
     const req = createMockRequest('/auth/login');
     const response = await middleware(req);
     expect(response?.status).toBe(307);
@@ -61,17 +63,25 @@ describe('middleware', () => {
   });
 
   it('returns 403 for unauthorized admin role', async () => {
-    mockedGetToken.mockResolvedValue({ sub: '1', role: 'COLLABORATOR' } as { sub: string; role: string });
+    mockedGetToken.mockResolvedValue({
+      sub: '1',
+      role: 'COLLABORATOR',
+      permissions: [{ resource: 'something', action: 'read' }],
+    } as any);
     const req = createMockRequest('/admin/dashboard');
     const response = await middleware(req);
-    expect(response?.status).toBe(403);
+    expect(response?.status).toBe(307);
+    expect(response?.headers.get('location')).toContain(
+      '/auth/error?error=AccessDenied',
+    );
   });
 
   it('allows access to admin route for authorized role', async () => {
     mockedGetToken.mockResolvedValue({
       sub: '1',
       role: 'GENERAL_MANAGER',
-    } as { sub: string; role: string });
+      permissions: [{ resource: 'dashboard', action: 'manage' }],
+    } as any);
     const req = createMockRequest('/admin/dashboard');
     const response = await middleware(req);
     expect(response).toEqual(NextResponse.next());
