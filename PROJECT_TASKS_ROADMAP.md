@@ -5,11 +5,13 @@
 
 ## Table of Contents
 1. [Task 1: Finalize Email System Templates](#task-1-finalize-email-system-templates)
-2. [Task 2: Build WhatsApp Integration System](#task-2-build-whatsapp-integration-system)
-3. [Task 3: Improve and Standardize Button Designs](#task-3-improve-and-standardize-button-designs)
-4. [Task 4: Improve Card Layouts](#task-4-improve-card-layouts)
-5. [Task 5: Integrate Email & WhatsApp for Registration Workflows](#task-5-integrate-email--whatsapp-for-registration-workflows)
-6. [Task 6: Standardize File Naming Convention](#task-6-standardize-file-naming-convention)
+2. [Task 2: Send Notification Messages to System Administrators](#task-2-send-notification-messages-to-system-administrators)
+3. [Task 3: Design and Develop Dashboard for Managers and Supervisors](#task-3-design-and-develop-dashboard-for-managers-and-supervisors)
+4. [Task 4: Improve and Standardize Button Designs](#task-4-improve-and-standardize-button-designs)
+5. [Task 5: Improve Card Layouts](#task-5-improve-card-layouts)
+6. [Task 6: Integrate Email & WhatsApp for Registration Workflows](#task-6-integrate-email--whatsapp-for-registration-workflows)
+7. [Task 7: Standardize File Naming Convention](#task-7-standardize-file-naming-convention)
+8. [Task 8: Build WhatsApp Integration System](#task-8-build-whatsapp-integration-system)
 
 ---
 
@@ -100,7 +102,275 @@ Complete and customize the existing email system templates to ensure they are pr
 
 ---
 
-## Task 2: Build WhatsApp Integration System
+## Task 2: Send Notification Messages to System Administrators
+
+### Status: 🔴 Not Started
+
+### Description
+Implement a comprehensive notification system to alert system administrators when critical events occur, such as new registrations, submissions, or system errors. Notifications will be sent via email and eventually WhatsApp (once Task 8 is complete).
+
+### Current State
+- ✅ Email infrastructure exists (`src/lib/email/service.ts`)
+- ✅ Admin user model with RBAC permissions
+- ✅ EmailLog and EmailQueue models in database
+- ❌ No automated admin notifications currently
+
+### Subtasks
+
+#### 2.1 Define Notification Events
+- [ ] New collaborator registration
+- [ ] New innovator registration
+- [ ] Submission status changes
+- [ ] System errors or failures
+- [ ] User account activities (new admin users, role changes)
+- [ ] Database backup completion
+- [ ] Security alerts (failed login attempts, suspicious activity)
+
+#### 2.2 Create Admin Notification Service
+- [ ] Create `src/lib/notifications/admin-notifications.ts`
+- [ ] Implement `notifyAdmins(event, data)` function
+- [ ] Query database for admins with notification permissions
+- [ ] Support filtering by permission type (e.g., only notify users with "collaborators:manage")
+- [ ] Queue notifications for all eligible admins
+
+#### 2.3 Email Templates for Admin Notifications
+- [ ] New registration alert template (AR/EN)
+- [ ] Submission review reminder template (AR/EN)
+- [ ] System error alert template (AR/EN)
+- [ ] Security alert template (AR/EN)
+- [ ] Daily/Weekly digest template (AR/EN)
+- [ ] Include direct links to admin dashboard actions
+
+#### 2.4 Admin Notification Preferences
+- [ ] Add notification preferences to User model
+  ```prisma
+  model User {
+    // ... existing fields
+    notificationPreferences Json? // { emailNewSubmissions: true, emailSystemErrors: true, etc. }
+  }
+  ```
+- [ ] Create admin settings page for notification preferences
+- [ ] Allow admins to enable/disable specific notification types
+- [ ] Add option for digest mode (immediate vs. daily summary)
+
+#### 2.5 Integration Points
+- [ ] Trigger notification on new collaborator registration (`/api/collaborator` route)
+- [ ] Trigger notification on new innovator registration (`/api/innovators` route)
+- [ ] Trigger notification on system errors (error handlers)
+- [ ] Add admin notification to approval/rejection workflows
+- [ ] Create scheduled job for daily/weekly digests
+
+#### 2.6 Admin Dashboard Notifications Panel
+- [ ] Create notification bell icon in admin header
+- [ ] Display unread notification count
+- [ ] Create notification dropdown/panel
+- [ ] Mark notifications as read
+- [ ] Link notifications to relevant pages
+- [ ] Store notifications in database for history
+
+#### 2.7 Database Schema Updates
+- [ ] Create `AdminNotification` model
+  ```prisma
+  model AdminNotification {
+    id          String   @id @default(cuid())
+    userId      String
+    user        User     @relation(fields: [userId], references: [id])
+    type        String   // "NEW_REGISTRATION", "SYSTEM_ERROR", etc.
+    title       String
+    message     String   @db.Text
+    data        Json?    // Additional data for the notification
+    isRead      Boolean  @default(false)
+    readAt      DateTime?
+    actionUrl   String?  // Direct link to take action
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    
+    @@index([userId, isRead])
+    @@index([createdAt])
+  }
+  ```
+- [ ] Run Prisma migration
+
+#### 2.8 Testing
+- [ ] Test notification triggers for each event type
+- [ ] Test admin preference filtering
+- [ ] Test email delivery to multiple admins
+- [ ] Test notification panel UI in dashboard
+- [ ] Test mark as read functionality
+- [ ] Test digest mode
+
+### Technical Requirements
+- Existing email service (`src/lib/email/service.ts`)
+- BullMQ for scheduled jobs (already configured)
+- Prisma ORM for database operations
+- Next.js API routes for webhook endpoints
+- React Query for real-time notification updates
+
+### Files to Create/Modify
+- `src/lib/notifications/admin-notifications.ts` (new)
+- `src/lib/email/templates/admin/` (new directory)
+- `src/app/admin/notifications/page.tsx` (new)
+- `src/app/admin/settings/notifications/page.tsx` (new)
+- `src/features/admin/components/NotificationBell.tsx` (new)
+- `src/features/collaborators/server/route.ts` (modify)
+- `src/features/innovators/server/route.ts` (modify)
+- `prisma/schema.prisma` (add AdminNotification model)
+
+### Acceptance Criteria
+- [ ] Admins receive email notifications for new registrations
+- [ ] Admins receive notifications for system errors
+- [ ] Notification preferences can be customized per admin
+- [ ] Notification panel shows recent alerts in dashboard
+- [ ] Notifications include actionable links to relevant pages
+- [ ] Both Arabic and English templates work correctly
+- [ ] Notifications are logged in database
+- [ ] Read/unread status is tracked properly
+
+---
+
+## Task 3: Design and Develop Dashboard for Managers and Supervisors
+
+### Status: 🔴 Not Started
+
+### Description
+Create a dedicated dashboard interface for managers and supervisors (non-technical admin users) that provides an intuitive overview of key metrics, pending actions, and simplified controls for common tasks.
+
+### Current State
+- ✅ RBAC system exists with Role and Permission models
+- ✅ Basic admin dashboard exists (`/admin/dashboard`)
+- ❌ Current dashboard is developer-focused, not manager-friendly
+- ❌ No role-specific dashboard views
+
+### Subtasks
+
+#### 3.1 Requirements & Design
+- [ ] Conduct user research with managers/supervisors
+- [ ] Define key metrics managers need to see
+- [ ] Create wireframes for manager dashboard
+- [ ] Design mobile-responsive layouts
+- [ ] Get stakeholder approval on designs
+
+#### 3.2 Dashboard Layout Structure
+- [ ] Create manager-specific dashboard route (`/admin/manager-dashboard`)
+- [ ] Design header with quick actions
+- [ ] Create sidebar with simplified navigation
+- [ ] Implement responsive grid layout for widgets
+- [ ] Add customizable widget arrangement
+
+#### 3.3 Key Metrics Widgets
+- [ ] **Pending Reviews Widget**
+  - Count of pending collaborator submissions
+  - Count of pending innovator submissions
+  - Quick links to review pages
+- [ ] **Recent Activity Widget**
+  - Timeline of recent registrations
+  - Recent approvals/rejections
+  - System activity log
+- [ ] **Statistics Widget**
+  - Total collaborators (approved/pending/rejected)
+  - Total innovators (approved/pending/rejected)
+  - Charts showing trends over time
+- [ ] **Quick Actions Widget**
+  - Review pending submissions
+  - Manage users
+  - View reports
+  - System settings
+
+#### 3.4 Data Visualization
+- [ ] Install charting library (Chart.js or Recharts)
+- [ ] Create line chart for registration trends
+- [ ] Create pie chart for submission statuses
+- [ ] Create bar chart for monthly/weekly comparisons
+- [ ] Add date range filters for charts
+- [ ] Export charts as images/PDFs
+
+#### 3.5 Simplified Review Interface
+- [ ] Create card-based review interface
+- [ ] One-click approve/reject buttons
+- [ ] Inline view of submission details
+- [ ] Bulk actions (approve/reject multiple)
+- [ ] Add comment/reason field for rejections
+- [ ] Show submission history
+
+#### 3.6 Reporting Features
+- [ ] Generate monthly summary reports
+- [ ] Export data to Excel/CSV
+- [ ] Create printable report templates
+- [ ] Schedule automated report emails
+- [ ] Custom date range reports
+
+#### 3.7 Role-Based Dashboard Routing
+- [ ] Detect user role on login
+- [ ] Redirect managers to manager dashboard
+- [ ] Redirect developers/admins to technical dashboard
+- [ ] Add dashboard preference in user settings
+- [ ] Allow users to switch between dashboard views
+
+#### 3.8 Mobile Optimization
+- [ ] Optimize dashboard for tablet devices
+- [ ] Create mobile-specific widget layouts
+- [ ] Implement touch-friendly controls
+- [ ] Test on various mobile devices
+- [ ] Add pull-to-refresh functionality
+
+#### 3.9 Notifications Integration
+- [ ] Display notification count on dashboard
+- [ ] Show recent notifications widget
+- [ ] Highlight urgent/high-priority items
+- [ ] Add notification sound toggle
+- [ ] Implement desktop push notifications (optional)
+
+#### 3.10 Performance Optimization
+- [ ] Implement data caching for metrics
+- [ ] Add skeleton loaders for widgets
+- [ ] Lazy load heavy components
+- [ ] Optimize database queries
+- [ ] Add pagination for large datasets
+
+### Dashboard Permissions
+Create new permission resources:
+- `dashboard:manager:view` - View manager dashboard
+- `dashboard:manager:customize` - Customize widget layout
+- `submissions:review` - Review and approve/reject submissions
+- `reports:generate` - Generate and export reports
+
+### Technical Requirements
+- Next.js App Router for dashboard pages
+- TanStack Query for data fetching
+- Recharts or Chart.js for visualizations
+- Tailwind CSS for styling
+- Framer Motion for animations (already installed)
+- React Hook Form for forms (already installed)
+
+### Files to Create
+- `src/app/admin/manager-dashboard/page.tsx` (main dashboard)
+- `src/features/admin/components/ManagerDashboard/` (component directory)
+  - `MetricsWidget.tsx`
+  - `PendingReviewsWidget.tsx`
+  - `RecentActivityWidget.tsx`
+  - `StatisticsWidget.tsx`
+  - `QuickActionsWidget.tsx`
+  - `ChartWidget.tsx`
+- `src/features/admin/api/use-dashboard-metrics.ts` (data fetching)
+- `src/app/api/admin/metrics/route.ts` (API endpoint)
+- `src/features/admin/components/ReviewInterface/` (review components)
+- `src/features/admin/components/Reports/` (reporting components)
+
+### Acceptance Criteria
+- [ ] Manager dashboard is accessible at `/admin/manager-dashboard`
+- [ ] Dashboard displays real-time metrics accurately
+- [ ] Charts and visualizations render correctly
+- [ ] Review interface allows quick approve/reject actions
+- [ ] Dashboard is responsive on mobile and tablet
+- [ ] Managers can customize widget layout
+- [ ] Role-based routing works correctly
+- [ ] Dashboard loads in under 2 seconds
+- [ ] Reports can be generated and exported
+- [ ] All text supports Arabic and English
+
+---
+
+## Task 4: Improve and Standardize Button Designs
 
 ### Status: 🔴 Not Started
 
@@ -229,7 +499,6 @@ WHATSAPP_WEBHOOK_URL="https://yourdomain.com/api/whatsapp/webhook"
 
 ---
 
-## Task 3: Improve and Standardize Button Designs
 
 ### Status: 🔴 Not Started
 
@@ -354,7 +623,7 @@ const buttonVariants = cva(
 
 ---
 
-## Task 4: Improve Card Layouts
+## Task 5: Improve Card Layouts
 
 ### Status: 🔴 Not Started
 
@@ -513,7 +782,7 @@ interface InnovatorCardProps {
 
 ---
 
-## Task 5: Integrate Email & WhatsApp for Registration Workflows
+## Task 6: Integrate Email & WhatsApp for Registration Workflows
 
 ### Status: 🔴 Not Started
 
@@ -717,7 +986,7 @@ POST /api/admin/innovator/reject/:id
 
 ---
 
-## Task 6: Standardize File Naming Convention
+## Task 7: Standardize File Naming Convention
 
 ### Status: 🔴 Not Started
 
@@ -917,13 +1186,15 @@ All dependencies are already installed according to `package.json`:
 | Task | Estimated Time | Priority |
 |------|----------------|----------|
 | Task 1: Email Templates | 8-12 hours | High |
-| Task 2: WhatsApp System | 16-24 hours | High |
-| Task 3: Button Design | 8-12 hours | Medium |
-| Task 4: Card Layouts | 12-16 hours | High |
-| Task 5: Workflow Integration | 16-20 hours | High |
-| Task 6: Naming Convention | 4-6 hours (documentation) | Low |
+| Task 2: Admin Notifications | 12-16 hours | High |
+| Task 3: Manager Dashboard | 24-32 hours | High |
+| Task 4: Button Design | 8-12 hours | Medium |
+| Task 5: Card Layouts | 12-16 hours | High |
+| Task 6: Workflow Integration | 16-20 hours | High |
+| Task 7: Naming Convention | 4-6 hours (documentation) | Low |
+| Task 8: WhatsApp System | 16-24 hours | Medium |
 
-**Total Estimated Time**: 64-90 hours
+**Total Estimated Time**: 100-138 hours
 
 ---
 
@@ -979,6 +1250,135 @@ All dependencies are already installed according to `package.json`:
 
 ---
 
-**Last Updated**: November 7, 2025  
+## Task 8: Build WhatsApp Integration System
+
+### Status: 🔴 Not Started
+
+### Description
+Build a notification system similar to the email system but using WhatsApp for instant messaging. This will provide an alternative communication channel for users who prefer WhatsApp.
+
+### Architecture Overview
+```
+┌─────────────────┐
+│ User Action     │
+│ (Registration)  │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│ RPC Handler                     │
+│ - Creates EmailQueue record     │
+│ - Creates WhatsAppQueue record  │
+└────────┬────────────────────────┘
+         │
+    ┌────┴────┐
+    ▼         ▼
+┌────────┐ ┌──────────────┐
+│ Email  │ │ WhatsApp     │
+│ Worker │ │ Worker       │
+└────────┘ └──────────────┘
+```
+
+### Subtasks
+
+#### 8.1 Research and Setup
+- [ ] Choose WhatsApp Business API provider (Twilio, Meta Cloud API, or others)
+- [ ] Create WhatsApp Business account
+- [ ] Obtain API credentials and phone number
+- [ ] Test API connection and message sending
+- [ ] Review rate limits and pricing
+
+#### 8.2 Database Schema
+- [ ] Create `WhatsAppQueue` model in Prisma schema
+  ```prisma
+  model WhatsAppQueue {
+    id          String      @id @default(cuid())
+    to          String      // Phone number in E.164 format
+    message     String      @db.Text
+    templateId  String?
+    status      QueueStatus @default(PENDING)
+    messageId   String?
+    errorMessage String?
+    sentAt      DateTime?
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+  }
+  ```
+- [ ] Create `WhatsAppLog` model for tracking
+- [ ] Create `WhatsAppTemplate` model for message templates
+- [ ] Run Prisma migration
+
+#### 8.3 WhatsApp Service Layer
+- [ ] Create `src/lib/whatsapp/service.ts` (main service)
+- [ ] Create `src/lib/whatsapp/client.ts` (API client wrapper)
+- [ ] Implement `sendMessage(to, message)` function
+- [ ] Implement `sendTemplate(to, templateId, params)` function
+- [ ] Add phone number validation (libphonenumber-js)
+- [ ] Add error handling and retry logic
+
+#### 8.4 Message Templates
+- [ ] Create submission confirmation template (Arabic/English)
+- [ ] Create approval notification template
+- [ ] Create rejection notification template
+- [ ] Create reminder template
+- [ ] Test templates with WhatsApp Business API
+
+#### 8.5 Queue Worker
+- [ ] Create `services/whatsapp-worker/worker.ts`
+- [ ] Implement BullMQ queue processing
+- [ ] Add row locking to prevent duplicate sends
+- [ ] Implement retry logic (3 attempts)
+- [ ] Log all sends to `WhatsAppLog` table
+- [ ] Add worker script to package.json: `worker:whatsapp`
+
+#### 8.6 RPC Integration
+- [ ] Create `src/lib/whatsapp/rpc/sendMessage.ts`
+- [ ] Register WhatsApp methods in RPC registry
+- [ ] Add validation with Zod schemas
+- [ ] Test RPC endpoint: `/api/rpc`
+
+#### 8.7 Testing
+- [ ] Unit tests for WhatsApp service
+- [ ] Integration tests for queue worker
+- [ ] E2E test for registration workflow
+- [ ] Test with real phone numbers
+- [ ] Test rate limiting
+
+### Technical Requirements
+- WhatsApp Business API (Twilio or Meta)
+- Phone number validation (libphonenumber-js - already installed)
+- BullMQ queue (already configured)
+- Prisma ORM for database
+
+### Environment Variables
+```env
+WHATSAPP_API_KEY="your-api-key"
+WHATSAPP_PHONE_NUMBER="+1234567890"
+WHATSAPP_API_PROVIDER="twilio" # or "meta"
+WHATSAPP_WEBHOOK_URL="https://yourdomain.com/api/whatsapp/webhook"
+```
+
+### Files to Create
+- `src/lib/whatsapp/service.ts`
+- `src/lib/whatsapp/client.ts`
+- `src/lib/whatsapp/templates/`
+- `src/lib/whatsapp/rpc/sendMessage.ts`
+- `services/whatsapp-worker/worker.ts`
+- `services/whatsapp-worker/config.ts`
+- `tests/whatsapp/` (all test files)
+- `docs/whatsapp/README.md`
+
+### Acceptance Criteria
+- [ ] WhatsApp messages send successfully via API
+- [ ] Messages are queued and processed by worker
+- [ ] Templates support both Arabic and English
+- [ ] Phone numbers are validated before sending
+- [ ] All sends are logged to database
+- [ ] Error handling works correctly
+- [ ] RPC endpoint accepts WhatsApp requests
+
+---
+
+**Last Updated**: January 11, 2025  
 **Project**: Misurata Center for Entrepreneurship & Business Incubators  
-**Version**: 1.0
+**Version**: 1.1
