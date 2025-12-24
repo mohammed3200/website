@@ -8,26 +8,28 @@ datasource db {
 }
 
 model User {
-  id                    String                 @id @default(cuid())
-  name                  String?
-  email                 String?                @unique
-  emailVerified         DateTime?
-  image                 String?
-  password              String?
-  roleId                String?
-  role                  Role?                  @relation(fields: [roleId], references: [id])
-  accounts              Account[]
-  isTwoFactorEnabled    Boolean                @default(false)
-  twoFactorConfirmation TwoFactorConfirmation?
-  invitedBy             String?                // ID of user who invited this user
-  invitedByUser         User?                  @relation("UserInvitations", fields: [invitedBy], references: [id])
-  invitedUsers          User[]                 @relation("UserInvitations")
-  userInvitations       UserInvitation[]       @relation("InvitedBy")
-  receivedInvitations   UserInvitation[]       @relation("InvitedUser")
-  lastLoginAt           DateTime?
-  isActive              Boolean                @default(true)
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
+  id                      String                 @id @default(cuid())
+  name                    String?
+  email                   String?                @unique
+  emailVerified           DateTime?
+  image                   String?
+  password                String?
+  roleId                  String?
+  role                    Role?                  @relation(fields: [roleId], references: [id])
+  accounts                Account[]
+  isTwoFactorEnabled      Boolean                @default(false)
+  twoFactorConfirmation   TwoFactorConfirmation?
+  invitedBy               String?                // ID of user who invited this user
+  invitedByUser           User?                  @relation("UserInvitations", fields: [invitedBy], references: [id])
+  invitedUsers            User[]                 @relation("UserInvitations")
+  userInvitations         UserInvitation[]       @relation("InvitedBy")
+  receivedInvitations     UserInvitation[]       @relation("InvitedUser")
+  notifications           AdminNotification[]    @relation("UserNotifications")
+  notificationPreferences Json?                  // { emailNewSubmissions: true, emailSystemErrors: true, etc. }
+  lastLoginAt             DateTime?
+  isActive                Boolean                @default(true)
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
 
   @@index([email])
   @@index([roleId])
@@ -380,4 +382,33 @@ enum EmailTemplateCategory {
   REJECTION_NOTIFICATION
   SYSTEM
   MARKETING
+}
+
+// Admin Notification model for Task 2
+model AdminNotification {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // "NEW_REGISTRATION", "SYSTEM_ERROR", "SECURITY_ALERT", etc.
+  title       String
+  message     String   @db.Text
+  data        Json?    // Additional data for the notification
+  isRead      Boolean  @default(false)
+  readAt      DateTime?
+  actionUrl   String?  // Direct link to take action
+  priority    NotificationPriority @default(NORMAL)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@index([type])
+  @@index([priority])
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
 }
