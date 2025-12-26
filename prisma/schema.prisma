@@ -130,20 +130,30 @@ model News {
 }
 
 model Innovator {
-  id                 String           @id @default(cuid()) // Fixed for MySQL
+  id                 String                @id @default(cuid()) // Fixed for MySQL
   name               String
   imageId            String?
   email              String
   phone              String
+  country            String                // NEW: Country from dropdown
+  city               String                // NEW: City/Address (free text)
+  specialization     String                // NEW: Scientific field specialization
   projectTitle       String
   projectDescription String?
   objective          String?
   stageDevelopment   StageDevelopment
-  status             RecordStatus     @default(PENDING)
-  isVisible          Boolean          @default(false)
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  emailLogs          EmailLog[]       @relation("InnovatorEmails")
+  status             RecordStatus          @default(PENDING)
+  isVisible          Boolean               @default(false)
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  emailLogs          EmailLog[]            @relation("InnovatorEmails")
+  projectFiles       InnovatorProjectFile[] @relation("InnovatorFiles")
+
+  @@index([email])
+  @@index([phone])
+  @@index([status])
+  @@index([country])
+  @@index([specialization])
 }
 
 model Collaborator {
@@ -412,3 +422,22 @@ enum NotificationPriority {
   HIGH
   URGENT
 }
+
+// Innovator Project Files
+model InnovatorProjectFile {
+  id           String     @id @default(cuid())
+  innovatorId  String
+  innovator    Innovator  @relation("InnovatorFiles", fields: [innovatorId], references: [id], onDelete: Cascade)
+  fileName     String
+  fileType     String     // MIME type (application/pdf, image/jpeg, etc.)
+  fileSize     Int        // Size in bytes
+  mediaId      String     @unique // Reference to Media table for binary storage
+  description  String?    @db.Text // Optional file description
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  
+  @@index([innovatorId])
+  @@index([fileType])
+  @@index([createdAt])
+}
+
