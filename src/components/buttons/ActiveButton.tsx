@@ -10,13 +10,14 @@ import { BackGroundEffect } from "@/constants"
 
 
 
-interface ActiveButtonProps {
+type ActiveButtonProps = {
   children: React.ReactNode;
   onClick: () => void;
   className?: string;
   containerClassName?: string;
   icon?: string;
-}
+  disabled?: boolean
+} & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const ActiveButton = ({
   children,
@@ -24,6 +25,7 @@ export const ActiveButton = ({
   className,
   containerClassName,
   icon,
+  disabled = false,
 }: ActiveButtonProps) => {
     const { isArabic } = useLanguage();
   return (
@@ -41,11 +43,12 @@ export const ActiveButton = ({
     >
       <button
         className={cn(
-          "flex justify-center items-center h-full bg-gradient-to-r from-[#fe7921] to-[#fe7011] w-full cursor-pointer px-5 py-2 relative rounded-full",
+          "w-full h-full flex justify-center items-center  bg-radial-[at_50%_50%] from-orange-300 to-orange-600 to-75% cursor-pointer px-5 py-2 relative rounded-full",
           isArabic ? "flex-row" : "flex-row-reverse",
           containerClassName,
         )}
         onClick={onClick}
+        disabled={disabled}
       >
         <div>{children}</div>
         {icon && (

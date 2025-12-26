@@ -33,7 +33,7 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({
         {...props}
         type="submit"
         className={cn(
-            "font-din-regular text-base bg-gradient-to-r from-[#fe7921] to-[#fe7011] px-4 py-3 pl-[0.9em] flex items-center border-none rounded-full overflow-hidden transition-all duration-200 cursor-pointer",
+            "font-din-regular text-base bg-radial-[at_50%_50%] from-orange-300 to-orange-600 to-75% px-4 py-3 pl-[0.9em] flex items-center border-none rounded-full overflow-hidden transition-all duration-200 cursor-pointer",
             className,
             { "opacity-50 cursor-not-allowed": isLoading }
         )}
