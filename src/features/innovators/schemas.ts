@@ -21,6 +21,15 @@ export const createCreativeRegistrationSchema = (
       .email({
         message: t("InvalidEmail"),
       }),
+    country: z.string().min(1, { message: t("RequiredField") }),
+    city: z
+      .string()
+      .min(1, { message: t("RequiredField") })
+      .max(100, { message: t("CityTooLong") }),
+    specialization: z
+      .string()
+      .min(1, { message: t("RequiredField") })
+      .max(200, { message: t("SpecializationTooLong") }),
     image: z
       .union([
         z.instanceof(File),
@@ -36,6 +45,37 @@ export const createCreativeRegistrationSchema = (
       .max(1000, { message: `${t("MaximumFieldSize")} 1000` }),
     objective: z.string().optional(),
     stageDevelopment: z.nativeEnum(StageDevelopment).optional(),
+
+    // ======= Project Files =======
+    projectFiles: z
+      .array(z.instanceof(File))
+      .min(0)
+      .max(10, { message: t("MaximumFiles") })
+      .refine(
+        (files) => {
+          const maxSize = 10 * 1024 * 1024; // 10MB per file
+          return files.every(file => file.size <= maxSize);
+        },
+        { message: t("FileTooLarge") }
+      )
+      .refine(
+        (files) => {
+          const allowedTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'image/webp',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+          ];
+          return files.every(file => allowedTypes.includes(file.type));
+        },
+        { message: t("InvalidFileType") }
+      )
+      .optional(),
 
     // ======== Center Policies ========
     TermsOfUse: z
@@ -63,6 +103,15 @@ export const createCreativeRegistrationSchemaServer = z.object({
     .email({
       message: "InvalidEmail",
     }),
+  country: z.string().min(1, { message: "RequiredField" }),
+  city: z
+    .string()
+    .min(1, { message: "RequiredField" })
+    .max(100, { message: "CityTooLong" }),
+  specialization: z
+    .string()
+    .min(1, { message: "RequiredField" })
+    .max(200, { message: "SpecializationTooLong" }),
   image: z
     .union([
       z.instanceof(File),
@@ -78,6 +127,37 @@ export const createCreativeRegistrationSchemaServer = z.object({
     .max(1000, { message: "MaximumFieldSize 1000" }),
   objective: z.string().optional(),
   stageDevelopment: z.nativeEnum(StageDevelopment).optional(),
+
+  // ======= Project Files =======
+  projectFiles: z
+    .array(z.instanceof(File))
+    .min(0)
+    .max(10, { message: "MaximumFiles" })
+    .refine(
+      (files) => {
+        const maxSize = 10 * 1024 * 1024; // 10MB per file
+        return files.every(file => file.size <= maxSize);
+      },
+      { message: "FileTooLarge" }
+    )
+    .refine(
+      (files) => {
+        const allowedTypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'image/jpeg',
+          'image/jpg',
+          'image/png',
+          'image/webp',
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        ];
+        return files.every(file => allowedTypes.includes(file.type));
+      },
+      { message: "InvalidFileType" }
+    )
+    .optional(),
 
   // ======== Center Policies ========
   TermsOfUse: z.coerce

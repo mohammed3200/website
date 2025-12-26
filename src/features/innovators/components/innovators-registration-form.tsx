@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Upload, FileText } from "lucide-react";
 import { z } from "zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,7 @@ import {
 } from "@/components";
 
 import { createCreativeRegistrationSchema } from "../schemas";
-import { StagesDevelopment } from "../constants";
+import { StagesDevelopment, Countries } from "../constants";
 import { useJoiningInnovators } from "../api/use-joining-innovators";
 import { StageDevelopment } from "../types";
 
@@ -33,10 +33,12 @@ export const InnovatorsRegistrationForm = () => {
   const { mutate, isPending } = useJoiningInnovators();
   const { isArabic, isEnglish, lang } = useLanguage();
   const [fileName, setFileName] = useState<string | null>(null);
+  const [projectFiles, setProjectFiles] = useState<File[]>([]);
   const t = useTranslations("CreatorsAndInnovators");
   const tForm = useTranslations("Form");
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,10 +56,14 @@ export const InnovatorsRegistrationForm = () => {
       name: "",
       phoneNumber: "",
       email: "",
+      country: "",
+      city: "",
+      specialization: "",
       projectTitle: "",
       projectDescription: "",
       objective: "",
       stageDevelopment: StageDevelopment.STAGE,
+      projectFiles: [],
       TermsOfUse: false,
     },
   });
@@ -123,8 +129,8 @@ export const InnovatorsRegistrationForm = () => {
                                     field.value instanceof File
                                       ? URL.createObjectURL(field.value)
                                       : typeof field.value === "string"
-                                      ? field.value
-                                      : ""
+                                        ? field.value
+                                        : ""
                                   }
                                   width={250}
                                   height={250}
@@ -230,6 +236,50 @@ export const InnovatorsRegistrationForm = () => {
                       iconSrc={IconsInterface.Email}
                       iconAlt="email"
                       isEnglish
+                    />
+                    <CustomFormField
+                      fieldType={FormFieldType.SELECT}
+                      control={form.control}
+                      name="country"
+                      label={t("form.country")}
+                    >
+                      {Object.entries(Countries).map(([key, value]) => (
+                        <SelectItem
+                          key={key}
+                          value={key}
+                          dir={isArabic ? "rtl" : "ltr"}
+                        >
+                          <p className="font-din-regular base max-md:base-small">
+                            {isArabic ? value.ar : value.en}
+                          </p>
+                        </SelectItem>
+                      ))}
+                    </CustomFormField>
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="city"
+                      label={t("form.city")}
+                      placeholder={
+                        isArabic
+                          ? "المدينة، المنطقة، الشارع..."
+                          : "City, Region, Street..."
+                      }
+                      iconSrc={IconsInterface.Location}
+                      iconAlt="location"
+                    />
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="specialization"
+                      label={t("form.specialization")}
+                      placeholder={
+                        isArabic
+                          ? "المجال العلمي أو التخصص"
+                          : "Scientific field or specialization"
+                      }
+                      iconSrc={IconsInterface.Text}
+                      iconAlt="specialization"
                     />
                   </div>
                 </section>
@@ -338,6 +388,98 @@ export const InnovatorsRegistrationForm = () => {
                   ))}
                 </CustomFormField>
               </div>
+
+              {/* Project Files Upload Section */}
+              <div
+                dir={isArabic ? "rtl" : "ltr"}
+                className="w-full space-y-4"
+              >
+                <CustomFormField
+                  fieldType={FormFieldType.SKELETON}
+                  control={form.control}
+                  name="projectFiles"
+                  label={t("form.projectFiles")}
+                  renderSkeleton={(field) => (
+                    <FormControl>
+                      <div className="space-y-4">
+                        {/* Upload Area */}
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-orange-500 transition-colors bg-gray-50">
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp,.ppt,.pptx"
+                            className="hidden"
+                            onChange={(e) => {
+                              const files = Array.from(e.target.files || []);
+                              const newFiles = [...projectFiles, ...files].slice(0, 10);
+                              setProjectFiles(newFiles);
+                              field.onChange(newFiles);
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="w-full flex flex-col items-center gap-3 cursor-pointer"
+                          >
+                            <Upload className="w-12 h-12 text-orange-500" />
+                            <p className="font-din-bold text-lg text-gray-700">
+                              {t("form.uploadFiles")}
+                            </p>
+                            <p className="text-sm text-gray-500 text-center">
+                              {t("form.allowedTypes")}
+                            </p>
+                            <p className="text-xs text-gray-400">
+                              {t("form.maxFiles")} | {t("form.maxFileSize")}
+                            </p>
+                          </button>
+                        </div>
+
+                        {/* File List */}
+                        {projectFiles.length > 0 && (
+                          <div className="space-y-2">
+                            <p className="font-din-bold text-sm text-gray-700">
+                              {t("form.uploadedFiles")} ({projectFiles.length}/10)
+                            </p>
+                            <div className="space-y-2">
+                              {projectFiles.map((file, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center justify-between bg-white border border-gray-200 p-3 rounded-lg hover:border-orange-300 transition-colors"
+                                >
+                                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <FileText className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                                    <div className="min-w-0 flex-1">
+                                      <p className="font-din-regular text-sm truncate text-gray-700">
+                                        {file.name}
+                                      </p>
+                                      <p className="text-xs text-gray-500">
+                                        {(file.size / 1024 / 1024).toFixed(2)} MB
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updated = projectFiles.filter((_, i) => i !== index);
+                                      setProjectFiles(updated);
+                                      field.onChange(updated);
+                                    }}
+                                    className="p-2 hover:bg-red-50 rounded-full transition-colors flex-shrink-0"
+                                  >
+                                    <Trash2 className="w-4 h-4 text-red-500" />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </FormControl>
+                  )}
+                />
+              </div>
+
               <section className="space-y-3 my-4 max-md:w-full">
                 <div dir={isArabic ? "rtl" : "ltr"}>
                   {/* TODO: Remove Terms of user */}
@@ -352,9 +494,8 @@ export const InnovatorsRegistrationForm = () => {
                   <SubmitButton
                     isLoading={isPending}
                     dir={isArabic ? "rtl" : "ltr"}
-                    classNameContent={`max-md:items-center ${
-                      isArabic ? "flex-row-reverse" : "flex-row"
-                    }`}
+                    classNameContent={`max-md:items-center ${isArabic ? "flex-row-reverse" : "flex-row"
+                      }`}
                     className="max-md:w-full max-md:h-1/2"
                   >
                     <p className="font-din-regular text-white">{t("submit")}</p>
