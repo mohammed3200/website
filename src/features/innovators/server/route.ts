@@ -14,13 +14,21 @@ const app = new Hono().post(
       email,
       image,
       phoneNumber,
+      country,
+      city,
+      specialization,
       projectTitle,
       projectDescription,
       objective,
-      stageDevelopment
+      stageDevelopment,
+      projectFiles
     } = c.req.valid("form");
 
     try {
+      console.log("📝 Received innovator data:", {
+        name, email, phoneNumber, country, city, specialization,
+        projectTitle, hasImage: !!image, filesCount: projectFiles?.length || 0
+      });
 
       // Check for existing email
       const existingEmail = await db.innovator.findFirst({
@@ -72,6 +80,9 @@ const app = new Hono().post(
         email,
         imageId,
         phone: phoneNumber,
+        country,
+        city,
+        specialization,
         projectTitle,
         projectDescription,
         objective,
@@ -82,19 +93,82 @@ const app = new Hono().post(
         email: string,
         imageId?: string,
         phone: string,
+        country: string,
+        city: string,
+        specialization: string,
         projectTitle: string,
         projectDescription: string,
         objective?: string,
         stageDevelopment: StageDevelopment
       };
 
-      await db.innovator.create({ data });
+      const innovator = await db.innovator.create({ data });
 
+      // Process project files if any
+      if (projectFiles && Array.isArray(projectFiles) && projectFiles.length > 0) {
+        const allowedTypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'image/jpeg',
+          'image/jpg',
+          'image/png',
+          'image/webp',
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        ];
+
+        for (const file of projectFiles) {
+          if (!(file instanceof File)) continue;
+
+          // Validate file type
+          if (!allowedTypes.includes(file.type)) {
+            return c.json({
+              code: "INVALID_FILE_TYPE",
+              message: `File type ${file.type} is not allowed`
+            }, 400);
+          }
+
+          // Check file size (10MB limit)
+          if (file.size > 10 * 1024 * 1024) {
+            return c.json({
+              code: "FILE_TOO_LARGE",
+              message: `File ${file.name} exceeds 10MB limit`
+            }, 400);
+          }
+
+          // Store in Media table
+          const media = await db.media.create({
+            data: {
+              data: Buffer.from(await file.arrayBuffer()),
+              type: file.type,
+              size: file.size,
+            },
+          });
+
+          // Create InnovatorProjectFile record
+          await db.innovatorProjectFile.create({
+            data: {
+              id: uuidv4(),
+              innovatorId: innovator.id,
+              fileName: file.name,
+              fileType: file.type,
+              fileSize: file.size,
+              mediaId: media.id,
+            },
+          });
+        }
+      }
       return c.json({
         message: "The innovator has been successfully created",
       });
     } catch (error) {
-      console.log("Error Creating innovators:", error);
+      console.error("❌ Error Creating innovators:", error);
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        error
+      });
       return c.json({
         code: "SERVER_ERROR",
         message: "Failed to create innovators"
