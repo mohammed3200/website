@@ -2,12 +2,12 @@ import { Hono } from "hono";
 import { v4 as uuidv4 } from "uuid";
 import { zValidator } from "@hono/zod-validator";
 import { db } from "@/lib/db";
-import { createCreativeRegistrationSchemaServer } from "../schemas";
+import { completeRegistrationSchema } from "../schemas/step-schemas";
 import { StageDevelopment } from "@prisma/client";
 
 const app = new Hono().post(
   "/",
-  zValidator("form", createCreativeRegistrationSchemaServer),
+  zValidator("form", completeRegistrationSchema((key: string) => key)),
   async (c) => {
     const {
       name,

@@ -41,7 +41,7 @@ export const Introduction = () => {
             {t("subtitle")}
           </p>
           <ActiveButton
-            onClick={() => router.push(`/${lang}/innovators/registration`)}
+            onClick={() => router.push(`/${lang}/innovators/registration/1`)}
             className=""
           >
             <div

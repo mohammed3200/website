@@ -1,4 +1,4 @@
-import { StageDevelopment } from "./types"
+import { StageDevelopment } from "../types/types"
 
 export const StagesDevelopment = {
     [StageDevelopment.STAGE] : {
