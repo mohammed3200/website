@@ -5,6 +5,13 @@ import { Header, MobileNavigation } from "@/components";
 import { Toaster } from "@/components/ui/toaster";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { AppProviders } from "@/components/providers/app-providers";
+import { Almarai } from "next/font/google"; // Import Almarai
+
+const almarai = Almarai({
+  subsets: ["arabic"],
+  weight: ["300", "400", "700", "800"], // Select weights you need
+  variable: "--font-almarai", // Define a CSS variable
+});
 
 export const dynamic = "force-dynamic";
 
@@ -25,10 +32,11 @@ export default async function LocaleLayout({
   }
 
   const messages = await getMessages({ locale });
+  const direction = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale}>
-      <body>
+    <html lang={locale} dir={direction} suppressHydrationWarning>
+      <body className={`${almarai.variable} font-sans`}>
         <AppProviders messages={messages} locale={locale}>
           <BackgroundBeams className="-z-10" />
           <main className="flex h-screen">
@@ -37,9 +45,9 @@ export default async function LocaleLayout({
               <Header />
               <div className="main-content">{children}</div>
             </section>
-            <Toaster />
           </main>
         </AppProviders>
+        <Toaster />
       </body>
     </html>
   );

@@ -82,9 +82,10 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
-        "din-bold": ["DINNextLT-Bold", "sans-serif"],
-        "din-regular": ["DINNextLT-Regular", "sans-serif"],
+        sans: ["var(--font-almarai)", ...fontFamily.sans],
+        "din-bold": ["var(--font-almarai)", "sans-serif"], // Mapped to Almarai
+        "din-regular": ["var(--font-almarai)", "sans-serif"], // Mapped to Almarai
+        "almarai": ["var(--font-almarai)", "sans-serif"],
         "space-mono": ["SpaceMono-Regular", "monospace"],
         "outfit": ["Outfit", "sans-serif"],
       },
