@@ -1,23 +1,24 @@
 # Project Tasks Roadmap
-**Misurata Center for Entrepreneurship & Business Incubators**
+**Center for Leadership and Business Incubators - Misrata**
 
 ---
 
 ## Table of Contents
 1. [Task 1: Finalize Email System Templates](#task-1-finalize-email-system-templates)
-2. [Task 2: Send Notification Messages to System Administrators](#task-2-send-notification-messages-to-system-administrators)
-3. [Task 3: Design and Develop Dashboard for Managers and Supervisors](#task-3-design-and-develop-dashboard-for-managers-and-supervisors)
-4. [Task 4: Improve and Standardize Button Designs](#task-4-improve-and-standardize-button-designs)
-5. [Task 5: Improve Card Layouts](#task-5-improve-card-layouts)
-6. [Task 6: Integrate Email & WhatsApp for Registration Workflows](#task-6-integrate-email--whatsapp-for-registration-workflows)
-7. [Task 7: Standardize File Naming Convention](#task-7-standardize-file-naming-convention)
-8. [Task 8: Build WhatsApp Integration System](#task-8-build-whatsapp-integration-system)
+2. [Task 2: Redesign Innovators & Creators Feature](#task-2-redesign-innovators--creators-feature)
+3. [Task 3: Send Notification Messages to System Administrators](#task-3-send-notification-messages-to-system-administrators)
+4. [Task 4: Design and Develop Dashboard for Managers and Supervisors](#task-4-design-and-develop-dashboard-for-managers-and-supervisors)
+5. [Task 5: Improve and Standardize Button Designs](#task-5-improve-and-standardize-button-designs)
+6. [Task 6: Improve Card Layouts](#task-6-improve-card-layouts)
+7. [Task 7: Integrate Email & WhatsApp for Registration Workflows](#task-7-integrate-email--whatsapp-for-registration-workflows)
+8. [Task 8: Standardize File Naming Convention](#task-8-standardize-file-naming-convention)
+9. [Task 9: Build WhatsApp Integration System](#task-9-build-whatsapp-integration-system)
 
 ---
 
 ## Overview
 
-This document outlines the development tasks for enhancing the Misurata Center for Entrepreneurship & Business Incubators platform. The tasks are organized by priority and include detailed subtasks, technical requirements, and acceptance criteria.
+This document outlines the development tasks for enhancing the Center for Leadership and Business Incubators - Misrata platform. The tasks are organized by priority and include detailed subtasks, technical requirements, and acceptance criteria.
 
 **Tech Stack Reference:**
 - Frontend: Next.js 15.1.2, React 19, TypeScript, Tailwind CSS
@@ -102,7 +103,356 @@ Complete and customize the existing email system templates to ensure they are pr
 
 ---
 
-## Task 2: Send Notification Messages to System Administrators
+## Task 2: Redesign Innovators & Creators Feature
+
+### Status: 🔴 Not Started
+
+### Priority: 🔴 HIGH
+
+### Description
+Redesign and enhance the Innovators & Creators feature to include additional required fields and support for multiple project file uploads. This task involves database schema changes, form redesign, file upload functionality, and backend API updates.
+
+### Current State
+- ✅ Basic Innovator model exists with: name, email, phone, projectTitle, projectDescription, objective, stageDevelopment
+- ✅ Registration form implemented (`innovators-registration-form.tsx`)
+- ✅ Single image upload supported via `imageId`
+- ❌ Missing: location, specialization fields
+- ❌ Missing: Multiple project file upload support (PDF, Word, JPG, PNG, etc.)
+
+### Required New Fields
+1. **Location** - Innovator's geographical location (string)
+2. **Specialization** - Area of expertise/industry sector (string)
+3. **Project Files** - Multiple file uploads (documents, images, presentations)
+
+### Subtasks
+
+#### 2.1 Database Schema Updates
+- [ ] Update `Innovator` model in `prisma/schema.prisma`:
+  ```prisma
+  model Innovator {
+    id                 String                @id @default(cuid())
+    name               String
+    imageId            String?
+    email              String
+    phone              String
+    location           String                // NEW: Geographical location
+    specialization     String                // NEW: Area of expertise
+    projectTitle       String
+    projectDescription String?
+    objective          String?
+    stageDevelopment   StageDevelopment
+    status             RecordStatus          @default(PENDING)
+    isVisible          Boolean               @default(false)
+    createdAt          DateTime              @default(now())
+    updatedAt          DateTime              @updatedAt
+    emailLogs          EmailLog[]            @relation("InnovatorEmails")
+    projectFiles       InnovatorProjectFile[] // NEW: Multiple file uploads
+    
+    @@index([email])
+    @@index([status])
+    @@index([specialization])
+  }
+  ```
+
+- [ ] Create new `InnovatorProjectFile` model:
+  ```prisma
+  model InnovatorProjectFile {
+    id           String     @id @default(cuid())
+    innovatorId  String
+    innovator    Innovator  @relation(fields: [innovatorId], references: [id], onDelete: Cascade)
+    fileName     String
+    fileType     String     // MIME type (application/pdf, image/jpeg, etc.)
+    fileSize     Int        // Size in bytes
+    mediaId      String     // Reference to Media table for file storage
+    description  String?    // Optional file description
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
+    
+    @@index([innovatorId])
+    @@index([fileType])
+  }
+  ```
+
+- [ ] Run Prisma migration:
+  ```bash
+  npx prisma migrate dev --name add_innovator_fields_and_files
+  ```
+
+#### 2.2 Update Validation Schemas
+- [ ] Update `src/features/innovators/schemas.ts`:
+  ```typescript
+  export const createCreativeRegistrationSchema = (
+    t: (key: string) => string
+  ) => {
+    return z.object({
+      // ====== Basic information ======
+      name: z.string().min(1, { message: t("RequiredField") }),
+      phoneNumber: z
+        .string()
+        .min(1, { message: t("RequiredField") })
+        .refine(
+          (phone) => typeof phone === "string" && /^\+[\d\s-]{6,15}$/.test(phone),
+          { message: t("InvalidPhoneNumber") }
+        ),
+      email: z
+        .string()
+        .min(1, { message: t("RequiredField") })
+        .email({ message: t("InvalidEmail") }),
+      location: z.string().min(1, { message: t("RequiredField") }), // NEW
+      specialization: z.string().min(1, { message: t("RequiredField") }), // NEW
+      image: z
+        .union([
+          z.instanceof(File),
+          z.string().transform((value) => (value === "" ? undefined : value)),
+        ])
+        .optional(),
+
+      // ======= Project Details ======
+      projectTitle: z.string().min(1, { message: t("RequiredField") }),
+      projectDescription: z
+        .string()
+        .min(1, { message: t("RequiredField") })
+        .max(1000, { message: `${t("MaximumFieldSize")} 1000` }),
+      objective: z.string().optional(),
+      stageDevelopment: z.nativeEnum(StageDevelopment).optional(),
+      
+      // ======= Project Files ======= NEW
+      projectFiles: z
+        .array(z.instanceof(File))
+        .min(0)
+        .max(10, { message: t("MaximumFiles") })
+        .refine(
+          (files) => {
+            const maxSize = 10 * 1024 * 1024; // 10MB per file
+            return files.every(file => file.size <= maxSize);
+          },
+          { message: t("FileTooLarge") }
+        )
+        .refine(
+          (files) => {
+            const allowedTypes = [
+              'application/pdf',
+              'application/msword',
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+              'image/jpeg',
+              'image/jpg',
+              'image/png',
+              'application/vnd.ms-powerpoint',
+              'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+            ];
+            return files.every(file => allowedTypes.includes(file.type));
+          },
+          { message: t("InvalidFileType") }
+        )
+        .optional(),
+
+      // ======== Center Policies ========
+      TermsOfUse: z
+        .boolean()
+        .default(false)
+        .refine((value) => value === true, {
+          message: t("TermsOfUse"),
+        }),
+    });
+  };
+  ```
+
+#### 2.3 Update Registration Form Component
+- [ ] Update `src/features/innovators/components/innovators-registration-form.tsx`:
+  - [ ] Add Location input field
+  - [ ] Add Specialization input field (consider dropdown/select with predefined options)
+  - [ ] Add Project Files upload section with drag-and-drop
+  - [ ] Display file list with remove option
+  - [ ] Show file upload progress
+  - [ ] Validate file types and sizes client-side
+  - [ ] Update form layout to accommodate new fields
+
+- [ ] Add multi-file upload UI:
+  ```typescript
+  const [projectFiles, setProjectFiles] = useState<File[]>([]);
+  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setProjectFiles(prev => [...prev, ...files].slice(0, 10)); // Max 10 files
+    form.setValue('projectFiles', [...projectFiles, ...files].slice(0, 10));
+  };
+  
+  const removeFile = (index: number) => {
+    const updated = projectFiles.filter((_, i) => i !== index);
+    setProjectFiles(updated);
+    form.setValue('projectFiles', updated);
+  };
+  ```
+
+#### 2.4 Update API Endpoints
+- [ ] Update `src/features/innovators/server/*.ts` or API route:
+  - [ ] Handle new location and specialization fields
+  - [ ] Process multiple file uploads
+  - [ ] Store files in Media table
+  - [ ] Create InnovatorProjectFile records
+  - [ ] Validate file types server-side
+  - [ ] Handle file size limits
+
+- [ ] File upload handler example:
+  ```typescript
+  // Process project files
+  if (projectFiles && projectFiles.length > 0) {
+    for (const file of projectFiles) {
+      // Convert file to buffer
+      const buffer = await file.arrayBuffer();
+      
+      // Store in Media table
+      const media = await db.media.create({
+        data: {
+          data: Buffer.from(buffer),
+          type: file.type,
+          size: file.size,
+        },
+      });
+      
+      // Create InnovatorProjectFile record
+      await db.innovatorProjectFile.create({
+        data: {
+          innovatorId: innovator.id,
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: file.size,
+          mediaId: media.id,
+        },
+      });
+    }
+  }
+  ```
+
+#### 2.5 Update Card Component
+- [ ] Update `src/features/innovators/components/card-innovators.tsx`:
+  - [ ] Display location with icon
+  - [ ] Display specialization badge
+  - [ ] Add file count indicator
+  - [ ] Update card layout for new fields
+
+#### 2.6 Add Specialization Options
+- [ ] Create specialization constants in `src/features/innovators/constants.ts`:
+  ```typescript
+  export const Specializations = {
+    TECHNOLOGY: { ar: "التكنولوجيا", en: "Technology" },
+    HEALTHCARE: { ar: "الرعاية الصحية", en: "Healthcare" },
+    EDUCATION: { ar: "التعليم", en: "Education" },
+    AGRICULTURE: { ar: "الزراعة", en: "Agriculture" },
+    MANUFACTURING: { ar: "التصنيع", en: "Manufacturing" },
+    SERVICES: { ar: "الخدمات", en: "Services" },
+    ENERGY: { ar: "الطاقة", en: "Energy" },
+    ENVIRONMENT: { ar: "البيئة", en: "Environment" },
+    FINANCE: { ar: "المالية", en: "Finance" },
+    OTHER: { ar: "أخرى", en: "Other" },
+  };
+  ```
+
+#### 2.7 Add Translations
+- [ ] Update locale files (`messages/ar.json`, `messages/en.json`):
+  ```json
+  {
+    "CreatorsAndInnovators": {
+      "form": {
+        "location": "Location / الموقع",
+        "specialization": "Specialization / التخصص",
+        "projectFiles": "Project Files / ملفات المشروع",
+        "uploadFiles": "Upload Files / تحميل الملفات",
+        "maxFiles": "Maximum 10 files / حد أقصى 10 ملفات",
+        "allowedTypes": "Allowed: PDF, Word, JPG, PNG, PPT / مسموح: PDF, Word, JPG, PNG, PPT",
+        "fileTooLarge": "File size must not exceed 10MB / حجم الملف يجب ألا يتجاوز 10 ميجابايت",
+        "invalidFileType": "Invalid file type / نوع ملف غير صالح",
+        "maxFilesReached": "Maximum files reached / تم الوصول للحد الأقصى من الملفات"
+      }
+    }
+  }
+  ```
+
+#### 2.8 Admin Dashboard Updates
+- [ ] Update admin innovators list to show new fields
+- [ ] Add file download functionality in admin view
+- [ ] Add file preview modal (for images/PDFs)
+- [ ] Update filter options to include location and specialization
+
+#### 2.9 Testing
+- [ ] Test form validation with new fields
+- [ ] Test file upload (single and multiple files)
+- [ ] Test file type validation
+- [ ] Test file size validation
+- [ ] Test with different file types (PDF, DOCX, images)
+- [ ] Test file removal functionality
+- [ ] Test database migrations
+- [ ] Test API endpoints with new fields
+- [ ] Test bilingual support for new fields
+- [ ] Test admin dashboard file viewing
+
+### Technical Requirements
+- Next.js file upload handling (FormData)
+- React Dropzone for drag-and-drop (already installed)
+- File type validation (file-type package - already installed)
+- Prisma migrations
+- Media storage in database (LongBlob)
+
+### Files to Modify/Create
+- `prisma/schema.prisma` - Update Innovator model, create InnovatorProjectFile model
+- `src/features/innovators/schemas.ts` - Add new field validations
+- `src/features/innovators/components/innovators-registration-form.tsx` - Add fields and file upload UI
+- `src/features/innovators/components/card-innovators.tsx` - Display new fields
+- `src/features/innovators/constants.ts` - Add specialization options
+- `src/features/innovators/server/*.ts` - Update API to handle files
+- `messages/ar.json`, `messages/en.json` - Add translations
+- `src/app/admin/innovators/*` - Update admin views
+
+### File Upload UI Mockup
+```
+┌─────────────────────────────────────────┐
+│ Project Files                           │
+│                                         │
+│ ┌───────────────────────────────────┐   │
+│ │  📎 Drag & Drop files here       │   │
+│ │     or click to browse            │   │
+│ │                                    │   │
+│ │  Allowed: PDF, Word, JPG, PNG, PPT│   │
+│ │  Max: 10 files, 10MB each         │   │
+│ └───────────────────────────────────┘   │
+│                                         │
+│ Uploaded Files:                         │
+│ [ ] proposal.pdf (2.5 MB)      [X]      │
+│ [ ] design.jpg (1.2 MB)        [X]      │
+│ [ ] budget.xlsx (500 KB)       [X]      │
+│                                         │
+│ 3 of 10 files uploaded                  │
+└─────────────────────────────────────────┘
+```
+
+### Acceptance Criteria
+- [ ] Location field is required and validated
+- [ ] Specialization field is required with predefined options
+- [ ] Multiple files can be uploaded (up to 10 files)
+- [ ] Only allowed file types are accepted (PDF, Word, JPG, PNG, PPT)
+- [ ] File size validation (max 10MB per file)
+- [ ] Files are stored securely in database
+- [ ] Files can be downloaded from admin dashboard
+- [ ] Form validation works for all new fields
+- [ ] Bilingual support for all new fields
+- [ ] Database migrations run successfully
+- [ ] Existing innovator records remain intact
+- [ ] Admin can view and manage files
+- [ ] File upload progress is displayed
+- [ ] Files can be removed before submission
+
+### Time Estimate
+**12-16 hours**
+- Database schema (2 hours)
+- Form updates (3-4 hours)
+- File upload functionality (4-5 hours)
+- API updates (2-3 hours)
+- Admin dashboard updates (2 hours)
+- Testing (2-3 hours)
+
+---
+
+## Task 3: Send Notification Messages to System Administrators
 
 ### Status: 🔴 Not Started
 
@@ -228,7 +578,7 @@ Implement a comprehensive notification system to alert system administrators whe
 
 ---
 
-## Task 3: Design and Develop Dashboard for Managers and Supervisors
+## Task 4: Design and Develop Dashboard for Managers and Supervisors
 
 ### Status: 🔴 Not Started
 
@@ -370,7 +720,7 @@ Create new permission resources:
 
 ---
 
-## Task 4: Improve and Standardize Button Designs
+## Task 5: Improve and Standardize Button Designs
 
 ### Status: 🔴 Not Started
 
@@ -623,7 +973,7 @@ const buttonVariants = cva(
 
 ---
 
-## Task 5: Improve Card Layouts
+## Task 6: Improve Card Layouts
 
 ### Status: 🔴 Not Started
 
@@ -782,7 +1132,7 @@ interface InnovatorCardProps {
 
 ---
 
-## Task 6: Integrate Email & WhatsApp for Registration Workflows
+## Task 7: Integrate Email & WhatsApp for Registration Workflows
 
 ### Status: 🔴 Not Started
 
@@ -986,7 +1336,7 @@ POST /api/admin/innovator/reject/:id
 
 ---
 
-## Task 7: Standardize File Naming Convention
+## Task 8: Standardize File Naming Convention
 
 ### Status: 🔴 Not Started
 
@@ -1250,7 +1600,7 @@ All dependencies are already installed according to `package.json`:
 
 ---
 
-## Task 8: Build WhatsApp Integration System
+## Task 9: Build WhatsApp Integration System
 
 ### Status: 🔴 Not Started
 
