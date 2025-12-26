@@ -1,6 +1,6 @@
 {
   "Navigation": {
-    "home":"الصفحة الرئيسية",
+    "home": "الصفحة الرئيسية",
     "entrepreneurship": "الريادة",
     "incubators": "الحاضنات",
     "projects": "المشاريع",
@@ -9,13 +9,13 @@
     "contact": "تواصل معنا"
   },
   "News": {
-    "NoNews" : "لا يوجد أخبار أو الإعلانات"
+    "NoNews": "لا يوجد أخبار أو الإعلانات"
   },
-  "ui" : {
-    "readMore" : "اقرأ المزيد",
-    "back" : "عودة"
+  "ui": {
+    "readMore": "اقرأ المزيد",
+    "back": "عودة"
   },
-  "Error" : {
+  "Error": {
     "title": "حدث خطأ ما",
     "message": "نحن نواجه مشكلة مؤقتة. يرجى المحاولة مرة أخرى لاحقًا."
   },
@@ -23,67 +23,81 @@
     "title": "الاستفسار يعزز الفهم، فهو يؤدي إلى رؤى قيمة.",
     "subtitle": "لديك أسئلة، ولدينا إجابات."
   },
-  "collaboratingPartners":{
-    "title" : "شعارنا.",
+  "collaboratingPartners": {
+    "title": "شعارنا.",
     "subtitle": "التكامل بين الخبرات الاكاديمية والعملية.",
-    "registration":"انضم إلينا",
+    "registration": "انضم إلينا",
     "submit": "إرسال الطلب",
-    "form" : {
-      "title":"الهدف من الشراكة.",
-      "subtitle":"دمج الخبرات الأكاديمية مع الخبرات العملية و التعاون في تطوير الصناعة المحلية.",
+    "form": {
+      "title": "الهدف من الشراكة.",
+      "subtitle": "دمج الخبرات الأكاديمية مع الخبرات العملية و التعاون في تطوير الصناعة المحلية.",
       "CompanyNameField": "اسم الشركة (المؤسسة)",
-      "MainImage":"اختر أو حدد صورتك الرئيسية",
-      "PrimaryPhone" : "رقم الهاتف الأساسي ",
-      "OptionalPhone" : "رقم الهاتف الإضافي (اختياري)",
-      "Email" : "البريد الإلكتروني",
-      "Location" : "الموقع (المكان)",
-      "Website" : "رابط موقعك (اختياري)",
-      "IndustrialSector" : "القطاع الصناعي",
-      "Specialization" : "المجال التخصصي",
-      "CompanyCapabilities" : "إمكانيات الشركة",
-      "ExperienceProvided" : "الخبرة المقدمة (اختياري)",
-      "ExperienceProvidedMedia" : "ملفات ،صور ،فيديوهات ... (اختياري)",
-      "MachineryAndEquipment":"الالآت و المعدات (اختياري)",
-      "MachineryAndEquipmentMedia":"ملفات ،صور ،فيديوهات ... (اختياري)",
-      "TermsOfUse" : "أوافق على شروط الاستخدام",
-      "RequestSuccess" : "تم إرسال طلب التعاون بنجاح",
-      "RequestFailed" : "فشل إرسال طلب التعاون"
+      "MainImage": "اختر أو حدد صورتك الرئيسية",
+      "PrimaryPhone": "رقم الهاتف الأساسي ",
+      "OptionalPhone": "رقم الهاتف الإضافي (اختياري)",
+      "Email": "البريد الإلكتروني",
+      "Location": "الموقع (المكان)",
+      "Website": "رابط موقعك (اختياري)",
+      "IndustrialSector": "القطاع الصناعي",
+      "Specialization": "المجال التخصصي",
+      "CompanyCapabilities": "إمكانيات الشركة",
+      "ExperienceProvided": "الخبرة المقدمة (اختياري)",
+      "ExperienceProvidedMedia": "ملفات ،صور ،فيديوهات ... (اختياري)",
+      "MachineryAndEquipment": "الالآت و المعدات (اختياري)",
+      "MachineryAndEquipmentMedia": "ملفات ،صور ،فيديوهات ... (اختياري)",
+      "TermsOfUse": "أوافق على شروط الاستخدام",
+      "RequestSuccess": "تم إرسال طلب التعاون بنجاح",
+      "RequestFailed": "فشل إرسال طلب التعاون"
     }
   },
-  "CreatorsAndInnovators" : {
-    "title" : "من الفكرة إلى الإبداع: أطلق العنان لإمكاناتك",
-    "subtitle":"انضم إلينا في مركز ريادة الأعمال وحاضنات الأعمال لتحويل أفكارك إلى مشاريع ناجحة",
-    "registration":"ابتكر معنا",
+  "CreatorsAndInnovators": {
+    "title": "من الفكرة إلى الإبداع: أطلق العنان لإمكاناتك",
+    "subtitle": "انضم إلينا في مركز ريادة الأعمال وحاضنات الأعمال لتحويل أفكارك إلى مشاريع ناجحة",
+    "registration": "ابتكر معنا",
     "submit": "إرسال الطلب",
     "form": {
       "name": "الاسم الرباعي",
       "Image": "اختر أو حدد صورة الملف الشخصي",
-      "phone":"رقم الهاتف",
-      "email":"البريد الالكتروني",
-      "projectTitle":"عنوان المشروع أو الفكرة",
-      "projectDescription":"وصف المشروع",
-      "objective":"أهداف المشروع...(اختياري)",
-      "stageDevelopment" : "تقدم المشروع",
-      "TermsOfUse" : "أوافق على شروط الاستخدام",
-      "RequestSuccess" : "تم إرسال طلبك بنجاح",
-      "RequestFailed" : "فشل إرسال طلبك"
+      "phone": "رقم الهاتف",
+      "email": "البريد الالكتروني",
+      "country": "الدولة",
+      "city": "المدينة / العنوان",
+      "specialization": "التخصص العلمي",
+      "projectTitle": "عنوان المشروع أو الفكرة",
+      "projectDescription": "وصف المشروع",
+      "objective": "أهداف المشروع...(اختياري)",
+      "stageDevelopment": "تقدم المشروع",
+      "projectFiles": "ملفات المشروع (اختياري)",
+      "uploadFiles": "انقر لتحميل الملفات",
+      "allowedTypes": "مسموح: PDF, Word, JPG, PNG, PPT",
+      "maxFiles": "حد أقصى 10 ملفات",
+      "maxFileSize": "حد أقصى 10 ميجابايت لكل ملف",
+      "uploadedFiles": "الملفات المحملة",
+      "TermsOfUse": "أوافق على شروط الاستخدام",
+      "RequestSuccess": "تم إرسال طلبك بنجاح",
+      "RequestFailed": "فشل إرسال طلبك"
     }
   },
-  "Form" : {
-    "RequiredField":"الحقل مطلوب",
-    "MaximumFieldSize":"تجاوز الحجم المتاح",
-    "InvalidPhoneNumber" : "رقم الهاتف غير صحيح",
-    "InvalidEmail" : "البريد الإلكتروني غير صحيح",
-    "InvalidURL" : "عنوان URL غير صالح",
-    "InvalidMediaType" :"غير مسموح بهذا النوع من الملفات",
-    "InvalidFileSize" : "حجم الملف أكبر من 50 ميجا بايت",
-    "TermsOfUse" : "يجب الموافقة على شروط الاستخدام",
+  "Form": {
+    "RequiredField": "الحقل مطلوب",
+    "MaximumFieldSize": "تجاوز الحجم المتاح",
+    "CityTooLong": "المدينة يجب أن تكون أقل من 100 حرف",
+    "SpecializationTooLong": "التخصص يجب أن يكون أقل من 200 حرف",
+    "MaximumFiles": "الحد الأقصى 10 ملفات",
+    "FileTooLarge": "حجم الملف يتجاوز 10 ميجابايت",
+    "InvalidFileType": "نوع ملف غير صالح",
+    "InvalidPhoneNumber": "رقم الهاتف غير صحيح",
+    "InvalidEmail": "البريد الإلكتروني غير صحيح",
+    "InvalidURL": "عنوان URL غير صالح",
+    "InvalidMediaType": "غير مسموح بهذا النوع من الملفات",
+    "InvalidFileSize": "حجم الملف أكبر من 50 ميجا بايت",
+    "TermsOfUse": "يجب الموافقة على شروط الاستخدام",
     "EmailExists": "البريد الإلكتروني موجود مسبقاً",
     "PhoneExists": "رقم الهاتف موجود مسبقاً"
   },
   "Footer": {
     "copyright": "جميع الحقوق © 2025 محفوظة  لمركز الريادة وحاضنات الاعمال.",
-    "privacyPolicy" : "سياسة الخصوصية",
-    "termsOfUse" : "شروط الاستخدام"
+    "privacyPolicy": "سياسة الخصوصية",
+    "termsOfUse": "شروط الاستخدام"
   }
 }
