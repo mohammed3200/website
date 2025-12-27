@@ -5,7 +5,7 @@ import Image from "next/image";
 import "photoswipe/dist/photoswipe.css";
 import { Gallery, Item } from "react-photoswipe-gallery";
 
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 import { useNewsId } from "@/features/news/hooks";
 import { Back } from "@/components/buttons";
 import { MockNewsData } from "@/mock";

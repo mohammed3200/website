@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { strategics } from "@/constants";
 import { Back } from "@/components/buttons";
@@ -37,7 +37,7 @@ const PageStrategicPlan = () => {
                 ? StrategicPlan?.arabic.title
                 : StrategicPlan?.english.title}
             </CardTitle>
-            <div className="w-[60vw] h-1 rounded-full bg-primary"/>
+            <div className="w-[60vw] h-1 rounded-full bg-primary" />
             <CardDescription className="font-din-regular text-ms md:text-base">
               {isArabic
                 ? StrategicPlan?.arabic.caption
