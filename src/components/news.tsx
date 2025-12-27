@@ -8,7 +8,7 @@ import Autoplay from "embla-carousel-autoplay";
 
 import { MockNewsData } from "@/mock";
 
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { truncateString } from "@/lib/utils";
 
@@ -75,25 +75,25 @@ export const News = () => {
                           sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw" // Responsive sizes for mobile and desktop
                           className="h-auto object-cover rounded-md"
                         />
-                      ) : 
+                      ) :
                         item.photoGallery.length > 0 ? (
                           <Image
-                          src={item.photoGallery[0]}
-                          alt={item.title}
-                          width={300} // Default width
-                          height={300} // Default height
-                          sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw" // Responsive sizes for mobile and desktop
-                          className="h-auto object-cover rounded-md"
-                        />
-                        ): (
+                            src={item.photoGallery[0]}
+                            alt={item.title}
+                            width={300} // Default width
+                            height={300} // Default height
+                            sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw" // Responsive sizes for mobile and desktop
+                            className="h-auto object-cover rounded-md"
+                          />
+                        ) : (
                           <Image
-                          src={DefaultImage.NewsDefault}
-                          alt={item.title}
-                          width={150} // Default width
-                          height={150} // Default height
-                          sizes="(max-width: 640px) 90vw, (min-width: 641px) 45vw" // Responsive sizes for mobile and desktop
-                          className="h-auto w-full object-cover rounded-lg"
-                        />
+                            src={DefaultImage.NewsDefault}
+                            alt={item.title}
+                            width={150} // Default width
+                            height={150} // Default height
+                            sizes="(max-width: 640px) 90vw, (min-width: 641px) 45vw" // Responsive sizes for mobile and desktop
+                            className="h-auto w-full object-cover rounded-lg"
+                          />
                         )
                       }
                     </div>
@@ -108,16 +108,16 @@ export const News = () => {
                         {isEnglish ? item.title_en ?? item.title : item.title}
                       </p>
                       {item.description || item.description_en ? (
-                        <p
+                        <div
                           className="font-din-regular text-light-100 text-sm md:text-base break-words"
                           dir={isEnglish ? "ltr" : "rtl"}
                         >
                           {isEnglish && item.description_en
-                            ? truncateString(item.description_en,97)
-                            : truncateString(item.description,97) ||
-                              truncateString(item.description_en,97)}
+                            ? truncateString(item.description_en, 97)
+                            : truncateString(item.description, 97) ||
+                            truncateString(item.description_en, 97)}
                           <ReadMore href={`${lang}/News/${item.id}`} />
-                        </p>
+                        </div>
                       ) : (
                         <ReadMore href={`${lang}/News/${item.id}`} />
                       )}
@@ -158,15 +158,14 @@ export const News = () => {
       ) : (
         <Card className="w-full h-full bg-transparent">
           <div
-            className={`w-full flex ${
-              isEnglish ? "flex-row" : "flex-row-reverse"
-            } items-center justify-center
+            className={`w-full flex ${isEnglish ? "flex-row" : "flex-row-reverse"
+              } items-center justify-center
           gap-2 text-light-200`}
             dir={isEnglish ? "ltr" : "rtl"}
           >
-            <p className="font-din-bold text-base md:text-lg break-words">
+            <div className="font-din-bold text-base md:text-lg break-words">
               {t("NoNews")}
-            </p>
+            </div>
             <CircleOff className="size-10" />
           </div>
         </Card>

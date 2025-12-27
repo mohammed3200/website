@@ -6,7 +6,7 @@ import { Trash2, CircleCheck } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { useDropzone } from "react-dropzone";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import {
   cn,
@@ -114,8 +114,8 @@ export const UploadFiles = ({
                 ? "ضع الملفات هنا..."
                 : "Drop the files here..."
               : isArabic
-              ? "اسحب الملفات وأفلِتها هنا، أو انقر لتحديد الملفات"
-              : "Drag and drop files here, or click to select files"}
+                ? "اسحب الملفات وأفلِتها هنا، أو انقر لتحديد الملفات"
+                : "Drag and drop files here, or click to select files"}
           </p>
           {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
         </div>

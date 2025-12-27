@@ -6,7 +6,7 @@ import Link from "next/link";
 
 import { MainLogo } from "@/constants";
 
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { TranslateButton, NavBar } from "@/components";
 

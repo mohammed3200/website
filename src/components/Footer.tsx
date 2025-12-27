@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { useTranslations } from "next-intl";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { Separator } from "./ui/separator";
 import { socials } from "@/constants";
@@ -17,7 +17,7 @@ export const Footer = () => {
   return (
     <footer dir={isArabic ? "rtl" : "ltr"}>
       <div className="w-full flex flex-col items-center">
-      <Separator className="mt-2 md:mt-4 bg-primary w-[80vw]" />
+        <Separator className="mt-2 md:mt-4 bg-primary w-[80vw]" />
         <div className="py-2 px-10 w-full">
           <div className="flex w-full max-md:flex-col">
             <div className="small-compact flex flex-1 flex-wrap items-center justify-center gap-5">

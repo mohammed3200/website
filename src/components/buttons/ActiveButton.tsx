@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { BackGroundEffect } from "@/constants"
 
@@ -27,7 +27,7 @@ export const ActiveButton = ({
   icon,
   disabled = false,
 }: ActiveButtonProps) => {
-    const { isArabic } = useLanguage();
+  const { isArabic } = useLanguage();
   return (
     <div
       className={cn(

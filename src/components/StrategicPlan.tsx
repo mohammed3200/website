@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ArrowUpLeft, ArrowUpRight } from "lucide-react";
 
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 import { strategics } from "@/constants";
 
 import { WobbleCard } from "./ui/wobble-card";
@@ -43,8 +43,8 @@ export const StrategicPlan = () => {
             ? "bg-primary text-white shadow-md shadow-primary"
             : "bg-neutral-200 hover:bg-primary hover:text-white hover:shadow-md hover:shadow-primary"
           : isSelected
-          ? "bg-primary text-white shadow-md shadow-primary"
-          : "bg-neutral-200 max-md:border-2 max-md:shadow-md max-md:shadow-[#e99]";
+            ? "bg-primary text-white shadow-md shadow-primary"
+            : "bg-neutral-200 max-md:border-2 max-md:shadow-md max-md:shadow-[#e99]";
 
         return (
           <WobbleCard

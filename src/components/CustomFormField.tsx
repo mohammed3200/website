@@ -7,6 +7,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "./ui/input";
 import { Control, FieldValues, ControllerRenderProps } from "react-hook-form";
@@ -43,6 +44,8 @@ interface CustomProps<T extends FieldValues = FieldValues> {
   children?: React.ReactNode;
   renderSkeleton?: (field: ControllerRenderProps<T>) => React.ReactNode;
   isEnglish?: boolean;
+  className?: string;
+  description?: string;
 }
 
 const RenderField = <T extends FieldValues = FieldValues>({
@@ -69,13 +72,13 @@ const RenderField = <T extends FieldValues = FieldValues>({
         <div className="flex rounded-md border shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)]">
           {iconSrc && (
             <div className="flex border border-gray-200 rounded items-center justify-center px-2">
-            <Image
-              src={iconSrc}
-              height={30}
-              width={30}
-              alt={iconAlt || "icon"}
-              className="object-cover"
-            />
+              <Image
+                src={iconSrc}
+                height={30}
+                width={30}
+                alt={iconAlt || "icon"}
+                className="object-cover"
+              />
             </div>
           )}
           <FormControl>
@@ -94,7 +97,7 @@ const RenderField = <T extends FieldValues = FieldValues>({
           <Textarea
             {...field}
             placeholder={placeholder}
-            className="placeholder:text-gray-400 font-din-regular focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base text-sm"
+            className={`placeholder:text-gray-400 font-din-regular focus-visible:ring-0 focus-visible:ring-offset-0 md:text-base text-sm ${props.className || ""}`}
             disabled={props.disabled}
           />
         </FormControl>
@@ -174,7 +177,7 @@ const RenderField = <T extends FieldValues = FieldValues>({
 };
 
 export const CustomFormField = <T extends FieldValues = FieldValues>(props: CustomProps<T>) => {
-  const { control, fieldType, name, label, isEnglish } = props;
+  const { control, fieldType, name, label, isEnglish, description } = props;
   return (
     <FormField
       control={control}
@@ -189,6 +192,12 @@ export const CustomFormField = <T extends FieldValues = FieldValues>(props: Cust
           )}
 
           <RenderField field={field} props={props} isEnglish={isEnglish} />
+
+          {description && (
+            <FormDescription className="font-din-regular text-xs text-gray-500 mt-1">
+              {description}
+            </FormDescription>
+          )}
 
           <FormMessage className="font-din-regular" />
         </FormItem>

@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { Faqs } from "@/features/Faqs";
 

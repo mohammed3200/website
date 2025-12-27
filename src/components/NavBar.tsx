@@ -7,8 +7,8 @@ import { useMedia } from "react-use";
 import { motion } from "framer-motion";
 
 import { cn } from "@/lib/utils";
-import useLanguage from "@/hooks/uselanguage";
-import { useNavigationItems } from "@/hooks/useNavigation"; // Update this import
+import useLanguage from "@/hooks/use-language";
+import { useNavigationItems } from "@/hooks/use-navigation"; // Update this import
 
 export const NavBar = () => {
   const pathname = usePathname();

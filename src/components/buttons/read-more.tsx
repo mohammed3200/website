@@ -1,10 +1,10 @@
- 
+
 "use client";
 
 import React from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 interface ReactMoreProps {
   href: string;
@@ -14,11 +14,11 @@ export const ReadMore = ({ href }: ReactMoreProps) => {
   const t = useTranslations("ui");
   const { isArabic } = useLanguage();
   return (
-    <div className="bg-transparent" dir={isArabic ? "rtl" : "ltr"}>
+    <span className="bg-transparent" dir={isArabic ? "rtl" : "ltr"}>
       <Link href={href}>
-        <p className="font-din-regular text-primary">{t("readMore")}</p>
+        <span className="font-din-regular text-primary">{t("readMore")}</span>
       </Link>
-    </div>
+    </span>
   );
 };
 
