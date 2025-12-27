@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import  useLanguage  from "./uselanguage";
+import  useLanguage  from "./use-language";
 
 export function useNavigationItems() {
   const { lang } = useLanguage();
