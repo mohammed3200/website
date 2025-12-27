@@ -55,6 +55,8 @@
     "subtitle": "Join Us at the Entrepreneurship and Business Incubators Center to Transform Your Ideas into Successful Projects",
     "registration": "Innovate with us",
     "submit": "Submit an application",
+    "previous": "Previous",
+    "next": "Next",
     "form": {
       "name": "Full Name",
       "Image": "Choose or select a profile picture",
@@ -73,6 +75,9 @@
       "maxFiles": "Maximum 10 files",
       "maxFileSize": "Max 10MB per file",
       "uploadedFiles": "Uploaded Files",
+      "stageDevelopmentHint": "Select the current phase of your project",
+      "projectFilesHint": "Upload proposals, designs, or presentations",
+      "objectiveHint": "Define specific, measurable goals",
       "TermsOfUse": "I agree to the terms of use",
       "RequestSuccess": "Your request was sent successfully",
       "RequestFailed": "Failed to send your request"
