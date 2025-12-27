@@ -381,3 +381,63 @@ export const MockCompaniesData = [
     cooperation_interests_ar: ["استراتيجية المحتوى", "التسويق الرقمي"]
   }
 ];
+
+// TODO: writing the Mock to comply with the new data for innovators
+
+type InnovatorStage = "STAGE" | "PROTOTYPE" | "DEVELOPMENT" | "TESTING" | "RELEASED";
+
+export const MockInnovatorsData: {
+  id: string;
+  name: string;
+  image?: string;
+  projectTitle: string;
+  specialization: string;
+  stageDevelopment: InnovatorStage;
+}[] = [
+  {
+    id: "1",
+    name: "Ahmed Al-Farsi",
+    image: "https://picsum.photos/seed/innovator1/300/300",
+    projectTitle: "Smart Irrigation System",
+    specialization: "AgriTech",
+    stageDevelopment: "PROTOTYPE",
+  },
+  {
+    id: "2",
+    name: "Sarah Johnson",
+    image: "https://picsum.photos/seed/innovator2/300/300",
+    projectTitle: "AI-Powered Education Platform",
+    specialization: "EdTech",
+    stageDevelopment: "DEVELOPMENT",
+  },
+  {
+    id: "3",
+    name: "Mohamed Ali",
+    projectTitle: "Renewable Energy Storage",
+    specialization: "CleanTech",
+    stageDevelopment: "STAGE",
+  },
+  {
+    id: "4",
+    name: "Layla Hassan",
+    image: "https://picsum.photos/seed/innovator4/300/300",
+    projectTitle: "Blockchain Supply Chain",
+    specialization: "FinTech",
+    stageDevelopment: "TESTING",
+  },
+  {
+    id: "5",
+    name: "Omar Khaled",
+    projectTitle: "Remote Health Monitoring",
+    specialization: "HealthTech",
+    stageDevelopment: "RELEASED",
+  },
+  {
+    id: "6",
+    name: "Fatima Zohra",
+    image: "https://picsum.photos/seed/innovator6/300/300",
+    projectTitle: "Eco-Friendly Packaging",
+    specialization: "Sustainability",
+    stageDevelopment: "PROTOTYPE",
+  }
+];

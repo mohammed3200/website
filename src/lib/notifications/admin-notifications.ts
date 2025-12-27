@@ -158,7 +158,7 @@ async function createNotification(
         message: notificationData.message,
         actionUrl: notificationData.actionUrl,
         priority: notificationData.priority || NotificationPriority.NORMAL,
-        data: (notificationData.data || {}) as any,
+        data: (notificationData.data || {}) as Record<string, string | number | boolean | null | object>,
       },
     });
   } catch (error) {
