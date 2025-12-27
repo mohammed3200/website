@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { InterfaceImage } from "@/constants";
 import Link from "next/link";

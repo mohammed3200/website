@@ -3,12 +3,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { InterfaceImage } from "@/constants";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 
 export default function NotFound() {
   const { isArabic, lang } = useLanguage();
-  
+
   return (
     <div>
       <BackgroundBeams className="-z-10" />
