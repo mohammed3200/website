@@ -3,10 +3,19 @@
     "home": "Home",
     "entrepreneurship": "Entrepreneurship",
     "incubators": "Incubators",
-    "projects": "Projects",
-    "collaboratingPartners": "Collaborating companies",
+    "collaboratingPartners": "Collaborating Partners",
     "CreatorsAndInnovators": "Creators and Innovators",
-    "contact": "Contact Us"
+    "contact": "Contact Us",
+    "registerCompany": "Register Company",
+    "registerCompanyDesc": "Join as a collaborating partner",
+    "partnersList": "Partners List",
+    "partnersListDesc": "Browse collaborating partners",
+    "registerInnovator": "Register Innovator",
+    "registerInnovatorDesc": "Share your idea or project",
+    "innovatorsList": "Innovators List",
+    "innovatorsListDesc": "Browse projects and ideas",
+    "centerName": "Entrepreneurship & Business Incubators Center",
+    "established": "Established"
   },
   "News": {
     "NoNews": "No news or announcements"

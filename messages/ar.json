@@ -3,10 +3,19 @@
     "home": "الصفحة الرئيسية",
     "entrepreneurship": "الريادة",
     "incubators": "الحاضنات",
-    "projects": "المشاريع",
     "collaboratingPartners": "الشركات المتعاونة",
     "CreatorsAndInnovators": "المبدعون والمبتكرون",
-    "contact": "تواصل معنا"
+    "contact": "تواصل معنا",
+    "registerCompany": "تسجيل شركة",
+    "registerCompanyDesc": "انضم كشريك متعاون معنا",
+    "partnersList": "قائمة الشركاء",
+    "partnersListDesc": "تصفح الشركاء المتعاونين",
+    "registerInnovator": "تسجيل مبتكر",
+    "registerInnovatorDesc": "شارك فكرتك أو مشروعك",
+    "innovatorsList": "قائمة المبتكرين",
+    "innovatorsListDesc": "تصفح المشاريع والأفكار",
+    "centerName": "مركز الريادة وحاضنات الأعمال",
+    "established": "تأسس عام"
   },
   "News": {
     "NoNews": "لا يوجد أخبار أو الإعلانات"
