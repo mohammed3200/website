@@ -1,12 +1,15 @@
-import React from 'react';
-import { CollaboratorJoiningForm } from '@/features/collaborators/components';
+import { redirect } from "next/navigation";
 
-const Registration = () => {
-    return (
-        <div className="overflow-hidden">
-            <CollaboratorJoiningForm />
-        </div>
-    );
-};
+interface PageProps {
+    params: Promise<{
+        locale: string;
+    }>;
+}
 
-export default Registration;
+export default async function CollaboratorRegistrationPage({
+    params,
+}: PageProps) {
+    // Directly redirect to the first step
+    const { locale } = await params;
+    redirect(`/${locale}/collaborators/registration/1`);
+}

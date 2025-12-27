@@ -2,7 +2,7 @@
 
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 import { Button } from "@/components/ui/button";
 
 export default function RegistrationCompletePage() {

@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 import { useMultiStepForm } from "@/features/innovators/hooks/useMultiStepForm";
 import { useJoiningInnovators } from "@/features/innovators/api/use-joining-innovators";
 import {
@@ -13,7 +13,9 @@ import {
     ProgressIndicator,
 } from "@/features/innovators/components/multi-step";
 import { STEP_CONFIGS } from "@/features/innovators/constants/step-config";
+import { CompleteFormData } from "@/features/innovators/types/multi-step-types";
 import { Back } from "@/components";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function RegistrationStepPage() {
     const router = useRouter();
@@ -57,7 +59,7 @@ export default function RegistrationStepPage() {
         }
     }, [currentStepNumber, currentStep, totalSteps, canGoToStep, router, lang]);
 
-    const handleStepComplete = (stepData: any) => {
+    const handleStepComplete = (stepData: Partial<CompleteFormData>) => {
         updateStepData(stepData);
 
         if (currentStep === totalSteps) {
@@ -69,7 +71,7 @@ export default function RegistrationStepPage() {
             };
 
             mutate(
-                { form: completeData },
+                { form: completeData as any },
                 {
                     onSuccess: () => {
                         resetForm();
@@ -164,8 +166,18 @@ export default function RegistrationStepPage() {
                 />
 
                 {/* Step Content */}
-                <div className="bg-white rounded-lg shadow-md p-6 md:p-8">
-                    {renderStep()}
+                <div className="bg-white rounded-lg shadow-md p-6 md:p-8 overflow-hidden">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentStep}
+                            initial={{ x: isArabic ? -20 : 20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: isArabic ? 20 : -20, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                        >
+                            {renderStep()}
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
             </div>
         </div>
