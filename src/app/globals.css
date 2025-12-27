@@ -69,7 +69,7 @@ body {
 
 @font-face {
   font-family: "SpaceMono-Regular";
-  src: url("../../public/assets/fonts/SpaceMono-Regular.ttf") format("truetype");
+  src: url("/assets/fonts/SpaceMono-Regular.ttf") format("truetype");
   font-weight: normal;
   /* Specify the font weight if applicable */
   font-style: normal;
@@ -338,7 +338,7 @@ body {
 
   /* =====  REACT PHONE NUMBER INPUT OVERRIDES */
   .input-phone {
-    @apply mt-2 h-11 rounded-md px-3 shadow-[0px_2px_3px_-1px_rgba(0, 0, 0, 0.1), _0px_1px_0px_0px_rgba(25, 28, 33, 0.02), _0px_0px_0px_1px_rgba(25, 28, 33, 0.08)] bg-transparent placeholder:font-din-regular font-din-regular placeholder:text-light-100 !important;
+    @apply mt-2 h-11 rounded-md px-3 shadow-input-phone bg-transparent placeholder:font-din-regular font-din-regular placeholder:text-light-100 !important;
   }
 }
 

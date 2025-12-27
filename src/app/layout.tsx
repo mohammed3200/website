@@ -2,7 +2,14 @@ import { QueryProvider } from "@/components";
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppProviders } from "@/components/providers/app-providers"; // Adjust import path
-import { getLocale, getMessages } from "next-intl/server"; // Add next-intl imports
+import { getLocale, getMessages } from "next-intl/server";
+import { Almarai as AlmaraiGoogle } from "next/font/google";
+
+const almarai = AlmaraiGoogle({
+  subsets: ["arabic"],
+  weight: ["300", "400", "700", "800"],
+  variable: "--font-almarai",
+});
 
 // TODO: change Metadata
 export const metadata: Metadata = {
@@ -18,9 +25,11 @@ export default async function RootLayout({
   const locale = await getLocale();
   const messages = await getMessages();
 
+  const direction = locale === 'ar' ? 'rtl' : 'ltr';
+
   return (
-    <html lang="en">
-      <body>
+    <html lang={locale} dir={direction}>
+      <body className={`${almarai.variable} font-sans`}>
         <AppProviders messages={messages} locale={locale}>
           <QueryProvider>{children}</QueryProvider>
         </AppProviders>
