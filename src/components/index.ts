@@ -1,19 +1,16 @@
 export * from "./providers";
 export * from "./buttons";
 
-export * from "./Header";
-export * from "./MobileNavigation";
-export * from "./NavBar";
 export * from "./separator-gradients";
-export * from "./CustomFormField";
-export * from "./AnimatedList";
+export * from "./custom-form-field";
+export * from "./animated-list";
 export * from "./upload-files";
-export * from "./Thumbnail";
+export * from "./thumbnail";
 
-export * from "./Hero";
+export * from "./hero";
 
-export * from "./Footer";
+export * from "./footer";
 
 export * from "./news";
-export * from "./StrategicPlan";
-export * from "./Faq";
+export * from "./strategic-plan";
+export * from "./faq";
