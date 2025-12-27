@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 import type {
   CompleteFormData,
   UseMultiStepFormReturn,
@@ -211,7 +211,7 @@ export function useMultiStepForm(initialStep: number = 1): UseMultiStepFormRetur
    * Get data for a specific step
    */
   const getStepData = useCallback(
-    <T,>(step: number): Partial<T> => {
+    <T,>(_step: number): Partial<T> => {
       return formData as Partial<T>;
     },
     [formData]

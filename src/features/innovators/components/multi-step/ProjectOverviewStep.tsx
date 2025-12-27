@@ -4,7 +4,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { Form } from "@/components/ui/form";
 import { CustomFormField, FormFieldType } from "@/components";
@@ -27,6 +27,7 @@ export function ProjectOverviewStep({
 
     const form = useForm<Step2Data>({
         resolver: zodResolver(step2Schema(tForm)),
+        mode: "onChange",
         defaultValues: {
             projectTitle: data.projectTitle || "",
             projectDescription: data.projectDescription || "",
@@ -82,6 +83,7 @@ export function ProjectOverviewStep({
                         control={form.control}
                         name="objective"
                         label={t("form.objective")}
+                        description={t("form.objectiveHint")}
                         placeholder={
                             isArabic
                                 ? "ما هي أهداف فكرتك؟ وما هي المشكلة التي تحلها؟"

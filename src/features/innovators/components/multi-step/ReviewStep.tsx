@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Edit2, FileText, Image as ImageIcon, File as FileIcon } from "lucide-react";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 import Image from "next/image";
 
 import { Form } from "@/components/ui/form";
@@ -38,6 +38,7 @@ export function ReviewStep({
 
     const form = useForm<Step4Data>({
         resolver: zodResolver(step4Schema(tForm)),
+        mode: "onChange",
         defaultValues: {
             TermsOfUse: data.TermsOfUse || false,
         },

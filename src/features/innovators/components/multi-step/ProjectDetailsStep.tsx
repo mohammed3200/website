@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Trash2, Upload, FileText, File as FileIcon, Image as ImageIcon } from "lucide-react";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 import { useToast } from "@/hooks/use-toast";
 
 import { cn } from "@/lib/utils";
@@ -38,6 +38,7 @@ export function ProjectDetailsStep({
 
     const form = useForm<Step3Data>({
         resolver: zodResolver(step3Schema(tForm)),
+        mode: "onChange",
         defaultValues: {
             stageDevelopment: data.stageDevelopment || StageDevelopment.STAGE,
             projectFiles: data.projectFiles || [],
@@ -135,6 +136,7 @@ export function ProjectDetailsStep({
                         control={form.control}
                         name="stageDevelopment"
                         label={t("form.stageDevelopment")}
+                        description={t("form.stageDevelopmentHint")}
                     >
                         {Object.entries(StagesDevelopment).map(([key, value]) => (
                             <SelectItem key={key} value={key} dir={isArabic ? "rtl" : "ltr"}>
@@ -151,6 +153,7 @@ export function ProjectDetailsStep({
                         control={form.control}
                         name="projectFiles"
                         label={t("form.projectFiles")}
+                        description={t("form.projectFilesHint")}
                         renderSkeleton={(field) => (
                             <FormControl>
                                 <div className="space-y-4">

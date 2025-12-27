@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import type { ProgressProps } from "../../types/multi-step-types";
 
 export function ProgressIndicator({
@@ -19,9 +19,11 @@ export function ProgressIndicator({
             {/* Progress Bar */}
             <div className="relative mb-8">
                 <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                        className="h-full bg-orange-500 transition-all duration-500 ease-out"
-                        style={{ width: `${progressPercent}%` }}
+                    <motion.div
+                        className="h-full bg-orange-500"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${progressPercent}%` }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
                     />
                 </div>
                 <div className="flex justify-between mt-2">
@@ -30,9 +32,14 @@ export function ProgressIndicator({
                             ? `الخطوة ${currentStep} من ${steps.length}`
                             : `Step ${currentStep} of ${steps.length}`}
                     </span>
-                    <span className="text-sm font-din-bold text-orange-600">
+                    <motion.span
+                        key={currentStep}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-sm font-din-bold text-orange-600"
+                    >
                         {Math.round(progressPercent)}%
-                    </span>
+                    </motion.span>
                 </div>
             </div>
 
@@ -40,12 +47,14 @@ export function ProgressIndicator({
             <div className="flex items-center justify-between relative">
                 {/* Connection Line */}
                 <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200 -z-10" />
-                <div
-                    className="absolute top-5 left-0 h-0.5 bg-orange-500 -z-10 transition-all duration-500"
-                    style={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
+                <motion.div
+                    className="absolute top-5 left-0 h-0.5 bg-orange-500 -z-10"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
                 />
 
-                {steps.map((step, _) => {
+                {steps.map((step, index) => {
                     const stepNumber = step.number;
                     const isActive = currentStep === stepNumber;
                     const isCompleted = completedSteps.includes(stepNumber);
@@ -58,14 +67,17 @@ export function ProgressIndicator({
                             style={{ width: `${100 / steps.length}%` }}
                         >
                             {/* Step Circle */}
-                            <button
+                            <motion.button
                                 type="button"
+                                initial={{ scale: 0.8, opacity: 0 }}
+                                animate={{ scale: isActive ? 1.1 : 1, opacity: 1 }}
+                                transition={{ delay: index * 0.1 }}
                                 onClick={() => canClick && onStepClick(stepNumber)}
                                 disabled={!canClick}
                                 className={cn(
                                     "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2",
                                     isActive &&
-                                    "bg-orange-500 border-orange-500 scale-110 shadow-lg",
+                                    "bg-orange-500 border-orange-500 shadow-lg",
                                     isCompleted &&
                                     !isActive &&
                                     "bg-orange-500 border-orange-500 hover:scale-105 cursor-pointer",
@@ -78,7 +90,12 @@ export function ProgressIndicator({
                                 aria-current={isActive ? "step" : undefined}
                             >
                                 {isCompleted ? (
-                                    <Check className="w-5 h-5 text-white" />
+                                    <motion.div
+                                        initial={{ scale: 0, rotate: -45 }}
+                                        animate={{ scale: 1, rotate: 0 }}
+                                    >
+                                        <Check className="w-5 h-5 text-white" />
+                                    </motion.div>
                                 ) : (
                                     <span
                                         className={cn(
@@ -89,10 +106,13 @@ export function ProgressIndicator({
                                         {stepNumber}
                                     </span>
                                 )}
-                            </button>
+                            </motion.button>
 
                             {/* Step Label */}
-                            <span
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: index * 0.1 + 0.2 }}
                                 className={cn(
                                     "mt-2 text-xs font-din-regular text-center max-w-[80px]",
                                     isActive && "text-orange-600 font-din-bold",
@@ -101,7 +121,7 @@ export function ProgressIndicator({
                                 )}
                             >
                                 {isArabic ? step.label.ar : step.label.en}
-                            </span>
+                            </motion.span>
                         </div>
                     );
                 })}

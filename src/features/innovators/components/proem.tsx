@@ -6,12 +6,14 @@ import { useRouter } from "next/navigation";
 import { CircleArrowLeft, CircleArrowRight } from "lucide-react";
 
 import { useTranslations } from "next-intl";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { ActiveButton, AnimatedList } from "@/components";
 
 import { InterfaceImage } from "@/constants";
-import { MockCompaniesData } from "@/mock";
+import { MockInnovatorsData } from "@/mock";
+import { CardInnovators } from "@/features/innovators/components/card-innovators";
+
 
 export const Introduction = () => {
   const router = useRouter();
@@ -73,10 +75,12 @@ export const Introduction = () => {
           speed="normal"
           pauseOnHover={true}
           layout="vertical"
-          items={MockCompaniesData}
-          renderItem={(item, index) => ( // Corrected: Pass item and index as separate arguments
-            <div className="w-44 max-md:w-36 h-36 rounded-md items-center text-black text-base bg-red-500">
-              {index + 1}
+          items={MockInnovatorsData}
+          renderItem={(_item, _index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {MockInnovatorsData.map((innovator) => (
+                <CardInnovators key={innovator.id} innovator={innovator} />
+              ))}
             </div>
           )}
         />
@@ -85,10 +89,12 @@ export const Introduction = () => {
           speed="slow"
           pauseOnHover={true}
           layout="vertical"
-          items={MockCompaniesData}
-          renderItem={(item, index) => ( // Corrected: Pass item and index as separate arguments
-            <div className="w-44 max-md:w-36 h-36 rounded-md items-center text-black text-base bg-red-500">
-              {index + 1}
+          items={MockInnovatorsData}
+          renderItem={(_item, _index) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {MockInnovatorsData.map((innovator) => (
+                <CardInnovators key={innovator.id} innovator={innovator} />
+              ))}
             </div>
           )}
         />

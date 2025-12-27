@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Trash2 } from "lucide-react";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { Form, FormControl } from "@/components/ui/form";
 import { SelectItem } from "@/components/ui/select";
@@ -35,6 +35,7 @@ export function PersonalInfoStep({
 
     const form = useForm<Step1Data>({
         resolver: zodResolver(step1Schema(tForm)),
+        mode: "onChange",
         defaultValues: {
             name: data.name || "",
             phoneNumber: data.phoneNumber || "",
