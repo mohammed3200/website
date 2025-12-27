@@ -1,4 +1,4 @@
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 import React from "react";
 import { FaqItem } from "./FaqItem";
 import { ListOfFaq } from "../types";
@@ -18,13 +18,13 @@ export const Faqs = ({ listOfFaq }: FaqProps) => {
             item={
               isArabic
                 ? {
-                    question: item.question_ar,
-                    answer: item.answer_ar,
-                  }
+                  question: item.question_ar,
+                  answer: item.answer_ar,
+                }
                 : {
-                    question: item.question_en,
-                    answer: item.answer_en,
-                  }
+                  question: item.question_en,
+                  answer: item.answer_en,
+                }
             }
             index={index}
           />
