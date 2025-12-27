@@ -3,18 +3,18 @@
 import React from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { CircleArrowLeft,CircleArrowRight } from "lucide-react";
+import { CircleArrowLeft, CircleArrowRight } from "lucide-react";
 
 import { useTranslations } from "next-intl";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 import { ActiveButton } from "@/components";
 
 import { InterfaceImage } from "@/constants";
 
 export const Introduction = () => {
-  const router =  useRouter();
-  const { isArabic,lang } = useLanguage();
+  const router = useRouter();
+  const { isArabic, lang } = useLanguage();
   const t = useTranslations("collaboratingPartners");
   return (
     <div
@@ -30,25 +30,25 @@ export const Introduction = () => {
           <p className="font-din-regular h4 max-md:h5">{t("title")}</p>
           <p className="font-din-regular text-light-100 body-1 max-md:body-2 max-lg:max-w-sm">
             {t("subtitle")}
-              </p>
-          <ActiveButton 
-          onClick={() => router.push(`/${lang}/collaborators/registration`)} 
-          className=""
+          </p>
+          <ActiveButton
+            onClick={() => router.push(`/${lang}/collaborators/registration/1`)}
+            className=""
           >
-            <div 
-            className="flex items-center gap-2"
-            dir={isArabic ? "rtl" : "ltr"}
+            <div
+              className="flex items-center gap-2"
+              dir={isArabic ? "rtl" : "ltr"}
             >
-                <p 
+              <p
                 className="font-din-bold h9 text-gray-50 transition-all
                  duration-500 hover:decoration-[1.5px] hover:underline-offset-[2px] hover:underline
                   hover:decoration-slate-50">
-                    {t("registration")}
-                    </p>
-                {isArabic 
+                {t("registration")}
+              </p>
+              {isArabic
                 ? <CircleArrowLeft className="size-5 max-md:size-4 text-gray-50" />
                 : <CircleArrowRight className="size-5 max-md:size-4 text-gray-50" />
-            }
+              }
             </div>
           </ActiveButton>
         </div>

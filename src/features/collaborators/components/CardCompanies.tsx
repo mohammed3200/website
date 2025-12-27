@@ -2,7 +2,7 @@ import React from "react";
 import { BackGroundEffect } from "@/constants";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
-import useLanguage from "@/hooks/uselanguage";
+import useLanguage from "@/hooks/use-language";
 
 interface CardCompaniesProps {
   className?: string;
@@ -85,7 +85,7 @@ export const CardCompanies = ({
             {ExperienceProvided}
           </p>
         </div>
-        <div className="absolute bottom-0 w-full h-2 bg-gradient-to-b from-transparent via-[#fd7724] to-primary rounded-b-full"/>
+        <div className="absolute bottom-0 w-full h-2 bg-gradient-to-b from-transparent via-[#fd7724] to-primary rounded-b-full" />
       </div>
     </div>
   );

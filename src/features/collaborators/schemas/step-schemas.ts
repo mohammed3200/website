@@ -1,38 +1,34 @@
-import { z } from 'zod';
-import { ListOfIndustrialSectors } from './types';
-import { mediaTypes } from '@/constants';
+import { z } from "zod";
+import { ListOfIndustrialSectors } from "../types";
+import { mediaTypes } from "@/constants";
 
-export const createJoiningCompaniesCollaboratorSchema = (
-  t: (key: string) => string,
-) => {
+/**
+ * Step 1: Company Information
+ */
+export const step1Schema = (t: (key: string) => string) => {
   return z.object({
-    // ====== Basic information ======
-    companyName: z.string().min(1, { message: t('RequiredField') }),
+    companyName: z.string().min(1, { message: t("RequiredField") }),
+    image: z
+      .union([
+        z.instanceof(File),
+        z.string().transform((value) => (value === "" ? undefined : value)),
+      ])
+      .optional(),
     primaryPhoneNumber: z
       .string()
-      .min(1, { message: t('RequiredField') })
+      .min(1, { message: t("RequiredField") })
       .refine(
-        (phone) => typeof phone === 'string' && /^\+[\d\s-]{6,15}$/.test(phone),
-        { message: t('InvalidPhoneNumber') },
+        (phone) => typeof phone === "string" && /^\+[\d\s-]{6,15}$/.test(phone),
+        { message: t("InvalidPhoneNumber") }
       ),
     optionalPhoneNumber: z
       .string()
       .optional()
       .refine((phone) => !phone || /^\+[\d\s-]{6,15}$/.test(phone), {
-        message: t('InvalidPhoneNumber'),
+          message: t("InvalidPhoneNumber"),
       }),
-    email: z
-      .string()
-      .min(1, { message: t('RequiredField') })
-      .email({
-        message: t('InvalidEmail'),
-      }),
-    image: z
-      .union([
-        z.instanceof(File),
-        z.string().transform((value) => (value === '' ? undefined : value)),
-      ])
-      .optional(),
+    email: z.string().min(1, { message: t("RequiredField") }).email({ message: t("InvalidEmail") }),
+    location: z.string().optional(),
     site: z
       .string()
       .optional()
@@ -41,29 +37,40 @@ export const createJoiningCompaniesCollaboratorSchema = (
           !url ||
           /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(url),
         {
-          message: t('InvalidURL'),
-        },
+          message: t("InvalidURL"),
+        }
       ),
-    location: z.string().optional(),
+  });
+};
 
-    // ====== Industrial Information ======
+/**
+ * Step 2: Industry Information
+ */
+export const step2Schema = (t: (key: string) => string) => {
+  return z.object({
     industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
-      message: t('RequiredField'),
+      message: t("RequiredField"),
     }),
-    specialization: z.string().min(1, t('RequiredField')),
+    specialization: z.string().min(1, t("RequiredField")),
+  });
+};
 
-    // ======= Shared Resources =======
+/**
+ * Step 3: Company Capabilities
+ */
+export const step3Schema = (t: (key: string) => string) => {
+  return z.object({
     experienceProvided: z.string().optional(),
     experienceProvidedMedia: z
-      .custom<File[]>()
+    .custom<File[]>()
       .refine(
         (files) =>
           Array.isArray(files) &&
           (files.length === 0 ||
             files.every((file) => mediaTypes.includes(file.type))),
         {
-          message: t('InvalidMediaType'),
-        },
+          message: t("InvalidMediaType"),
+        }
       )
       .refine(
         (files) =>
@@ -71,12 +78,12 @@ export const createJoiningCompaniesCollaboratorSchema = (
           (files.length === 0 ||
             files.every((file) => file.size <= 50 * 1024 * 1024)),
         {
-          message: t('InvalidFileSize'),
-        },
+          message: t("InvalidFileSize"),
+        }
       )
       .optional()
-      .default([]), // Default to an empty array if no files are provided
-
+      .default([]),
+      
     machineryAndEquipment: z.string().optional(),
     machineryAndEquipmentMedia: z
       .custom<File[]>()
@@ -86,8 +93,8 @@ export const createJoiningCompaniesCollaboratorSchema = (
           (files.length === 0 ||
             files.every((file) => mediaTypes.includes(file.type))),
         {
-          message: t('InvalidMediaType'),
-        },
+          message: t("InvalidMediaType"),
+        }
       )
       .refine(
         (files) =>
@@ -95,25 +102,40 @@ export const createJoiningCompaniesCollaboratorSchema = (
           (files.length === 0 ||
             files.every((file) => file.size <= 50 * 1024 * 1024)),
         {
-          message: t('InvalidFileSize'),
-        },
+          message: t("InvalidFileSize"),
+        }
       )
       .optional()
-      .default([]), // Default to an empty array if no files are provided
-
-    // ======== Center Policies ========
-    // TermsOfUse: z
-    //   .boolean()
-    //   .default(false)
-    //   .refine((value) => value === true, {
-    //     message: t("TermsOfUse"),
-    //   }),
+      .default([]),
   });
 };
 
-export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
-  // ====== Basic information ======
+/**
+ * Step 4: Review & Terms
+ */
+export const step4Schema = (_t: (key: string) => string) => {
+  return z.object({
+    // TermsOfUse: z.boolean().default(false).refine((value) => value === true, { message: t("TermsOfUse") }),
+  });
+};
+
+// Merged server-side validation schema
+export const completeCollaboratorRegistrationSchema = (t: (key: string) => string) => {
+  return step1Schema(t)
+    .merge(step2Schema(t))
+    .merge(step3Schema(t))
+    .merge(step4Schema(t));
+};
+
+export const completeCollaboratorRegistrationSchemaServer = z.object({
+  // Step 1
   companyName: z.string().min(1, { message: 'RequiredField' }),
+  image: z
+    .union([
+      z.instanceof(File),
+      z.string().transform((value) => (value === '' ? undefined : value)),
+    ])
+    .optional(),
   primaryPhoneNumber: z
     .string()
     .min(1, { message: 'RequiredField' })
@@ -130,12 +152,7 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
   email: z.string().min(1, { message: 'RequiredField' }).email({
     message: 'InvalidEmail',
   }),
-  image: z
-    .union([
-      z.instanceof(File),
-      z.string().transform((value) => (value === '' ? undefined : value)),
-    ])
-    .optional(),
+  location: z.string().optional(),
   site: z
     .string()
     .optional()
@@ -147,21 +164,20 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
         message: 'InvalidURL',
       },
     ),
-  location: z.string().optional(),
 
-  // ====== Industrial Information ======
+  // Step 2
   industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
     message: 'RequiredField',
   }),
   specialization: z.string().min(1, 'RequiredField'),
 
-  // ======= Shared Resources =======
+  // Step 3
   experienceProvided: z.string().optional(),
   experienceProvidedMedia: z
-    .custom<File | File[]>() // Accept single File or array
+    .custom<File | File[]>()
     .optional()
     .default([])
-    .transform((files) => (Array.isArray(files) ? files : [files])) // Ensure array
+    .transform((files) => (Array.isArray(files) ? files : [files]))
     .refine((files) => files.every((file) => mediaTypes.includes(file.type)), {
       message: 'InvalidMediaType',
     })
@@ -171,24 +187,16 @@ export const createJoiningCompaniesCollaboratorSchemaServer = z.object({
 
   machineryAndEquipment: z.string().optional(),
   machineryAndEquipmentMedia: z
-    .custom<File | File[]>() // Accept single File or array
+    .custom<File | File[]>()
     .optional()
     .default([])
-    .transform((files) => (Array.isArray(files) ? files : [files])) // Ensure array
+    .transform((files) => (Array.isArray(files) ? files : [files]))
     .refine((files) => files.every((file) => mediaTypes.includes(file.type)), {
       message: 'InvalidMediaType',
     })
     .refine((files) => files.every((file) => file.size <= 50 * 1024 * 1024), {
       message: 'InvalidFileSize',
     }),
-
-  // ======== Center Policies ========
-  // TermsOfUse: z
-  //   .string()
-  //   .default("false")
-  //   .refine((value) => value === "true", {
-  //     message: "TermsOfUse",
-  //   }),
 });
 
 // Validation schema for status update

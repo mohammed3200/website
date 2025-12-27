@@ -8,9 +8,9 @@ import { db } from '@/lib/db';
 
 import { RecordStatus } from '@/features/collaborators/types';
 import {
-  createJoiningCompaniesCollaboratorSchemaServer,
+  completeCollaboratorRegistrationSchemaServer,
   statusUpdateSchema,
-} from '@/features/collaborators/schemas';
+} from '@/features/collaborators/schemas/step-schemas';
 
 import { emailService } from '@/lib/email/service'; 
 
@@ -86,7 +86,7 @@ const app = new Hono()
   })
   .post(
     '/',
-    zValidator('form', createJoiningCompaniesCollaboratorSchemaServer),
+    zValidator('form', completeCollaboratorRegistrationSchemaServer),
     async (c) => {
       try {
         // Destructure form data
