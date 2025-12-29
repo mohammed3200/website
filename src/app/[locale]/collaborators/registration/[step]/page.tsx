@@ -11,7 +11,7 @@ import {
     CapabilitiesStep,
     ProgressIndicator,
 } from "@/features/collaborators/components/multi-step";
-import { ReviewStep } from "@/features/collaborators/components/multi-step/ReviewStep";
+import { ReviewStep } from "@/features/collaborators/components/multi-step/review-step";
 import { useJoiningCollaborators } from "@/features/collaborators/api";
 import type { CompleteFormData } from "@/features/collaborators/types/multi-step-types";
 import { useToast } from "@/hooks/use-toast";
@@ -98,9 +98,22 @@ export default function StepPage({
                     },
                     onError: (error) => {
                         console.error("Error submitting form:", error);
+
+                        // Check for specific error types
+                        let errorMessage = t("error_submitting") || "An error occurred while submitting.";
+
+                        if (error && typeof error === 'object' && 'message' in error) {
+                            const err = error as { message: string };
+                            if (err.message === "PHONE_EXISTS") {
+                                errorMessage = t("error_phone_exists") || "Phone number already exists.";
+                            } else if (err.message === "EMAIL_EXISTS") {
+                                errorMessage = t("form.EmailExists") || "Email already exists.";
+                            }
+                        }
+
                         toast({
-                            title: "Error",
-                            description: t("error_submitting") || "An error occurred while submitting.",
+                            title: isArabic ? "خطأ" : "Error",
+                            description: errorMessage,
                             variant: "destructive"
                         });
                     },
@@ -163,30 +176,32 @@ export default function StepPage({
     };
 
     return (
-        <div className="container max-w-5xl mx-auto py-10 px-4">
-            <div className="mb-8">
-                <ProgressIndicator
-                    currentStep={step}
-                    totalSteps={totalSteps}
-                    completedSteps={completedSteps}
-                />
-            </div>
+        <div className="w-full min-h-screen py-10 px-4 md:px-8 bg-gray-50">
+            <div className="max-w-5xl mx-auto">
+                {/* Progress Indicator */}
+                <div className="mb-8">
+                    <ProgressIndicator
+                        currentStep={step}
+                        totalSteps={totalSteps}
+                        completedSteps={completedSteps}
+                    />
+                </div>
 
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10 min-h-[500px] overflow-hidden">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={step}
-                        initial={{ x: isArabic ? -20 : 20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: isArabic ? 20 : -20, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                    >
-                        {renderStep()}
-                    </motion.div>
-                </AnimatePresence>
+                {/* Step Content */}
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 md:p-12 overflow-hidden">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={step}
+                            initial={{ x: isArabic ? -20 : 20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            exit={{ x: isArabic ? 20 : -20, opacity: 0 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                        >
+                            {renderStep()}
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
             </div>
-
-            {/* Error Display if needed globally */}
         </div>
     );
 }
