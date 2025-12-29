@@ -15,18 +15,18 @@ export function ProgressIndicator({
     const progressPercent = (currentStep / steps.length) * 100;
 
     return (
-        <div className="w-full mb-8" dir={isArabic ? "rtl" : "ltr"}>
-            {/* Progress Bar */}
-            <div className="relative mb-8">
-                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="w-full mb-10" dir={isArabic ? "rtl" : "ltr"}>
+            {/* Progress Bar with Percentage */}
+            <div className="relative mb-10">
+                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden shadow-inner">
                     <motion.div
-                        className="h-full bg-orange-500"
+                        className="h-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-full"
                         initial={{ width: 0 }}
                         animate={{ width: `${progressPercent}%` }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     />
                 </div>
-                <div className="flex justify-between mt-2">
+                <div className="flex justify-between mt-3">
                     <span className="text-sm font-din-regular text-gray-600">
                         {isArabic
                             ? `الخطوة ${currentStep} من ${steps.length}`
@@ -36,7 +36,8 @@ export function ProgressIndicator({
                         key={currentStep}
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-sm font-din-bold text-orange-600"
+                        transition={{ duration: 0.3 }}
+                        className="text-sm font-din-bold bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent"
                     >
                         {Math.round(progressPercent)}%
                     </motion.span>
@@ -44,11 +45,13 @@ export function ProgressIndicator({
             </div>
 
             {/* Step Indicators */}
-            <div className="flex items-center justify-between relative">
-                {/* Connection Line */}
-                <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200 -z-10" />
+            <div className="flex items-center justify-between relative px-2">
+                {/* Connection Line Background */}
+                <div className="absolute top-6 left-0 right-0 h-1 bg-gray-200 rounded-full -z-10" />
+
+                {/* Active Progress Line */}
                 <motion.div
-                    className="absolute top-5 left-0 h-0.5 bg-orange-500 -z-10"
+                    className="absolute top-6 left-0 h-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full -z-10"
                     initial={{ width: 0 }}
                     animate={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
@@ -70,20 +73,39 @@ export function ProgressIndicator({
                             <motion.button
                                 type="button"
                                 initial={{ scale: 0.8, opacity: 0 }}
-                                animate={{ scale: isActive ? 1.1 : 1, opacity: 1 }}
-                                transition={{ delay: index * 0.1 }}
+                                animate={{
+                                    scale: isActive ? 1.15 : 1,
+                                    opacity: 1
+                                }}
+                                whileHover={canClick ? { scale: isActive ? 1.2 : 1.05 } : {}}
+                                transition={{
+                                    delay: index * 0.1,
+                                    duration: 0.3,
+                                    type: "spring",
+                                    stiffness: 300
+                                }}
                                 onClick={() => canClick && onStepClick(stepNumber)}
                                 disabled={!canClick}
                                 className={cn(
-                                    "w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 border-2",
-                                    isActive &&
-                                    "bg-orange-500 border-orange-500 shadow-lg",
-                                    isCompleted &&
-                                    !isActive &&
-                                    "bg-orange-500 border-orange-500 hover:scale-105 cursor-pointer",
-                                    !isActive &&
-                                    !isCompleted &&
-                                    "bg-white border-gray-300 cursor-not-allowed",
+                                    "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border-2 relative",
+                                    "backdrop-blur-sm",
+                                    isActive && [
+                                        "bg-gradient-to-br from-orange-500 to-orange-600",
+                                        "border-orange-500",
+                                        "shadow-lg shadow-orange-500/30",
+                                        "before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-br before:from-white/20 before:to-transparent before:opacity-50"
+                                    ],
+                                    isCompleted && !isActive && [
+                                        "bg-green-500 border-green-500",
+                                        "shadow-md shadow-green-500/20",
+                                        "hover:shadow-lg hover:shadow-green-500/30",
+                                        "cursor-pointer"
+                                    ],
+                                    !isActive && !isCompleted && [
+                                        "bg-white border-gray-300",
+                                        "cursor-not-allowed",
+                                        "shadow-sm"
+                                    ],
                                     canClick && "focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
                                 )}
                                 aria-label={isArabic ? step.label.ar : step.label.en}
@@ -93,13 +115,14 @@ export function ProgressIndicator({
                                     <motion.div
                                         initial={{ scale: 0, rotate: -45 }}
                                         animate={{ scale: 1, rotate: 0 }}
+                                        transition={{ type: "spring", stiffness: 200 }}
                                     >
-                                        <Check className="w-5 h-5 text-white" />
+                                        <Check className="w-6 h-6 text-white" strokeWidth={3} />
                                     </motion.div>
                                 ) : (
                                     <span
                                         className={cn(
-                                            "font-din-bold text-sm",
+                                            "font-din-bold text-base",
                                             isActive ? "text-white" : "text-gray-500"
                                         )}
                                     >
@@ -110,13 +133,13 @@ export function ProgressIndicator({
 
                             {/* Step Label */}
                             <motion.span
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 + 0.2 }}
                                 className={cn(
-                                    "mt-2 text-xs font-din-regular text-center max-w-[80px]",
+                                    "mt-3 text-xs font-din-regular text-center max-w-[90px] leading-tight",
                                     isActive && "text-orange-600 font-din-bold",
-                                    isCompleted && !isActive && "text-gray-700",
+                                    isCompleted && !isActive && "text-gray-700 font-medium",
                                     !isActive && !isCompleted && "text-gray-400"
                                 )}
                             >

@@ -11,7 +11,7 @@ import { CustomFormField, FormFieldType } from "@/components";
 
 import { step2Schema } from "../../schemas/step-schemas";
 import type { Step2Data, StepComponentProps } from "../../types/multi-step-types";
-import { StepNavigation } from "./StepNavigation";
+import { StepNavigation } from "./step-navigation";
 
 export function ProjectOverviewStep({
     data,
@@ -27,7 +27,7 @@ export function ProjectOverviewStep({
 
     const form = useForm<Step2Data>({
         resolver: zodResolver(step2Schema(tForm)),
-        mode: "onChange",
+        mode: "onTouched",
         defaultValues: {
             projectTitle: data.projectTitle || "",
             projectDescription: data.projectDescription || "",
@@ -41,13 +41,13 @@ export function ProjectOverviewStep({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
                 {/* Section Header */}
-                <div className="border-b border-gray-200 pb-4" dir={isArabic ? "rtl" : "ltr"}>
+                <div className="border-b-2 border-gray-200 pb-6" dir={isArabic ? "rtl" : "ltr"}>
                     <h2 className="text-2xl font-din-bold text-gray-800">
                         {isArabic ? "نظرة عامة على المشروع" : "Project Overview"}
                     </h2>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-gray-600 mt-2">
                         {isArabic ? "صف فكرتك ومشروعك" : "Describe your idea and project"}
                     </p>
                 </div>

@@ -16,7 +16,7 @@ import { IconsInterface } from "@/constants";
 import { step1Schema } from "../../schemas/step-schemas";
 import { Countries } from "../../constants/constants";
 import type { Step1Data, StepComponentProps } from "../../types/multi-step-types";
-import { StepNavigation } from "./StepNavigation";
+import { StepNavigation } from "./step-navigation";
 
 export function PersonalInfoStep({
     data,
@@ -35,7 +35,7 @@ export function PersonalInfoStep({
 
     const form = useForm<Step1Data>({
         resolver: zodResolver(step1Schema(tForm)),
-        mode: "onChange",
+        mode: "onTouched",
         defaultValues: {
             name: data.name || "",
             phoneNumber: data.phoneNumber || "",
@@ -61,13 +61,13 @@ export function PersonalInfoStep({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
                 {/* Section Header */}
-                <div className="border-b border-gray-200 pb-4" dir={isArabic ? "rtl" : "ltr"}>
+                <div className="border-b-2 border-gray-200 pb-6" dir={isArabic ? "rtl" : "ltr"}>
                     <h2 className="text-2xl font-din-bold text-gray-800">
                         {isArabic ? "المعلومات الشخصية" : "Personal Information"}
                     </h2>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-gray-600 mt-2">
                         {isArabic ? "أدخل معلوماتك الأساسية" : "Enter your basic information"}
                     </p>
                 </div>

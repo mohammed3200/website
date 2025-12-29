@@ -17,7 +17,7 @@ import { step3Schema } from "../../schemas/step-schemas";
 import { StagesDevelopment } from "../../constants/constants";
 import { StageDevelopment } from "../../types/types";
 import type { Step3Data, StepComponentProps } from "../../types/multi-step-types";
-import { StepNavigation } from "./StepNavigation";
+import { StepNavigation } from "./step-navigation";
 
 export function ProjectDetailsStep({
     data,
@@ -38,7 +38,7 @@ export function ProjectDetailsStep({
 
     const form = useForm<Step3Data>({
         resolver: zodResolver(step3Schema(tForm)),
-        mode: "onChange",
+        mode: "onTouched",
         defaultValues: {
             stageDevelopment: data.stageDevelopment || StageDevelopment.STAGE,
             projectFiles: data.projectFiles || [],
@@ -117,13 +117,13 @@ export function ProjectDetailsStep({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
                 {/* Section Header */}
-                <div className="border-b border-gray-200 pb-4" dir={isArabic ? "rtl" : "ltr"}>
+                <div className="border-b-2 border-gray-200 pb-6" dir={isArabic ? "rtl" : "ltr"}>
                     <h2 className="text-2xl font-din-bold text-gray-800">
                         {isArabic ? "مرحلة المشروع والملفات" : "Project Stage & Files"}
                     </h2>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-gray-600 mt-2">
                         {isArabic ? "حدد مرحلة التطوير وأرفق الملفات" : "Select development stage and attach files"}
                     </p>
                 </div>

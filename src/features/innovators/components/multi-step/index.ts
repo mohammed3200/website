@@ -1,8 +1,6 @@
-"use client";
-
-export { PersonalInfoStep } from "./PersonalInfoStep";
-export { ProjectOverviewStep } from "./ProjectOverviewStep";
-export { ProjectDetailsStep } from "./ProjectDetailsStep";
-export { ReviewStep } from "./ReviewStep";
-export { StepNavigation } from "./StepNavigation";
-export { ProgressIndicator } from "./ProgressIndicator";
+export { PersonalInfoStep } from "./personal-info-step";
+export { ProjectOverviewStep } from "./project-overview-step";
+export { ProjectDetailsStep } from "./project-details-step";
+export { ReviewStep } from "./review-step";
+export { StepNavigation } from "./step-navigation";
+export { ProgressIndicator } from "./progress-indicator";

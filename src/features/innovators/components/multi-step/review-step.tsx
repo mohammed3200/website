@@ -15,7 +15,7 @@ import { CustomFormField, FormFieldType } from "@/components";
 import { step4Schema } from "../../schemas/step-schemas";
 import { Countries, StagesDevelopment } from "../../constants/constants";
 import type { Step4Data, StepComponentProps, CompleteFormData } from "../../types/multi-step-types";
-import { StepNavigation } from "./StepNavigation";
+import { StepNavigation } from "./step-navigation";
 
 interface ReviewStepProps extends StepComponentProps<Step4Data> {
     allFormData: Partial<CompleteFormData>;
@@ -38,7 +38,7 @@ export function ReviewStep({
 
     const form = useForm<Step4Data>({
         resolver: zodResolver(step4Schema(tForm)),
-        mode: "onChange",
+        mode: "onTouched",
         defaultValues: {
             TermsOfUse: data.TermsOfUse || false,
         },
@@ -60,13 +60,13 @@ export function ReviewStep({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
                 {/* Section Header */}
-                <div className="border-b border-gray-200 pb-4" dir={isArabic ? "rtl" : "ltr"}>
+                <div className="border-b-2 border-gray-200 pb-6" dir={isArabic ? "rtl" : "ltr"}>
                     <h2 className="text-2xl font-din-bold text-gray-800">
                         {isArabic ? "المراجعة والإرسال" : "Review & Submit"}
                     </h2>
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-gray-600 mt-2">
                         {isArabic ? "راجع معلوماتك قبل الإرسال" : "Review your information before submitting"}
                     </p>
                 </div>
@@ -74,7 +74,7 @@ export function ReviewStep({
                 {/* Summary Sections */}
                 <div className="space-y-6">
                     {/* Personal Information Section */}
-                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                    <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4" dir={isArabic ? "rtl" : "ltr"}>
                             <h3 className="text-lg font-din-bold text-gray-800">
                                 {isArabic ? "المعلومات الشخصية" : "Personal Information"}
@@ -84,7 +84,7 @@ export function ReviewStep({
                                 variant="outline"
                                 size="sm"
                                 onClick={() => onEdit(1)}
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-2 hover:bg-orange-50 hover:border-orange-300 transition-colors"
                             >
                                 <Edit2 className="w-4 h-4" />
                                 {isArabic ? "تعديل" : "Edit"}
@@ -138,7 +138,7 @@ export function ReviewStep({
                     </div>
 
                     {/* Project Overview Section */}
-                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                    <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4" dir={isArabic ? "rtl" : "ltr"}>
                             <h3 className="text-lg font-din-bold text-gray-800">
                                 {isArabic ? "نظرة عامة على المشروع" : "Project Overview"}
@@ -148,7 +148,7 @@ export function ReviewStep({
                                 variant="outline"
                                 size="sm"
                                 onClick={() => onEdit(2)}
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-2 hover:bg-orange-50 hover:border-orange-300 transition-colors"
                             >
                                 <Edit2 className="w-4 h-4" />
                                 {isArabic ? "تعديل" : "Edit"}
@@ -177,7 +177,7 @@ export function ReviewStep({
                     </div>
 
                     {/* Project Details Section */}
-                    <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                    <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex items-center justify-between mb-4" dir={isArabic ? "rtl" : "ltr"}>
                             <h3 className="text-lg font-din-bold text-gray-800">
                                 {isArabic ? "تفاصيل المشروع" : "Project Details"}
@@ -187,7 +187,7 @@ export function ReviewStep({
                                 variant="outline"
                                 size="sm"
                                 onClick={() => onEdit(3)}
-                                className="flex items-center gap-2"
+                                className="flex items-center gap-2 hover:bg-orange-50 hover:border-orange-300 transition-colors"
                             >
                                 <Edit2 className="w-4 h-4" />
                                 {isArabic ? "تعديل" : "Edit"}

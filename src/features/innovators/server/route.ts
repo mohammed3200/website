@@ -25,11 +25,6 @@ const app = new Hono().post(
     } = c.req.valid("form");
 
     try {
-      console.log("📝 Received innovator data:", {
-        name, email, phoneNumber, country, city, specialization,
-        projectTitle, hasImage: !!image, filesCount: projectFiles?.length || 0
-      });
-
       // Check for existing email
       const existingEmail = await db.innovator.findFirst({
         where: { email },
