@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { step3Schema } from "../../schemas/step-schemas";
 import type { Step3Data, StepComponentProps } from "../../types/multi-step-types";
-import { StepNavigation } from "./StepNavigation";
+import { StepNavigation } from "./step-navigation";
 
 export function CapabilitiesStep({
     data,
@@ -32,6 +32,7 @@ export function CapabilitiesStep({
 
     const form = useForm<Step3Data>({
         resolver: zodResolver(step3Schema(tForm)),
+        mode: "onTouched",
         defaultValues: {
             experienceProvided: data.experienceProvided || "",
             experienceProvidedMedia: data.experienceProvidedMedia || [],
@@ -46,12 +47,13 @@ export function CapabilitiesStep({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
-                <div className="text-center mb-6">
-                    <h2 className="text-2xl font-din-bold text-gray-800 mb-2">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
+                {/* Section Header */}
+                <div className="border-b-2 border-gray-200 pb-6 text-center">
+                    <h2 className="text-2xl font-din-bold text-gray-800">
                         {t("form.CompanyCapabilities")}
                     </h2>
-                    <p className="text-gray-600 font-din-regular">
+                    <p className="text-gray-600 font-din-regular mt-2">
                         {isArabic ? "شاركنا خبراتك وامكانياتك" : "Share your experiences and capabilities"}
                     </p>
                 </div>

@@ -41,7 +41,7 @@ export function useMultiStepForm(initialStep: number = 1): UseMultiStepFormRetur
         // Check expiration
         const expiryDate = new Date(parsed.expiresAt);
         if (expiryDate < new Date()) {
-          console.log("Saved data expired, clearing");
+
           localStorage.removeItem(STORAGE_KEY);
           return;
         }
@@ -50,7 +50,7 @@ export function useMultiStepForm(initialStep: number = 1): UseMultiStepFormRetur
         setFormData(parsed.formData);
         setCompletedSteps(parsed.completedSteps);
         
-        console.log("Loaded saved collaborator registration data");
+
       } catch (error) {
         console.error("Error loading saved data:", error);
         localStorage.removeItem(STORAGE_KEY);

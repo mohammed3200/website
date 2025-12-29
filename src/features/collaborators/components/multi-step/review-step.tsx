@@ -13,7 +13,7 @@ import { Form } from "@/components/ui/form";
 import { step4Schema } from "../../schemas/step-schemas";
 import { SectorTranslations } from "../../constants";
 import type { Step4Data, StepComponentProps, CompleteFormData } from "../../types/multi-step-types";
-import { StepNavigation } from "./StepNavigation";
+import { StepNavigation } from "./step-navigation";
 
 export function ReviewStep({
     data,
@@ -32,6 +32,7 @@ export function ReviewStep({
 
     const form = useForm<Step4Data>({
         resolver: zodResolver(step4Schema(tForm)),
+        mode: "onTouched",
         defaultValues: {},
     });
 
@@ -44,11 +45,12 @@ export function ReviewStep({
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
-                <div className="text-center mb-8">
-                    <h2 className="text-2xl font-din-bold text-gray-800 mb-2">
+                {/* Section Header */}
+                <div className="border-b-2 border-gray-200 pb-6 text-center">
+                    <h2 className="text-2xl font-din-bold text-gray-800">
                         {isArabic ? "مراجعة البيانات" : "Review Information"}
                     </h2>
-                    <p className="text-gray-600 font-din-regular">
+                    <p className="text-gray-600 font-din-regular mt-2">
                         {isArabic ? "يرجى مراجعة بياناتك قبل الإرسال النهائي" : "Please review your information before final submission"}
                     </p>
                 </div>
@@ -57,7 +59,7 @@ export function ReviewStep({
                     {/* Compact Summary Cards */}
 
                     {/* Company Info */}
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm relative">
+                    <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex justify-between items-start mb-4 border-b pb-2">
                             <h3 className="font-din-bold text-lg text-gray-800">
                                 {t("form.title")}
@@ -68,7 +70,11 @@ export function ReviewStep({
                                 {allFormData.image && (
                                     <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border border-gray-200">
                                         <Image
-                                            src={allFormData.image instanceof File ? URL.createObjectURL(allFormData.image) : allFormData.image}
+                                            src={
+                                                allFormData.image instanceof File
+                                                    ? URL.createObjectURL(allFormData.image)
+                                                    : allFormData.image
+                                            }
                                             alt="Logo"
                                             fill
                                             className="object-cover"
@@ -86,7 +92,7 @@ export function ReviewStep({
                     </div>
 
                     {/* Industry */}
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex justify-between items-start mb-4 border-b pb-2">
                             <h3 className="font-din-bold text-lg text-gray-800">
                                 {isArabic ? "القطاع والتخصص" : "Industry & Specialization"}
@@ -109,7 +115,7 @@ export function ReviewStep({
                     </div>
 
                     {/* Capabilities */}
-                    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                    <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex justify-between items-start mb-4 border-b pb-2">
                             <h3 className="font-din-bold text-lg text-gray-800">
                                 {t("form.CompanyCapabilities")}

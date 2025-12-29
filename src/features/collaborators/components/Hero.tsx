@@ -1,8 +1,8 @@
 import React from "react";
-import { Introduction } from "./Introduction";
+import { Introduction } from "./introduction";
 import { AnimatedList, SeparatorGradients } from "@/components";
 import { MockCompaniesData } from "@/mock";
-import { CardCompanies } from "./CardCompanies";
+import { CardCompanies } from "./card-companies";
 
 export const Hero = () => {
   return (

@@ -233,7 +233,7 @@ const app = new Hono()
 
           // FIXME: create table for log email
           if (emailResult.success) {
-            console.log('✅ Confirmation email sent successfully:', emailResult.messageId);
+
           } else {
             console.error('❌ Failed to send confirmation email:', emailResult.error);
           }
@@ -319,7 +319,7 @@ const app = new Hono()
           );
 
           if (emailResult.success) {
-            console.log('✅ Status update email sent successfully:', emailResult.messageId);
+
           } else {
             console.error('❌ Failed to send status update email:', emailResult.error);
           }

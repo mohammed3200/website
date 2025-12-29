@@ -14,7 +14,7 @@ import { SectorTranslations } from "../../constants";
 import { ListOfIndustrialSectors } from "@/features/collaborators/types";
 import { step2Schema } from "../../schemas/step-schemas";
 import type { Step2Data, StepComponentProps } from "../../types/multi-step-types";
-import { StepNavigation } from "./StepNavigation";
+import { StepNavigation } from "./step-navigation";
 
 export function IndustryInfoStep({
     data,
@@ -30,6 +30,7 @@ export function IndustryInfoStep({
 
     const form = useForm<Step2Data>({
         resolver: zodResolver(step2Schema(tForm)),
+        mode: "onTouched",
         defaultValues: {
             industrialSector: data.industrialSector as ListOfIndustrialSectors,
             specialization: data.specialization || "",
@@ -44,13 +45,14 @@ export function IndustryInfoStep({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
                 <div className="space-y-6 max-w-2xl mx-auto">
-                    <div className="text-center mb-8">
-                        <h2 className="text-2xl font-din-bold text-gray-800 mb-2">
+                    {/* Section Header */}
+                    <div className="border-b-2 border-gray-200 pb-6 text-center">
+                        <h2 className="text-2xl font-din-bold text-gray-800">
                             {isArabic ? "معلومات القطاع" : "Industry Information"}
                         </h2>
-                        <p className="text-gray-600 font-din-regular">
+                        <p className="text-gray-600 font-din-regular mt-2">
                             {isArabic ? "حدد مجال عملك وتخصصك" : "Select your field of work and specialization"}
                         </p>
                     </div>
