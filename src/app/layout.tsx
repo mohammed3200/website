@@ -22,6 +22,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Force cache invalidation
   const locale = await getLocale();
   const messages = await getMessages();
 
