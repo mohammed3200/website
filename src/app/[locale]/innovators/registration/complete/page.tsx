@@ -4,9 +4,11 @@ import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 import useLanguage from "@/hooks/use-language";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export default function RegistrationCompletePage() {
-    const { lang, isArabic } = useLanguage();
+    const { lang } = useLanguage();
+    const t = useTranslations("CreatorsAndInnovators");
 
     return (
         <div className="w-full min-h-screen flex items-center justify-center py-12 px-4">
@@ -18,25 +20,23 @@ export default function RegistrationCompletePage() {
                 </div>
 
                 <h1 className="text-3xl font-din-bold text-gray-900 mb-4">
-                    {isArabic ? "تم التسجيل بنجاح!" : "Registration Successful!"}
+                    {t("success_title")}
                 </h1>
 
                 <p className="text-gray-600 font-din-regular mb-8">
-                    {isArabic
-                        ? "شكراً لتسجيلك. سنقوم بمراجعة طلبك والتواصل معك قريباً."
-                        : "Thank you for registering. We will review your application and contact you soon."}
+                    {t("success_message")}
                 </p>
 
                 <div className="space-y-3">
                     <Button asChild className="w-full bg-orange-500 hover:bg-orange-600">
                         <Link href={`/${lang}/innovators`}>
-                            {isArabic ? "العودة إلى صفحة المبتكرين" : "Back to Innovators Page"}
+                            {t("backToInnovators")}
                         </Link>
                     </Button>
 
                     <Button asChild variant="outline" className="w-full">
                         <Link href={`/${lang}`}>
-                            {isArabic ? "العودة إلى الصفحة الرئيسية" : "Back to Home"}
+                            {t("backToHome")}
                         </Link>
                     </Button>
                 </div>

@@ -1,8 +1,7 @@
-'use client';
-
 import { Toaster } from "@/components/ui/toaster";
 import { BackgroundBeams } from "@/components/ui/background-beams";
 import { ResponsiveNavbar } from "@/components/navigation";
+import { Footer } from "@/components";
 
 export const dynamic = "force-dynamic";
 
@@ -16,11 +15,10 @@ export default async function LocaleLayout({
     return (
         <>
             <BackgroundBeams className="-z-10" />
-            <main className="flex h-screen">
-                <section className="flex h-full flex-1 flex-col">
-                    <ResponsiveNavbar />
-                    <div className="main-content">{children}</div>
-                </section>
+            <main className="flex min-h-screen flex-col">
+                <ResponsiveNavbar />
+                <div className="main-content flex-1">{children}</div>
+                <Footer />
             </main>
             <Toaster />
         </>

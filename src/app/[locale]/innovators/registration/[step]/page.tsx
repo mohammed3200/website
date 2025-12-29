@@ -71,6 +71,7 @@ export default function RegistrationStepPage() {
             };
 
             mutate(
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 { form: completeData as any },
                 {
                     onSuccess: () => {
@@ -149,10 +150,10 @@ export default function RegistrationStepPage() {
     }
 
     return (
-        <div className="w-full min-h-screen py-8 px-4 md:px-8">
-            <div className="max-w-4xl mx-auto">
+        <div className="w-full min-h-screen py-10 px-4 md:px-8 bg-gray-50">
+            <div className="max-w-5xl mx-auto">
                 {/* Back Button */}
-                <div className={`mb-6 ${isArabic ? "text-right" : "text-left"}`}>
+                <div className={`mb-8 ${isArabic ? "text-right" : "text-left"}`}>
                     <Back />
                 </div>
 
@@ -166,7 +167,7 @@ export default function RegistrationStepPage() {
                 />
 
                 {/* Step Content */}
-                <div className="bg-white rounded-lg shadow-md p-6 md:p-8 overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 md:p-12 overflow-hidden">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentStep}
