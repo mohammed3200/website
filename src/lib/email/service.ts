@@ -50,7 +50,7 @@ export class EmailService {
       try {
         this.transporter = createNodemailerTransport();
         this.isTestMode = false;
-        console.log('✅ Email service initialized with SMTP transport');
+
       } catch (error) {
         console.warn(
           '⚠️ Failed to initialize SMTP transport, falling back to test mode',
@@ -59,7 +59,7 @@ export class EmailService {
         this.isTestMode = true;
       }
     } else {
-      console.log('📧 No SMTP credentials found, using test transport');
+
       this.isTestMode = true;
     }
   }
@@ -370,7 +370,6 @@ export class EmailService {
         locale,
       });
     } catch (error) {
-      console.error('Error sending password reset:', error);
       return {
         success: false,
         error:

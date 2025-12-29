@@ -20,13 +20,5 @@ export function createNodemailerTransport(): nodemailer.Transporter {
 
   const transporter = nodemailer.createTransport(config);
 
-  // Log configuration (without sensitive data)
-  console.log('📧 Nodemailer transport created:', {
-    host: config.host,
-    port: config.port,
-    secure: config.secure,
-    user: config.auth.user,
-  });
-
   return transporter;
 }
