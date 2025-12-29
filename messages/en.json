@@ -37,6 +37,9 @@
     "subtitle": "Integration of academic and practical experiences.",
     "registration": "Join Us",
     "submit": "Submit an application",
+    "success_title": "Registration Completed!",
+    "success_message": "Thank you for registering. Your details have been submitted successfully. We will review your application and get back to you soon.",
+    "home": "Back to Home",
     "form": {
       "title": "The purpose of the partnership.",
       "subtitle": "Integrating academic expertise with practical experience and cooperating in developing local industry.",
@@ -112,6 +115,12 @@
   "Footer": {
     "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators  2024.",
     "privacyPolicy": "Privacy Policy",
-    "termsOfUse": "Terms of Use"
+    "termsOfUse": "Terms of Use",
+    "quickLinks": "Quick Links",
+    "resources": "Resources",
+    "contactUs": "Contact Us",
+    "backToTop": "Back to top",
+    "address": "Libya, Misurata, College of Industrial Technology",
+    "subtitle": "Empowering innovation and entrepreneurship through expert guidance and comprehensive support."
   }
 }
