@@ -3,56 +3,193 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-
 import { useTranslations } from "next-intl";
 import useLanguage from "@/hooks/use-language";
-
-import { Separator } from "./ui/separator";
-import { socials } from "@/constants";
+import { MainLogo, socials } from "@/constants";
+import { getNavItems } from "@/components/navigation/constants";
+import { Mail, MapPin, Phone, ArrowUp } from "lucide-react";
 
 export const Footer = () => {
-  const { isArabic } = useLanguage();
+  const { lang, isArabic } = useLanguage();
   const t = useTranslations("Footer");
+  const tNav = useTranslations("Navigation");
+
+  // Generate navigation items for Quick Links
+  const navItems = getNavItems(tNav, lang);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
-    <footer dir={isArabic ? "rtl" : "ltr"}>
-      <div className="w-full flex flex-col items-center">
-        <Separator className="mt-2 md:mt-4 bg-primary w-[80vw]" />
-        <div className="py-2 px-10 w-full">
-          <div className="flex w-full max-md:flex-col">
-            <div className="small-compact flex flex-1 flex-wrap items-center justify-center gap-5">
-              <p className="font-din-regular text-xs md:text-ms">
-                {t("copyright")}
-              </p>
-              <div className="flex items-center justify-center ms:ml-auto">
-                <p className="font-din-regular relative mr-9 text-p5 transition-all duration-500 hover:text-p1">
-                  {t("privacyPolicy")}
-                </p>
-                <p className="font-din-regular text-p5 transition-all duration-500 hover:text-p1">
-                  {t("termsOfUse")}
-                </p>
+    <footer
+      dir={isArabic ? "rtl" : "ltr"}
+      className="w-full bg-white border-t border-gray-200"
+    >
+      <div className="container mx-auto max-w-[90%]">
+        {/* Main Footer Content */}
+        <div className="py-12 lg:py-16">
+          <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
+
+            {/* Left Section: Information Columns (Links, Resources, Contact) */}
+            <div className="flex flex-col sm:flex-row gap-10 lg:gap-16 flex-1">
+
+              {/* Column 1: Quick Links */}
+              <div className="flex flex-col gap-4">
+                <h3 className="text-lg font-bold text-gray-900">
+                  {t("quickLinks") || "Quick Links"}
+                </h3>
+                <ul className="flex flex-col gap-3">
+                  {navItems.slice(0, 5).map((item) => (
+                    <li key={item.id}>
+                      <Link
+                        href={item.href || "#"}
+                        className="text-gray-500 hover:text-primary transition-colors text-base font-medium"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Column 2: Resources */}
+              <div className="flex flex-col gap-4">
+                <h3 className="text-lg font-bold text-gray-900">
+                  {t("resources") || "Resources"}
+                </h3>
+                <ul className="flex flex-col gap-3">
+                  <li>
+                    <Link
+                      href={`/${lang}/contact`}
+                      className="text-gray-500 hover:text-primary transition-colors text-base font-medium"
+                    >
+                      {tNav("contact")}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href={`/${lang}/faq`}
+                      className="text-gray-500 hover:text-primary transition-colors text-base font-medium"
+                    >
+                      FAQ
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 3: Contact Info */}
+              <div className="flex flex-col gap-4">
+                <h3 className="text-lg font-bold text-gray-900">
+                  {t("contactUs") || "Contact Us"}
+                </h3>
+                <ul className="flex flex-col gap-3">
+                  <li className="flex items-start gap-3 text-gray-500">
+                    <MapPin className="size-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-base font-medium leading-normal">
+                      {t("address")}
+                    </span>
+                  </li>
+                  <li className="flex items-center gap-3 text-gray-500">
+                    <Phone className="size-5 text-primary shrink-0" />
+                    <span dir="ltr" className="text-base font-medium">
+                      +218 91 000 0000
+                    </span>
+                  </li>
+                  <li className="flex items-center gap-3 text-gray-500">
+                    <Mail className="size-5 text-primary shrink-0" />
+                    <span className="text-base font-medium">info@cit.edu.ly</span>
+                  </li>
+                </ul>
               </div>
             </div>
-            <ul className="flex flex-1 justify-center gap-3 mt-4 md:mt-5 md:justify-end">
-              {socials.map(({ id, url, icon, title }) => (
-                <li key={id}>
+
+            {/* Right Section: Brand & Actions */}
+            <div className="flex flex-col sm:flex-row lg:flex-col justify-between gap-8 lg:gap-10 lg:min-w-[320px]">
+
+              {/* Brand & Socials */}
+              <div className="flex flex-col gap-6">
+                {/* Logo Area */}
+                <div className="flex items-center gap-4">
                   <Link
-                    href={url}
-                    className="flex size-7 md:size-10 items-center justify-center rounded-full border-2 border-primary bg-transparent"
+                    href={`/${lang}`}
+                    className="flex items-center justify-center bg-gray-50 rounded-lg p-3 hover:opacity-90 transition-opacity"
                   >
-                    <Image
-                      src={icon}
-                      alt={title}
-                      width={20}
-                      height={20}
-                      title={title}
-                      color="primary"
-                      className="size-2/3 object-contain h-auto"
-                    />
+                    <div className="size-16 flex items-center justify-center">
+                      <Image
+                        src={MainLogo.Logo}
+                        alt={tNav("centerName")}
+                        width={64}
+                        height={64}
+                        className="object-contain"
+                      />
+                    </div>
                   </Link>
-                </li>
-              ))}
-            </ul>
+                  <div className="flex flex-col">
+                    <h2 className="text-xl font-bold text-gray-900 leading-tight">
+                      {tNav("centerName")}
+                    </h2>
+                    <p className="text-sm text-gray-500 font-medium">
+                      {t("subtitle") || "Empowering innovation"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  {socials.map(({ id, url, icon, title }) => (
+                    <Link
+                      key={id}
+                      href={url}
+                      target="_blank"
+                      className="group flex size-12 items-center justify-center rounded-lg border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 hover:bg-primary hover:border-primary transition-all duration-200"
+                    >
+                      <Image
+                        src={icon}
+                        alt={title}
+                        width={24}
+                        height={24}
+                        className="size-6 transition-all opacity-40 backdrop-grayscale-0 group-hover:opacity-100 group-hover:brightness-0 group-hover:invert dark:brightness-0 dark:invert"
+                      />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Back to Top */}
+              <div className="flex sm:flex-col items-center sm:items-end gap-3">
+                <button
+                  onClick={scrollToTop}
+                  className="flex items-center justify-center size-10 rounded-lg border border-gray-200 bg-white text-gray-500 hover:text-white hover:bg-primary hover:border-primary transition-all duration-200 group"
+                  aria-label="Scroll to top"
+                >
+                  <ArrowUp className="size-5" />
+                </button>
+                <span className="text-lg font-medium text-gray-900">
+                  {t("backToTop")}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Bottom */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-gray-200 py-8">
+          <p className="text-base text-gray-500">
+            {t("copyright")}
+          </p>
+          <div className="flex gap-6">
+            <Link
+              href="#"
+              className="text-base text-gray-500 hover:text-primary transition-colors"
+            >
+              {t("termsOfUse")}
+            </Link>
+            <Link
+              href="#"
+              className="text-base text-gray-500 hover:text-primary transition-colors"
+            >
+              {t("privacyPolicy")}
+            </Link>
           </div>
         </div>
       </div>

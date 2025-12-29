@@ -37,53 +37,53 @@ const DesktopMenu = () => {
     return (
         <div
             className={cn(
-                "fixed top-0 inset-x-0 w-full z-50 transition-all duration-300",
-                isArabic && "rtl",
-                isScrolled
-                    ? [
-                        "py-3 px-6",
-                        "bg-white/95 backdrop-blur-lg",
-                        "border-b border-gray-200",
-                        "shadow-lg",
-                    ]
-                    : ["py-4 px-6", "bg-white/80 backdrop-blur-md"]
+                "sticky inset-x-0 mx-auto z-50 w-full max-w-7xl px-4 transition-all duration-300",
+                isScrolled ? "top-4" : "top-6"
             )}
         >
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div
+                className={cn(
+                    "w-full bg-white/80 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg transition-all duration-300",
+                    "flex items-center justify-between px-6",
+                    isScrolled ? "py-2 shadow-xl" : "py-3 shadow-lg"
+                )}
+            >
                 {/* Logo Section */}
                 <Link
                     href={`/${locale}`}
-                    className={cn(
-                        "flex items-center gap-3 transition-transform duration-300",
-                        isScrolled && "scale-90"
-                    )}
+                    className="flex items-center gap-4 shrink-0 transition-transform duration-300 hover:opacity-90"
                 >
-                    <Image
-                        src={
-                            isArabic
-                                ? MainLogo.CenterLogoSmall
-                                : MainLogo.CenterLogoSmallEnglish
-                        }
-                        alt="Center Logo"
-                        width={isScrolled ? 50 : 60}
-                        height={isScrolled ? 50 : 60}
-                        className="h-auto"
-                    />
-                    <Image
-                        src={
-                            isArabic
-                                ? MainLogo.CollegeLogoSmall
-                                : MainLogo.CollegeLogoSmallEnglish
-                        }
-                        alt="College Logo"
-                        width={isScrolled ? 50 : 60}
-                        height={isScrolled ? 50 : 60}
-                        className="h-auto"
-                    />
+                    <div className="relative h-12 w-12 md:h-14 md:w-14">
+                        <Image
+                            src={
+                                isArabic
+                                    ? MainLogo.Logo
+                                    : MainLogo.Logo
+                            }
+                            alt="Center Logo"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
+                    </div>
+                    <div className="h-8 w-[1px] bg-gray-300" /> {/* Vertical divider */}
+                    <div className="relative h-12 w-12 md:h-14 md:w-14">
+                        <Image
+                            src={
+                                isArabic
+                                    ? MainLogo.LogoCollege
+                                    : MainLogo.LogoCollege
+                            }
+                            alt="College Logo"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
+                    </div>
                 </Link>
 
                 {/* Navigation Items */}
-                <nav className="flex items-center gap-1">
+                <nav className="hidden md:flex items-center gap-1 mx-4">
                     {navItems.map((item) => {
                         const isActive = pathname === item.href;
                         const hasChildren = item.children && item.children.length > 0;
@@ -95,13 +95,16 @@ const DesktopMenu = () => {
                                     key={item.id}
                                     href={item.href || "#"}
                                     className={cn(
-                                        "px-4 py-2 font-medium text-sm transition-all duration-200 rounded-lg",
+                                        "px-4 py-2 font-din-medium text-sm transition-all duration-200 rounded-lg relative overflow-hidden group",
                                         isActive
-                                            ? "text-orange-600 bg-orange-50"
-                                            : "text-gray-700 hover:text-orange-600 hover:bg-orange-50"
+                                            ? "text-orange-600 bg-orange-50 font-din-bold"
+                                            : "text-gray-700 hover:text-orange-600 hover:bg-orange-50/50"
                                     )}
                                 >
-                                    {item.label}
+                                    <span className="relative z-10">{item.label}</span>
+                                    {isActive && (
+                                        <div className="absolute bottom-0 left-0 w-full h-0.5 bg-orange-500" />
+                                    )}
                                 </Link>
                             );
                         }
@@ -116,10 +119,10 @@ const DesktopMenu = () => {
                             >
                                 <button
                                     className={cn(
-                                        "px-4 py-2 font-medium text-sm transition-all duration-200 rounded-lg flex items-center gap-1",
-                                        isActive
+                                        "px-4 py-2 font-din-medium text-sm transition-all duration-200 rounded-lg flex items-center gap-1 group",
+                                        isActive || activeDropdown === item.id
                                             ? "text-orange-600 bg-orange-50"
-                                            : "text-gray-700 hover:text-orange-600 hover:bg-orange-50"
+                                            : "text-gray-700 hover:text-orange-600 hover:bg-orange-50/50"
                                     )}
                                 >
                                     {item.label}
@@ -132,36 +135,39 @@ const DesktopMenu = () => {
                                 </button>
 
                                 {/* Dropdown Content */}
-                                {activeDropdown === item.id && (
-                                    <div
-                                        className={cn(
-                                            "absolute top-full mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50",
-                                            isArabic ? "right-0" : "left-0"
-                                        )}
-                                    >
-                                        {item.children?.map((child, index) => (
-                                            <Link
-                                                key={index}
-                                                href={child.href}
-                                                className="block px-4 py-3 hover:bg-orange-50 transition-colors group"
-                                            >
-                                                <div className="text-sm font-medium text-gray-900 group-hover:text-orange-600">
-                                                    {child.label}
-                                                </div>
-                                                <div className="text-xs text-gray-500 mt-1">
-                                                    {child.description}
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                )}
+                                <div
+                                    className={cn(
+                                        "absolute top-full mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-100 py-2 z-50 transition-all duration-200 origin-top",
+                                        activeDropdown === item.id
+                                            ? "opacity-100 scale-100 translate-y-0"
+                                            : "opacity-0 scale-95 translate-y-2 pointer-events-none",
+                                        isArabic ? "right-0" : "left-0"
+                                    )}
+                                >
+                                    {item.children?.map((child, index) => (
+                                        <Link
+                                            key={index}
+                                            href={child.href}
+                                            className="block px-4 py-3 hover:bg-orange-50 transition-colors group relative border-l-2 border-transparent hover:border-orange-500"
+                                        >
+                                            <div className="text-sm font-din-medium text-gray-900 group-hover:text-orange-600">
+                                                {child.label}
+                                            </div>
+                                            <div className="text-xs text-gray-500 mt-1 font-din-regular line-clamp-1">
+                                                {child.description}
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         );
                     })}
                 </nav>
 
                 {/* Language Switcher */}
-                <TranslateButton />
+                <div className="flex items-center gap-2">
+                    <TranslateButton />
+                </div>
             </div>
         </div>
     );
