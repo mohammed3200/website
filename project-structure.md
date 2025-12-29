@@ -1,6 +1,6 @@
 # File Tree: website
 
-**Generated:** 12/27/2025, 7:14:56 PM
+**Generated:** 12/28/2025, 6:01:50 PM
 **Root Path:** `c:\Users\iG\Documents\Next.JS\website`
 
 ```
@@ -314,17 +314,17 @@
 │   │   │   │   └── 📄 use-update-status-collaborator.ts
 │   │   │   ├── 📁 components
 │   │   │   │   ├── 📁 multi-step
-│   │   │   │   │   ├── 📄 CapabilitiesStep.tsx
-│   │   │   │   │   ├── 📄 CompanyInfoStep.tsx
-│   │   │   │   │   ├── 📄 IndustryInfoStep.tsx
-│   │   │   │   │   ├── 📄 ProgressIndicator.tsx
-│   │   │   │   │   ├── 📄 ReviewStep.tsx
-│   │   │   │   │   ├── 📄 StepNavigation.tsx
-│   │   │   │   │   └── 📄 index.ts
-│   │   │   │   ├── 📄 CardCompanies.tsx
-│   │   │   │   ├── 📄 Hero.tsx
-│   │   │   │   ├── 📄 Introduction.tsx
-│   │   │   │   └── 📄 index.ts
+│   │   │   │   │   ├── 📄 capabilities-step.tsx
+│   │   │   │   │   ├── 📄 company-info-step.tsx
+│   │   │   │   │   ├── 📄 index.ts
+│   │   │   │   │   ├── 📄 industry-info-step.tsx
+│   │   │   │   │   ├── 📄 progress-indicator.tsx
+│   │   │   │   │   ├── 📄 review-step.tsx
+│   │   │   │   │   └── 📄 step-navigation.tsx
+│   │   │   │   ├── 📄 card-companies.tsx
+│   │   │   │   ├── 📄 hero.tsx
+│   │   │   │   ├── 📄 index.ts
+│   │   │   │   └── 📄 introduction.tsx
 │   │   │   ├── 📁 hooks
 │   │   │   │   ├── 📄 use-collaborator-id.ts
 │   │   │   │   ├── 📄 useMultiStepCollaboratorForm.ts
@@ -347,15 +347,15 @@
 │   │   │   │   └── 📄 use-joining-innovators.ts
 │   │   │   ├── 📁 components
 │   │   │   │   ├── 📁 multi-step
-│   │   │   │   │   ├── 📄 PersonalInfoStep.tsx
-│   │   │   │   │   ├── 📄 ProgressIndicator.tsx
-│   │   │   │   │   ├── 📄 ProjectDetailsStep.tsx
-│   │   │   │   │   ├── 📄 ProjectOverviewStep.tsx
-│   │   │   │   │   ├── 📄 ReviewStep.tsx
-│   │   │   │   │   ├── 📄 StepNavigation.tsx
-│   │   │   │   │   └── 📄 index.ts
-│   │   │   │   ├── 📄 Hero.tsx
+│   │   │   │   │   ├── 📄 index.ts
+│   │   │   │   │   ├── 📄 personal-info-step.tsx
+│   │   │   │   │   ├── 📄 progress-indicator.tsx
+│   │   │   │   │   ├── 📄 project-details-step.tsx
+│   │   │   │   │   ├── 📄 project-overview-step.tsx
+│   │   │   │   │   ├── 📄 review-step.tsx
+│   │   │   │   │   └── 📄 step-navigation.tsx
 │   │   │   │   ├── 📄 card-innovators.tsx
+│   │   │   │   ├── 📄 hero.tsx
 │   │   │   │   ├── 📄 index.ts
 │   │   │   │   └── 📄 proem.tsx
 │   │   │   ├── 📁 constants
@@ -455,7 +455,7 @@
 ├── 📄 next.config.ts
 ├── ⚙️ package.json
 ├── 📄 postcss.config.mjs
-├── 📄 project-structure.txt
+├── 📝 project-structure.md
 ├── 📄 tailwind.config.ts
 └── ⚙️ tsconfig.json
 ```
