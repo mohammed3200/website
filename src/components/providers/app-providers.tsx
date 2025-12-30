@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { SessionProvider } from "next-auth/react";
 import { NextIntlClientProvider } from "next-intl";
 import type { ReactNode } from "react";
@@ -8,19 +9,18 @@ import type { ReactNode } from "react";
 export function AppProviders({
   children,
   messages,
-  locale, // Add locale prop
+  locale,
 }: {
   children: ReactNode;
   messages: any;
-  locale: string; // Add type for locale
+  locale: string;
 }) {
   return (
     <SessionProvider>
-      {/* Pass locale to NextIntlClientProvider */}
-      <NextIntlClientProvider 
-      locale={locale} 
-      messages={messages} 
-      timeZone="Africa/Tripoli" // Add this line
+      <NextIntlClientProvider
+        locale={locale}
+        messages={messages}
+        timeZone="Africa/Tripoli"
       >
         {children}
       </NextIntlClientProvider>

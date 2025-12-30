@@ -1,7 +1,7 @@
 import { QueryProvider } from '@/components';
 import type { Metadata } from 'next';
 import './globals.css';
-import { AppProviders } from '@/components/providers/app-providers'; // Adjust import path
+import { AppProviders } from '@/components/providers/app-providers';
 import { getLocale, getMessages } from 'next-intl/server';
 import { Almarai as AlmaraiGoogle } from 'next/font/google';
 
@@ -23,25 +23,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Force cache invalidation
-  let locale;
-  try {
-    locale = await getLocale();
-  } catch {
-    locale = 'ar';
-  }
-
-  // Ensure locale has a value
-  if (!locale) {
-    locale = 'ar';
-  }
-  let messages;
-  try {
-    messages = await getMessages({ locale });
-  } catch {
-    messages = {};
-  }
-
+  const locale = await getLocale();
+  const messages = await getMessages();
   const direction = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
