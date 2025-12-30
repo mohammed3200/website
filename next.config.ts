@@ -1,7 +1,10 @@
-import type { NextConfig } from "next";
-import createNextIntlPlugin from "next-intl/plugin";
+import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
+import path from 'path';
 
-const withNextIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin(
+  path.join(process.cwd(), 'src/i18n/request.ts'),
+);
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
@@ -11,7 +14,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'picsum.photos',
         port: '',
-        pathname: '/**', 
+        pathname: '/**',
       },
     ],
   },
