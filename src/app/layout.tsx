@@ -27,7 +27,7 @@ export default async function RootLayout({
   let locale;
   try {
     locale = await getLocale();
-  } catch (error) {
+  } catch {
     locale = 'ar';
   }
 
@@ -38,7 +38,7 @@ export default async function RootLayout({
   let messages;
   try {
     messages = await getMessages({ locale });
-  } catch (error) {
+  } catch {
     messages = {};
   }
 
