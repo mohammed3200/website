@@ -23,8 +23,20 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
-  const messages = await getMessages();
+  let locale;
+  try {
+    locale = await getLocale();
+  } catch {
+    locale = 'ar';
+  }
+
+  let messages;
+  try {
+    messages = await getMessages({ locale });
+  } catch {
+    messages = {};
+  }
+
   const direction = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
