@@ -22,9 +22,7 @@ export async function middleware(req: NextRequest) {
   
   // Handle auth routes - these don't need locale
   if (pathname.startsWith('/auth')) {
-    // If already logged in, redirect based on role
     if (token) {
-      // Check if user has admin permissions
       if (token.permissions) {
         const permissions = token.permissions as Array<{resource: string, action: string}>;
         const hasDashboardAccess = permissions.some(
@@ -36,14 +34,13 @@ export async function middleware(req: NextRequest) {
         }
       }
       
-      // Regular users go to localized home
       const locale = getPreferredLocale(req);
       return NextResponse.redirect(new URL(`/${locale}`, req.url));
     }
     return NextResponse.next();
   }
   
-  // Handle admin routes - these require authentication
+  // Handle admin routes
   if (pathname.startsWith('/admin')) {
     if (!token) {
       const loginUrl = new URL('/auth/login', req.url);
@@ -51,7 +48,6 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
     
-    // Check permissions
     if (token.permissions) {
       const permissions = token.permissions as Array<{resource: string, action: string}>;
       const hasDashboardAccess = permissions.some(
@@ -66,26 +62,28 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
   
-  // Handle root path - this is now handled by the root page.tsx
+  // Handle root path - redirect to preferred locale
   if (pathname === '/') {
-    // Let the page.tsx handle the redirect
-    return NextResponse.next();
+    const locale = getPreferredLocale(req);
+    return NextResponse.redirect(new URL(`/${locale}`, req.url));
   }
   
-  // All other routes should be handled by intl middleware
+  // All other routes handled by intl middleware
   return intlMiddleware(req);
 }
 
 function getPreferredLocale(req: NextRequest): string {
   // Check cookie for saved preference
   const localeCookie = req.cookies.get('NEXT_LOCALE');
-  if (localeCookie) return localeCookie.value;
+  if (localeCookie && ['ar', 'en'].includes(localeCookie.value)) {
+    return localeCookie.value;
+  }
   
   // Check Accept-Language header
   const acceptLanguage = req.headers.get('accept-language');
   if (acceptLanguage) {
-    if (acceptLanguage.includes('ar')) return 'ar';
-    if (acceptLanguage.includes('en')) return 'en';
+    if (acceptLanguage.toLowerCase().includes('ar')) return 'ar';
+    if (acceptLanguage.toLowerCase().includes('en')) return 'en';
   }
   
   // Default to Arabic
@@ -94,13 +92,6 @@ function getPreferredLocale(req: NextRequest): string {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\..*).*)',
   ]
 };

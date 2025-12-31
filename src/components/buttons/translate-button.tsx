@@ -17,8 +17,7 @@ export const TranslateButton = () => {
     const isDesktop = useMedia("(min-width: 1024px)", true);
     const [isPending, startTransition] = useTransition();
 
-    // Get current locale from pathname
-    const currentLocale = pathname.split("/").filter(Boolean)[0] || "en";
+    const currentLocale = pathname.split("/").filter(Boolean)[0] || "ar";
 
     const handleLanguageChange = (localeCode: string) => {
         if (localeCode === currentLocale) return;
@@ -26,7 +25,6 @@ export const TranslateButton = () => {
         startTransition(() => {
             const pathSegments = pathname.split("/").filter(Boolean);
 
-            // Replace the first segment (locale) or add it if missing
             if (pathSegments.length > 0 && (pathSegments[0] === "en" || pathSegments[0] === "ar")) {
                 pathSegments[0] = localeCode;
             } else {
@@ -34,6 +32,10 @@ export const TranslateButton = () => {
             }
 
             const newPath = `/${pathSegments.join("/")}`;
+
+            // Set cookie to persist preference
+            document.cookie = `NEXT_LOCALE=${localeCode}; path=/; max-age=31536000; SameSite=Lax`;
+
             router.replace(newPath);
         });
     };
