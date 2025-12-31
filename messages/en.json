@@ -32,6 +32,11 @@
     "title": "Something Went Wrong.",
     "message": "We're experiencing a temporary issue. Please try again later."
   },
+  "GlobalError": {
+    "title": "Under Maintenance",
+    "description": "We are currently working on improving our site. Please check back soon. Back to",
+    "homePage": "Home Page"
+  },
   "NotFound": {
     "title": "Page not found",
     "description": "We couldn't find the page you were looking for. Please check the URL or return to",
