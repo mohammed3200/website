@@ -37,7 +37,7 @@ const DesktopMenu = () => {
     return (
         <div
             className={cn(
-                "sticky inset-x-0 mx-auto z-50 w-full max-w-7xl px-4 transition-all duration-300",
+                "sticky inset-x-0 mx-auto z-50 w-fit px-4 transition-all duration-300",
                 isScrolled ? "top-4" : "top-6"
             )}
         >
