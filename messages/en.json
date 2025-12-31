@@ -32,6 +32,11 @@
     "title": "Something Went Wrong.",
     "message": "We're experiencing a temporary issue. Please try again later."
   },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "We couldn't find the page you were looking for. Please check the URL or return to",
+    "homePage": "Home Page"
+  },
   "collaboratingPartners": {
     "title": "Our slogan",
     "subtitle": "Integration of academic and practical experiences.",
