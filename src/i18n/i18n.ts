@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getRequestConfig } from 'next-intl/server';
 import { routing } from './routing';
 
