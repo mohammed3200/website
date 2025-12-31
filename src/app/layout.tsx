@@ -2,7 +2,7 @@ import { QueryProvider } from '@/components';
 import type { Metadata } from 'next';
 import './globals.css';
 import { AppProviders } from '@/components/providers/app-providers';
-import { getLocale, getMessages } from 'next-intl/server';
+import { getLocale } from 'next-intl/server';
 import { Almarai as AlmaraiGoogle } from 'next/font/google';
 
 const almarai = AlmaraiGoogle({
@@ -30,19 +30,12 @@ export default async function RootLayout({
     locale = 'ar';
   }
 
-  let messages;
-  try {
-    messages = await getMessages({ locale });
-  } catch {
-    messages = {};
-  }
-
   const direction = locale === 'ar' ? 'rtl' : 'ltr';
 
   return (
     <html lang={locale} dir={direction}>
       <body className={`${almarai.variable} font-sans`}>
-        <AppProviders messages={messages} locale={locale}>
+        <AppProviders>
           <QueryProvider>{children}</QueryProvider>
         </AppProviders>
       </body>

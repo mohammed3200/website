@@ -5,9 +5,26 @@ import Image from "next/image";
 import { InterfaceImage } from "@/constants";
 import useLanguage from "@/hooks/use-language";
 import { BackgroundBeams } from "@/components/ui/background-beams";
+import { NextIntlClientProvider, useTranslations } from "next-intl";
+import arMessages from "../../messages/ar.json";
 
 export default function NotFound() {
+  return (
+    <NextIntlClientProvider locale="ar" messages={arMessages} timeZone="Africa/Tripoli">
+      <NotFoundContent />
+    </NextIntlClientProvider>
+  );
+}
+
+function NotFoundContent() {
   const { isArabic, lang } = useLanguage();
+  const t = useTranslations("NotFound");
+
+  // Fallback to 'ar' if lang is undefined/empty to prevent 404 loops or broken links
+  // But wait, lang comes from useLocale now which defaults to configured locale.
+  // Actually in global 404, we might not have a locale in URL.
+  // useLanguage uses NextIntl's useLocale, which needs context.
+  // NotFoundContent is inside NextIntlClientProvider with "ar" context, so lang will be "ar".
 
   return (
     <div>
@@ -27,30 +44,17 @@ export default function NotFound() {
               className="object-cover h-auto"
             />
             <h2 className="font-din-bold h6 md:h5 ">
-              {isArabic ? "لم يتم العثور على الصفحة" : "Page not found"}
+              {t("title")}
             </h2>
             <div className="font-din-regular body-2 max-lg:max-w-sm">
-              {isArabic ? (
-                <p className="">
-                  لم نتمكن من العثور على الصفحة التي تبحث عنها. يرجى التحقق
-                  من عنوان URL أو العودة إلى{" "}
-                  <Link href={`/${lang}`}>
-                    <span className="text-primary cursor-pointer hover:underline hover:decoration-4 hover:underline-offset-[6px]">
-                      الصفحة الرئيسية
-                    </span>
-                  </Link>
-                </p>
-              ) : (
-                <p className="">
-                  We couldn&apos;t find the page you were looking for.
-                  Please check the URL or return to{" "}
-                  <Link href={`/${lang}`}>
-                    <span className="text-primary cursor-pointer hover:underline hover:decoration-4 hover:underline-offset-[6px]">
-                      Home Page
-                    </span>
-                  </Link>
-                </p>
-              )}
+              <p className="">
+                {t("description")}{" "}
+                <Link href={`/${lang}`}>
+                  <span className="text-primary cursor-pointer hover:underline hover:decoration-4 hover:underline-offset-[6px]">
+                    {t("homePage")}
+                  </span>
+                </Link>
+              </p>
             </div>
           </div>
         </section>
