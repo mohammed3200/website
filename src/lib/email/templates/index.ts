@@ -8,10 +8,11 @@ import EmailVerification from './EmailVerification';
 import AdminNotification from './AdminNotification';
 
 export interface AdminNotificationData {
+  adminName: string;
   title: string;
   message: string;
   actionUrl?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   locale?: 'ar' | 'en';
 }
 

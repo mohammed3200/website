@@ -24,7 +24,6 @@ const BaseLayout = ({ children, locale = 'en' }: BaseLayoutProps) => {
   // Dynamic asset URLs
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ebic.cit.edu.ly';
   const logoUrl = `${baseUrl}/assets/icons/logo.svg`;
-  const headerBgUrl = `${baseUrl}/assets/images/backgroundHeader.svg`;
 
   return (
     <Html dir={dir} lang={locale}>

@@ -16,6 +16,8 @@ import {
   getTwoFactorAuthSubject,
   renderAdminNotification,
   getAdminNotificationSubject,
+  renderEmailVerification,
+  getEmailVerificationSubject,
 } from './templates';
 
 export interface EmailOptions {
@@ -334,6 +336,46 @@ export class EmailService {
       };
     }
   }
+  
+  /**
+   * Send verification email
+   */
+  async sendEmailVerification(
+    data: {
+      name: string;
+      email: string;
+      verificationLink: string;
+    },
+    locale: 'ar' | 'en' = 'en',
+    expiresIn?: string,
+  ): Promise<SendResult> {
+    try {
+      const html = await renderEmailVerification({
+        name: data.name,
+        verificationLink: data.verificationLink,
+        locale,
+        expiresIn: expiresIn || (locale === 'ar' ? '24 ساعة' : '24 hours'),
+      });
+
+      const subject = getEmailVerificationSubject(locale);
+
+      return this.sendEmail({
+        to: data.email,
+        subject,
+        html,
+        locale,
+      });
+    } catch (error) {
+      console.error('Error sending verification email:', error);
+      return {
+        success: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to send verification email',
+      };
+    }
+  }
 
   /**
    * Send admin notification email
@@ -353,6 +395,7 @@ export class EmailService {
   ): Promise<SendResult> {
     try {
       const html = await renderAdminNotification({
+        adminName: data.adminName,
         title: data.title,
         message: data.message,
         actionUrl: data.actionUrl,
