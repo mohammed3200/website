@@ -3,7 +3,7 @@ import { BackgroundBeams } from "@/components/ui/background-beams";
 import { ResponsiveNavbar } from "@/components/navigation";
 import { Footer } from "@/components";
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Almarai as AlmaraiGoogle } from 'next/font/google';
@@ -42,7 +42,7 @@ export default async function LocaleLayout({
     let messages;
     try {
         messages = (await import(`../../../messages/${locale}.json`)).default;
-    } catch (error) {
+    } catch (_error) {
         notFound();
     }
 
