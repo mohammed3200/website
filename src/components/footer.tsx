@@ -31,7 +31,7 @@ export const Footer = () => {
         <div className="py-12 lg:py-16">
           <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
 
-            {/* Left Section: Information Columns (Links, Resources, Contact) */}
+            {/* Left Section: Information Columns (Links, Contact) */}
             <div className="flex flex-col sm:flex-row gap-10 lg:gap-16 flex-1">
 
               {/* Column 1: Quick Links */}
@@ -50,23 +50,7 @@ export const Footer = () => {
                       </Link>
                     </li>
                   ))}
-                </ul>
-              </div>
-
-              {/* Column 2: Resources */}
-              <div className="flex flex-col gap-4">
-                <h3 className="text-lg font-bold text-gray-900">
-                  {t("resources") || "Resources"}
-                </h3>
-                <ul className="flex flex-col gap-3">
-                  <li>
-                    <Link
-                      href={`/${lang}/contact`}
-                      className="text-gray-500 hover:text-primary transition-colors text-base font-medium"
-                    >
-                      {tNav("contact")}
-                    </Link>
-                  </li>
+                  {/* Added FAQ Link */}
                   <li>
                     <Link
                       href={`/${lang}/faq`}
@@ -78,17 +62,24 @@ export const Footer = () => {
                 </ul>
               </div>
 
-              {/* Column 3: Contact Info */}
-              <div className="flex flex-col gap-4">
+              {/* Column 2: Contact Info */}
+              <div className="flex flex-col gap-4 flex-1">
                 <h3 className="text-lg font-bold text-gray-900">
                   {t("contactUs") || "Contact Us"}
                 </h3>
-                <ul className="flex flex-col gap-3">
-                  <li className="flex items-start gap-3 text-gray-500">
-                    <MapPin className="size-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-base font-medium leading-normal">
-                      {t("address")}
-                    </span>
+                <ul className="flex flex-col gap-4">
+                  {/* Google Map Embed */}
+                  <li className="w-full h-48 rounded-lg overflow-hidden border border-gray-200">
+                    <iframe
+                      src="https://maps.google.com/maps?q=32.37082,15.07411&z=15&output=embed"
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Misurata College of Industrial Technology Location"
+                    ></iframe>
                   </li>
                   <li className="flex items-center gap-3 text-gray-500">
                     <Phone className="size-5 text-primary shrink-0" />
@@ -175,7 +166,7 @@ export const Footer = () => {
         {/* Footer Bottom */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-gray-200 py-8">
           <p className="text-base text-gray-500">
-            {t("copyright")}
+            {t("copyright", { year: new Date().getFullYear() })}
           </p>
           <div className="flex gap-6">
             <Link

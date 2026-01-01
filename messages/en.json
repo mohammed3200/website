@@ -128,7 +128,7 @@
     "PhoneExists": "Phone number already exists"
   },
   "Footer": {
-    "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators  2024.",
+    "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators {year}.",
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
     "quickLinks": "Quick Links",
