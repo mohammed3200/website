@@ -12,10 +12,14 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
   return {
     locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
+    messages: (
+      await import(`../../messages/${locale}.json`).catch(() => ({
+        default: {},
+      }))
+    ).default,
     // Add timeZone configuration
     timeZone: 'Africa/Tripoli',
     // Optional but recommended for consistent server/client rendering
-    now: new Date()
+    now: new Date(),
   };
 });
