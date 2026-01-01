@@ -39,8 +39,6 @@ const BaseLayout = ({ children, locale = 'en' }: BaseLayoutProps) => {
           <Section
             style={{
               ...header,
-              backgroundImage: `linear-gradient(180deg, rgba(38, 50, 56, 0.85) 6.73%, rgba(59, 80, 87, 0.85) 51.44%, rgba(81, 110, 117, 0.85) 89.9%), url(${headerBgUrl})`,
-              backgroundBlendMode: 'overlay',
             }}
           >
             {/* Content */}
@@ -114,14 +112,13 @@ const container: React.CSSProperties = {
 };
 
 const header: React.CSSProperties = {
-  background:
-    'linear-gradient(180deg, rgba(38, 50, 56, 0.98) 6.73%, #3B5057 51.44%, #516E75 89.9%)',
+  background: 'linear-gradient(135deg, #fe6601 0%, #fd7724 100%)',
   backgroundRepeat: 'no-repeat',
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   padding: '40px 20px',
   textAlign: 'center' as const,
-  borderRadius: '10% 10% 0 0',
+  borderRadius: '10px 10px 0 0',
   position: 'relative',
 };
 

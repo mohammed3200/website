@@ -2,7 +2,12 @@
   "Navigation": {
     "home": "Home",
     "entrepreneurship": "Entrepreneurship",
+    "entrepreneurshipDesc": "Learn about our entrepreneurship programs",
     "incubators": "Incubators",
+    "incubatorsDesc": "Discover our business incubators",
+    "entrepreneurshipAndIncubators": "Entrepreneurship & Incubators",
+    "segments": "Segments",
+    "segmentsDesc": "Explore our focused sectors",
     "collaboratingPartners": "Collaborating Partners",
     "CreatorsAndInnovators": "Creators and Innovators",
     "contact": "Contact Us",

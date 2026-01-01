@@ -2,7 +2,12 @@
   "Navigation": {
     "home": "الصفحة الرئيسية",
     "entrepreneurship": "الريادة",
+    "entrepreneurshipDesc": "تعرف على برامج ريادة الأعمال لدينا",
     "incubators": "الحاضنات",
+    "incubatorsDesc": "اكتشف حاضنات الأعمال لدينا",
+    "entrepreneurshipAndIncubators": "الريادة والحاضنات",
+    "segments": "القطاعات",
+    "segmentsDesc": "استكشف قطاعاتنا المتخصصة",
     "collaboratingPartners": "الشركات المتعاونة",
     "CreatorsAndInnovators": "المبدعون والمبتكرون",
     "contact": "تواصل معنا",

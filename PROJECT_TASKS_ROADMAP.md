@@ -1,9 +1,11 @@
 # Project Tasks Roadmap
+
 **Center for Leadership and Business Incubators - Misrata**
 
 ---
 
 ## Table of Contents
+
 1. [Task 1: Finalize Email System Templates](#task-1-finalize-email-system-templates)
 2. [Task 2: Redesign Innovators & Creators Feature](#task-2-redesign-innovators--creators-feature)
 3. [Task 3: Send Notification Messages to System Administrators](#task-3-send-notification-messages-to-system-administrators)
@@ -13,6 +15,9 @@
 7. [Task 7: Integrate Email & WhatsApp for Registration Workflows](#task-7-integrate-email--whatsapp-for-registration-workflows)
 8. [Task 8: Standardize File Naming Convention](#task-8-standardize-file-naming-convention)
 9. [Task 9: Build WhatsApp Integration System](#task-9-build-whatsapp-integration-system)
+10. [Task 10: Navigation Improvements](#task-10-navigation-improvements)
+11. [Task 11: News Section UI Enhancements](#task-11-news-section-ui-enhancements)
+12. [Task 12: Fix Registration Form Data Persistence](#task-12-fix-registration-form-data-persistence)
 
 ---
 
@@ -21,6 +26,7 @@
 This document outlines the development tasks for enhancing the Center for Leadership and Business Incubators - Misrata platform. The tasks are organized by priority and include detailed subtasks, technical requirements, and acceptance criteria.
 
 **Tech Stack Reference:**
+
 - Frontend: Next.js 15.1.2, React 19, TypeScript, Tailwind CSS
 - Backend: Hono.js, Prisma ORM
 - Database: MySQL
@@ -35,9 +41,11 @@ This document outlines the development tasks for enhancing the Center for Leader
 ### Status: 🟡 In Progress
 
 ### Description
+
 Complete and customize the existing email system templates to ensure they are production-ready with proper branding, bilingual support, and all necessary workflows.
 
 ### Current State
+
 - ✅ Basic email infrastructure exists (`src/features/email/`)
 - ✅ Email documentation available (`docs/email/`)
 - ✅ Nodemailer and React Email configured
@@ -46,6 +54,7 @@ Complete and customize the existing email system templates to ensure they are pr
 ### Subtasks
 
 #### 1.1 Review and Test Existing Templates
+
 - [ ] Review email templates in `src/lib/email/templates/` (if they exist)
 - [ ] Test submission confirmation templates (English/Arabic)
 - [ ] Test status update templates (approval/rejection)
@@ -54,6 +63,7 @@ Complete and customize the existing email system templates to ensure they are pr
 - [ ] Test email rendering on multiple clients (Gmail, Outlook, mobile)
 
 #### 1.2 Customize Templates for Branding
+
 - [ ] Add EBIC logo and college branding to all templates
 - [ ] Apply consistent color scheme (primary: orange, matching website)
 - [ ] Add footer with contact information and social links
@@ -61,6 +71,7 @@ Complete and customize the existing email system templates to ensure they are pr
 - [ ] Add unsubscribe/preferences link (if applicable)
 
 #### 1.3 Create Additional Templates
+
 - [ ] Welcome email for new users
 - [ ] Password reset email template
 - [ ] Account verification email
@@ -68,6 +79,7 @@ Complete and customize the existing email system templates to ensure they are pr
 - [ ] Admin notification templates
 
 #### 1.4 Template Content Enhancement
+
 - [ ] Improve copywriting for all templates (professional tone)
 - [ ] Add clear call-to-action buttons
 - [ ] Include estimated response times
@@ -75,6 +87,7 @@ Complete and customize the existing email system templates to ensure they are pr
 - [ ] Implement personalization tokens (name, company, etc.)
 
 #### 1.5 Testing and Validation
+
 - [ ] Run test-email-service.ts script
 - [ ] Verify SMTP connection with Gmail
 - [ ] Test email delivery to multiple providers
@@ -82,6 +95,7 @@ Complete and customize the existing email system templates to ensure they are pr
 - [ ] Verify database logging in `EmailLog` table
 
 ### Technical Requirements
+
 - React Email components (`@react-email/components`)
 - Handlebars for dynamic content
 - Bilingual support (Arabic RTL, English LTR)
@@ -89,11 +103,13 @@ Complete and customize the existing email system templates to ensure they are pr
 - Accessibility (ARIA labels, alt text)
 
 ### Files to Modify/Create
+
 - `src/lib/email/templates/` (all template files)
 - `src/app/admin/settings/email-templates/` (Handlebars templates)
 - `docs/email/templates.md` (documentation)
 
 ### Acceptance Criteria
+
 - [ ] All templates render correctly in email preview
 - [ ] Arabic templates display properly with RTL layout
 - [ ] Emails pass spam filter tests
@@ -110,9 +126,11 @@ Complete and customize the existing email system templates to ensure they are pr
 ### Priority: 🔴 HIGH
 
 ### Description
+
 Redesign and enhance the Innovators & Creators feature to include additional required fields and support for multiple project file uploads. This task involves database schema changes, form redesign, file upload functionality, and backend API updates.
 
 ### Current State
+
 - ✅ Basic Innovator model exists with: name, email, phone, projectTitle, projectDescription, objective, stageDevelopment
 - ✅ Registration form implemented (`innovators-registration-form.tsx`)
 - ✅ Single image upload supported via `imageId`
@@ -120,6 +138,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 - ❌ Missing: Multiple project file upload support (PDF, Word, JPG, PNG, etc.)
 
 ### Required New Fields
+
 1. **Location** - Innovator's geographical location (string)
 2. **Specialization** - Area of expertise/industry sector (string)
 3. **Project Files** - Multiple file uploads (documents, images, presentations)
@@ -127,7 +146,9 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 ### Subtasks
 
 #### 2.1 Database Schema Updates
+
 - [ ] Update `Innovator` model in `prisma/schema.prisma`:
+
   ```prisma
   model Innovator {
     id                 String                @id @default(cuid())
@@ -147,7 +168,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
     updatedAt          DateTime              @updatedAt
     emailLogs          EmailLog[]            @relation("InnovatorEmails")
     projectFiles       InnovatorProjectFile[] // NEW: Multiple file uploads
-    
+
     @@index([email])
     @@index([status])
     @@index([specialization])
@@ -155,6 +176,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
   ```
 
 - [ ] Create new `InnovatorProjectFile` model:
+
   ```prisma
   model InnovatorProjectFile {
     id           String     @id @default(cuid())
@@ -167,7 +189,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
     description  String?    // Optional file description
     createdAt    DateTime   @default(now())
     updatedAt    DateTime   @updatedAt
-    
+
     @@index([innovatorId])
     @@index([fileType])
   }
@@ -179,54 +201,57 @@ Redesign and enhance the Innovators & Creators feature to include additional req
   ```
 
 #### 2.2 Update Validation Schemas
+
 - [ ] Update `src/features/innovators/schemas.ts`:
+
   ```typescript
   export const createCreativeRegistrationSchema = (
-    t: (key: string) => string
+    t: (key: string) => string,
   ) => {
     return z.object({
       // ====== Basic information ======
-      name: z.string().min(1, { message: t("RequiredField") }),
+      name: z.string().min(1, { message: t('RequiredField') }),
       phoneNumber: z
         .string()
-        .min(1, { message: t("RequiredField") })
+        .min(1, { message: t('RequiredField') })
         .refine(
-          (phone) => typeof phone === "string" && /^\+[\d\s-]{6,15}$/.test(phone),
-          { message: t("InvalidPhoneNumber") }
+          (phone) =>
+            typeof phone === 'string' && /^\+[\d\s-]{6,15}$/.test(phone),
+          { message: t('InvalidPhoneNumber') },
         ),
       email: z
         .string()
-        .min(1, { message: t("RequiredField") })
-        .email({ message: t("InvalidEmail") }),
-      location: z.string().min(1, { message: t("RequiredField") }), // NEW
-      specialization: z.string().min(1, { message: t("RequiredField") }), // NEW
+        .min(1, { message: t('RequiredField') })
+        .email({ message: t('InvalidEmail') }),
+      location: z.string().min(1, { message: t('RequiredField') }), // NEW
+      specialization: z.string().min(1, { message: t('RequiredField') }), // NEW
       image: z
         .union([
           z.instanceof(File),
-          z.string().transform((value) => (value === "" ? undefined : value)),
+          z.string().transform((value) => (value === '' ? undefined : value)),
         ])
         .optional(),
 
       // ======= Project Details ======
-      projectTitle: z.string().min(1, { message: t("RequiredField") }),
+      projectTitle: z.string().min(1, { message: t('RequiredField') }),
       projectDescription: z
         .string()
-        .min(1, { message: t("RequiredField") })
-        .max(1000, { message: `${t("MaximumFieldSize")} 1000` }),
+        .min(1, { message: t('RequiredField') })
+        .max(1000, { message: `${t('MaximumFieldSize')} 1000` }),
       objective: z.string().optional(),
       stageDevelopment: z.nativeEnum(StageDevelopment).optional(),
-      
+
       // ======= Project Files ======= NEW
       projectFiles: z
         .array(z.instanceof(File))
         .min(0)
-        .max(10, { message: t("MaximumFiles") })
+        .max(10, { message: t('MaximumFiles') })
         .refine(
           (files) => {
             const maxSize = 10 * 1024 * 1024; // 10MB per file
-            return files.every(file => file.size <= maxSize);
+            return files.every((file) => file.size <= maxSize);
           },
-          { message: t("FileTooLarge") }
+          { message: t('FileTooLarge') },
         )
         .refine(
           (files) => {
@@ -238,11 +263,11 @@ Redesign and enhance the Innovators & Creators feature to include additional req
               'image/jpg',
               'image/png',
               'application/vnd.ms-powerpoint',
-              'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+              'application/vnd.openxmlformats-officedocument.presentationml.presentation',
             ];
-            return files.every(file => allowedTypes.includes(file.type));
+            return files.every((file) => allowedTypes.includes(file.type));
           },
-          { message: t("InvalidFileType") }
+          { message: t('InvalidFileType') },
         )
         .optional(),
 
@@ -251,13 +276,14 @@ Redesign and enhance the Innovators & Creators feature to include additional req
         .boolean()
         .default(false)
         .refine((value) => value === true, {
-          message: t("TermsOfUse"),
+          message: t('TermsOfUse'),
         }),
     });
   };
   ```
 
 #### 2.3 Update Registration Form Component
+
 - [ ] Update `src/features/innovators/components/innovators-registration-form.tsx`:
   - [ ] Add Location input field
   - [ ] Add Specialization input field (consider dropdown/select with predefined options)
@@ -268,15 +294,16 @@ Redesign and enhance the Innovators & Creators feature to include additional req
   - [ ] Update form layout to accommodate new fields
 
 - [ ] Add multi-file upload UI:
+
   ```typescript
   const [projectFiles, setProjectFiles] = useState<File[]>([]);
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setProjectFiles(prev => [...prev, ...files].slice(0, 10)); // Max 10 files
+    setProjectFiles((prev) => [...prev, ...files].slice(0, 10)); // Max 10 files
     form.setValue('projectFiles', [...projectFiles, ...files].slice(0, 10));
   };
-  
+
   const removeFile = (index: number) => {
     const updated = projectFiles.filter((_, i) => i !== index);
     setProjectFiles(updated);
@@ -285,6 +312,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
   ```
 
 #### 2.4 Update API Endpoints
+
 - [ ] Update `src/features/innovators/server/*.ts` or API route:
   - [ ] Handle new location and specialization fields
   - [ ] Process multiple file uploads
@@ -294,13 +322,14 @@ Redesign and enhance the Innovators & Creators feature to include additional req
   - [ ] Handle file size limits
 
 - [ ] File upload handler example:
+
   ```typescript
   // Process project files
   if (projectFiles && projectFiles.length > 0) {
     for (const file of projectFiles) {
       // Convert file to buffer
       const buffer = await file.arrayBuffer();
-      
+
       // Store in Media table
       const media = await db.media.create({
         data: {
@@ -309,7 +338,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
           size: file.size,
         },
       });
-      
+
       // Create InnovatorProjectFile record
       await db.innovatorProjectFile.create({
         data: {
@@ -325,6 +354,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
   ```
 
 #### 2.5 Update Card Component
+
 - [ ] Update `src/features/innovators/components/card-innovators.tsx`:
   - [ ] Display location with icon
   - [ ] Display specialization badge
@@ -332,23 +362,25 @@ Redesign and enhance the Innovators & Creators feature to include additional req
   - [ ] Update card layout for new fields
 
 #### 2.6 Add Specialization Options
+
 - [ ] Create specialization constants in `src/features/innovators/constants.ts`:
   ```typescript
   export const Specializations = {
-    TECHNOLOGY: { ar: "التكنولوجيا", en: "Technology" },
-    HEALTHCARE: { ar: "الرعاية الصحية", en: "Healthcare" },
-    EDUCATION: { ar: "التعليم", en: "Education" },
-    AGRICULTURE: { ar: "الزراعة", en: "Agriculture" },
-    MANUFACTURING: { ar: "التصنيع", en: "Manufacturing" },
-    SERVICES: { ar: "الخدمات", en: "Services" },
-    ENERGY: { ar: "الطاقة", en: "Energy" },
-    ENVIRONMENT: { ar: "البيئة", en: "Environment" },
-    FINANCE: { ar: "المالية", en: "Finance" },
-    OTHER: { ar: "أخرى", en: "Other" },
+    TECHNOLOGY: { ar: 'التكنولوجيا', en: 'Technology' },
+    HEALTHCARE: { ar: 'الرعاية الصحية', en: 'Healthcare' },
+    EDUCATION: { ar: 'التعليم', en: 'Education' },
+    AGRICULTURE: { ar: 'الزراعة', en: 'Agriculture' },
+    MANUFACTURING: { ar: 'التصنيع', en: 'Manufacturing' },
+    SERVICES: { ar: 'الخدمات', en: 'Services' },
+    ENERGY: { ar: 'الطاقة', en: 'Energy' },
+    ENVIRONMENT: { ar: 'البيئة', en: 'Environment' },
+    FINANCE: { ar: 'المالية', en: 'Finance' },
+    OTHER: { ar: 'أخرى', en: 'Other' },
   };
   ```
 
 #### 2.7 Add Translations
+
 - [ ] Update locale files (`messages/ar.json`, `messages/en.json`):
   ```json
   {
@@ -369,12 +401,14 @@ Redesign and enhance the Innovators & Creators feature to include additional req
   ```
 
 #### 2.8 Admin Dashboard Updates
+
 - [ ] Update admin innovators list to show new fields
 - [ ] Add file download functionality in admin view
 - [ ] Add file preview modal (for images/PDFs)
 - [ ] Update filter options to include location and specialization
 
 #### 2.9 Testing
+
 - [ ] Test form validation with new fields
 - [ ] Test file upload (single and multiple files)
 - [ ] Test file type validation
@@ -387,6 +421,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 - [ ] Test admin dashboard file viewing
 
 ### Technical Requirements
+
 - Next.js file upload handling (FormData)
 - React Dropzone for drag-and-drop (already installed)
 - File type validation (file-type package - already installed)
@@ -394,6 +429,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 - Media storage in database (LongBlob)
 
 ### Files to Modify/Create
+
 - `prisma/schema.prisma` - Update Innovator model, create InnovatorProjectFile model
 - `src/features/innovators/schemas.ts` - Add new field validations
 - `src/features/innovators/components/innovators-registration-form.tsx` - Add fields and file upload UI
@@ -404,6 +440,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 - `src/app/admin/innovators/*` - Update admin views
 
 ### File Upload UI Mockup
+
 ```
 ┌─────────────────────────────────────────┐
 │ Project Files                           │
@@ -426,6 +463,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 ```
 
 ### Acceptance Criteria
+
 - [ ] Location field is required and validated
 - [ ] Specialization field is required with predefined options
 - [ ] Multiple files can be uploaded (up to 10 files)
@@ -442,7 +480,9 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 - [ ] Files can be removed before submission
 
 ### Time Estimate
+
 **12-16 hours**
+
 - Database schema (2 hours)
 - Form updates (3-4 hours)
 - File upload functionality (4-5 hours)
@@ -457,9 +497,11 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 ### Status: 🔴 Not Started
 
 ### Description
+
 Implement a comprehensive notification system to alert system administrators when critical events occur, such as new registrations, submissions, or system errors. Notifications will be sent via email and eventually WhatsApp (once Task 8 is complete).
 
 ### Current State
+
 - ✅ Email infrastructure exists (`src/lib/email/service.ts`)
 - ✅ Admin user model with RBAC permissions
 - ✅ EmailLog and EmailQueue models in database
@@ -468,6 +510,7 @@ Implement a comprehensive notification system to alert system administrators whe
 ### Subtasks
 
 #### 2.1 Define Notification Events
+
 - [ ] New collaborator registration
 - [ ] New innovator registration
 - [ ] Submission status changes
@@ -477,6 +520,7 @@ Implement a comprehensive notification system to alert system administrators whe
 - [ ] Security alerts (failed login attempts, suspicious activity)
 
 #### 2.2 Create Admin Notification Service
+
 - [ ] Create `src/lib/notifications/admin-notifications.ts`
 - [ ] Implement `notifyAdmins(event, data)` function
 - [ ] Query database for admins with notification permissions
@@ -484,6 +528,7 @@ Implement a comprehensive notification system to alert system administrators whe
 - [ ] Queue notifications for all eligible admins
 
 #### 2.3 Email Templates for Admin Notifications
+
 - [ ] New registration alert template (AR/EN)
 - [ ] Submission review reminder template (AR/EN)
 - [ ] System error alert template (AR/EN)
@@ -492,6 +537,7 @@ Implement a comprehensive notification system to alert system administrators whe
 - [ ] Include direct links to admin dashboard actions
 
 #### 2.4 Admin Notification Preferences
+
 - [ ] Add notification preferences to User model
   ```prisma
   model User {
@@ -504,6 +550,7 @@ Implement a comprehensive notification system to alert system administrators whe
 - [ ] Add option for digest mode (immediate vs. daily summary)
 
 #### 2.5 Integration Points
+
 - [ ] Trigger notification on new collaborator registration (`/api/collaborator` route)
 - [ ] Trigger notification on new innovator registration (`/api/innovators` route)
 - [ ] Trigger notification on system errors (error handlers)
@@ -511,6 +558,7 @@ Implement a comprehensive notification system to alert system administrators whe
 - [ ] Create scheduled job for daily/weekly digests
 
 #### 2.6 Admin Dashboard Notifications Panel
+
 - [ ] Create notification bell icon in admin header
 - [ ] Display unread notification count
 - [ ] Create notification dropdown/panel
@@ -519,7 +567,9 @@ Implement a comprehensive notification system to alert system administrators whe
 - [ ] Store notifications in database for history
 
 #### 2.7 Database Schema Updates
+
 - [ ] Create `AdminNotification` model
+
   ```prisma
   model AdminNotification {
     id          String   @id @default(cuid())
@@ -534,14 +584,16 @@ Implement a comprehensive notification system to alert system administrators whe
     actionUrl   String?  // Direct link to take action
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
-    
+
     @@index([userId, isRead])
     @@index([createdAt])
   }
   ```
+
 - [ ] Run Prisma migration
 
 #### 2.8 Testing
+
 - [ ] Test notification triggers for each event type
 - [ ] Test admin preference filtering
 - [ ] Test email delivery to multiple admins
@@ -550,6 +602,7 @@ Implement a comprehensive notification system to alert system administrators whe
 - [ ] Test digest mode
 
 ### Technical Requirements
+
 - Existing email service (`src/lib/email/service.ts`)
 - BullMQ for scheduled jobs (already configured)
 - Prisma ORM for database operations
@@ -557,6 +610,7 @@ Implement a comprehensive notification system to alert system administrators whe
 - React Query for real-time notification updates
 
 ### Files to Create/Modify
+
 - `src/lib/notifications/admin-notifications.ts` (new)
 - `src/lib/email/templates/admin/` (new directory)
 - `src/app/admin/notifications/page.tsx` (new)
@@ -567,6 +621,7 @@ Implement a comprehensive notification system to alert system administrators whe
 - `prisma/schema.prisma` (add AdminNotification model)
 
 ### Acceptance Criteria
+
 - [ ] Admins receive email notifications for new registrations
 - [ ] Admins receive notifications for system errors
 - [ ] Notification preferences can be customized per admin
@@ -583,9 +638,11 @@ Implement a comprehensive notification system to alert system administrators whe
 ### Status: 🔴 Not Started
 
 ### Description
+
 Create a dedicated dashboard interface for managers and supervisors (non-technical admin users) that provides an intuitive overview of key metrics, pending actions, and simplified controls for common tasks.
 
 ### Current State
+
 - ✅ RBAC system exists with Role and Permission models
 - ✅ Basic admin dashboard exists (`/admin/dashboard`)
 - ❌ Current dashboard is developer-focused, not manager-friendly
@@ -594,6 +651,7 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
 ### Subtasks
 
 #### 3.1 Requirements & Design
+
 - [ ] Conduct user research with managers/supervisors
 - [ ] Define key metrics managers need to see
 - [ ] Create wireframes for manager dashboard
@@ -601,6 +659,7 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
 - [ ] Get stakeholder approval on designs
 
 #### 3.2 Dashboard Layout Structure
+
 - [ ] Create manager-specific dashboard route (`/admin/manager-dashboard`)
 - [ ] Design header with quick actions
 - [ ] Create sidebar with simplified navigation
@@ -608,6 +667,7 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
 - [ ] Add customizable widget arrangement
 
 #### 3.3 Key Metrics Widgets
+
 - [ ] **Pending Reviews Widget**
   - Count of pending collaborator submissions
   - Count of pending innovator submissions
@@ -627,6 +687,7 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
   - System settings
 
 #### 3.4 Data Visualization
+
 - [ ] Install charting library (Chart.js or Recharts)
 - [ ] Create line chart for registration trends
 - [ ] Create pie chart for submission statuses
@@ -635,6 +696,7 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
 - [ ] Export charts as images/PDFs
 
 #### 3.5 Simplified Review Interface
+
 - [ ] Create card-based review interface
 - [ ] One-click approve/reject buttons
 - [ ] Inline view of submission details
@@ -643,6 +705,7 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
 - [ ] Show submission history
 
 #### 3.6 Reporting Features
+
 - [ ] Generate monthly summary reports
 - [ ] Export data to Excel/CSV
 - [ ] Create printable report templates
@@ -650,6 +713,7 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
 - [ ] Custom date range reports
 
 #### 3.7 Role-Based Dashboard Routing
+
 - [ ] Detect user role on login
 - [ ] Redirect managers to manager dashboard
 - [ ] Redirect developers/admins to technical dashboard
@@ -657,6 +721,7 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
 - [ ] Allow users to switch between dashboard views
 
 #### 3.8 Mobile Optimization
+
 - [ ] Optimize dashboard for tablet devices
 - [ ] Create mobile-specific widget layouts
 - [ ] Implement touch-friendly controls
@@ -664,6 +729,7 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
 - [ ] Add pull-to-refresh functionality
 
 #### 3.9 Notifications Integration
+
 - [ ] Display notification count on dashboard
 - [ ] Show recent notifications widget
 - [ ] Highlight urgent/high-priority items
@@ -671,6 +737,7 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
 - [ ] Implement desktop push notifications (optional)
 
 #### 3.10 Performance Optimization
+
 - [ ] Implement data caching for metrics
 - [ ] Add skeleton loaders for widgets
 - [ ] Lazy load heavy components
@@ -678,13 +745,16 @@ Create a dedicated dashboard interface for managers and supervisors (non-technic
 - [ ] Add pagination for large datasets
 
 ### Dashboard Permissions
+
 Create new permission resources:
+
 - `dashboard:manager:view` - View manager dashboard
 - `dashboard:manager:customize` - Customize widget layout
 - `submissions:review` - Review and approve/reject submissions
 - `reports:generate` - Generate and export reports
 
 ### Technical Requirements
+
 - Next.js App Router for dashboard pages
 - TanStack Query for data fetching
 - Recharts or Chart.js for visualizations
@@ -693,6 +763,7 @@ Create new permission resources:
 - React Hook Form for forms (already installed)
 
 ### Files to Create
+
 - `src/app/admin/manager-dashboard/page.tsx` (main dashboard)
 - `src/features/admin/components/ManagerDashboard/` (component directory)
   - `MetricsWidget.tsx`
@@ -707,6 +778,7 @@ Create new permission resources:
 - `src/features/admin/components/Reports/` (reporting components)
 
 ### Acceptance Criteria
+
 - [ ] Manager dashboard is accessible at `/admin/manager-dashboard`
 - [ ] Dashboard displays real-time metrics accurately
 - [ ] Charts and visualizations render correctly
@@ -725,9 +797,11 @@ Create new permission resources:
 ### Status: 🔴 Not Started
 
 ### Description
+
 Build a notification system similar to the email system but using WhatsApp for instant messaging. This will provide an alternative communication channel for users who prefer WhatsApp.
 
 ### Architecture Overview
+
 ```
 ┌─────────────────┐
 │ User Action     │
@@ -752,6 +826,7 @@ Build a notification system similar to the email system but using WhatsApp for i
 ### Subtasks
 
 #### 2.1 Research and Setup
+
 - [ ] Choose WhatsApp Business API provider (Twilio, Meta Cloud API, or others)
 - [ ] Create WhatsApp Business account
 - [ ] Obtain API credentials and phone number
@@ -759,6 +834,7 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Review rate limits and pricing
 
 #### 2.2 Database Schema
+
 - [ ] Create `WhatsAppQueue` model in Prisma schema
   ```prisma
   model WhatsAppQueue {
@@ -779,6 +855,7 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Run Prisma migration
 
 #### 2.3 WhatsApp Service Layer
+
 - [ ] Create `src/lib/whatsapp/service.ts` (main service)
 - [ ] Create `src/lib/whatsapp/client.ts` (API client wrapper)
 - [ ] Implement `sendMessage(to, message)` function
@@ -787,6 +864,7 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Add error handling and retry logic
 
 #### 2.4 Message Templates
+
 - [ ] Create submission confirmation template (Arabic/English)
 - [ ] Create approval notification template
 - [ ] Create rejection notification template
@@ -794,6 +872,7 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Test templates with WhatsApp Business API
 
 #### 2.5 Queue Worker
+
 - [ ] Create `services/whatsapp-worker/worker.ts`
 - [ ] Implement BullMQ queue processing
 - [ ] Add row locking to prevent duplicate sends
@@ -802,12 +881,14 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Add worker script to package.json: `worker:whatsapp`
 
 #### 2.6 RPC Integration
+
 - [ ] Create `src/lib/whatsapp/rpc/sendMessage.ts`
 - [ ] Register WhatsApp methods in RPC registry
 - [ ] Add validation with Zod schemas
 - [ ] Test RPC endpoint: `/api/rpc`
 
 #### 2.7 Testing
+
 - [ ] Unit tests for WhatsApp service
 - [ ] Integration tests for queue worker
 - [ ] E2E test for registration workflow
@@ -815,12 +896,14 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Test rate limiting
 
 ### Technical Requirements
+
 - WhatsApp Business API (Twilio or Meta)
 - Phone number validation (libphonenumber-js - already installed)
 - BullMQ queue (already configured)
 - Prisma ORM for database
 
 ### Environment Variables
+
 ```env
 WHATSAPP_API_KEY="your-api-key"
 WHATSAPP_PHONE_NUMBER="+1234567890"
@@ -829,6 +912,7 @@ WHATSAPP_WEBHOOK_URL="https://yourdomain.com/api/whatsapp/webhook"
 ```
 
 ### Files to Create
+
 - `src/lib/whatsapp/service.ts`
 - `src/lib/whatsapp/client.ts`
 - `src/lib/whatsapp/templates/`
@@ -839,6 +923,7 @@ WHATSAPP_WEBHOOK_URL="https://yourdomain.com/api/whatsapp/webhook"
 - `docs/whatsapp/README.md`
 
 ### Acceptance Criteria
+
 - [ ] WhatsApp messages send successfully via API
 - [ ] Messages are queued and processed by worker
 - [ ] Templates support both Arabic and English
@@ -849,13 +934,14 @@ WHATSAPP_WEBHOOK_URL="https://yourdomain.com/api/whatsapp/webhook"
 
 ---
 
-
 ### Status: 🔴 Not Started
 
 ### Description
+
 Standardize button designs across the entire platform while giving send buttons a distinctive look. Create a consistent design system for all interactive elements.
 
 ### Current State
+
 - ✅ Existing button components:
   - `src/components/buttons/SubmitButton.tsx`
   - `src/components/buttons/ActiveButton.tsx`
@@ -865,12 +951,14 @@ Standardize button designs across the entire platform while giving send buttons 
 ### Subtasks
 
 #### 3.1 Audit Current Buttons
+
 - [ ] List all button usage across the platform
 - [ ] Document current button styles and variants
 - [ ] Identify inconsistencies in design
 - [ ] Screenshot all button types for reference
 
 #### 3.2 Design System Planning
+
 - [ ] Define button hierarchy (primary, secondary, tertiary)
 - [ ] Define button states (default, hover, active, disabled, loading)
 - [ ] Define button sizes (sm, md, lg, xl)
@@ -879,6 +967,7 @@ Standardize button designs across the entire platform while giving send buttons 
 - [ ] Design focus states for accessibility
 
 #### 3.3 Create Base Button Component
+
 - [ ] Refactor `src/components/ui/button.tsx` with variants
 - [ ] Implement CVA (class-variance-authority) for variants
 - [ ] Add proper TypeScript types
@@ -887,6 +976,7 @@ Standardize button designs across the entire platform while giving send buttons 
 - [ ] Add icon support (left/right)
 
 #### 3.4 Create Specialized Buttons
+
 - [ ] **SubmitButton** (send buttons with distinctive design)
   - Enhance animation for loading state
   - Add distinctive gradient or glow effect
@@ -899,6 +989,7 @@ Standardize button designs across the entire platform while giving send buttons 
 - [ ] **LinkButton** (button styled as link)
 
 #### 3.5 Send Button Distinctive Design
+
 - [ ] Create unique visual style for send buttons
 - [ ] Add animation on click (paper plane flying, etc.)
 - [ ] Add success feedback animation
@@ -907,6 +998,7 @@ Standardize button designs across the entire platform while giving send buttons 
 - [ ] Test on all forms (contact, registration, etc.)
 
 #### 3.6 Implement Across Platform
+
 - [ ] Replace buttons in forms
 - [ ] Replace buttons in modals/dialogs
 - [ ] Replace buttons in admin dashboard
@@ -914,48 +1006,49 @@ Standardize button designs across the entire platform while giving send buttons 
 - [ ] Update all feature components
 
 #### 3.7 Documentation
+
 - [ ] Create Storybook stories for all button variants
 - [ ] Document usage in component library
 - [ ] Add examples and best practices
 - [ ] Create visual design guide
 
 ### Technical Requirements
+
 - class-variance-authority (CVA) - already installed
 - Tailwind CSS for styling
 - Framer Motion for animations - already installed
 - Lucide React for icons - already installed
 
 ### Button Variants Structure
+
 ```typescript
-const buttonVariants = cva(
-  "base-button-classes",
-  {
-    variants: {
-      variant: {
-        primary: "...",
-        secondary: "...",
-        outline: "...",
-        danger: "...",
-        ghost: "...",
-        link: "...",
-        send: "..." // Distinctive style
-      },
-      size: {
-        sm: "...",
-        md: "...",
-        lg: "...",
-        xl: "...",
-      },
+const buttonVariants = cva('base-button-classes', {
+  variants: {
+    variant: {
+      primary: '...',
+      secondary: '...',
+      outline: '...',
+      danger: '...',
+      ghost: '...',
+      link: '...',
+      send: '...', // Distinctive style
     },
-    defaultVariants: {
-      variant: "primary",
-      size: "md",
+    size: {
+      sm: '...',
+      md: '...',
+      lg: '...',
+      xl: '...',
     },
-  }
-)
+  },
+  defaultVariants: {
+    variant: 'primary',
+    size: 'md',
+  },
+});
 ```
 
 ### Files to Modify/Create
+
 - `src/components/ui/button.tsx` (main button component)
 - `src/components/buttons/SubmitButton.tsx` (refactor)
 - `src/components/buttons/index.ts` (barrel export)
@@ -963,6 +1056,7 @@ const buttonVariants = cva(
 - All feature components using buttons
 
 ### Acceptance Criteria
+
 - [ ] All buttons use consistent design system
 - [ ] Send buttons have distinctive, attractive design
 - [ ] Buttons are accessible (keyboard, screen readers)
@@ -978,15 +1072,18 @@ const buttonVariants = cva(
 ### Status: 🔴 Not Started
 
 ### Description
+
 Redesign card components to accurately reflect database data and provide better visual presentation of collaborators and innovators.
 
 ### Current State
+
 - `src/features/collaborators/components/CardCompanies.tsx` - needs redesign
 - `src/features/innovators/components/card-innovators.tsx` - empty, needs complete implementation
 
 ### Subtasks
 
 #### 4.1 Analyze Database Schema
+
 - [ ] Review `Collaborator` model in Prisma schema
   - Fields: companyName, email, phone, location, site, sector, specialization, experience, machinery, image
   - Related: ExperienceProvidedMedia, MachineryAndEquipmentMedia
@@ -996,6 +1093,7 @@ Redesign card components to accurately reflect database data and provide better 
 - [ ] Determine display priority of fields
 
 #### 4.2 Design CardCompanies Component
+
 - [ ] Audit current implementation
 - [ ] Fix FIXME comments in existing code
 - [ ] Design new layout for company information
@@ -1013,6 +1111,7 @@ Redesign card components to accurately reflect database data and provide better 
 - [ ] Add responsive design (mobile, tablet, desktop)
 
 #### 4.3 Design card-innovators Component (From Scratch)
+
 - [ ] Create complete component structure
 - [ ] Design card layout for innovator information:
   - [ ] Innovator photo/avatar
@@ -1029,6 +1128,7 @@ Redesign card components to accurately reflect database data and provide better 
 - [ ] Implement responsive design
 
 #### 4.4 Shared Card Features
+
 - [ ] Create base card component (`src/components/ui/card.tsx`)
 - [ ] Implement card variants (collaborator, innovator, news, etc.)
 - [ ] Add image optimization with Next.js Image
@@ -1038,6 +1138,7 @@ Redesign card components to accurately reflect database data and provide better 
 - [ ] Create media gallery modal for multiple images
 
 #### 4.5 Implement Gallery Support
+
 - [ ] Display multiple media items for collaborators
 - [ ] Implement photoswipe gallery (already installed)
 - [ ] Create thumbnail grid
@@ -1045,6 +1146,7 @@ Redesign card components to accurately reflect database data and provide better 
 - [ ] Support video media (if applicable)
 
 #### 4.6 Accessibility & UX
+
 - [ ] Add proper ARIA labels
 - [ ] Implement keyboard navigation
 - [ ] Add focus indicators
@@ -1054,6 +1156,7 @@ Redesign card components to accurately reflect database data and provide better 
 - [ ] Implement placeholder for missing images
 
 #### 4.7 Integration with Data Fetching
+
 - [ ] Update API routes to return complete data
 - [ ] Add data validation with Zod
 - [ ] Implement proper error handling
@@ -1063,6 +1166,7 @@ Redesign card components to accurately reflect database data and provide better 
 ### Database Fields Mapping
 
 #### Collaborator Card Fields
+
 ```typescript
 interface CollaboratorCardProps {
   id: string;
@@ -1085,6 +1189,7 @@ interface CollaboratorCardProps {
 ```
 
 #### Innovator Card Fields
+
 ```typescript
 interface InnovatorCardProps {
   id: string;
@@ -1102,6 +1207,7 @@ interface InnovatorCardProps {
 ```
 
 ### Design Specifications
+
 - Card width: Flexible with max-width constraints
 - Card height: Auto, maintaining aspect ratio
 - Border radius: 16px (rounded-2xl)
@@ -1110,6 +1216,7 @@ interface InnovatorCardProps {
 - Typography: Clear hierarchy with din-bold/din-regular fonts
 
 ### Files to Modify/Create
+
 - `src/features/collaborators/components/CardCompanies.tsx` (refactor)
 - `src/features/innovators/components/card-innovators.tsx` (implement)
 - `src/components/ui/card.tsx` (base component)
@@ -1120,6 +1227,7 @@ interface InnovatorCardProps {
 - `src/features/innovators/api/` (data fetching)
 
 ### Acceptance Criteria
+
 - [ ] CardCompanies accurately displays all database fields
 - [ ] card-innovators is fully implemented and functional
 - [ ] Cards are responsive on all screen sizes
@@ -1137,9 +1245,11 @@ interface InnovatorCardProps {
 ### Status: 🔴 Not Started
 
 ### Description
+
 Integrate both email and WhatsApp notification systems into the registration, acceptance, and rejection workflows for collaborators and innovators.
 
 ### Workflow Overview
+
 ```
 User Submits Registration
          │
@@ -1176,6 +1286,7 @@ Send Status Update
 #### 5.1 Registration Workflow Integration
 
 ##### 5.1.1 Collaborator Registration
+
 - [ ] Update registration API endpoint
 - [ ] Add dual notification trigger on submission
 - [ ] Create confirmation email template
@@ -1185,6 +1296,7 @@ Send Status Update
 - [ ] Add UI feedback for successful submission
 
 ##### 5.1.2 Innovator Registration
+
 - [ ] Update registration API endpoint
 - [ ] Add dual notification trigger on submission
 - [ ] Create confirmation email template
@@ -1196,6 +1308,7 @@ Send Status Update
 #### 5.2 Admin Approval/Rejection Workflow
 
 ##### 5.2.1 Admin Dashboard Integration
+
 - [ ] Add approval action to admin dashboard
 - [ ] Add rejection action with reason field
 - [ ] Update status in database
@@ -1203,6 +1316,7 @@ Send Status Update
 - [ ] Display notification status in admin UI
 
 ##### 5.2.2 Approval Notifications
+
 - [ ] Create approval email template (bilingual)
 - [ ] Create approval WhatsApp template (bilingual)
 - [ ] Include next steps in notification
@@ -1210,6 +1324,7 @@ Send Status Update
 - [ ] Include contact details for questions
 
 ##### 5.2.3 Rejection Notifications
+
 - [ ] Create rejection email template (bilingual)
 - [ ] Create rejection WhatsApp template (bilingual)
 - [ ] Include rejection reason (if provided)
@@ -1217,6 +1332,7 @@ Send Status Update
 - [ ] Include reapplication information
 
 #### 5.3 Notification Preferences
+
 - [ ] Add user preference model to database
   ```prisma
   model NotificationPreference {
@@ -1234,6 +1350,7 @@ Send Status Update
 - [ ] Add preference management UI
 
 #### 5.4 Notification Tracking
+
 - [ ] Link notifications to user records
 - [ ] Track delivery status (sent, delivered, failed)
 - [ ] Track read receipts (if available)
@@ -1241,6 +1358,7 @@ Send Status Update
 - [ ] Add retry mechanism for failed notifications
 
 #### 5.5 Edge Cases & Error Handling
+
 - [ ] Handle invalid email addresses
 - [ ] Handle invalid phone numbers
 - [ ] Handle notification service outages
@@ -1249,6 +1367,7 @@ Send Status Update
 - [ ] Handle rate limiting from providers
 
 #### 5.6 Testing
+
 - [ ] Test complete registration flow (both types)
 - [ ] Test approval workflow with notifications
 - [ ] Test rejection workflow with notifications
@@ -1261,6 +1380,7 @@ Send Status Update
 ### Integration Points
 
 #### API Endpoints to Modify
+
 ```typescript
 // Collaborator registration
 POST /api/collaborator/register
@@ -1299,6 +1419,7 @@ POST /api/admin/innovator/reject/:id
 ### Notification Templates Required
 
 #### Email Templates
+
 1. Collaborator confirmation (AR/EN)
 2. Innovator confirmation (AR/EN)
 3. Collaborator approval (AR/EN)
@@ -1307,6 +1428,7 @@ POST /api/admin/innovator/reject/:id
 6. Innovator rejection (AR/EN)
 
 #### WhatsApp Templates
+
 1. Collaborator confirmation (AR/EN)
 2. Innovator confirmation (AR/EN)
 3. Collaborator approval (AR/EN)
@@ -1315,6 +1437,7 @@ POST /api/admin/innovator/reject/:id
 6. Innovator rejection (AR/EN)
 
 ### Files to Modify/Create
+
 - `src/features/collaborators/api/register.ts`
 - `src/features/innovators/api/register.ts`
 - `src/features/admin/api/approve.ts`
@@ -1324,6 +1447,7 @@ POST /api/admin/innovator/reject/:id
 - All template files (email and WhatsApp)
 
 ### Acceptance Criteria
+
 - [ ] Registration triggers both email and WhatsApp confirmations
 - [ ] Approval sends notifications via both channels
 - [ ] Rejection sends notifications via both channels
@@ -1341,11 +1465,13 @@ POST /api/admin/innovator/reject/:id
 ### Status: 🔴 Not Started
 
 ### Description
+
 Adopt a consistent file naming convention across the entire project, using either the kebab-case (CardCompanies) or lowercase-with-hyphens (card-innovators) style.
 
 ### Naming Convention Decision
 
 After analyzing the existing codebase, the recommended convention is:
+
 - **Components**: PascalCase for React components (e.g., `CardCompanies.tsx`, `SubmitButton.tsx`)
 - **Utilities/Services**: kebab-case (e.g., `email-service.ts`, `auth-utils.ts`)
 - **API Routes**: kebab-case (e.g., `send-email.ts`, `approve-collaborator.ts`)
@@ -1356,12 +1482,14 @@ This aligns with Next.js conventions and React best practices.
 ### Subtasks
 
 #### 6.1 Audit Current File Naming
+
 - [ ] List all files in the project
 - [ ] Categorize files by type (components, utils, API, etc.)
 - [ ] Identify naming inconsistencies
 - [ ] Create naming convention document
 
 #### 6.2 Create Naming Convention Guide
+
 - [ ] Document naming rules for each file type:
   - React components
   - Utility functions
@@ -1375,6 +1503,7 @@ This aligns with Next.js conventions and React best practices.
 - [ ] Add to project documentation
 
 #### 6.3 Plan Refactoring Strategy
+
 - [ ] Identify high-risk renames (frequently imported)
 - [ ] Create rename script or checklist
 - [ ] Determine order of renaming (dependencies first)
@@ -1382,6 +1511,7 @@ This aligns with Next.js conventions and React best practices.
 - [ ] **POSTPONE** actual renaming for later phase
 
 #### 6.4 Update Import Statements
+
 - [ ] Use VSCode refactor tool for safe renames
 - [ ] Update all import statements
 - [ ] Update dynamic imports
@@ -1389,6 +1519,7 @@ This aligns with Next.js conventions and React best practices.
 - [ ] Update test file imports
 
 #### 6.5 Update Documentation
+
 - [ ] Update README with naming convention
 - [ ] Update CONTRIBUTING guide
 - [ ] Update code review checklist
@@ -1396,6 +1527,7 @@ This aligns with Next.js conventions and React best practices.
 - [ ] Add ESLint rules for naming (optional)
 
 #### 6.6 Create Tracking List for Future Renames
+
 - [ ] List files that need renaming
 - [ ] Prioritize by impact (low risk first)
 - [ ] Document dependencies for each file
@@ -1405,6 +1537,7 @@ This aligns with Next.js conventions and React best practices.
 ### Naming Convention Guidelines
 
 #### React Components
+
 ```
 ✅ CardCompanies.tsx
 ✅ SubmitButton.tsx
@@ -1414,6 +1547,7 @@ This aligns with Next.js conventions and React best practices.
 ```
 
 #### Utilities & Services
+
 ```
 ✅ email-service.ts
 ✅ auth-utils.ts
@@ -1423,6 +1557,7 @@ This aligns with Next.js conventions and React best practices.
 ```
 
 #### API Routes (Hono/Next.js)
+
 ```
 ✅ send-email.ts
 ✅ approve-collaborator.ts
@@ -1431,6 +1566,7 @@ This aligns with Next.js conventions and React best practices.
 ```
 
 #### Type Definitions
+
 ```
 ✅ Collaborator.types.ts
 ✅ Email.types.ts
@@ -1439,6 +1575,7 @@ This aligns with Next.js conventions and React best practices.
 ```
 
 #### Test Files
+
 ```
 ✅ email-service.test.ts
 ✅ CardCompanies.test.tsx
@@ -1448,10 +1585,12 @@ This aligns with Next.js conventions and React best practices.
 ### Files Requiring Attention
 
 #### Inconsistent Naming Examples
+
 - `src/features/innovators/components/card-innovators.tsx` (should be `CardInnovators.tsx`)
 - Other files TBD during audit
 
 ### ESLint Rules (Optional)
+
 ```javascript
 // .eslintrc.js
 rules: {
@@ -1466,6 +1605,7 @@ rules: {
 ```
 
 ### Acceptance Criteria
+
 - [ ] Naming convention document is created
 - [ ] All team members agree on convention
 - [ ] Tracking list of files to rename is created
@@ -1479,18 +1619,22 @@ rules: {
 ## Dependencies & Prerequisites
 
 ### Required Tools
+
 - Node.js (v18+)
 - MySQL database
 - Redis server
 - pnpm (v10.4.1)
 
 ### Required API Keys
+
 - Gmail App Password (for email)
 - WhatsApp Business API key (to be obtained)
 - Redis connection (local or cloud)
 
 ### Installed Dependencies
+
 All dependencies are already installed according to `package.json`:
+
 - nodemailer
 - react-email
 - @react-email/components
@@ -1506,6 +1650,7 @@ All dependencies are already installed according to `package.json`:
 ## Testing Strategy
 
 ### Unit Tests
+
 - Email service functions
 - WhatsApp service functions
 - Button component variants
@@ -1513,18 +1658,21 @@ All dependencies are already installed according to `package.json`:
 - Utility functions
 
 ### Integration Tests
+
 - Complete registration workflow
 - Notification delivery (email + WhatsApp)
 - Admin approval/rejection workflow
 - Database operations
 
 ### E2E Tests
+
 - User registration flow
 - Admin dashboard actions
 - Notification reception
 - Multi-language support
 
 ### Testing Tools
+
 - Jest (already configured)
 - React Testing Library (already installed)
 - Playwright (optional for E2E)
@@ -1533,16 +1681,16 @@ All dependencies are already installed according to `package.json`:
 
 ## Timeline Estimates
 
-| Task | Estimated Time | Priority |
-|------|----------------|----------|
-| Task 1: Email Templates | 8-12 hours | High |
-| Task 2: Admin Notifications | 12-16 hours | High |
-| Task 3: Manager Dashboard | 24-32 hours | High |
-| Task 4: Button Design | 8-12 hours | Medium |
-| Task 5: Card Layouts | 12-16 hours | High |
-| Task 6: Workflow Integration | 16-20 hours | High |
-| Task 7: Naming Convention | 4-6 hours (documentation) | Low |
-| Task 8: WhatsApp System | 16-24 hours | Medium |
+| Task                         | Estimated Time            | Priority |
+| ---------------------------- | ------------------------- | -------- |
+| Task 1: Email Templates      | 8-12 hours                | High     |
+| Task 2: Admin Notifications  | 12-16 hours               | High     |
+| Task 3: Manager Dashboard    | 24-32 hours               | High     |
+| Task 4: Button Design        | 8-12 hours                | Medium   |
+| Task 5: Card Layouts         | 12-16 hours               | High     |
+| Task 6: Workflow Integration | 16-20 hours               | High     |
+| Task 7: Naming Convention    | 4-6 hours (documentation) | Low      |
+| Task 8: WhatsApp System      | 16-24 hours               | Medium   |
 
 **Total Estimated Time**: 100-138 hours
 
@@ -1551,18 +1699,21 @@ All dependencies are already installed according to `package.json`:
 ## Success Metrics
 
 ### Functional Metrics
+
 - [ ] All notifications (email + WhatsApp) delivered successfully
 - [ ] Registration completion rate improved
 - [ ] Admin workflow efficiency increased
 - [ ] User satisfaction with notifications
 
 ### Technical Metrics
+
 - [ ] Code coverage ≥ 80%
 - [ ] All tests passing
 - [ ] No console errors in production
 - [ ] Lighthouse score ≥ 90
 
 ### UX Metrics
+
 - [ ] Button click-through rate improved
 - [ ] Card interaction increased
 - [ ] Mobile responsiveness improved
@@ -1573,16 +1724,19 @@ All dependencies are already installed according to `package.json`:
 ## Risk Assessment
 
 ### High Risk
+
 - WhatsApp API integration (depends on external provider)
 - Database migrations (potential data loss)
 - Breaking changes in file renaming
 
 ### Medium Risk
+
 - Email deliverability (spam filters)
 - Performance impact of notifications
 - Template rendering issues
 
 ### Low Risk
+
 - Button styling changes
 - Card layout improvements
 - Documentation updates
@@ -1605,9 +1759,11 @@ All dependencies are already installed according to `package.json`:
 ### Status: 🔴 Not Started
 
 ### Description
+
 Build a notification system similar to the email system but using WhatsApp for instant messaging. This will provide an alternative communication channel for users who prefer WhatsApp.
 
 ### Architecture Overview
+
 ```
 ┌─────────────────┐
 │ User Action     │
@@ -1632,6 +1788,7 @@ Build a notification system similar to the email system but using WhatsApp for i
 ### Subtasks
 
 #### 8.1 Research and Setup
+
 - [ ] Choose WhatsApp Business API provider (Twilio, Meta Cloud API, or others)
 - [ ] Create WhatsApp Business account
 - [ ] Obtain API credentials and phone number
@@ -1639,6 +1796,7 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Review rate limits and pricing
 
 #### 8.2 Database Schema
+
 - [ ] Create `WhatsAppQueue` model in Prisma schema
   ```prisma
   model WhatsAppQueue {
@@ -1659,6 +1817,7 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Run Prisma migration
 
 #### 8.3 WhatsApp Service Layer
+
 - [ ] Create `src/lib/whatsapp/service.ts` (main service)
 - [ ] Create `src/lib/whatsapp/client.ts` (API client wrapper)
 - [ ] Implement `sendMessage(to, message)` function
@@ -1667,6 +1826,7 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Add error handling and retry logic
 
 #### 8.4 Message Templates
+
 - [ ] Create submission confirmation template (Arabic/English)
 - [ ] Create approval notification template
 - [ ] Create rejection notification template
@@ -1674,6 +1834,7 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Test templates with WhatsApp Business API
 
 #### 8.5 Queue Worker
+
 - [ ] Create `services/whatsapp-worker/worker.ts`
 - [ ] Implement BullMQ queue processing
 - [ ] Add row locking to prevent duplicate sends
@@ -1682,12 +1843,14 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Add worker script to package.json: `worker:whatsapp`
 
 #### 8.6 RPC Integration
+
 - [ ] Create `src/lib/whatsapp/rpc/sendMessage.ts`
 - [ ] Register WhatsApp methods in RPC registry
 - [ ] Add validation with Zod schemas
 - [ ] Test RPC endpoint: `/api/rpc`
 
 #### 8.7 Testing
+
 - [ ] Unit tests for WhatsApp service
 - [ ] Integration tests for queue worker
 - [ ] E2E test for registration workflow
@@ -1695,12 +1858,14 @@ Build a notification system similar to the email system but using WhatsApp for i
 - [ ] Test rate limiting
 
 ### Technical Requirements
+
 - WhatsApp Business API (Twilio or Meta)
 - Phone number validation (libphonenumber-js - already installed)
 - BullMQ queue (already configured)
 - Prisma ORM for database
 
 ### Environment Variables
+
 ```env
 WHATSAPP_API_KEY="your-api-key"
 WHATSAPP_PHONE_NUMBER="+1234567890"
@@ -1709,6 +1874,7 @@ WHATSAPP_WEBHOOK_URL="https://yourdomain.com/api/whatsapp/webhook"
 ```
 
 ### Files to Create
+
 - `src/lib/whatsapp/service.ts`
 - `src/lib/whatsapp/client.ts`
 - `src/lib/whatsapp/templates/`
@@ -1719,6 +1885,7 @@ WHATSAPP_WEBHOOK_URL="https://yourdomain.com/api/whatsapp/webhook"
 - `docs/whatsapp/README.md`
 
 ### Acceptance Criteria
+
 - [ ] WhatsApp messages send successfully via API
 - [ ] Messages are queued and processed by worker
 - [ ] Templates support both Arabic and English
@@ -1729,6 +1896,73 @@ WHATSAPP_WEBHOOK_URL="https://yourdomain.com/api/whatsapp/webhook"
 
 ---
 
-**Last Updated**: January 11, 2025  
-**Project**: Misurata Center for Entrepreneurship & Business Incubators  
-**Version**: 1.1
+---
+
+## Task 10: Navigation Improvements
+
+### Status: 🔴 Not Started
+
+### Description
+
+Improve the main navigation component (`src/components/navigation`) by adding a generic "Segment" section to the "Entrepreneurship and Incubators" tab and enhancing the language switcher animation.
+
+### Subtasks
+
+#### 10.1 Add Segment to Entrepreneurship Tab
+
+- [ ] Add a "Segment" section to the Entrepreneurship and Incubators dropdown/tab.
+- [ ] Ensure it matches the "Collaborators" section style (registerCompany, partnersList).
+- [ ] Update `src/components/navigation` components.
+
+#### 10.2 Animate Language Switcher
+
+- [ ] Add smooth animation for language switching.
+- [ ] Implement cursor/highlight movement effect between languages.
+- [ ] Add fade effect for the non-selected language.
+
+---
+
+## Task 11: News Section UI Enhancements
+
+### Status: 🔴 Not Started
+
+### Description
+
+Improve the visual distinction between headlines and body text in the News section to enhance readability.
+
+### Subtasks
+
+#### 11.1 Typography Updates
+
+- [ ] Increase font weight/size contrast between News Headlines and Body Text.
+- [ ] Ensure proper spacing/margin between elements.
+- [ ] Check `src/components/news.tsx` or related components.
+
+---
+
+## Task 12: Fix Registration Form Data Persistence
+
+### Status: 🔴 Not Started
+
+### Description
+
+Debug and fix the issue where registration form data (Collaborators and Innovators) is stored locally but appears empty in the form fields upon reloading or navigating back.
+
+### Subtasks
+
+#### 12.1 Debug Collaborator Form
+
+- [ ] Investigate `src/features/collaborators` form components.
+- [ ] Check local storage retrieval logic.
+- [ ] Ensure form state inputs are correctly bound to retrieved data.
+
+#### 12.2 Debug Innovator Form
+
+- [ ] Investigate `src/features/innovators` form components.
+- [ ] Apply similar fixes as Collaborator form.
+
+---
+
+**Last Updated**: January 2026
+**Project**: Misurata Center for Entrepreneurship & Business Incubators
+**Version**: 1.2

@@ -5,6 +5,15 @@ import PasswordReset from './PasswordReset';
 import Welcome from './Welcome';
 import TwoFactorAuth from './TwoFactorAuth';
 import EmailVerification from './EmailVerification';
+import AdminNotification from './AdminNotification';
+
+export interface AdminNotificationData {
+  title: string;
+  message: string;
+  actionUrl?: string;
+  data?: Record<string, any>;
+  locale?: 'ar' | 'en';
+}
 
 export interface SubmissionConfirmationData {
   name: string;
@@ -103,6 +112,15 @@ export async function renderEmailVerification(
 }
 
 /**
+ * Render admin notification email template
+ */
+export async function renderAdminNotification(
+  data: AdminNotificationData,
+): Promise<string> {
+  return render(AdminNotification(data));
+}
+
+/**
  * Get email subject for submission confirmation
  */
 export function getSubmissionConfirmationSubject(
@@ -172,10 +190,24 @@ export function getTwoFactorAuthSubject(locale: 'ar' | 'en' = 'en'): string {
 /**
  * Get email subject for email verification
  */
-export function getEmailVerificationSubject(locale: 'ar' | 'en' = 'en'): string {
+export function getEmailVerificationSubject(
+  locale: 'ar' | 'en' = 'en',
+): string {
   return locale === 'ar'
     ? '✉️ تأكيد البريد الإلكتروني'
     : '✉️ Email Verification';
+}
+
+/**
+ * Get email subject for admin notification
+ */
+export function getAdminNotificationSubject(
+  title: string,
+  locale: 'ar' | 'en' = 'en',
+): string {
+  return locale === 'ar'
+    ? `📢 تنبيه إداري: ${title}`
+    : `📢 Admin Alert: ${title}`;
 }
 
 export {
@@ -185,4 +217,5 @@ export {
   Welcome,
   TwoFactorAuth,
   EmailVerification,
+  AdminNotification,
 };
