@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { NextIntlClientProvider, useTranslations } from "next-intl";
+import { NextIntlClientProvider, useTranslations, type AbstractIntlMessages } from "next-intl";
 
 import useLanguage from "@/hooks/use-language";
 import { InterfaceImage } from "@/constants";
@@ -13,14 +13,14 @@ import { BackgroundBeams } from "@/components/ui/background-beams";
 import arMessages from "../../messages/ar.json";
 import enMessages from "../../messages/en.json";
 
-const messagesMap: Record<string, any> = {
+const messagesMap: Record<string, AbstractIntlMessages> = {
   ar: arMessages,
   en: enMessages,
 };
 
 export default function GlobalError({
-  error,
-  reset,
+  error: _error,
+  reset: _reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
