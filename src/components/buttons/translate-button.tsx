@@ -85,6 +85,7 @@ export const TranslateButton = () => {
       )}
     >
       <div
+        dir="ltr"
         className={cn(
           'flex bg-gray-100 dark:bg-gray-800 p-1 rounded-full relative',
           !isDesktop && 'w-full gap-2',
