@@ -24,11 +24,6 @@ export const getNavItems = (
         href: `/${locale}/incubators`,
         description: t('incubatorsDesc'),
       },
-      {
-        label: t('segments'),
-        href: `/${locale}/segments`,
-        description: t('segmentsDesc'),
-      },
     ],
   },
   {
