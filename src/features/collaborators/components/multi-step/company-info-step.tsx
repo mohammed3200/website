@@ -1,15 +1,14 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import Image from 'next/image';
-import { Trash2 } from 'lucide-react';
+import { useDebounce } from 'react-use';
 import useLanguage from '@/hooks/use-language';
 
-import { Form, FormControl } from '@/components/ui/form';
-import { CustomFormField, FormFieldType } from '@/components';
+import { Form } from '@/components/ui/form';
+import { CustomFormField, FormFieldType, UploadFiles } from '@/components';
 import { IconsInterface } from '@/constants';
 
 import { step1Schema } from '../../schemas/step-schemas';
@@ -26,13 +25,13 @@ export function CompanyInfoStep({
   isLoading,
   currentStep,
   totalSteps,
+  onSave,
 }: StepComponentProps<Step1Data>) {
   const t = useTranslations('collaboratingPartners');
   const tForm = useTranslations('Form');
   const { isArabic } = useLanguage();
 
-  const [fileName, setFileName] = useState<string | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+
 
   const form = useForm<Step1Data>({
     resolver: zodResolver(step1Schema(tForm)),
@@ -48,8 +47,24 @@ export function CompanyInfoStep({
     },
   });
 
+  // Watch all form values for auto-save
+  const values = form.watch();
+
+  // Auto-save draft data
+  useDebounce(
+    () => {
+      if (onSave && Object.keys(values).length > 0) {
+        onSave(values);
+      }
+    },
+    1000,
+    [values]
+  );
+
   // Reset form when data changes (e.g. loaded from localStorage)
   React.useEffect(() => {
+    if (form.formState.isDirty) return;
+
     form.reset({
       companyName: data.companyName || '',
       image: data.image,
@@ -61,13 +76,7 @@ export function CompanyInfoStep({
     });
   }, [data, form]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFileName(file.name);
-      form.setValue('image', file, { shouldValidate: true });
-    }
-  };
+
 
   const onSubmit = (values: Step1Data) => {
     onNext(values);
@@ -153,96 +162,40 @@ export function CompanyInfoStep({
 
           {/* Profile Image - right Column */}
           <div className="col-span-6 md:col-span-2">
-            <CustomFormField
-              fieldType={FormFieldType.SKELETON}
-              control={form.control}
-              name="image"
-              label={t('form.MainImage')}
-              renderSkeleton={(field) => (
-                <FormControl className="h-full overflow-hidden">
-                  <div className="flex flex-col items-center gap-y-2 overflow-hidden h-full">
-                    {field.value ? (
-                      <div className="w-full h-full min-h-[200px] flex items-center justify-center py-2 rounded-lg overflow-hidden border-gray-300 border-dashed border-2 shadow-sm">
-                        <Image
-                          src={
-                            field.value instanceof File
-                              ? URL.createObjectURL(field.value)
-                              : typeof field.value === 'string' &&
-                                  field.value !== ''
-                                ? field.value
-                                : ''
-                          }
-                          width={250}
-                          height={250}
-                          alt="Company Logo"
-                          className="object-cover rounded-md"
-                        />
-                      </div>
-                    ) : (
-                      <div className="flex-1 w-full min-h-[200px]">
-                        <input
-                          className="sr-only"
-                          type="file"
-                          accept="image/*"
-                          ref={inputRef}
-                          onChange={handleImageChange}
-                          id="id-img-upload-step1"
-                        />
-                        <label
-                          htmlFor="id-img-upload-step1"
-                          className="bg-transparent font-din-regular gap-2 px-12 py-8 w-full h-full flex cursor-pointer flex-col items-center justify-center rounded-lg border-gray-300 border-dashed border-2 shadow-sm hover:border-orange-400 focus-within:ring-2 focus-within:ring-orange-500 transition-all"
-                        >
-                          <Image
-                            src={IconsInterface.Upload}
-                            width={80}
-                            height={80}
-                            alt="upload"
-                          />
-                          <div className="flex flex-col justify-center gap-2 text-center text-black">
-                            <p className="font-din-regular text-base">
-                              {isArabic
-                                ? 'انقر للتحميل أو اسحب وأفلِت'
-                                : 'Click to upload or drag and drop'}
-                            </p>
-                            <p className="font-din-regular text-sm text-gray-500">
-                              PNG, JPG or SVG (max. 800x400px)
-                            </p>
-                          </div>
-                        </label>
-                      </div>
-                    )}
-                    <div
-                      className="bg-gray-200 w-full h-10 rounded-xl cursor-pointer flex items-center gap-4 px-2 border-none"
-                      dir={isArabic ? 'rtl' : 'ltr'}
-                    >
-                      <button
-                        type="button"
-                        className="cursor-pointer hover:bg-orange-50 p-1 rounded transition-colors focus-visible:ring-2 focus-visible:ring-orange-500"
-                        onClick={() => {
-                          field.onChange(null);
-                          if (inputRef.current) {
-                            inputRef.current.value = '';
-                            setFileName(null);
-                          }
-                        }}
-                      >
-                        <Trash2
-                          color="#fe6601"
-                          className="size-8 rounded-full p-1 cursor-pointer"
-                        />
-                      </button>
-                      <p className="font-din-regular truncate max-md:text-sm text-gray-600">
-                        {fileName
-                          ? fileName
-                          : isArabic
-                            ? 'لم يتم اختيار ملف'
-                            : 'No file selected'}
-                      </p>
-                    </div>
-                  </div>
-                </FormControl>
-              )}
-            />
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm h-full flex flex-col gap-4">
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-din-medium text-gray-700">
+                  {t('form.Image')}
+                </label>
+                <p className="text-xs text-gray-500 font-din-regular">
+                  {isArabic
+                    ? 'قم بتحميل شعار الشركة أو صورة تعبر عنها'
+                    : 'Upload company logo or representative image'}
+                </p>
+              </div>
+
+              <div className="flex-1 flex flex-col justify-center">
+                <UploadFiles
+                  onFileChange={(files) => {
+                    if (files && files.length > 0) {
+                      form.setValue('image', files[0], { shouldValidate: true });
+                    } else {
+                      form.setValue('image', undefined, { shouldValidate: true });
+                    }
+                  }}
+                  maxFiles={1}
+                  files={
+                    form.watch('image') instanceof File
+                      ? [form.watch('image') as File]
+                      : []
+                  }
+                  accept={{
+                    'image/*': ['.png', '.jpg', '.jpeg', '.webp']
+                  }}
+                  label={isArabic ? 'تحميل الشعار' : 'Upload Logo'}
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -253,8 +206,8 @@ export function CompanyInfoStep({
           onPrevious={onPrevious}
           canGoNext={form.formState.isValid}
           canGoPrevious={false}
-          isLoading={isLoading}
-          isArabic={isArabic}
+          isLoading={!!isLoading}
+          isArabic={!!isArabic}
         />
       </form>
     </Form>

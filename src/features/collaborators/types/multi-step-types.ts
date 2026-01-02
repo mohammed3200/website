@@ -17,6 +17,7 @@ export interface StepComponentProps<T = CompleteFormData> {
   currentStep?: number;
   totalSteps?: number;
   isArabic?: boolean;
+  onSave?: (data: Partial<T>) => void;
 }
 
 export interface MultiStepFormData {

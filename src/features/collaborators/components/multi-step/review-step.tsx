@@ -166,8 +166,8 @@ export function ReviewStep({
                     onPrevious={onPrevious}
                     canGoNext={true}
                     canGoPrevious={true}
-                    isLoading={isLoading}
-                    isArabic={isArabic}
+                    isLoading={!!isLoading}
+                    isArabic={!!isArabic}
                 />
             </form>
         </Form>

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { Telescope, GraduationCap } from 'lucide-react';
+import { useDebounce } from 'react-use';
 import useLanguage from '@/hooks/use-language';
 
 import { Form, FormControl } from '@/components/ui/form';
@@ -25,16 +26,25 @@ export function CapabilitiesStep({
   isLoading,
   currentStep,
   totalSteps,
+  onSave,
 }: StepComponentProps<Step3Data>) {
   const t = useTranslations('collaboratingPartners');
   const tForm = useTranslations('Form');
   const { isArabic } = useLanguage();
 
+  // Filter valid files
+  const initialExperienceFiles = (data.experienceProvidedMedia || []).filter(
+    (f): f is File => f instanceof File,
+  );
+  const initialMachineryFiles = (data.machineryAndEquipmentMedia || []).filter(
+    (f): f is File => f instanceof File,
+  );
+
   const [experienceFiles, setExperienceFiles] = useState<File[]>(
-    data.experienceProvidedMedia || [],
+    initialExperienceFiles,
   );
   const [machineryFiles, setMachineryFiles] = useState<File[]>(
-    data.machineryAndEquipmentMedia || [],
+    initialMachineryFiles,
   );
 
   const form = useForm<Step3Data>({
@@ -42,16 +52,36 @@ export function CapabilitiesStep({
     mode: 'onTouched',
     defaultValues: {
       experienceProvided: data.experienceProvided || '',
-      experienceProvidedMedia: data.experienceProvidedMedia || [],
+      experienceProvidedMedia: initialExperienceFiles,
       machineryAndEquipment: data.machineryAndEquipment || '',
-      machineryAndEquipmentMedia: data.machineryAndEquipmentMedia || [],
+      machineryAndEquipmentMedia: initialMachineryFiles,
     },
   });
 
+  // Watch all form values for auto-save
+  const values = form.watch();
+
+  // Auto-save draft data
+  useDebounce(
+    () => {
+      if (onSave && Object.keys(values).length > 0) {
+        onSave(values);
+      }
+    },
+    1000,
+    [values]
+  );
+
   // Reset form and local state when data changes
   React.useEffect(() => {
-    const experienceMedia = data.experienceProvidedMedia || [];
-    const machineryMedia = data.machineryAndEquipmentMedia || [];
+    if (form.formState.isDirty) return;
+
+    const experienceMedia = (data.experienceProvidedMedia || []).filter(
+      (f): f is File => f instanceof File,
+    );
+    const machineryMedia = (data.machineryAndEquipmentMedia || []).filter(
+      (f): f is File => f instanceof File,
+    );
 
     form.reset({
       experienceProvided: data.experienceProvided || '',
@@ -207,8 +237,8 @@ export function CapabilitiesStep({
           onPrevious={onPrevious}
           canGoNext={true} // Fields are optional
           canGoPrevious={true}
-          isLoading={isLoading}
-          isArabic={isArabic}
+          isLoading={!!isLoading}
+          isArabic={!!isArabic}
         />
       </form>
     </Form>

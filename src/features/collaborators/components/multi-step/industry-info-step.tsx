@@ -4,6 +4,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import { useDebounce } from 'react-use';
 import useLanguage from '@/hooks/use-language';
 
 import { Form } from '@/components/ui/form';
@@ -26,6 +27,7 @@ export function IndustryInfoStep({
   isLoading,
   currentStep,
   totalSteps,
+  onSave,
 }: StepComponentProps<Step2Data>) {
   const t = useTranslations('collaboratingPartners');
   const tForm = useTranslations('Form');
@@ -40,8 +42,24 @@ export function IndustryInfoStep({
     },
   });
 
+  // Watch all form values for auto-save
+  const values = form.watch();
+
+  // Auto-save draft data
+  useDebounce(
+    () => {
+      if (onSave && Object.keys(values).length > 0) {
+        onSave(values);
+      }
+    },
+    1000,
+    [values]
+  );
+
   // Reset form when data changes
   React.useEffect(() => {
+    if (form.formState.isDirty) return;
+
     form.reset({
       industrialSector: data.industrialSector as ListOfIndustrialSectors,
       specialization: data.specialization || '',
@@ -105,8 +123,8 @@ export function IndustryInfoStep({
           onPrevious={onPrevious}
           canGoNext={isValid}
           canGoPrevious={true}
-          isLoading={isLoading}
-          isArabic={isArabic}
+          isLoading={!!isLoading}
+          isArabic={!!isArabic}
         />
       </form>
     </Form>
