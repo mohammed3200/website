@@ -11,6 +11,7 @@ import {
   File as FileIcon,
   Image as ImageIcon,
 } from 'lucide-react';
+import { useDebounce } from 'react-use';
 import useLanguage from '@/hooks/use-language';
 import { useToast } from '@/hooks/use-toast';
 
@@ -35,15 +36,19 @@ export function ProjectDetailsStep({
   isLoading,
   currentStep,
   totalSteps,
+  onSave,
 }: StepComponentProps<Step3Data>) {
   const t = useTranslations('CreatorsAndInnovators');
   const tForm = useTranslations('Form');
   const { isArabic } = useLanguage();
   const { toast } = useToast();
 
-  const [projectFiles, setProjectFiles] = useState<File[]>(
-    data.projectFiles || [],
+  // Filter out invalid files (e.g. from localStorage restoration)
+  const initialFiles = (data.projectFiles || []).filter(
+    (f): f is File => f instanceof File,
   );
+
+  const [projectFiles, setProjectFiles] = useState<File[]>(initialFiles);
   const [fileError, setFileError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,13 +57,33 @@ export function ProjectDetailsStep({
     mode: 'onTouched',
     defaultValues: {
       stageDevelopment: data.stageDevelopment || StageDevelopment.STAGE,
-      projectFiles: data.projectFiles || [],
+      projectFiles: initialFiles,
     },
   });
 
+  // Watch all form values for auto-save
+  const values = form.watch();
+
+  // Auto-save draft data
+  useDebounce(
+    () => {
+      if (onSave && Object.keys(values).length > 0) {
+        onSave(values);
+      }
+    },
+    1000,
+    [values]
+  );
+
   // Reset form and local state when data changes
   React.useEffect(() => {
-    const files = data.projectFiles || [];
+    if (form.formState.isDirty) return;
+
+    // Filter invalid files again for safety on prop updates
+    const files = (data.projectFiles || []).filter(
+      (f): f is File => f instanceof File,
+    );
+
     form.reset({
       stageDevelopment: data.stageDevelopment || StageDevelopment.STAGE,
       projectFiles: files,
@@ -344,14 +369,14 @@ export function ProjectDetailsStep({
 
         {/* Navigation */}
         <StepNavigation
-          currentStep={currentStep}
-          totalSteps={totalSteps}
+          currentStep={currentStep || 3}
+          totalSteps={totalSteps || 4}
           canGoNext={form.formState.isValid}
           canGoPrevious={true}
           onNext={form.handleSubmit(onSubmit)}
           onPrevious={onPrevious}
-          isLoading={isLoading}
-          isArabic={isArabic}
+          isLoading={!!isLoading}
+          isArabic={!!isArabic}
         />
       </form>
     </Form>

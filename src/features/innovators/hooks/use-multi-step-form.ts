@@ -46,8 +46,15 @@ export function useMultiStepForm(initialStep: number = 1): UseMultiStepFormRetur
           return;
         }
 
-        // Restore data
-        setFormData(parsed.formData);
+        // Restore data but clear file fields that can't be persisted as valid File objects
+        const sanitizedData = {
+          ...parsed.formData,
+          // Clear file fields to prevent sending invalid plain objects to server
+          image: undefined,
+          projectFiles: [] as File[],
+        } as Partial<CompleteFormData>;
+
+        setFormData(sanitizedData);
         setCompletedSteps(parsed.completedSteps);
         
 

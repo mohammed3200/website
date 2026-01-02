@@ -155,12 +155,12 @@ export function ReviewStep({
                 <p className="text-sm text-gray-500">{t('form.country')}</p>
                 <p className="font-din-regular text-gray-800">
                   {allFormData.country &&
-                  Countries[allFormData.country as keyof typeof Countries]
+                    Countries[allFormData.country as keyof typeof Countries]
                     ? isArabic
                       ? Countries[allFormData.country as keyof typeof Countries]
-                          .ar
+                        .ar
                       : Countries[allFormData.country as keyof typeof Countries]
-                          .en
+                        .en
                     : allFormData.country}
                 </p>
               </div>
@@ -256,16 +256,16 @@ export function ReviewStep({
                 </p>
                 <p className="font-din-regular text-gray-800">
                   {allFormData.stageDevelopment &&
-                  StagesDevelopment[
+                    StagesDevelopment[
                     allFormData.stageDevelopment as keyof typeof StagesDevelopment
-                  ]
+                    ]
                     ? isArabic
                       ? StagesDevelopment[
-                          allFormData.stageDevelopment as keyof typeof StagesDevelopment
-                        ].ar
+                        allFormData.stageDevelopment as keyof typeof StagesDevelopment
+                      ].ar
                       : StagesDevelopment[
-                          allFormData.stageDevelopment as keyof typeof StagesDevelopment
-                        ].en
+                        allFormData.stageDevelopment as keyof typeof StagesDevelopment
+                      ].en
                     : allFormData.stageDevelopment}
                 </p>
               </div>
@@ -308,14 +308,14 @@ export function ReviewStep({
 
         {/* Navigation */}
         <StepNavigation
-          currentStep={currentStep}
-          totalSteps={totalSteps}
+          currentStep={currentStep || 4}
+          totalSteps={totalSteps || 4}
           canGoNext={form.formState.isValid && form.watch('TermsOfUse')}
           canGoPrevious={true}
           onNext={form.handleSubmit(onSubmit)}
           onPrevious={onPrevious}
-          isLoading={isLoading}
-          isArabic={isArabic}
+          isLoading={!!isLoading}
+          isArabic={!!isArabic}
         />
       </form>
     </Form>

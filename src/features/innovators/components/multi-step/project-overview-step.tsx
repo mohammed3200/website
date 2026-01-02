@@ -4,6 +4,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
+import { useDebounce } from 'react-use';
 import useLanguage from '@/hooks/use-language';
 
 import { Form } from '@/components/ui/form';
@@ -23,6 +24,7 @@ export function ProjectOverviewStep({
   isLoading,
   currentStep,
   totalSteps,
+  onSave,
 }: StepComponentProps<Step2Data>) {
   const t = useTranslations('CreatorsAndInnovators');
   const tForm = useTranslations('Form');
@@ -38,8 +40,24 @@ export function ProjectOverviewStep({
     },
   });
 
+  // Watch all form values for auto-save
+  const values = form.watch();
+
+  // Auto-save draft data
+  useDebounce(
+    () => {
+      if (onSave && Object.keys(values).length > 0) {
+        onSave(values);
+      }
+    },
+    1000,
+    [values]
+  );
+
   // Reset form when data changes
   React.useEffect(() => {
+    if (form.formState.isDirty) return;
+
     form.reset({
       projectTitle: data.projectTitle || '',
       projectDescription: data.projectDescription || '',
@@ -107,14 +125,14 @@ export function ProjectOverviewStep({
 
         {/* Navigation */}
         <StepNavigation
-          currentStep={currentStep}
-          totalSteps={totalSteps}
+          currentStep={currentStep || 2}
+          totalSteps={totalSteps || 4}
           canGoNext={form.formState.isValid}
           canGoPrevious={true}
           onNext={form.handleSubmit(onSubmit)}
           onPrevious={onPrevious}
-          isLoading={isLoading}
-          isArabic={isArabic}
+          isLoading={!!isLoading}
+          isArabic={!!isArabic}
         />
       </form>
     </Form>

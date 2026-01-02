@@ -45,10 +45,12 @@ export interface StepComponentProps<T = CompleteFormData> {
   data: Partial<T>;
   onNext: (data: T) => void;
   onPrevious: () => void;
-  isLoading: boolean;
-  currentStep: number;
-  totalSteps: number;
+  isLoading?: boolean;
+  currentStep?: number;
+  totalSteps?: number;
   completedSteps: number[];
+  onSave?: (data: Partial<T>) => void;
+  isArabic?: boolean;
 }
 
 export interface NavigationProps {
