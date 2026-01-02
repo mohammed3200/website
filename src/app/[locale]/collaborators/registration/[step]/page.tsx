@@ -4,7 +4,7 @@ import { useEffect, use } from "react";
 import { notFound, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-import { useMultiStepForm } from "@/features/collaborators/hooks/useMultiStepForm";
+import { useMultiStepForm } from "@/features/collaborators/hooks/use-multi-step-form";
 import {
     CompanyInfoStep,
     IndustryInfoStep,
@@ -135,6 +135,7 @@ export default function StepPage({
                         isLoading={isPending}
                         currentStep={step}
                         totalSteps={totalSteps}
+                        onSave={updateStepData}
                     />
                 );
             case 2:
@@ -146,6 +147,7 @@ export default function StepPage({
                         isLoading={isPending}
                         currentStep={step}
                         totalSteps={totalSteps}
+                        onSave={updateStepData}
                     />
                 );
             case 3:
@@ -157,6 +159,7 @@ export default function StepPage({
                         isLoading={isPending}
                         currentStep={step}
                         totalSteps={totalSteps}
+                        onSave={updateStepData}
                     />
                 );
             case 4:
@@ -168,6 +171,7 @@ export default function StepPage({
                         isLoading={isPending}
                         currentStep={step}
                         totalSteps={totalSteps}
+                        onSave={updateStepData}
                     />
                 );
             default:

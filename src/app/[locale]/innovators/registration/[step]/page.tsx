@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import useLanguage from "@/hooks/use-language";
-import { useMultiStepForm } from "@/features/innovators/hooks/useMultiStepForm";
+import { useMultiStepForm } from "@/features/innovators/hooks/use-multi-step-form";
 import { useJoiningInnovators } from "@/features/innovators/api/use-joining-innovators";
 import {
     PersonalInfoStep,
@@ -100,6 +100,7 @@ export default function RegistrationStepPage() {
                         currentStep={currentStep}
                         totalSteps={totalSteps}
                         completedSteps={completedSteps}
+                        onSave={updateStepData}
                     />
                 );
             case 2:
@@ -138,6 +139,7 @@ export default function RegistrationStepPage() {
                         currentStep={currentStep}
                         totalSteps={totalSteps}
                         completedSteps={completedSteps}
+                        onSave={updateStepData}
                     />
                 );
             default:
