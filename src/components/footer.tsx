@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import useLanguage from "@/hooks/use-language";
 import { MainLogo, socials } from "@/constants";
 import { getNavItems } from "@/components/navigation/constants";
-import { Mail, MapPin, Phone, ArrowUp } from "lucide-react";
+import { Mail, Phone, ArrowUp } from "lucide-react";
 
 export const Footer = () => {
   const { lang, isArabic } = useLanguage();
@@ -84,12 +84,14 @@ export const Footer = () => {
                   <li className="flex items-center gap-3 text-gray-500">
                     <Phone className="size-5 text-primary shrink-0" />
                     <span dir="ltr" className="text-base font-medium">
-                      +218 91 000 0000
+                      <Link href="tel:+218910000000">+218 91 000 0000</Link>
                     </span>
                   </li>
                   <li className="flex items-center gap-3 text-gray-500">
                     <Mail className="size-5 text-primary shrink-0" />
-                    <span className="text-base font-medium">info@cit.edu.ly</span>
+                    <span className="text-base font-medium">
+                      <Link href="mailto:info@cit.edu.ly">info@cit.edu.ly</Link>
+                    </span>
                   </li>
                 </ul>
               </div>
