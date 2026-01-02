@@ -38,7 +38,7 @@ This document outlines the development tasks for enhancing the Center for Leader
 
 ## Task 1: Finalize Email System Templates
 
-### Status: 🟡 In Progress
+### Status: ✅ Completed
 
 ### Description
 
@@ -446,9 +446,9 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 │ Project Files                           │
 │                                         │
 │ ┌───────────────────────────────────┐   │
-│ │  📎 Drag & Drop files here       │   │
+│ │ 📎 Drag & Drop files here         │   │
 │ │     or click to browse            │   │
-│ │                                    │   │
+│ │                                   │   │
 │ │  Allowed: PDF, Word, JPG, PNG, PPT│   │
 │ │  Max: 10 files, 10MB each         │   │
 │ └───────────────────────────────────┘   │
@@ -794,7 +794,7 @@ Create new permission resources:
 
 ## Task 5: Improve and Standardize Button Designs
 
-### Status: 🔴 Not Started
+### Status: ✅ Completed
 
 ### Description
 
