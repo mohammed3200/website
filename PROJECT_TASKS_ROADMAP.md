@@ -18,6 +18,7 @@
 10. [Task 10: Navigation Improvements](#task-10-navigation-improvements)
 11. [Task 11: News Section UI Enhancements](#task-11-news-section-ui-enhancements)
 12. [Task 12: Fix Registration Form Data Persistence](#task-12-fix-registration-form-data-persistence)
+13. [Task 13: AI-Powered Form Redesign](#task-13-ai-powered-form-redesign)
 
 ---
 
@@ -1966,3 +1967,26 @@ Debug and fix the issue where registration form data (Collaborators and Innovato
 **Last Updated**: January 2026
 **Project**: Misurata Center for Entrepreneurship & Business Incubators
 **Version**: 1.2
+
+---
+
+## Task 13: AI-Powered Form Redesign
+
+### Status: 🚀 In Progress
+
+### Priority: 🔴 HIGH
+
+### Description
+
+Implement the comprehensive AI-driven redesign of the multi-step forms for Collaborators and Innovators. This includes creating a new foundation layer (types, store, hooks), shared components, and transforming the existing forms to use the new infrastructure.
+
+Detailed plan available in: `ai_form_redesign_plan.md`
+
+### Subtasks
+
+- [ ] Phase 1: Foundation Layer (Types, Store, Hooks)
+- [ ] Phase 2: Shared Components Library
+- [ ] Phase 3: Collaborators Form Transformation
+- [ ] Phase 4: Innovators Form Transformation
+- [ ] Phase 5: Design Enhancement
+- [ ] Phase 6: Testing & Optimization
