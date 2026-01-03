@@ -113,9 +113,9 @@ export const step3Schema = (t: (key: string) => string) => {
 /**
  * Step 4: Review & Terms
  */
-export const step4Schema = (_t: (key: string) => string) => {
+export const step4Schema = (t: (key: string) => string) => {
   return z.object({
-    // TermsOfUse: z.boolean().default(false).refine((value) => value === true, { message: t("TermsOfUse") }),
+    TermsOfUse: z.boolean().default(false).refine((value) => value === true, { message: t("TermsOfUse") }),
   });
 };
 

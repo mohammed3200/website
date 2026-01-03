@@ -36,6 +36,7 @@ type BaseCollaborator = {
   machineryAndEquipment: string | null;
   createdAt: string;
   updatedAt: string;
+  TermsOfUse?: boolean;
 };
 
 // Media type
