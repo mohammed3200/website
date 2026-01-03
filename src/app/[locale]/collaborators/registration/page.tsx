@@ -11,5 +11,5 @@ export default async function CollaboratorRegistrationPage({
 }: PageProps) {
     // Directly redirect to the first step
     const { locale } = await params;
-    redirect(`/${locale}/collaborators/registration/1`);
+    redirect(`/${locale}/collaborators/registration/company-info`);
 }

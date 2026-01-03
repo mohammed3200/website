@@ -1,211 +1,74 @@
-"use client";
+console.log('[CollaboratorsPage] Module loaded');
+import { notFound, redirect } from 'next/navigation';
+import { CollaboratorFormWizard } from '@/features/collaborators/components/collaborator-form-wizard';
+import { getCollaboratorFormConfig } from '@/features/collaborators/form-config';
+import { routing } from '@/i18n/routing';
 
-import { useEffect, use } from "react";
-import { notFound, useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+export const dynamicParams = true;
 
-import { useMultiStepForm } from "@/features/collaborators/hooks/use-multi-step-form";
-import {
-    CompanyInfoStep,
-    IndustryInfoStep,
-    CapabilitiesStep,
-    ProgressIndicator,
-} from "@/features/collaborators/components/multi-step";
-import { ReviewStep } from "@/features/collaborators/components/multi-step/review-step";
-import { useJoiningCollaborators } from "@/features/collaborators/api";
-import type { CompleteFormData } from "@/features/collaborators/types/multi-step-types";
-import { useToast } from "@/hooks/use-toast";
-import { motion, AnimatePresence } from "framer-motion";
-import useLanguage from "@/hooks/use-language";
+// Next.js 16 Page Props
+type PageProps = {
+    params: Promise<{
+        locale: string;
+        step: string;
+    }>;
+};
 
-export default function StepPage({
-    params,
-}: {
-    params: Promise<{ step: string; locale: string }>;
-}) {
-    const { step: stepParam, locale } = use(params);
-    const step = parseInt(stepParam);
-    const router = useRouter();
-    const t = useTranslations("collaboratingPartners");
-    const { toast } = useToast();
-    const { isArabic } = useLanguage();
+// Generate valid params for SSG
+export async function generateStaticParams() {
+    try {
+        // Determine locales (mock if routing import fails, but assuming routing exists from context)
+        const locales = routing?.locales || ['en', 'ar'];
 
-    // Use existing API hook for submission
-    const { mutate, isPending } = useJoiningCollaborators();
+        // Get step IDs from config (using a dummy t function as IDs usually don't depend on it, 
+        // or we can just access the raw array if exported, but here we instantiate)
+        const config = getCollaboratorFormConfig((k) => k);
 
-    const {
-        currentStep,
-        totalSteps,
-        formData,
-        completedSteps,
-        nextStep,
-        previousStep,
-        updateStepData,
-        resetForm,
-    } = useMultiStepForm(step);
+        const params = [];
+        for (const locale of locales) {
+            for (const step of config.steps) {
+                params.push({ locale, step: step.id });
+            }
+        }
 
-    // Validate step number
-    if (isNaN(step) || step < 1 || step > 4) {
-        notFound();
+        console.log('[CollaboratorsPage] Generated static params:', params);
+        return params;
+    } catch (error) {
+        console.error('[CollaboratorsPage] Error generating static params:', error);
+        return [];
+    }
+}
+
+export default async function CollaboratorsRegistrationPage(props: PageProps) {
+    const { locale, step } = await props.params;
+
+    console.log(`[CollaboratorsPage] Processing request for step: "${step}" in locale: "${locale}"`);
+
+    const config = getCollaboratorFormConfig((k) => k);
+    const validIds = config.steps.map(s => s.id);
+
+    console.log('[CollaboratorsPage] Configured Valid IDs:', validIds);
+    console.log(`[CollaboratorsPage] Is step "${step}" valid?`, validIds.includes(step));
+
+    // 1. Check if it's a valid ID
+    if (validIds.includes(step)) {
+        console.log('[CollaboratorsPage] Valid ID found. Rendering wizard.');
+        return <CollaboratorFormWizard />;
     }
 
-    // Effect to sync URL with internal state if needed or handle direct access checks
-    // Note: The hook takes initialStep, but we might want to enforce sequential access here
-    useEffect(() => {
-        // If trying to access step > 1 without data, redirect to step 1
-        // (Simple protection, can be robustified)
-        if (step > 1 && Object.keys(formData).length === 0) {
-            // router.replace(`/${params.locale}/collaborators/registration/1`);
-        }
-    }, [step, formData, locale, router]);
+    // 2. Check if it's a legacy numeric ID
+    const numericStep = parseInt(step, 10);
+    console.log(`[CollaboratorsPage] Parsed numeric step: ${numericStep}`);
 
+    if (!isNaN(numericStep) && numericStep > 0 && numericStep <= validIds.length) {
+        // Redirect to new ID (numericStep is 1-indexed)
+        const newId = validIds[numericStep - 1];
+        const redirectUrl = `/${locale}/collaborators/registration/${newId}`;
+        console.log(`[CollaboratorsPage] Legacy numeric ID detected. Redirecting to: ${redirectUrl}`);
+        redirect(redirectUrl);
+    }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleNext = (data: any) => {
-        updateStepData(data);
-
-        if (currentStep === totalSteps) {
-            handleSubmission({ ...formData, ...data });
-        } else {
-            nextStep();
-        }
-    };
-
-    const handleSubmission = async (data: Partial<CompleteFormData>) => {
-        try {
-            // Final Validation (optional, but good practice)
-            // const result = completeCollaboratorRegistrationSchema(tForm).safeParse(data);
-            // if (!result.success) { ...handle error... }
-
-            const finalData = data as CompleteFormData;
-
-            // Prepare payload for API
-            // Note: The structure must match what the API expects
-            const payload = {
-                ...finalData,
-                // Ensure arrays for media
-                experienceProvidedMedia: Array.isArray(finalData.experienceProvidedMedia) ? finalData.experienceProvidedMedia : [],
-                machineryAndEquipmentMedia: Array.isArray(finalData.machineryAndEquipmentMedia) ? finalData.machineryAndEquipmentMedia : [],
-                // TermsOfUse is likely removed or handled
-            };
-
-            mutate(
-                { form: payload },
-                {
-                    onSuccess: () => {
-                        resetForm();
-                        router.push(`/${locale}/collaborators/registration/complete`);
-                    },
-                    onError: (error) => {
-                        console.error("Error submitting form:", error);
-
-                        // Check for specific error types
-                        let errorMessage = t("error_submitting") || "An error occurred while submitting.";
-
-                        if (error && typeof error === 'object' && 'message' in error) {
-                            const err = error as { message: string };
-                            if (err.message === "PHONE_EXISTS") {
-                                errorMessage = t("error_phone_exists") || "Phone number already exists.";
-                            } else if (err.message === "EMAIL_EXISTS") {
-                                errorMessage = t("form.EmailExists") || "Email already exists.";
-                            }
-                        }
-
-                        toast({
-                            title: isArabic ? "خطأ" : "Error",
-                            description: errorMessage,
-                            variant: "destructive"
-                        });
-                    },
-                }
-            );
-        } catch (error) {
-            console.error("Error in submission handler:", error);
-        }
-    };
-
-    const renderStep = () => {
-        switch (step) {
-            case 1:
-                return (
-                    <CompanyInfoStep
-                        data={formData}
-                        onNext={handleNext}
-                        onPrevious={previousStep}
-                        isLoading={isPending}
-                        currentStep={step}
-                        totalSteps={totalSteps}
-                        onSave={updateStepData}
-                    />
-                );
-            case 2:
-                return (
-                    <IndustryInfoStep
-                        data={formData}
-                        onNext={handleNext}
-                        onPrevious={previousStep}
-                        isLoading={isPending}
-                        currentStep={step}
-                        totalSteps={totalSteps}
-                        onSave={updateStepData}
-                    />
-                );
-            case 3:
-                return (
-                    <CapabilitiesStep
-                        data={formData}
-                        onNext={handleNext}
-                        onPrevious={previousStep}
-                        isLoading={isPending}
-                        currentStep={step}
-                        totalSteps={totalSteps}
-                        onSave={updateStepData}
-                    />
-                );
-            case 4:
-                return (
-                    <ReviewStep
-                        data={formData}
-                        onNext={handleNext} // This triggers submission
-                        onPrevious={previousStep}
-                        isLoading={isPending}
-                        currentStep={step}
-                        totalSteps={totalSteps}
-                        onSave={updateStepData}
-                    />
-                );
-            default:
-                return null; // or Error component
-        }
-    };
-
-    return (
-        <div className="w-full min-h-screen py-10 px-4 md:px-8 bg-gray-50">
-            <div className="max-w-5xl mx-auto">
-                {/* Progress Indicator */}
-                <div className="mb-8">
-                    <ProgressIndicator
-                        currentStep={step}
-                        totalSteps={totalSteps}
-                        completedSteps={completedSteps}
-                    />
-                </div>
-
-                {/* Step Content */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 md:p-12 overflow-hidden">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={step}
-                            initial={{ x: isArabic ? -20 : 20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            exit={{ x: isArabic ? 20 : -20, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                        >
-                            {renderStep()}
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-            </div>
-        </div>
-    );
+    console.log('[CollaboratorsPage] Invalid step. Triggering notFound().');
+    // 3. Otherwise 404
+    notFound();
 }
