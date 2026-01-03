@@ -4,7 +4,10 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
-const nextConfig: NextConfig = {
+const nextConfig : NextConfig = {
+  turbopack: {
+    root: './',
+  },
   images: {
     remotePatterns: [
       {
