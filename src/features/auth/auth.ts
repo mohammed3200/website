@@ -78,7 +78,7 @@ export const {
       }
 
       if (token.permissions && session.user) {
-        session.user.permissions = token.permissions;
+        session.user.permissions = token.permissions as any;
       }
 
       if (session.user) {
