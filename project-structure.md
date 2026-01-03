@@ -1,6 +1,6 @@
 # File Tree: website
 
-**Generated:** 1/1/2026, 4:13:38 PM
+**Generated:** 1/3/2026, 4:57:18 PM
 **Root Path:** `c:\Users\iG\Documents\Next.JS\website`
 
 ```
@@ -16,8 +16,10 @@
 │   │   ├── ⚙️ discovery_summary.json
 │   │   ├── 📝 email_integration_plan.md
 │   │   └── 📝 email_readme.md
+│   ├── 📝 IMPLEMENTATION_STATUS.md
 │   ├── 📝 TASK2_IMPLEMENTATION_SUMMARY.md
-│   └── 📝 TASK3_ADMIN_NOTIFICATIONS.md
+│   ├── 📝 TASK3_ADMIN_NOTIFICATIONS.md
+│   └── 📝 WARP.md
 ├── 📁 messages
 │   ├── ⚙️ ar.json
 │   └── ⚙️ en.json
@@ -170,6 +172,8 @@
 │   │   │   │   │   └── 📄 index.ts
 │   │   │   │   ├── 📄 layout.tsx
 │   │   │   │   └── 📄 page.tsx
+│   │   │   ├── 📁 faq
+│   │   │   │   └── 📄 page.tsx
 │   │   │   ├── 📁 incubators
 │   │   │   │   ├── 📁 components
 │   │   │   │   │   ├── 📄 Hero.tsx
@@ -225,6 +229,7 @@
 │   │   ├── 📁 ui
 │   │   │   ├── 📄 accordion.tsx
 │   │   │   ├── 📄 alert-dialog.tsx
+│   │   │   ├── 📄 alert.tsx
 │   │   │   ├── 📄 background-beams.tsx
 │   │   │   ├── 📄 badge.tsx
 │   │   │   ├── 📄 button.tsx
@@ -243,6 +248,7 @@
 │   │   │   ├── 📄 placeholders-and-vanish-input.tsx
 │   │   │   ├── 📄 popover.tsx
 │   │   │   ├── 📄 progress.tsx
+│   │   │   ├── 📄 radio-group.tsx
 │   │   │   ├── 📄 select.tsx
 │   │   │   ├── 📄 separator.tsx
 │   │   │   ├── 📄 sheet.tsx
@@ -303,29 +309,27 @@
 │   │   │   │   ├── 📄 use-joining-collaborator.ts
 │   │   │   │   └── 📄 use-update-status-collaborator.ts
 │   │   │   ├── 📁 components
-│   │   │   │   ├── 📁 multi-step
-│   │   │   │   │   ├── 📄 capabilities-step.tsx
-│   │   │   │   │   ├── 📄 company-info-step.tsx
-│   │   │   │   │   ├── 📄 index.ts
-│   │   │   │   │   ├── 📄 industry-info-step.tsx
-│   │   │   │   │   ├── 📄 progress-indicator.tsx
-│   │   │   │   │   ├── 📄 review-step.tsx
-│   │   │   │   │   └── 📄 step-navigation.tsx
 │   │   │   │   ├── 📄 card-companies.tsx
+│   │   │   │   ├── 📄 collaborator-form-wizard.tsx
 │   │   │   │   ├── 📄 hero.tsx
 │   │   │   │   ├── 📄 index.ts
 │   │   │   │   └── 📄 introduction.tsx
 │   │   │   ├── 📁 hooks
-│   │   │   │   ├── 📄 use-collaborator-id.ts
-│   │   │   │   ├── 📄 useMultiStepCollaboratorForm.ts
-│   │   │   │   └── 📄 useMultiStepForm.ts
+│   │   │   │   └── 📄 use-collaborator-id.ts
 │   │   │   ├── 📁 schemas
 │   │   │   │   └── 📄 step-schemas.ts
 │   │   │   ├── 📁 server
 │   │   │   │   └── 📄 route.ts
+│   │   │   ├── 📁 steps
+│   │   │   │   ├── 📄 capabilities-step.tsx
+│   │   │   │   ├── 📄 company-info-step.tsx
+│   │   │   │   ├── 📄 industry-info-step.tsx
+│   │   │   │   └── 📄 review-submit-step.tsx
 │   │   │   ├── 📁 types
 │   │   │   │   └── 📄 multi-step-types.ts
 │   │   │   ├── 📄 constants.ts
+│   │   │   ├── 📄 form-config.ts
+│   │   │   ├── 📄 store.ts
 │   │   │   └── 📄 types.ts
 │   │   ├── 📁 email
 │   │   │   ├── 📁 api
@@ -346,30 +350,28 @@
 │   │   │   ├── 📁 api
 │   │   │   │   └── 📄 use-joining-innovators.ts
 │   │   │   ├── 📁 components
-│   │   │   │   ├── 📁 multi-step
-│   │   │   │   │   ├── 📄 index.ts
-│   │   │   │   │   ├── 📄 personal-info-step.tsx
-│   │   │   │   │   ├── 📄 progress-indicator.tsx
-│   │   │   │   │   ├── 📄 project-details-step.tsx
-│   │   │   │   │   ├── 📄 project-overview-step.tsx
-│   │   │   │   │   ├── 📄 review-step.tsx
-│   │   │   │   │   └── 📄 step-navigation.tsx
 │   │   │   │   ├── 📄 card-innovators.tsx
 │   │   │   │   ├── 📄 hero.tsx
 │   │   │   │   ├── 📄 index.ts
+│   │   │   │   ├── 📄 innovator-form-wizard.tsx
 │   │   │   │   └── 📄 proem.tsx
 │   │   │   ├── 📁 constants
-│   │   │   │   ├── 📄 constants.ts
-│   │   │   │   └── 📄 step-config.ts
+│   │   │   │   └── 📄 constants.ts
 │   │   │   ├── 📁 hooks
-│   │   │   │   └── 📄 useMultiStepForm.ts
 │   │   │   ├── 📁 schemas
 │   │   │   │   └── 📄 step-schemas.ts
 │   │   │   ├── 📁 server
 │   │   │   │   └── 📄 route.ts
-│   │   │   └── 📁 types
-│   │   │       ├── 📄 multi-step-types.ts
-│   │   │       └── 📄 types.ts
+│   │   │   ├── 📁 steps
+│   │   │   │   ├── 📄 personal-info-step.tsx
+│   │   │   │   ├── 📄 project-details-step.tsx
+│   │   │   │   ├── 📄 project-overview-step.tsx
+│   │   │   │   └── 📄 review-submit-step.tsx
+│   │   │   ├── 📁 types
+│   │   │   │   ├── 📄 multi-step-types.ts
+│   │   │   │   └── 📄 types.ts
+│   │   │   ├── 📄 form-config.ts
+│   │   │   └── 📄 store.ts
 │   │   ├── 📁 news
 │   │   │   ├── 📁 components
 │   │   │   ├── 📁 hooks
@@ -410,6 +412,24 @@
 │   │   │   ├── 📁 transports
 │   │   │   │   └── 📄 nodemailer.ts
 │   │   │   └── 📄 service.ts
+│   │   ├── 📁 forms
+│   │   │   ├── 📁 components
+│   │   │   │   ├── 📁 fields
+│   │   │   │   │   ├── 📄 checkbox-field.tsx
+│   │   │   │   │   ├── 📄 date-picker-field.tsx
+│   │   │   │   │   ├── 📄 form-field-wrapper.tsx
+│   │   │   │   │   ├── 📄 index.ts
+│   │   │   │   │   ├── 📄 phone-number-input.tsx
+│   │   │   │   │   ├── 📄 radio-group-field.tsx
+│   │   │   │   │   ├── 📄 select-field.tsx
+│   │   │   │   │   ├── 📄 text-area.tsx
+│   │   │   │   │   └── 📄 text-input.tsx
+│   │   │   │   ├── 📄 file-upload.tsx
+│   │   │   │   ├── 📄 progress-indicator.tsx
+│   │   │   │   └── 📄 step-navigation.tsx
+│   │   │   ├── 📄 create-form-store.ts
+│   │   │   ├── 📄 types.ts
+│   │   │   └── 📄 use-form-controller.ts
 │   │   ├── 📁 notifications
 │   │   │   └── 📄 admin-notifications.ts
 │   │   ├── 📄 auth.ts
@@ -433,28 +453,23 @@
 │   ├── 📁 notifications
 │   │   ├── 📝 README.md
 │   │   └── 📄 admin-notifications.test.ts
-│   ├── 📁 outgoing
-│   └── 📄 admin-middleware.test.ts
+│   └── 📁 outgoing
 ├── ⚙️ .eslintrc.json
 ├── ⚙️ .hintrc
 ├── ⚙️ .prettierrc
 ├── 📝 CONTRIBUTING.md
-├── 📝 IMPLEMENTATION_STATUS.md
 ├── 📄 LICENSE
-├── 📝 MIGRATION_GUIDE.md
 ├── 📝 PROJECT_TASKS_ROADMAP.md
-├── 📝 QUICK_START_GUIDE.md
 ├── 📝 README.md
-├── 📝 SESSION_PROGRESS_SUMMARY.md
-├── 📝 WARP.md
 ├── 📄 bun.lock
 ├── ⚙️ components.json
-├── 📄 eslint.config.js
+├── 📄 eslint.config.mjs
 ├── 📄 jest.config.ts
 ├── 📄 jest.setup.ts
 ├── 📄 next.config.ts
 ├── ⚙️ package.json
 ├── 📄 postcss.config.mjs
+├── ⚙️ project-structure.json
 ├── 📝 project-structure.md
 ├── 📄 tailwind.config.ts
 └── ⚙️ tsconfig.json
