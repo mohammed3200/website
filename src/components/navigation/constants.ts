@@ -33,7 +33,7 @@ export const getNavItems = (
     children: [
       {
         label: t('registerCompany'),
-        href: `/${locale}/collaborators/registration/1`,
+        href: `/${locale}/collaborators/registration/company-info`,
         description: t('registerCompanyDesc'),
       },
       {
@@ -50,7 +50,7 @@ export const getNavItems = (
     children: [
       {
         label: t('registerInnovator'),
-        href: `/${locale}/innovators/registration/1`,
+        href: `/${locale}/innovators/registration/personal-info`,
         description: t('registerInnovatorDesc'),
       },
       {
