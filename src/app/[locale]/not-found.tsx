@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import { InterfaceImage } from "@/constants";
 import useLanguage from "@/hooks/use-language";
 import { BackgroundBeams } from "@/components/ui/background-beams";
@@ -19,45 +20,60 @@ export default function NotFound() {
 function NotFoundContent() {
     const { isArabic, lang } = useLanguage();
     const t = useTranslations("NotFound");
-
-    // Fallback to 'ar' if lang is undefined/empty to prevent 404 loops or broken links
-    // But wait, lang comes from useLocale now which defaults to configured locale.
-    // Actually in global 404, we might not have a locale in URL.
-    // useLanguage uses NextIntl's useLocale, which needs context.
-    // NotFoundContent is inside NextIntlClientProvider with "ar" context, so lang will be "ar".
+    const router = useRouter();
 
     return (
-        <div>
-            <BackgroundBeams className="-z-10" />
-            <main className="flex h-screen">
-                <section className="flex h-full flex-1 flex-col">
-                    <div
-                        className="flex flex-1 items-center justify-center flex-col gap-2"
-                        dir={isArabic ? "rtl" : "ltr"}
-                    >
+        <div className="relative min-h-screen w-full overflow-hidden bg-background">
+            <BackgroundBeams className="-z-10 opacity-40" />
+            <main className="flex h-screen w-full items-center justify-center p-4">
+                <div
+                    className="flex flex-col items-center justify-center gap-6 text-center z-10 max-w-lg mx-auto"
+                    dir={isArabic ? "rtl" : "ltr"}
+                >
+                    <div className="relative mb-4">
+                        <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
                         <Image
                             src={InterfaceImage.Error404}
-                            alt="not found"
+                            alt="404 Not Found"
                             width={300}
                             height={300}
-                            sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw"
-                            className="object-cover h-auto"
+                            className="object-contain relative z-10 drop-shadow-xl"
+                            priority
                         />
-                        <h2 className="font-din-bold h6 md:h5 ">
+                    </div>
+
+                    <div className="space-y-2">
+                        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight lg:text-6xl text-primary">
+                            404
+                        </h1>
+                        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
                             {t("title")}
                         </h2>
-                        <div className="font-din-regular body-2 max-lg:max-w-sm">
-                            <p className="">
-                                {t("description")}{" "}
-                                <Link href={`/${lang}`}>
-                                    <span className="text-primary cursor-pointer hover:underline hover:decoration-4 hover:underline-offset-[6px]">
-                                        {t("homePage")}
-                                    </span>
-                                </Link>
-                            </p>
-                        </div>
                     </div>
-                </section>
+
+                    <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                        {t("description")}
+                    </p>
+
+                    <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
+                        <Button
+                            variant="default"
+                            size="lg"
+                            onClick={() => router.push(`/${lang}`)}
+                            className="gap-2 min-w-[140px]"
+                        >
+                            <span className="font-semibold">{t("homePage")}</span>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            onClick={() => router.back()}
+                            className="gap-2 min-w-[140px]"
+                        >
+                            <span className="font-semibold">{isArabic ? "العودة" : "Go Back"}</span>
+                        </Button>
+                    </div>
+                </div>
             </main>
         </div>
     );
