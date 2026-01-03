@@ -1,188 +1,63 @@
-"use client";
+import { notFound, redirect } from 'next/navigation';
+import { InnovatorFormWizard } from '@/features/innovators/components/innovator-form-wizard';
+import { getInnovatorFormConfig } from '@/features/innovators/form-config';
+import { routing } from '@/i18n/routing';
 
-import { useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import useLanguage from "@/hooks/use-language";
-import { useMultiStepForm } from "@/features/innovators/hooks/use-multi-step-form";
-import { useJoiningInnovators } from "@/features/innovators/api/use-joining-innovators";
-import {
-    PersonalInfoStep,
-    ProjectOverviewStep,
-    ProjectDetailsStep,
-    ReviewStep,
-    ProgressIndicator,
-} from "@/features/innovators/components/multi-step";
-import { STEP_CONFIGS } from "@/features/innovators/constants/step-config";
-import { CompleteFormData } from "@/features/innovators/types/multi-step-types";
-import { Back } from "@/components";
-import { motion, AnimatePresence } from "framer-motion";
+export const dynamicParams = true;
 
-export default function RegistrationStepPage() {
-    const router = useRouter();
-    const params = useParams();
-    const { lang, isArabic } = useLanguage();
-    const { mutate, isPending } = useJoiningInnovators();
+type PageProps = {
+    params: Promise<{
+        locale: string;
+        step: string;
+    }>;
+};
 
-    const stepParam = params.step as string;
-    const currentStepNumber = parseInt(stepParam, 10);
+export async function generateStaticParams() {
+    try {
+        const locales = routing?.locales || ['en', 'ar'];
+        const config = getInnovatorFormConfig((k) => k);
 
-    const {
-        currentStep,
-        totalSteps,
-        formData,
-        completedSteps,
-        canGoToStep,
-        goToStep,
-        nextStep,
-        previousStep,
-        updateStepData,
-        resetForm,
-        getStepData,
-    } = useMultiStepForm(currentStepNumber);
-
-    // Sync URL with hook state
-    useEffect(() => {
-        if (currentStep !== currentStepNumber) {
-            router.replace(`/${lang}/innovators/registration/${currentStep}`);
-        }
-    }, [currentStep, currentStepNumber, router, lang]);
-
-    // Validate step access
-    useEffect(() => {
-        if (isNaN(currentStepNumber) || currentStepNumber < 1 || currentStepNumber > totalSteps) {
-            router.replace(`/${lang}/innovators/registration/1`);
-            return;
+        const params = [];
+        for (const locale of locales) {
+            for (const step of config.steps) {
+                params.push({ locale, step: step.id });
+            }
         }
 
-        if (!canGoToStep(currentStepNumber)) {
-            router.replace(`/${lang}/innovators/registration/${currentStep}`);
-        }
-    }, [currentStepNumber, currentStep, totalSteps, canGoToStep, router, lang]);
+        console.log('[InnovatorsPage] Generated static params:', params);
+        return params;
+    } catch (error) {
+        console.error('[InnovatorsPage] Error generating static params:', error);
+        return [];
+    }
+}
 
-    const handleStepComplete = (stepData: Partial<CompleteFormData>) => {
-        updateStepData(stepData);
+export default async function InnovatorsRegistrationPage(props: PageProps) {
+    const { locale, step } = await props.params;
 
-        if (currentStep === totalSteps) {
-            // Final submission
-            const completeData = {
-                ...formData,
-                ...stepData,
-                TermsOfUse: stepData.TermsOfUse ? "true" : "false",
-            };
+    console.log(`[InnovatorsPage] Processing request for step: "${step}" in locale: "${locale}"`);
 
-            mutate(
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                { form: completeData as any },
-                {
-                    onSuccess: () => {
-                        resetForm();
-                        router.push(`/${lang}/innovators/registration/complete`);
-                    },
-                    onError: (error) => {
-                        console.error("Submission error:", error);
-                    },
-                }
-            );
-        } else {
-            nextStep();
-        }
-    };
+    const config = getInnovatorFormConfig((k) => k);
+    const validIds = config.steps.map(s => s.id);
 
-    const renderStep = () => {
-        switch (currentStep) {
-            case 1:
-                return (
-                    <PersonalInfoStep
-                        data={getStepData(1)}
-                        onNext={handleStepComplete}
-                        onPrevious={previousStep}
-                        isLoading={isPending}
-                        currentStep={currentStep}
-                        totalSteps={totalSteps}
-                        completedSteps={completedSteps}
-                        onSave={updateStepData}
-                    />
-                );
-            case 2:
-                return (
-                    <ProjectOverviewStep
-                        data={getStepData(2)}
-                        onNext={handleStepComplete}
-                        onPrevious={previousStep}
-                        isLoading={isPending}
-                        currentStep={currentStep}
-                        totalSteps={totalSteps}
-                        completedSteps={completedSteps}
-                    />
-                );
-            case 3:
-                return (
-                    <ProjectDetailsStep
-                        data={getStepData(3)}
-                        onNext={handleStepComplete}
-                        onPrevious={previousStep}
-                        isLoading={isPending}
-                        currentStep={currentStep}
-                        totalSteps={totalSteps}
-                        completedSteps={completedSteps}
-                    />
-                );
-            case 4:
-                return (
-                    <ReviewStep
-                        data={getStepData(4)}
-                        allFormData={formData}
-                        onNext={handleStepComplete}
-                        onPrevious={previousStep}
-                        onEdit={goToStep}
-                        isLoading={isPending}
-                        currentStep={currentStep}
-                        totalSteps={totalSteps}
-                        completedSteps={completedSteps}
-                        onSave={updateStepData}
-                    />
-                );
-            default:
-                return null;
-        }
-    };
+    console.log('[InnovatorsPage] Configured Valid IDs:', validIds);
+    console.log(`[InnovatorsPage] Is step "${step}" valid?`, validIds.includes(step));
 
-    if (isNaN(currentStepNumber) || currentStepNumber < 1 || currentStepNumber > totalSteps) {
-        return null;
+    if (validIds.includes(step)) {
+        console.log('[InnovatorsPage] Valid ID found. Rendering wizard.');
+        return <InnovatorFormWizard />;
     }
 
-    return (
-        <div className="w-full min-h-screen py-10 px-4 md:px-8 bg-gray-50">
-            <div className="max-w-5xl mx-auto">
-                {/* Back Button */}
-                <div className={`mb-8 ${isArabic ? "text-right" : "text-left"}`}>
-                    <Back />
-                </div>
+    const numericStep = parseInt(step, 10);
+    console.log(`[InnovatorsPage] Parsed numeric step: ${numericStep}`);
 
-                {/* Progress Indicator */}
-                <ProgressIndicator
-                    steps={STEP_CONFIGS}
-                    currentStep={currentStep}
-                    completedSteps={completedSteps}
-                    onStepClick={goToStep}
-                    isArabic={isArabic}
-                />
+    if (!isNaN(numericStep) && numericStep > 0 && numericStep <= validIds.length) {
+        const newId = validIds[numericStep - 1];
+        const redirectUrl = `/${locale}/innovators/registration/${newId}`;
+        console.log(`[InnovatorsPage] Legacy numeric ID detected. Redirecting to: ${redirectUrl}`);
+        redirect(redirectUrl);
+    }
 
-                {/* Step Content */}
-                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 md:p-12 overflow-hidden">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={currentStep}
-                            initial={{ x: isArabic ? -20 : 20, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            exit={{ x: isArabic ? 20 : -20, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                        >
-                            {renderStep()}
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-            </div>
-        </div>
-    );
+    console.log('[InnovatorsPage] Invalid step. Triggering notFound().');
+    notFound();
 }
