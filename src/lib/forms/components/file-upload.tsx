@@ -7,6 +7,7 @@ import { UploadCloud, File as FileIcon, X, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface EnhancedFileUploadProps {
     files: File[];
@@ -37,6 +38,24 @@ export function EnhancedFileUpload({
     className,
 }: EnhancedFileUploadProps) {
     const [localError, setLocalError] = useState<string | null>(null);
+    const t = useTranslations('Form');
+
+    const formatBytes = (bytes: number, decimals = 1) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    };
+
+    const getAcceptedFormats = () => {
+        const formats: string[] = [];
+        Object.values(accept).forEach(exts => {
+            exts.forEach(ext => formats.push(ext.replace('.', '').toUpperCase()));
+        });
+        return formats.join(', ');
+    };
 
     const onDrop = useCallback(
         (acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -47,10 +66,10 @@ export function EnhancedFileUpload({
                     .map((rejection) => {
                         const errorMsg = rejection.errors[0].message;
                         if (rejection.errors[0].code === 'file-too-large') {
-                            return `File ${rejection.file.name} is too large. Max size is ${formatBytes(maxSize)}.`;
+                            return t('FileTooLarge');
                         }
                         if (rejection.errors[0].code === 'file-invalid-type') {
-                            return `File ${rejection.file.name} has an invalid format.`;
+                            return t('InvalidFileType');
                         }
                         return errorMsg;
                     })
@@ -60,14 +79,13 @@ export function EnhancedFileUpload({
 
             const newFiles = [...files, ...acceptedFiles];
             if (newFiles.length > maxFiles) {
-                setLocalError(`You can only upload a maximum of ${maxFiles} files.`);
-                // Trim to max
+                setLocalError(t('MaximumFiles'));
                 onFilesChange(newFiles.slice(0, maxFiles));
             } else {
                 onFilesChange(newFiles);
             }
         },
-        [files, maxFiles, maxSize, onFilesChange]
+        [files, maxFiles, maxSize, onFilesChange, t]
     );
 
     const removeFile = (index: number) => {
@@ -97,26 +115,31 @@ export function EnhancedFileUpload({
             <div
                 {...getRootProps()}
                 className={cn(
-                    'relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg p-6 transition-all duration-300 ease-in-out',
+                    'relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-lg p-6 transition-all duration-300 ease-in-out bg-transparent',
                     isDragActive
-                        ? 'border-primary bg-primary/10 scale-[1.02] ring-4 ring-primary/10'
-                        : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-muted/20',
-                    (disabled || files.length >= maxFiles) && 'opacity-60 cursor-not-allowed bg-muted',
+                        ? 'border-primary bg-primary/5 scale-[1.02] ring-4 ring-primary/5'
+                        : 'border-muted-foreground/25 hover:border-primary/50 hover:bg-slate-50/5 dark:hover:bg-slate-900/10',
+                    (disabled || files.length >= maxFiles) && 'opacity-60 cursor-not-allowed',
                     error || localError ? 'border-destructive/50 bg-destructive/5' : ''
                 )}
             >
                 <input {...getInputProps()} />
                 <div className="flex flex-col items-center justify-center gap-2 text-center">
-                    <div className="p-3 rounded-full bg-background shadow-sm border">
+                    <div className="p-3 rounded-full bg-transparent shadow-sm border">
                         <UploadCloud className="w-6 h-6 text-muted-foreground" />
                     </div>
                     <div className="space-y-1">
                         <p className="text-sm font-medium">
-                            {isDragActive ? 'Drop files here' : 'Click or drag files to upload'}
+                            {isDragActive ? t('DropFiles') : t('ClickToUpload')}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                            Max {maxFiles} files, up to {formatBytes(maxSize)} each
+                            {t('MaxFiles', { count: maxFiles })}, {t('MaxFileSizeEach', { size: formatBytes(maxSize) })}
                         </p>
+                        {!description && (
+                            <p className="text-xs text-muted-foreground">
+                                {t('SupportedFormats', { formats: getAcceptedFormats() })}
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
@@ -135,7 +158,7 @@ export function EnhancedFileUpload({
                     {files.map((file, index) => (
                         <div
                             key={`${file.name}-${index}`}
-                            className="flex items-center justify-between p-3 border rounded-lg bg-card group hover:border-primary/50 transition-colors"
+                            className="flex items-center justify-between p-3 border rounded-lg bg-transparent group hover:border-primary/50 transition-colors"
                         >
                             <div className="flex items-center gap-3 overflow-hidden">
                                 {file.type.startsWith('image/') ? (
@@ -149,7 +172,7 @@ export function EnhancedFileUpload({
                                         />
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-center w-10 h-10 rounded bg-muted shrink-0 text-muted-foreground">
+                                    <div className="flex items-center justify-center w-10 h-10 rounded bg-muted/20 shrink-0 text-muted-foreground">
                                         <FileIcon className="w-5 h-5" />
                                     </div>
                                 )}
@@ -169,14 +192,15 @@ export function EnhancedFileUpload({
                                 size="icon"
                                 className="text-muted-foreground hover:text-destructive shrink-0"
                                 onClick={(e) => {
-                                    e.stopPropagation(); // Prevent parent click if inside clickable area (though it's outside dropzone)
+                                    e.stopPropagation();
                                     removeFile(index);
                                 }}
+                                title={t('RemoveFile')}
                                 disabled={disabled}
                                 type="button"
                             >
                                 <X className="w-4 h-4" />
-                                <span className="sr-only">Remove file</span>
+                                <span className="sr-only">{t('RemoveFile')}</span>
                             </Button>
                         </div>
                     ))}
@@ -184,13 +208,4 @@ export function EnhancedFileUpload({
             )}
         </div>
     );
-}
-
-function formatBytes(bytes: number, decimals = 1) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
