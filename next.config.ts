@@ -1,12 +1,13 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
+import path from 'path';
 
 const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig : NextConfig = {
   turbopack: {
-    root: './',
+    root: path.resolve(__dirname),
   },
   images: {
     remotePatterns: [
@@ -17,6 +18,18 @@ const nextConfig : NextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  // Reduce file system operations to minimize EPERM errors on Windows
+  webpack: (config, { isServer }) => {
+    if (process.platform === 'win32') {
+      // Increase retry attempts for file operations
+      config.watchOptions = {
+        ...config.watchOptions,
+        poll: 1000,
+        aggregateTimeout: 300,
+      };
+    }
+    return config;
   },
 };
 

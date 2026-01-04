@@ -1,71 +1,97 @@
-import createMiddleware from 'next-intl/middleware';
-import { routing } from '@/i18n/routing';
-import { auth } from '@/auth';
-import { 
-    apiAuthPrefix, 
-    authRoutes, 
-    publicRoutes, 
-    DEFAULT_LOGIN_REDIRECT,
-    adminRoutes
-} from '@/routes';
+import { NextResponse, NextRequest } from "next/server";
+import { getToken } from "next-auth/jwt";
+import createIntlMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
 
-const intlMiddleware = createMiddleware(routing);
+const intlMiddleware = createIntlMiddleware(routing);
 
-export default auth((req) => {
-    const { nextUrl } = req;
-    console.log('[Middleware] Processing:', nextUrl.pathname);
-    const isLoggedIn = !!req.auth;
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+  
+  // Skip middleware for static files and API routes
+  if (
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.includes('.') // static files
+  ) {
+    return NextResponse.next();
+  }
 
-    const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-    const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-    const isAuthRoute = authRoutes.includes(nextUrl.pathname);
-    const isAdminRoute = adminRoutes.some(route => nextUrl.pathname.startsWith(route));
-
-    // Handle API auth routes
-    if (isApiAuthRoute) {
-        return; // Don't block API auth routes
-    }
-
-    // Handle auth routes (login, register, etc.)
-    if (isAuthRoute) {
-        if (isLoggedIn) {
-            // Check if user has admin permissions to redirect to dashboard
-            const permissions = req.auth?.user?.permissions as Array<{resource: string, action: string}> | undefined;
-            const hasDashboardAccess = permissions?.some(
-                p => p.resource === 'dashboard' && (p.action === 'read' || p.action === 'manage')
-            );
-
-            if (hasDashboardAccess) {
-                return Response.redirect(new URL('/admin/dashboard', nextUrl));
-            }
-            
-            return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-        }
-    }
-
-    // Handle admin routes
-    if (isAdminRoute) {
-        if (!isLoggedIn) {
-            const loginUrl = new URL('/auth/login', nextUrl);
-            loginUrl.searchParams.set('callbackUrl', nextUrl.pathname);
-            return Response.redirect(loginUrl);
-        }
-
-        const permissions = req.auth?.user?.permissions as Array<{resource: string, action: string}> | undefined;
-        const hasDashboardAccess = permissions?.some(
-            p => p.resource === 'dashboard' && (p.action === 'read' || p.action === 'manage')
+  // Get authentication token for admin check
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  
+  // Handle auth routes - these don't need locale
+  if (pathname.startsWith('/auth')) {
+    if (token) {
+      if (token.permissions) {
+        const permissions = token.permissions as Array<{resource: string, action: string}>;
+        const hasDashboardAccess = permissions.some(
+          p => p.resource === 'dashboard' && (p.action === 'read' || p.action === 'manage')
         );
         
-        if (!hasDashboardAccess) {
-            return Response.redirect(new URL('/auth/error?error=AccessDenied', nextUrl));
+        if (hasDashboardAccess) {
+          return NextResponse.redirect(new URL('/admin/dashboard', req.url));
         }
+      }
+      
+      const locale = getPreferredLocale(req);
+      return NextResponse.redirect(new URL(`/${locale}`, req.url));
     }
+    return NextResponse.next();
+  }
+  
+  // Handle admin routes
+  if (pathname.startsWith('/admin')) {
+    if (!token) {
+      const loginUrl = new URL('/auth/login', req.url);
+      loginUrl.searchParams.set('callbackUrl', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    
+    if (token.permissions) {
+      const permissions = token.permissions as Array<{resource: string, action: string}>;
+      const hasDashboardAccess = permissions.some(
+        p => p.resource === 'dashboard' && (p.action === 'read' || p.action === 'manage')
+      );
+      
+      if (!hasDashboardAccess) {
+        return NextResponse.redirect(new URL('/auth/error?error=AccessDenied', req.url));
+      }
+    }
+    
+    return NextResponse.next();
+  }
+  
+  // Handle root path - redirect to preferred locale
+  if (pathname === '/') {
+    const locale = getPreferredLocale(req);
+    return NextResponse.redirect(new URL(`/${locale}`, req.url));
+  }
+  
+  // All other routes handled by intl middleware
+  return intlMiddleware(req);
+}
 
-    return intlMiddleware(req);
-});
+function getPreferredLocale(req: NextRequest): string {
+  // Check cookie for saved preference
+  const localeCookie = req.cookies.get('NEXT_LOCALE');
+  if (localeCookie && ['ar', 'en'].includes(localeCookie.value)) {
+    return localeCookie.value;
+  }
+  
+  // Check Accept-Language header
+  const acceptLanguage = req.headers.get('accept-language');
+  if (acceptLanguage) {
+    if (acceptLanguage.toLowerCase().includes('ar')) return 'ar';
+    if (acceptLanguage.toLowerCase().includes('en')) return 'en';
+  }
+  
+  // Default to Arabic
+  return 'ar';
+}
 
 export const config = {
-    // Match only internationalized pathnames
-    // specific matcher to avoid matching static files and api
-    matcher: ['/', '/(ar|en)/:path*', '/((?!api|_next|_vercel|.*\\..*).*)']
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\..*).*)',
+  ]
 };
