@@ -4,42 +4,63 @@
 import { useTranslations } from 'next-intl';
 import { StepComponentProps } from '@/lib/forms/types';
 import { SelectField, TextInput } from '@/lib/forms/components/fields';
-import { Collaborator, ListOfIndustrialSectors } from '@/features/collaborators/types';
+import { Collaborator, ListOfIndustrialSectors } from '@/features/collaborators/types/types';
+import { StepLayout } from '@/lib/forms/components/shared/StepLayout';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 export function IndustryInfoStep({
     data,
     updateData,
     errors,
+    onNext,
+    onPrevious,
+    isSubmitting,
 }: StepComponentProps<Collaborator>) {
     const t = useTranslations('Collaborators.form');
     const tEnum = useTranslations('Enums.IndustrialSectors');
 
     const sectorOptions = Object.values(ListOfIndustrialSectors).map((sector) => ({
         value: sector,
-        label: tEnum(sector as any), // Assuming translations keys match enum values or mapped
+        label: tEnum(sector as any),
     }));
 
     return (
-        <div className="space-y-6 max-w-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <SelectField
-                label={t('industrialSector')}
-                value={data.industrialSector}
-                onValueChange={(value) => updateData({ industrialSector: value })}
-                options={sectorOptions}
-                error={errors.industrialSector}
-                required
-                placeholder={t('selectSector')}
-            />
+        <StepLayout
+            errors={errors}
+            onNext={onNext}
+            onBack={onPrevious}
+            isSubmitting={isSubmitting}
+        >
+            <Card className="bg-transparent border-slate-200 dark:border-slate-800">
+                <CardHeader>
+                    <CardTitle className="text-lg">{t('industrialSector')}</CardTitle>
+                    <CardDescription>
+                        {t('selectSector')}
+                    </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <SelectField
+                        label={t('industrialSector')}
+                        value={data.industrialSector}
+                        onValueChange={(value) => updateData({ industrialSector: value })}
+                        options={sectorOptions}
+                        error={errors.industrialSector}
+                        required
+                        placeholder={t('selectSector')}
+                    />
 
-            <TextInput
-                name="specialization"
-                label={t('specialization')}
-                value={data.specialization || ''}
-                onChange={(e) => updateData({ specialization: e.target.value })}
-                error={errors.specialization}
-                required
-                description={t('specializationDescription')}
-            />
-        </div>
+                    <TextInput
+                        name="specialization"
+                        label={t('specialization')}
+                        value={data.specialization || ''}
+                        onChange={(e) => updateData({ specialization: e.target.value })}
+                        error={errors.specialization}
+                        required
+                        description={t('specializationDescription')}
+                        className="bg-transparent"
+                    />
+                </CardContent>
+            </Card>
+        </StepLayout>
     );
 }

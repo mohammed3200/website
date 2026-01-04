@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { PublicCollaborator } from "../types";
+import { PublicCollaborator } from "../types/types";
 
 import { client } from "@/lib/rpc";
 

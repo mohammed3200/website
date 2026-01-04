@@ -4,33 +4,43 @@
 import { useTranslations } from 'next-intl';
 import { StepComponentProps } from '@/lib/forms/types';
 import { CheckboxField } from '@/lib/forms/components/fields';
-import { Collaborator } from '@/features/collaborators/types';
-import { Card, CardContent } from '@/components/ui/card';
+import { Collaborator } from '@/features/collaborators/types/types';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { StepLayout } from '@/lib/forms/components/shared/StepLayout';
 
 export function ReviewSubmitStep({
     data,
     updateData,
     errors,
+    onPrevious,
+    onNext, // This will be the actual submit action
+    isSubmitting,
 }: StepComponentProps<Collaborator>) {
     const t = useTranslations('Collaborators.form');
     const tEnum = useTranslations('Enums.IndustrialSectors');
 
     const SummaryItem = ({ label, value }: { label: string; value?: string | null }) => (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-4 py-3 border-b last:border-0 border-border/50">
-            <dt className="font-medium text-muted-foreground">{label}</dt>
-            <dd className="md:col-span-2 font-medium text-foreground break-words">{value || '-'}</dd>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 py-4 border-b last:border-0 border-slate-100 dark:border-slate-800">
+            <dt className="font-medium text-slate-500 dark:text-slate-400">{label}</dt>
+            <dd className="sm:col-span-2 font-semibold text-slate-900 dark:text-slate-100 break-words">{value || '-'}</dd>
         </div>
     );
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="space-y-4">
-                <h3 className="text-xl font-bold">{t('reviewInformation')}</h3>
-                <p className="text-muted-foreground">{t('reviewDescription')}</p>
-            </div>
-
-            <Card>
-                <CardContent className="p-6">
+        <StepLayout
+            errors={errors}
+            onBack={onPrevious}
+            onNext={onNext} // Submit
+            isLastStep={true}
+            isSubmitting={isSubmitting}
+        >
+            {/* Review Card */}
+            <Card className="bg-transparent border-slate-200 dark:border-slate-800">
+                <CardHeader>
+                    <CardTitle className="text-lg">{t('reviewInformation')}</CardTitle>
+                    <CardDescription>{t('reviewDescription')}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
                     <dl>
                         <SummaryItem label={t('companyName')} value={data.companyName} />
                         <SummaryItem label={t('primaryPhoneNumber')} value={data.primaryPhoneNumber} />
@@ -45,22 +55,25 @@ export function ReviewSubmitStep({
                 </CardContent>
             </Card>
 
-            <div className="pt-4">
-                <CheckboxField
-                    label={
-                        <span>
-                            {t('agreeTo')}{' '}
-                            <a href="/terms" className="text-primary hover:underline underline-offset-4" target='_blank'>
-                                {t('termsOfUse')}
-                            </a>
-                        </span>
-                    }
-                    checked={!!data.TermsOfUse}
-                    onCheckedChange={(checked) => updateData({ TermsOfUse: checked })}
-                    error={errors.TermsOfUse}
-                    required
-                />
-            </div>
-        </div>
+            {/* Terms Checkbox */}
+            <Card className="bg-transparent border-slate-200 dark:border-slate-800">
+                <CardContent className="pt-6">
+                    <CheckboxField
+                        label={
+                            <span>
+                                {t('agreeTo')}{' '}
+                                <a href="/terms" className="text-primary hover:underline underline-offset-4 font-medium" target='_blank'>
+                                    {t('termsOfUse')}
+                                </a>
+                            </span>
+                        }
+                        checked={!!data.TermsOfUse}
+                        onCheckedChange={(checked) => updateData({ TermsOfUse: checked })}
+                        error={errors.TermsOfUse}
+                        required
+                    />
+                </CardContent>
+            </Card>
+        </StepLayout>
     );
 }

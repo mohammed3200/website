@@ -9,98 +9,144 @@ import {
     PhoneNumberInput,
     EnhancedFileUpload,
 } from '@/lib/forms/components/fields';
-import { Collaborator } from '../types';
+import { Collaborator } from '../types/types';
+import { StepLayout } from '@/lib/forms/components/shared/StepLayout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function CompanyInfoStep({
     data,
     updateData,
     errors,
+    onNext,
+    onPrevious,
+    isSubmitting,
+    isValid,
 }: StepComponentProps<Collaborator>) {
     const t = useTranslations('Collaborators.form');
-    const tCommon = useTranslations('Common');
+    // We don't use tCommon here directly as StepLayout handles defaults, 
+    // but we could pass custom labels if needed.
 
     return (
-        <div className="flex flex-col-reverse md:flex-row gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Form Fields - Left Side */}
-            <div className="flex-1 space-y-6">
-                <TextInput
-                    name="companyName"
-                    label={t('companyName')}
-                    value={data.companyName || ''}
-                    onChange={(e) => updateData({ companyName: e.target.value })}
-                    error={errors.companyName} // Should map from errors['companyName']
-                    required
-                    placeholder={t('companyNamePlaceholder')}
-                />
+        <StepLayout
+            errors={errors}
+            onNext={onNext}
+            onBack={onPrevious}
+            isFirstStep={true} // Company Info is first
+            isSubmitting={isSubmitting}
+        >
+            <div className="space-y-6">
+                {/* Group 1: Basic Info */}
+                <Card className="bg-transparent border-slate-200 dark:border-slate-800">
+                    <CardHeader>
+                        <CardTitle className="text-lg">
+                            {t('companyName')}
+                        </CardTitle>
+                        <CardDescription>
+                            {t('companyNamePlaceholder')}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <TextInput
+                            name="companyName"
+                            label={t('companyName')}
+                            value={data.companyName || ''}
+                            onChange={(e) => updateData({ companyName: e.target.value })}
+                            error={errors.companyName}
+                            required
+                            placeholder={t('companyNamePlaceholder')}
+                            className="bg-transparent"
+                        />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <PhoneNumberInput
-                        name="primaryPhoneNumber"
-                        label={t('primaryPhoneNumber')}
-                        value={data.primaryPhoneNumber || ''}
-                        onChange={(value) => updateData({ primaryPhoneNumber: value })}
-                        error={errors.primaryPhoneNumber}
-                        required
-                        placeholder="+218..."
-                    />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <TextInput
+                                name="email"
+                                type="email"
+                                label={t('email')}
+                                value={data.email || ''}
+                                onChange={(e) => updateData({ email: e.target.value })}
+                                error={errors.email}
+                                required
+                                placeholder="contact@company.com"
+                                className="bg-transparent"
+                            />
+                            <TextInput
+                                name="site"
+                                label={t('site')}
+                                value={data.site || ''}
+                                onChange={(e) => updateData({ site: e.target.value })}
+                                error={errors.site}
+                                placeholder="https://example.com"
+                                className="bg-transparent"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
 
-                    <PhoneNumberInput
-                        name="optionalPhoneNumber"
-                        label={t('optionalPhoneNumber')}
-                        value={data.optionalPhoneNumber || ''}
-                        onChange={(value) => updateData({ optionalPhoneNumber: value })}
-                        error={errors.optionalPhoneNumber}
-                        placeholder={t('optional')}
-                    />
-                </div>
+                {/* Group 2: Contact Details */}
+                <Card className="bg-transparent border-slate-200 dark:border-slate-800">
+                    <CardHeader>
+                        <CardTitle className="text-lg">{t('contactDetails')}</CardTitle>
+                        <CardDescription>
+                            {t('howToReach')}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <PhoneNumberInput
+                                name="primaryPhoneNumber"
+                                label={t('primaryPhoneNumber')}
+                                value={data.primaryPhoneNumber || ''}
+                                onChange={(value) => updateData({ primaryPhoneNumber: value })}
+                                error={errors.primaryPhoneNumber}
+                                required
+                                placeholder="+218..."
+                                className="bg-transparent"
+                            />
 
-                <TextInput
-                    name="email"
-                    type="email"
-                    label={t('email')}
-                    value={data.email || ''}
-                    onChange={(e) => updateData({ email: e.target.value })}
-                    error={errors.email}
-                    required
-                    placeholder="contact@company.com"
-                />
+                            <PhoneNumberInput
+                                name="optionalPhoneNumber"
+                                label={t('optionalPhoneNumber')}
+                                value={data.optionalPhoneNumber || ''}
+                                onChange={(value) => updateData({ optionalPhoneNumber: value })}
+                                error={errors.optionalPhoneNumber}
+                                placeholder={t('optional')}
+                                className="bg-transparent"
+                            />
+                        </div>
 
-                <TextInput
-                    name="location"
-                    label={t('location')}
-                    value={data.location || ''}
-                    onChange={(e) => updateData({ location: e.target.value })}
-                    error={errors.location}
-                    description={t('locationDescription')}
-                />
+                        <TextInput
+                            name="location"
+                            label={t('location')}
+                            value={data.location || ''}
+                            onChange={(e) => updateData({ location: e.target.value })}
+                            error={errors.location}
+                            description={t('locationDescription')}
+                            className="bg-transparent"
+                        />
+                    </CardContent>
+                </Card>
 
-                <TextInput
-                    name="site"
-                    label={t('site')}
-                    value={data.site || ''}
-                    onChange={(e) => updateData({ site: e.target.value })}
-                    error={errors.site}
-                    placeholder="https://..."
-                />
+                {/* Group 3: Branding */}
+                <Card className="bg-transparent border-slate-200 dark:border-slate-800">
+                    <CardHeader>
+                        <CardTitle className="text-lg">{t('branding')}</CardTitle>
+                        <CardDescription>
+                            {t('uploadLogoDesc')}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <EnhancedFileUpload
+                            label={t('image')}
+                            files={data.image ? (data.image instanceof File ? [data.image] : []) : []}
+                            onFilesChange={(files) => updateData({ image: files[0] as any })}
+                            maxFiles={1}
+                            accept={{ 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] }}
+                            error={errors.image}
+                            className="bg-transparent"
+                        />
+                    </CardContent>
+                </Card>
             </div>
-
-            {/* Image Upload - Right Side */}
-            <div className="w-full md:w-1/3 space-y-4">
-                <EnhancedFileUpload
-                    label={t('image')}
-                    description="Upload your company logo or main image"
-                    files={data.image ? (data.image instanceof File ? [data.image] : []) : []} // Handle if image is File or Media object. Type says Media | null, but form state might hold File temporarily.
-                    // We need to handle the File vs Media type discrepancy. 
-                    // During form editing (client-side), it's likely a File.
-                    // Types.ts says `image: Media | null`.
-                    // But our schemas validate `z.instanceof(File)`.
-                    // We should update `updateData` to store the File.
-                    onFilesChange={(files) => updateData({ image: files[0] as any })} // Cast because of type mismatch in Collaborator definition vs form state
-                    maxFiles={1}
-                    accept={{ 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] }}
-                    error={errors.image}
-                />
-            </div>
-        </div>
+        </StepLayout>
     );
 }

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ListOfIndustrialSectors } from "../types";
+import { ListOfIndustrialSectors } from "../types/types";
 import { mediaTypes } from "@/constants";
 
 /**

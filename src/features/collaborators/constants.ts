@@ -1,4 +1,4 @@
-import { ListOfIndustrialSectors, sharedResources as sharedResource } from "./types";
+import { ListOfIndustrialSectors, sharedResources as sharedResource } from "./types/types";
 
 export const EntranceNamePlaceholders = {
   en: [

@@ -6,7 +6,7 @@ import { zValidator } from '@hono/zod-validator';
 import { auth } from '@/auth';
 import { db } from '@/lib/db';
 
-import { RecordStatus } from '@/features/collaborators/types';
+import { RecordStatus } from '@/features/collaborators/types/types';
 import {
   completeCollaboratorRegistrationSchemaServer,
   statusUpdateSchema,

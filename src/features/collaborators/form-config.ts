@@ -1,7 +1,7 @@
 
 import { Building2, Factory, Briefcase, ClipboardCheck } from 'lucide-react';
 import { FormConfig } from '@/lib/forms/types';
-import { Collaborator } from '@/features/collaborators/types';
+import { Collaborator } from '@/features/collaborators/types/types';
 import {
   step1Schema,
   step2Schema,
