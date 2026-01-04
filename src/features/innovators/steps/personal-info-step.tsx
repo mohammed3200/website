@@ -9,6 +9,8 @@ import {
     PhoneNumberInput,
     EnhancedFileUpload,
 } from '@/lib/forms/components/fields';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { StepLayout } from '@/lib/forms/components/shared/StepLayout';
 import { CompleteFormData } from '../schemas/step-schemas';
 
 export function PersonalInfoStep({
@@ -17,83 +19,110 @@ export function PersonalInfoStep({
     errors,
 }: StepComponentProps<CompleteFormData>) {
     const t = useTranslations('Innovators.form');
-    const tCommon = useTranslations('Common');
+    // const tCommon = useTranslations('Common');
 
     return (
-        <div className="flex flex-col-reverse md:flex-row gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex-1 space-y-6">
-                <TextInput
-                    name="name"
-                    label={t('name')}
-                    value={data.name || ''}
-                    onChange={(e) => updateData({ name: e.target.value })}
-                    error={errors.name}
-                    required
-                />
+        <StepLayout
+            title={t('personalInfoTitle')}
+            description={t('personalInfoDescription')}
+            errors={errors}
+        >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Main Info Card */}
+                <Card className="md:col-span-2 bg-transparent border-slate-200 dark:border-slate-800">
+                    <CardHeader>
+                        <CardTitle>{t('basicInfo')}</CardTitle>
+                        <CardDescription>{t('basicInfoDesc')}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <TextInput
+                            name="name"
+                            label={t('name')}
+                            value={data.name || ''}
+                            onChange={(e) => updateData({ name: e.target.value })}
+                            error={errors.name}
+                            required
+                            className="bg-transparent"
+                        />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <PhoneNumberInput
-                        name="phoneNumber"
-                        label={t('phoneNumber')}
-                        value={data.phoneNumber || ''}
-                        onChange={(value) => updateData({ phoneNumber: value })}
-                        error={errors.phoneNumber}
-                        required
-                        placeholder="+218..."
-                    />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <PhoneNumberInput
+                                name="phoneNumber"
+                                label={t('phoneNumber')}
+                                value={data.phoneNumber || ''}
+                                onChange={(value) => updateData({ phoneNumber: value })}
+                                error={errors.phoneNumber}
+                                required
+                                placeholder="+218..."
+                                className="bg-transparent"
+                            />
 
-                    <TextInput
-                        name="email"
-                        type="email"
-                        label={t('email')}
-                        value={data.email || ''}
-                        onChange={(e) => updateData({ email: e.target.value })}
-                        error={errors.email}
-                        required
-                    />
-                </div>
+                            <TextInput
+                                name="email"
+                                type="email"
+                                label={t('email')}
+                                value={data.email || ''}
+                                onChange={(e) => updateData({ email: e.target.value })}
+                                error={errors.email}
+                                required
+                                className="bg-transparent"
+                            />
+                        </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <TextInput
-                        name="country"
-                        label={t('country')}
-                        value={data.country || ''}
-                        onChange={(e) => updateData({ country: e.target.value })}
-                        error={errors.country}
-                        required
-                    />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <TextInput
+                                name="country"
+                                label={t('country')}
+                                value={data.country || ''}
+                                onChange={(e) => updateData({ country: e.target.value })}
+                                error={errors.country}
+                                required
+                                className="bg-transparent"
+                            />
 
-                    <TextInput
-                        name="city"
-                        label={t('city')}
-                        value={data.city || ''}
-                        onChange={(e) => updateData({ city: e.target.value })}
-                        error={errors.city}
-                        required
-                    />
-                </div>
+                            <TextInput
+                                name="city"
+                                label={t('city')}
+                                value={data.city || ''}
+                                onChange={(e) => updateData({ city: e.target.value })}
+                                error={errors.city}
+                                required
+                                className="bg-transparent"
+                            />
+                        </div>
 
-                <TextInput
-                    name="specialization"
-                    label={t('specialization')}
-                    value={data.specialization || ''}
-                    onChange={(e) => updateData({ specialization: e.target.value })}
-                    error={errors.specialization}
-                    required
-                />
+                        <TextInput
+                            name="specialization"
+                            label={t('specialization')}
+                            value={data.specialization || ''}
+                            onChange={(e) => updateData({ specialization: e.target.value })}
+                            error={errors.specialization}
+                            required
+                            className="bg-transparent"
+                        />
+                    </CardContent>
+                </Card>
+
+                {/* Profile Image Card */}
+                <Card className="bg-transparent border-slate-200 dark:border-slate-800">
+                    <CardHeader>
+                        <CardTitle>{t('profileImage')}</CardTitle>
+                        <CardDescription>{t('profileImageDesc')}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <EnhancedFileUpload
+                            label={t('image')}
+                            // description={t('imageDescription')} // Optional if card desc is enough
+                            files={data.image ? (data.image instanceof File ? [data.image] : []) : []}
+                            onFilesChange={(files) => updateData({ image: files[0] })}
+                            maxFiles={1}
+                            accept={{ 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] }}
+                            error={errors.image}
+                            className="bg-transparent"
+                        />
+                    </CardContent>
+                </Card>
             </div>
-
-            <div className="w-full md:w-1/3 space-y-4">
-                <EnhancedFileUpload
-                    label={t('image')}
-                    description={t('imageDescription')}
-                    files={data.image ? (data.image instanceof File ? [data.image] : []) : []}
-                    onFilesChange={(files) => updateData({ image: files[0] })}
-                    maxFiles={1}
-                    accept={{ 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] }}
-                    error={errors.image}
-                />
-            </div>
-        </div>
+        </StepLayout>
     );
 }

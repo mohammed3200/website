@@ -6,7 +6,9 @@ import { useTranslations } from 'next-intl';
 import { StepComponentProps } from '@/lib/forms/types';
 import { CheckboxField } from '@/lib/forms/components/fields';
 import { CompleteFormData } from '../schemas/step-schemas';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { StepLayout } from '@/lib/forms/components/shared/StepLayout';
 
 export function ReviewSubmitStep({
     data,
@@ -14,7 +16,8 @@ export function ReviewSubmitStep({
     errors,
 }: StepComponentProps<CompleteFormData>) {
     const t = useTranslations('Innovators.form');
-    const tSummary = useTranslations('Innovators.summary');
+    const tCommon = useTranslations('Common');
+    // const tSummary = useTranslations('Innovators.summary'); // Unused in original code?
 
     const SummaryItem = ({ label, value }: { label: string; value?: string | number | null }) => (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-4 py-3 border-b last:border-0 border-border/50">
@@ -24,13 +27,15 @@ export function ReviewSubmitStep({
     );
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="space-y-4">
-                <h3 className="text-xl font-bold">{t('reviewInformation')}</h3>
-                <p className="text-muted-foreground">{t('reviewDescription')}</p>
-            </div>
-
-            <Card>
+        <StepLayout
+            title={t('reviewInformation')}
+            description={t('reviewDescription')}
+            errors={errors}
+        >
+            <Card className="bg-transparent border-slate-200 dark:border-slate-800">
+                <CardHeader>
+                    <CardTitle>{t('summaryTitle') || t('reviewInformation')}</CardTitle>
+                </CardHeader>
                 <CardContent className="p-6">
                     <dl>
                         <SummaryItem label={t('name')} value={data.name} />
@@ -40,7 +45,7 @@ export function ReviewSubmitStep({
                         <SummaryItem label={t('city')} value={data.city} />
                         <SummaryItem label={t('specialization')} value={data.specialization} />
 
-                        <div className="py-4 font-semibold text-lg border-b">{t('projectDetails')}</div>
+                        <div className="py-4 font-semibold text-lg border-b mt-4 mb-2">{t('projectDetails')}</div>
 
                         <SummaryItem label={t('projectTitle')} value={data.projectTitle} />
                         <SummaryItem label={t('stageDevelopment')} value={data.stageDevelopment} />
@@ -70,13 +75,7 @@ export function ReviewSubmitStep({
                     required
                 />
             </div>
-        </div>
+        </StepLayout>
     );
 }
 
-// Assuming common translations might be needed
-function tCommon(key: string) {
-    // Placeholder - in real app, useTranslations('Common') 
-    // But hooks order matters. I'll rely on parent hook.
-    return key;
-}
