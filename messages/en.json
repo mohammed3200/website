@@ -124,7 +124,13 @@
     "InvalidFileSize": "File size is larger than 50MB",
     "TermsOfUse": "Terms of Use must be agreed to",
     "EmailExists": "Email already exists",
-    "PhoneExists": "Phone number already exists"
+    "PhoneExists": "Phone number already exists",
+    "DropFiles": "Drop files here",
+    "ClickToUpload": "Click or drag files to upload",
+    "MaxFiles": "Max {count} files",
+    "MaxFileSizeEach": "up to {size} each",
+    "SupportedFormats": "Supported formats: {formats}",
+    "RemoveFile": "Remove file"
   },
   "Footer": {
     "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators {year}.",

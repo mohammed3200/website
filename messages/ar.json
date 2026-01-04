@@ -18,7 +18,9 @@
     "innovatorsList": "قائمة المبتكرين",
     "innovatorsListDesc": "تصفح المشاريع والأفكار",
     "centerName": "مركز الريادة وحاضنات الأعمال",
-    "established": "تأسس عام"
+    "established": "تأسس عام",
+    "helpSupport": "المساعدة والدعم",
+    "saveExit": "حفظ وخروج"
   },
   "News": {
     "NoNews": "لا يوجد أخبار أو الإعلانات"
@@ -106,7 +108,13 @@
     "InvalidFileSize": "حجم الملف أكبر من 50 ميجا بايت",
     "TermsOfUse": "يجب الموافقة على شروط الاستخدام",
     "EmailExists": "البريد الإلكتروني موجود مسبقاً",
-    "PhoneExists": "رقم الهاتف موجود مسبقاً"
+    "PhoneExists": "رقم الهاتف موجود مسبقاً",
+    "DropFiles": "قم بإسقاط الملفات هنا",
+    "ClickToUpload": "انقر أو اسحب الملفات للتحميل",
+    "MaxFiles": "حد أقصى {count} ملفات",
+    "MaxFileSizeEach": "حتى {size} لكل ملف",
+    "SupportedFormats": "التنسيقات المدعومة: {formats}",
+    "RemoveFile": "إزالة الملف"
   },
   "Footer": {
     "copyright": "جميع الحقوق © {year} محفوظة  لمركز الريادة وحاضنات الاعمال.",
@@ -153,6 +161,13 @@
       "Telecommunications": "اتصالات",
       "Technology": "تكنولوجيا",
       "Renewable Energy": "الطاقة المتجددة"
+    },
+    "StageDevelopment": {
+      "IDEA": "فكرة",
+      "PROTOTYPE": "نموذج أولي",
+      "TESTING": "اختبار",
+      "PRODUCTION": "إنتاج",
+      "MARKET_READY": "جاهز للسوق"
     }
   },
   "Collaborators": {
@@ -194,7 +209,13 @@
     "submitting": "جاري الإرسال...",
     "validating": "جاري التحقق...",
     "back": "عودة",
-    "homePage": "الصفحة الرئيسية"
+    "homePage": "الصفحة الرئيسية",
+    "formNavigation": "التنقل في النموذج",
+    "files": "ملفات",
+    "contactDetails": "بيانات التواصل",
+    "howToReach": "كيف يمكننا الوصول إليك؟",
+    "branding": "العلامة التجارية",
+    "uploadLogoDesc": "قم بتحميل شعار شركتك أو صورتك الرئيسية"
   },
   "Innovators": {
     "form": {
@@ -220,7 +241,26 @@
       "objectiveHint": "حدد أهدافاً محددة وقابلة للقياس",
       "TermsOfUse": "أوافق على شروط الاستخدام",
       "RequestSuccess": "تم إرسال طلبك بنجاح",
-      "RequestFailed": "فشل إرسال طلبك"
+      "RequestFailed": "فشل إرسال طلبك",
+      "personalInfoTitle": "المعلومات الشخصية",
+      "personalInfoDescription": "يرجى تقديم بياناتك الشخصية ومعلومات الاتصال.",
+      "basicInfo": "المعلومات الأساسية",
+      "basicInfoDesc": "معلومات التعريف الخاصة بك.",
+      "profileImageDesc": "صورة مهنية لنفسك.",
+      "projectOverviewTitle": "نظرة عامة على المشروع",
+      "projectOverviewDescription": "أخبرنا عن مشروعك أو فكرتك.",
+      "projectBasicInfo": "أساسيات المشروع",
+      "projectBasicInfoDesc": "التفاصيل الجوهرية لابتكارك.",
+      "projectDetailsTitle": "تفاصيل المشروع",
+      "projectDetailsDescription": "تفاصيل حول مرحلة التطوير والملفات.",
+      "reviewInformation": "مراجعة المعلومات",
+      "reviewDescription": "يرجى مراجعة كافة المعلومات قبل الإرسال.",
+      "summaryTitle": "المراجعة والإرسال",
+      "projectDetails": "تفاصيل المشروع",
+      "image": "صورة الملف الشخصي",
+      "imageDescription": "قم بتحميل صورة مهنية",
+      "agreeTo": "أوافق على ",
+      "phoneNumber": "رقم الهاتف"
     }
   }
 }
