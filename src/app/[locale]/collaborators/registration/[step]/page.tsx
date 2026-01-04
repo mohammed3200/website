@@ -2,7 +2,6 @@ console.log('[CollaboratorsPage] Module loaded');
 import { notFound, redirect } from 'next/navigation';
 import { CollaboratorFormWizard } from '@/features/collaborators/components/collaborator-form-wizard';
 import { getCollaboratorFormConfig } from '@/features/collaborators/form-config';
-import { routing } from '@/i18n/routing';
 
 export const dynamicParams = true;
 
@@ -13,31 +12,6 @@ type PageProps = {
         step: string;
     }>;
 };
-
-// Generate valid params for SSG
-export async function generateStaticParams() {
-    try {
-        // Determine locales (mock if routing import fails, but assuming routing exists from context)
-        const locales = routing?.locales || ['en', 'ar'];
-
-        // Get step IDs from config (using a dummy t function as IDs usually don't depend on it, 
-        // or we can just access the raw array if exported, but here we instantiate)
-        const config = getCollaboratorFormConfig((k) => k);
-
-        const params = [];
-        for (const locale of locales) {
-            for (const step of config.steps) {
-                params.push({ locale, step: step.id });
-            }
-        }
-
-        console.log('[CollaboratorsPage] Generated static params:', params);
-        return params;
-    } catch (error) {
-        console.error('[CollaboratorsPage] Error generating static params:', error);
-        return [];
-    }
-}
 
 export default async function CollaboratorsRegistrationPage(props: PageProps) {
     const { locale, step } = await props.params;

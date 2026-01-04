@@ -5,6 +5,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import collaborator from "@/features/collaborators/server/route";
 import innovators from "@/features/innovators/server/route";
+import admin from "@/features/admin/server/route";
 // import email from "@/features/email/server/route";
 
 
@@ -19,7 +20,8 @@ app.use("/*", logger());
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
 const routes = app
   .route("/collaborator", collaborator)
-  .route("/innovators", innovators);
+  .route("/innovators", innovators)
+  .route("/admin", admin);
   // .route("/email", email);
 
 // Error handling
