@@ -206,7 +206,11 @@
       "requestSuccess": "Collaboration request sent successfully",
       "requestFailed": "Collaboration request sent failed",
       "errorTitle": "Validation Error",
-      "errorDescription": "Please fix the errors below."
+      "errorDescription": "Please fix the errors below.",
+      "contactDetails": "Contact Details",
+      "howToReach": "How can we reach you?",
+      "branding": "Branding",
+      "uploadLogoDesc": "Upload your company logo or main image"
     }
   },
   "Common": {
@@ -216,7 +220,8 @@
     "submitting": "Submitting...",
     "validating": "Validating...",
     "back": "Back",
-    "homePage": "Home Page"
+    "homePage": "Home Page",
+    "formNavigation": "Form Navigation"
   },
   "Innovators": {
     "form": {
