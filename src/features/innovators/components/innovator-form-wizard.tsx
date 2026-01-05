@@ -10,68 +10,70 @@ import { useInnovatorFormStore } from '../store';
 import { RegistrationLayout } from '@/lib/forms/components/layout/RegistrationLayout';
 
 export function InnovatorFormWizard() {
-    const t = useTranslations('Innovators.form');
-    const tValidation = useTranslations('Validation');
+  const t = useTranslations('Innovators.form');
+  const tValidation = useTranslations('Validation');
 
-    const tV = (key: string) => {
-        return tValidation(key) || key;
-    };
+  const tV = (key: string) => {
+    return tValidation(key) || key;
+  };
 
-    const config = useMemo(() => getInnovatorFormConfig(tV), []);
-    const params = useParams();
+  const config = useMemo(() => getInnovatorFormConfig(tV), []);
+  const params = useParams();
 
-    const {
-        currentStep,
-        currentStepIndex,
-        isFirstStep,
-        isLastStep,
-        isSubmitting,
-        data,
-        updateData,
-        nextStep,
-        prevStep,
-        validateStep,
-        goToStep
-    } = useFormController(useInnovatorFormStore, config);
+  const {
+    currentStep,
+    currentStepIndex,
+    isFirstStep,
+    isLastStep,
+    isSubmitting,
+    data,
+    updateData,
+    nextStep,
+    prevStep,
+    validateStep,
+    goToStep,
+  } = useFormController(useInnovatorFormStore, config);
 
-    const errors = useInnovatorFormStore(state => state.errors);
-    const isValid = Object.keys(errors).length === 0;
-    const router = useRouter();
+  const errors = useInnovatorFormStore((state) => state.errors);
+  const isValid = Object.keys(errors).length === 0;
+  const router = useRouter();
 
-    const stepIdFromUrl = params.step as string;
+  const stepIdFromUrl = params.step as string;
 
-    useEffect(() => {
-        if (stepIdFromUrl) {
-            const stepIndex = config.steps.findIndex(s => s.id === stepIdFromUrl);
-            if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
-                // only update if different
-                useInnovatorFormStore.setState({ currentStepIndex: stepIndex });
-            }
-        }
-    }, [stepIdFromUrl, config.steps, currentStepIndex]);
+  useEffect(() => {
+    if (stepIdFromUrl) {
+      const stepIndex = config.steps.findIndex((s) => s.id === stepIdFromUrl);
+      if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
+        // only update if different
+        useInnovatorFormStore.setState({ currentStepIndex: stepIndex });
+      }
+    }
+  }, [stepIdFromUrl, config.steps, currentStepIndex]);
 
-    if (!currentStep) return null;
+  if (!currentStep) return null;
 
-    const CurrentStepComponent = currentStep.component;
+  const CurrentStepComponent = currentStep.component;
 
-    return (
-        <RegistrationLayout
-            steps={config.steps}
-            currentStepIndex={currentStepIndex}
-            onStepClick={goToStep}
-        >
-            <AnimatePresence mode="wait">
-                <CurrentStepComponent
-                    key={currentStep.id}
-                    data={data}
-                    updateData={updateData}
-                    errors={errors}
-                    isValid={isValid}
-                    isSubmitting={isSubmitting}
-                    onNext={nextStep}
-                    onPrevious={prevStep}
-                />
-            </AnimatePresence>
-        </RegistrationLayout>
-    );
+  return (
+    <RegistrationLayout
+      steps={config.steps}
+      currentStepIndex={currentStepIndex}
+      onStepClick={goToStep}
+    >
+      <AnimatePresence mode="wait">
+        <CurrentStepComponent
+          key={currentStep.id}
+          data={data}
+          updateData={updateData}
+          errors={errors}
+          isValid={isValid}
+          isSubmitting={isSubmitting}
+          onNext={nextStep}
+          onPrevious={prevStep}
+          isFirstStep={isFirstStep}
+          isLastStep={isLastStep}
+        />
+      </AnimatePresence>
+    </RegistrationLayout>
+  );
 }
