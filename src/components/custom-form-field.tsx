@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import React from "react";
-import Image from "next/image";
-import { CalendarIcon } from "lucide-react";
+import React from 'react';
+import Image from 'next/image';
+import { CalendarIcon } from 'lucide-react';
 
-import DatePicker from "react-datepicker";
-import PhoneInput from "react-phone-number-input";
-import { E164Number } from "libphonenumber-js/core";
-import { Control, FieldValues, ControllerRenderProps } from "react-hook-form";
+import DatePicker from 'react-datepicker';
+import PhoneInput from 'react-phone-number-input';
+import { E164Number } from 'libphonenumber-js/core';
+import { Control, FieldValues, ControllerRenderProps } from 'react-hook-form';
 
 import {
   FormControl,
@@ -16,22 +16,22 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form";
-import { Input } from "./ui/input";
-import "react-datepicker/dist/react-datepicker.css";
-import { Select, SelectContent, SelectValue, SelectTrigger } from "./ui/select";
-import { Textarea } from "./ui/textarea";
-import { Checkbox } from "./ui/checkbox";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/form';
+import { Input } from './ui/input';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Select, SelectContent, SelectValue, SelectTrigger } from './ui/select';
+import { Textarea } from './ui/textarea';
+import { Checkbox } from './ui/checkbox';
+import { cn } from '@/lib/utils';
 
 export enum FormFieldType {
-  INPUT = "input",
-  TEXTAREA = "textarea",
-  PHONE_INPUT = "phoneInput",
-  CHECKBOX = "checkBox",
-  DATE_PICKER = "datePicker",
-  SELECT = "select",
-  SKELETON = "skeleton",
+  INPUT = 'input',
+  TEXTAREA = 'textarea',
+  PHONE_INPUT = 'phoneInput',
+  CHECKBOX = 'checkBox',
+  DATE_PICKER = 'datePicker',
+  SELECT = 'select',
+  SKELETON = 'skeleton',
 }
 
 interface CustomProps<T extends FieldValues = FieldValues> {
@@ -81,7 +81,7 @@ const RenderField = <T extends FieldValues = FieldValues>({
                 src={iconSrc}
                 height={20}
                 width={20}
-                alt={iconAlt || "icon"}
+                alt={iconAlt || 'icon'}
                 className="object-contain opacity-70 group-hover:opacity-100 transition-opacity"
               />
             </div>
@@ -90,11 +90,11 @@ const RenderField = <T extends FieldValues = FieldValues>({
             <Input
               {...field}
               placeholder={placeholder}
-              dir={isEnglish ? "ltr" : "rtl"}
+              dir={isEnglish ? 'ltr' : 'rtl'}
               className={cn(
-                "h-12 bg-white border-gray-200 shadow-sm transition-all duration-300 placeholder:text-gray-400 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 hover:border-orange-300",
-                iconSrc ? "pl-12" : "",
-                props.className
+                'h-12 bg-white border-gray-200 shadow-sm transition-all duration-300 placeholder:text-gray-400 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 hover:border-orange-300',
+                iconSrc ? 'pl-12' : '',
+                props.className,
               )}
             />
           </FormControl>
@@ -109,8 +109,8 @@ const RenderField = <T extends FieldValues = FieldValues>({
             placeholder={placeholder}
             disabled={props.disabled}
             className={cn(
-              "min-h-[120px] bg-white border-gray-200 shadow-sm transition-all duration-300 placeholder:text-gray-400 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 hover:border-orange-300 font-din-regular md:text-base text-sm resize-none p-4",
-              props.className
+              'min-h-[120px] bg-white border-gray-200 shadow-sm transition-all duration-300 placeholder:text-gray-400 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 hover:border-orange-300 font-din-regular md:text-base text-sm resize-none p-4',
+              props.className,
             )}
           />
         </FormControl>
@@ -128,11 +128,12 @@ const RenderField = <T extends FieldValues = FieldValues>({
               value={field.value as E164Number | undefined}
               onChange={field.onChange}
               className={cn(
-                "flex h-12 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 placeholder:text-gray-400 focus-within:border-orange-500 focus-within:ring-4 focus-within:ring-orange-500/10 hover:border-orange-300",
-                props.className
+                'flex h-12 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm transition-all duration-300 placeholder:text-gray-400 focus-within:border-orange-500 focus-within:ring-4 focus-within:ring-orange-500/10 hover:border-orange-300',
+                props.className,
               )}
               numberInputProps={{
-                className: "flex-1 bg-transparent border-none outline-none placeholder:text-gray-400 h-full text-base font-din-regular",
+                className:
+                  'flex-1 bg-transparent border-none outline-none placeholder:text-gray-400 h-full text-base font-din-regular',
               }}
               // Style the flag dropdown if needed via global CSS or className
               aria-label="Phone number"
@@ -151,14 +152,14 @@ const RenderField = <T extends FieldValues = FieldValues>({
             <div className="flex w-full">
               <DatePicker
                 selected={field.value}
-                onChange={(data) => field.onChange(data)}
-                dateFormat={dateFormat ?? "dd/MM/yyyy"}
+                onChange={(data: Date | null) => field.onChange(data)}
+                dateFormat={dateFormat ?? 'dd/MM/yyyy'}
                 showTimeSelect={showTimeSelect ?? false}
                 timeInputLabel="Time:"
                 wrapperClassName="w-full"
                 className={cn(
-                  "flex w-full h-12 rounded-md border border-gray-200 bg-white pl-10 pr-3 py-2 text-sm shadow-sm transition-all duration-300 placeholder:text-gray-400 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 hover:border-orange-300 font-din-regular",
-                  props.className
+                  'flex w-full h-12 rounded-md border border-gray-200 bg-white pl-10 pr-3 py-2 text-sm shadow-sm transition-all duration-300 placeholder:text-gray-400 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 hover:border-orange-300 font-din-regular',
+                  props.className,
                 )}
                 placeholderText={placeholder}
               />
@@ -172,10 +173,12 @@ const RenderField = <T extends FieldValues = FieldValues>({
         <FormControl>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
-              <SelectTrigger className={cn(
-                "h-12 w-full bg-white border-gray-200 shadow-sm transition-all duration-300 text-gray-700 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 hover:border-orange-300",
-                props.className
-              )}>
+              <SelectTrigger
+                className={cn(
+                  'h-12 w-full bg-white border-gray-200 shadow-sm transition-all duration-300 text-gray-700 focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 hover:border-orange-300',
+                  props.className,
+                )}
+              >
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>
@@ -214,7 +217,9 @@ const RenderField = <T extends FieldValues = FieldValues>({
   }
 };
 
-export const CustomFormField = <T extends FieldValues = FieldValues>(props: CustomProps<T>) => {
+export const CustomFormField = <T extends FieldValues = FieldValues>(
+  props: CustomProps<T>,
+) => {
   const { control, fieldType, name, label, isEnglish, description } = props;
   return (
     <FormField

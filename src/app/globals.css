@@ -68,8 +68,8 @@ body {
 /* DINNextLT fonts removed in favor of Almarai */
 
 @font-face {
-  font-family: "SpaceMono-Regular";
-  src: url("/assets/fonts/SpaceMono-Regular.ttf") format("truetype");
+  font-family: 'SpaceMono-Regular';
+  src: url('/assets/fonts/SpaceMono-Regular.ttf') format('truetype');
   font-weight: normal;
   /* Specify the font weight if applicable */
   font-style: normal;
@@ -108,7 +108,6 @@ body {
 }
 
 @layer utilities {
-
   /* START of Typography */
   .h-num {
     @apply font-inter text-[72px] font-bold leading-[84px];
@@ -176,14 +175,13 @@ body {
 
   /* END of Typography */
 
-
   /* START of Shadow Gradients */
   .shadow-gradient-primary-desktop {
-    @apply shadow-md shadow-primary
+    @apply shadow-md shadow-primary;
   }
 
   .shadow-gradient-primary-mobile {
-    @apply shadow-sm shadow-primary
+    @apply shadow-sm shadow-primary;
   }
 
   /* END of Shadow Gradients */
@@ -200,11 +198,11 @@ body {
   }
 
   .g4 {
-    @apply bg-gradient-to-l from-transparent via-[#f89b04] to-[#fe6601]
+    @apply bg-gradient-to-l from-transparent via-[#f89b04] to-[#fe6601];
   }
 
   .g5 {
-    @apply bg-gradient-to-b from-[#b0b0b0] to-[#c3c2c2]
+    @apply bg-gradient-to-b from-[#b0b0b0] to-[#c3c2c2];
   }
 
   .g6 {
@@ -212,7 +210,7 @@ body {
   }
 
   .g7 {
-    @apply bg-gradient-to-r from-transparent via-[#f89b04] to-[#fe6601]
+    @apply bg-gradient-to-r from-transparent via-[#f89b04] to-[#fe6601];
   }
 
   .g8 {
@@ -228,7 +226,6 @@ body {
   .caption {
     @apply small-2 mb-5 uppercase text-base;
   }
-
 
   .flex-center {
     @apply flex items-center justify-center;
@@ -246,7 +243,6 @@ body {
   .glow-after {
     @apply after:g8 after:absolute after:bottom-0 after:left-4 after:z-10 after:h-0.5 after:w-5/12 after:opacity-0 after:transition-all after:duration-500 after:content-[''] group-hover:after:left-1/4 group-hover:after:opacity-90;
   }
-
 
   /* Root Layout */
   .main-content {
@@ -302,7 +298,6 @@ body {
 
   /* END of FAQ */
 
-
   .active-button {
     outline: none;
     font-size: 16px;
@@ -315,7 +310,7 @@ body {
   }
 
   .active-button:after {
-    content: "";
+    content: '';
     border-radius: 18px;
     position: absolute;
     margin: 4px;
@@ -358,8 +353,6 @@ body {
   @apply flex border border-gray-200 rounded items-center justify-center px-2;
 }
 
-
-
 .PhoneInputCountryIconImg {
   @apply block w-full h-full;
 }
@@ -369,7 +362,7 @@ body {
 }
 
 .PhoneInputInternationalIconGlobe {
-  @apply opacity-65
+  @apply opacity-65;
 }
 
 .PhoneInputCountry {
@@ -384,8 +377,6 @@ body {
   @apply block content-[''] w-[0.3em] h-[0.3em] ml-[0.3em] border-b border-r rotate-45 opacity-45;
 }
 
-
-
-.PhoneInputCountrySelect:focus+.PhoneInputCountryIcon--border {
+.PhoneInputCountrySelect:focus + .PhoneInputCountryIcon--border {
   @apply shadow;
 }
