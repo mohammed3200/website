@@ -1,4 +1,3 @@
-
 import { ZodSchema } from 'zod';
 
 /**
@@ -21,6 +20,8 @@ export interface StepComponentProps<T = any> {
   isSubmitting: boolean;
   onNext: () => void;
   onPrevious: () => void;
+  isFirstStep?: boolean;
+  isLastStep?: boolean;
 }
 
 /**

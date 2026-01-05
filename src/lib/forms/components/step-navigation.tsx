@@ -35,16 +35,17 @@ export function StepNavigation({
       )}
     >
       <Button
-        variant="ghost"
+        variant="outline"
         onClick={onPrevious}
         disabled={isFirstStep || isSubmitting}
         className={cn(
-          'gap-2 text-muted-foreground hover:text-foreground',
+          'gap-2 border-2 hover:bg-slate-50 dark:hover:bg-slate-900',
           isFirstStep && 'invisible',
         )}
         type="button"
+        size="lg"
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
         {t('previous') || 'Previous'}
       </Button>
 
@@ -52,15 +53,15 @@ export function StepNavigation({
         onClick={onNext}
         disabled={isSubmitting || !canNext}
         className={cn(
-          'gap-2 min-w-[140px] shadow-sm transition-all hover:scale-[1.02]',
-          className,
+          'gap-2 min-w-[160px] shadow-lg font-semibold transition-all hover:scale-105 hover:shadow-xl',
+          isLastStep && 'bg-green-600 hover:bg-green-700',
         )}
         type="button"
         size="lg"
       >
         {isSubmitting ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="w-5 h-5 animate-spin" />
             {isLastStep
               ? t('submitting') || 'Submitting...'
               : t('validating') || 'Validating...'}
@@ -68,12 +69,12 @@ export function StepNavigation({
         ) : isLastStep ? (
           <>
             {t('submit') || 'Submit'}
-            <Check className="w-4 h-4" />
+            <Check className="w-5 h-5" />
           </>
         ) : (
           <>
             {t('next') || 'Next'}
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-5 h-5 rtl:rotate-180" />
           </>
         )}
       </Button>
