@@ -1,12 +1,16 @@
-
 import { useCallback, useEffect } from 'react';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
+import {
+  useRouter,
+  useSearchParams,
+  usePathname,
+  useParams,
+} from 'next/navigation';
 import { StoreApi, UseBoundStore } from 'zustand';
 import { FormConfig, FormStore } from '@/lib/forms/types';
 
 export const useFormController = <T>(
   useStore: UseBoundStore<StoreApi<FormStore<T>>>,
-  config: FormConfig<T>
+  config: FormConfig<T>,
 ) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -34,7 +38,6 @@ export const useFormController = <T>(
     // The plan suggested ` /[locale]/collaborators/registration/[step]/page.tsx`
     // So usually the page component handles the `params.step`.
     // But this hook can help validate if the URL matches the store state.
-    
     // For now, we'll let the Page component drive the initial step based on URL if needed,
     // or we can sync the URL when step changes.
   }, [currentStepIndex, pathname, router]);
@@ -78,6 +81,20 @@ export const useFormController = <T>(
     }
   }, [currentStep, data, setErrors, setValidating]);
 
+  const params = useParams();
+  const locale = params.locale as string;
+
+  const getPath = (stepId: string) => {
+    // If basePath already includes locale, don't prepend it.
+    // However, usually basePath is static like '/collaborators/registration'.
+    // We should safely construct the path.
+    const path = `${config.basePath}/${stepId}`;
+    if (locale && !path.startsWith(`/${locale}`)) {
+      return `/${locale}${path.startsWith('/') ? '' : '/'}${path}`;
+    }
+    return path;
+  };
+
   const nextStep = useCallback(async () => {
     const isValid = await validateStep();
     if (isValid) {
@@ -86,47 +103,58 @@ export const useFormController = <T>(
       } else {
         const nextIndex = currentStepIndex + 1;
         setStep(nextIndex);
-        router.push(`${config.basePath}/${config.steps[nextIndex].id}`);
+        router.push(getPath(config.steps[nextIndex].id));
       }
     }
-  }, [currentStepIndex, isLastStep, config, router, setStep, validateStep]);
+  }, [
+    currentStepIndex,
+    isLastStep,
+    config,
+    router,
+    setStep,
+    validateStep,
+    locale,
+  ]);
 
   const prevStep = useCallback(() => {
     if (!isFirstStep) {
       const prevIndex = currentStepIndex - 1;
       setStep(prevIndex);
-      router.push(`${config.basePath}/${config.steps[prevIndex].id}`);
+      router.push(getPath(config.steps[prevIndex].id));
     }
-  }, [currentStepIndex, isFirstStep, config, router, setStep]);
+  }, [currentStepIndex, isFirstStep, config, router, setStep, locale]);
 
-  const goToStep = useCallback((index: number) => {
-    if (index >= 0 && index < config.steps.length) {
-       // Ideally we should validate all steps before the target step but for jumping back it's usually fine.
-       // Jumping forward should be restricted.
-       if (index < currentStepIndex) {
-           setStep(index);
-           router.push(`${config.basePath}/${config.steps[index].id}`);
-       }
-       // If jumping forward, we might want to disallow or validate.
-    }
-  }, [currentStepIndex, config, router, setStep]);
+  const goToStep = useCallback(
+    (index: number) => {
+      if (index >= 0 && index < config.steps.length) {
+        if (index < currentStepIndex) {
+          setStep(index);
+          router.push(getPath(config.steps[index].id));
+        }
+      }
+    },
+    [currentStepIndex, config, router, setStep, locale],
+  );
 
   const handleSubmit = useCallback(async () => {
     setSubmitting(true);
     try {
-      // Final full validation could go here
       await config.onComplete(data as T);
-      router.push(config.successPath);
-      reset(); // Optional: clear form after success
+      router.push(
+        config.successPath.startsWith(`/${locale}`)
+          ? config.successPath
+          : `/${locale}${config.successPath}`,
+      );
+      reset();
     } catch (error) {
-       if (config.onError && error instanceof Error) {
-         config.onError(error);
-       }
-       console.error('Submission error:', error);
+      if (config.onError && error instanceof Error) {
+        config.onError(error);
+      }
+      console.error('Submission error:', error);
     } finally {
       setSubmitting(false);
     }
-  }, [config, data, router, setSubmitting, reset]);
+  }, [config, data, router, setSubmitting, reset, locale]);
 
   return {
     currentStep,

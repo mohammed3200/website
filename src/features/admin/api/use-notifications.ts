@@ -53,7 +53,8 @@ export function useNotifications(params?: {
       if (params?.page) searchParams.set('page', params.page.toString());
       if (params?.limit) searchParams.set('limit', params.limit.toString());
       if (params?.type) searchParams.set('type', params.type);
-      if (params?.isRead !== undefined) searchParams.set('isRead', params.isRead.toString());
+      if (params?.isRead !== undefined)
+        searchParams.set('isRead', params.isRead.toString());
       if (params?.priority) searchParams.set('priority', params.priority);
 
       const res = await client.api.admin.notifications.$get({
@@ -64,7 +65,17 @@ export function useNotifications(params?: {
         throw new Error('Failed to fetch notifications');
       }
 
-      return (await res.json()) as NotificationsResponse;
+      const data = await res.json();
+
+      return {
+        ...data,
+        notifications: data.notifications.map((n: any) => ({
+          ...n,
+          createdAt: new Date(n.createdAt),
+          updatedAt: new Date(n.updatedAt),
+          readAt: n.readAt ? new Date(n.readAt) : null,
+        })),
+      } as NotificationsResponse;
     },
   });
 }
@@ -117,7 +128,8 @@ export function useMarkAllNotificationsRead() {
 
   return useMutation({
     mutationFn: async () => {
-      const res = await client.api.admin.notifications['mark-all-read'].$patch();
+      const res =
+        await client.api.admin.notifications['mark-all-read'].$patch();
 
       if (!res.ok) {
         throw new Error('Failed to mark all notifications as read');
@@ -186,8 +198,9 @@ export function useUpdateNotificationPreferences() {
       return (await res.json()) as { preferences: NotificationPreferences };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notifications', 'preferences'] });
+      queryClient.invalidateQueries({
+        queryKey: ['notifications', 'preferences'],
+      });
     },
   });
 }
-
