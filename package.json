@@ -103,7 +103,8 @@
   },
   "overrides": {
     "react": "$react",
-    "react-dom": "$react-dom"
+    "react-dom": "$react-dom",
+    "esbuild": "0.25.9"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^16.1.1",
