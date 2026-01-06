@@ -51,7 +51,6 @@ export function ProjectOverviewStep({
             onChange={(e) => updateData({ projectTitle: e.target.value })}
             error={errors.projectTitle}
             required
-            className="bg-transparent"
           />
 
           <TextArea

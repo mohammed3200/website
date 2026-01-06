@@ -54,6 +54,7 @@ export function StepNavigation({
         disabled={isSubmitting || !canNext}
         className={cn(
           'gap-2 min-w-[160px] shadow-lg font-semibold transition-all hover:scale-105 hover:shadow-xl',
+          'disabled:bg-none disabled:bg-slate-200 disabled:text-slate-400 disabled:opacity-100 dark:disabled:bg-slate-800 dark:disabled:text-slate-600',
           isLastStep && 'bg-green-600 hover:bg-green-700',
         )}
         type="button"

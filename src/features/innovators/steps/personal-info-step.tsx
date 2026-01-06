@@ -57,7 +57,7 @@ export function PersonalInfoStep({
               onChange={(e) => updateData({ name: e.target.value })}
               error={errors.name}
               required
-              className="bg-transparent"
+
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -69,7 +69,7 @@ export function PersonalInfoStep({
                 error={errors.phoneNumber}
                 required
                 placeholder="+218..."
-                className="bg-transparent"
+
               />
 
               <TextInput
@@ -80,7 +80,7 @@ export function PersonalInfoStep({
                 onChange={(e) => updateData({ email: e.target.value })}
                 error={errors.email}
                 required
-                className="bg-transparent"
+
               />
             </div>
 
@@ -92,7 +92,7 @@ export function PersonalInfoStep({
                 onChange={(e) => updateData({ country: e.target.value })}
                 error={errors.country}
                 required
-                className="bg-transparent"
+
               />
 
               <TextInput
@@ -102,7 +102,7 @@ export function PersonalInfoStep({
                 onChange={(e) => updateData({ city: e.target.value })}
                 error={errors.city}
                 required
-                className="bg-transparent"
+
               />
             </div>
 
@@ -113,7 +113,7 @@ export function PersonalInfoStep({
               onChange={(e) => updateData({ specialization: e.target.value })}
               error={errors.specialization}
               required
-              className="bg-transparent"
+
             />
           </CardContent>
         </Card>
@@ -139,7 +139,7 @@ export function PersonalInfoStep({
               maxFiles={1}
               accept={{ 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] }}
               error={errors.image}
-              className="bg-transparent"
+
             />
           </CardContent>
         </Card>

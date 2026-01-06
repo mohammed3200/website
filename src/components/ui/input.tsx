@@ -9,7 +9,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
         type={type}
         className={cn(
           'flex h-11 w-full rounded-lg border-2 border-slate-200 dark:border-slate-700',
-          'bg-white dark:bg-slate-950',
+          'bg-stone-50 dark:bg-stone-950',
           'px-4 py-2.5',
           'text-sm md:text-base',
           'text-slate-900 dark:text-slate-100',
@@ -21,8 +21,7 @@ const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<'input'>>(
           'focus-visible:outline-none',
           'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-slate-50 dark:disabled:bg-slate-900',
           'file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground',
-          'text-start', // Added text-start for correct alignment
-          'rtl:text-right',
+          'text-start',
           className,
         )}
         ref={ref}

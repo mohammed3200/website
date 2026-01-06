@@ -48,7 +48,7 @@ export function CapabilitiesStep({
               }
               error={errors.experienceProvided}
               rows={4}
-              className="bg-transparent"
+
             />
 
             <EnhancedFileUpload
@@ -87,7 +87,7 @@ export function CapabilitiesStep({
               }
               error={errors.machineryAndEquipment}
               rows={4}
-              className="bg-transparent"
+
             />
 
             <EnhancedFileUpload

@@ -99,7 +99,7 @@ export function CompanyInfoStep({
                 error={errors.primaryPhoneNumber}
                 required
                 placeholder="+218..."
-                className="bg-transparent"
+
               />
 
               <PhoneNumberInput
@@ -109,7 +109,7 @@ export function CompanyInfoStep({
                 onChange={(value) => updateData({ optionalPhoneNumber: value })}
                 error={errors.optionalPhoneNumber}
                 placeholder={t('optional')}
-                className="bg-transparent"
+
               />
             </div>
 
@@ -120,7 +120,7 @@ export function CompanyInfoStep({
               onChange={(e) => updateData({ location: e.target.value })}
               error={errors.location}
               description={t('locationDescription')}
-              className="bg-transparent"
+
             />
           </CardContent>
         </Card>
@@ -145,7 +145,7 @@ export function CompanyInfoStep({
               maxFiles={1}
               accept={{ 'image/*': ['.png', '.jpg', '.jpeg', '.webp'] }}
               error={errors.image}
-              className="bg-transparent"
+
             />
           </CardContent>
         </Card>

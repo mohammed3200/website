@@ -65,7 +65,6 @@ export function IndustryInfoStep({
             error={errors.specialization}
             required
             description={t('specializationDescription')}
-            className="bg-transparent"
           />
         </CardContent>
       </Card>
