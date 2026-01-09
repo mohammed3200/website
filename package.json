@@ -22,6 +22,7 @@
     "@auth/prisma-adapter": "^2.11.1",
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
+    "@firecms/neat": "^0.5.0",
     "@hono/zod-validator": "^0.7.6",
     "@hookform/resolvers": "^5.2.2",
     "@next-auth/prisma-adapter": "^1.0.7",
