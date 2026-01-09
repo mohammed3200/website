@@ -1,0 +1,305 @@
+version: 1.0
+source_of_truth: brv_project_memory
+enforcement_mode: strict
+
+rule_schema:
+  rule_id: string
+  category: architecture | dependency | database | naming | cleanup | ui | frontend | backend
+  priority: critical | high | medium
+  scope: global | frontend | backend
+  description: string
+  rationale: string
+  enforcement:
+    type: hard | soft
+    action_on_violation: block | warn
+
+rules:
+
+  # =====================================================
+  # Dependency & Package Management
+  # =====================================================
+
+  - rule_id: DEP-01
+    category: dependency
+    priority: critical
+    scope: global
+    description: >
+      Updating or adding any package is forbidden without explicit approval.
+    rationale: >
+      Prevents dependency conflicts and stability issues.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  # =====================================================
+  # Feature-Based Architecture (Core)
+  # =====================================================
+
+  - rule_id: ARCH-01
+    category: architecture
+    priority: critical
+    scope: global
+    description: >
+      Any new feature must be created under src/features/<feature_name>.
+    rationale: >
+      Enforces modular, scalable, and predictable architecture.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: ARCH-02
+    category: architecture
+    priority: critical
+    scope: global
+    description: >
+      Each feature must strictly follow the approved folder structure.
+    rationale: >
+      Prevents architectural drift across the codebase.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: ARCH-REF-01
+    category: architecture
+    priority: critical
+    scope: global
+    description: >
+      Approved feature folder structure reference.
+    reference_structure: |
+      src/features/<feature_name>/
+      ├─ api/
+      │  └─ use_<method>_<feature_name>.ts
+      ├─ components/
+      │  └─ <component_name>.tsx
+      ├─ server/
+      │  └─ route.ts
+      ├─ hooks/
+      │  └─ use_<name>.ts
+      ├─ schemas/
+      │  └─ <name>_schema.ts
+      ├─ types/
+      │  └─ <name>_type.ts
+      ├─ constants/
+      │  └─ <constant_name>.ts
+      └─ index.ts
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  # =====================================================
+  # UI & Design Consistency
+  # =====================================================
+
+  - rule_id: UI-01
+    category: ui
+    priority: high
+    scope: frontend
+    description: >
+      Only pre-defined shared components must be used.
+    rationale: >
+      Ensures unified design language across the application.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: UI-02
+    category: ui
+    priority: high
+    scope: frontend
+    description: >
+      Any new component must be visually and functionally consistent
+      with existing components.
+    rationale: >
+      Prevents UI inconsistency and fragmented UX.
+    enforcement:
+      type: soft
+      action_on_violation: warn
+
+  # =====================================================
+  # Client API & React Query
+  # =====================================================
+
+  - rule_id: FEAT-API-01
+    category: frontend
+    priority: critical
+    scope: frontend
+    description: >
+      Feature API hooks must be placed under
+      src/features/<feature>/api and named use_<method>_<feature>.ts.
+    rationale: >
+      Standardizes API consumption and discovery.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: FEAT-API-02
+    category: frontend
+    priority: critical
+    scope: frontend
+    description: >
+      All feature APIs must use @tanstack/react-query.
+    rationale: >
+      Ensures consistent data fetching, caching, and synchronization.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  # =====================================================
+  # Global API Routing (Hono)
+  # =====================================================
+
+  - rule_id: API-GLOBAL-01
+    category: backend
+    priority: critical
+    scope: backend
+    description: >
+      All feature APIs must be registered in
+      src/app/api/[[...route]]/route.ts using Hono.
+    rationale: >
+      Centralizes routing and preserves end-to-end typing.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: API-GLOBAL-02
+    category: backend
+    priority: critical
+    scope: backend
+    description: >
+      Feature routers must be attached using
+      app.route("/<feature>", <featureRouter>).
+    rationale: >
+      Maintains a unified API entry point.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: API-GLOBAL-03
+    category: backend
+    priority: high
+    scope: backend
+    description: >
+      The global API must expose GET, POST, PATCH, and DELETE handlers
+      via handle(app).
+    rationale: >
+      Ensures predictable REST behavior.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  # =====================================================
+  # RPC Client
+  # =====================================================
+
+  - rule_id: RPC-01
+    category: architecture
+    priority: critical
+    scope: frontend
+    description: >
+      The RPC client must be created using hc from hono/client
+      and typed with AppType from the global API route.
+    rationale: >
+      Guarantees full type safety between frontend and backend.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  # =====================================================
+  # Feature Server Rules
+  # =====================================================
+
+  - rule_id: FEAT-SERVER-01
+    category: backend
+    priority: critical
+    scope: backend
+    description: >
+      Feature server logic must be implemented using Hono
+      inside src/features/<feature>/server/route.ts only.
+    rationale: >
+      Enforces strict separation of concerns.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: FEAT-SERVER-02
+    category: backend
+    priority: critical
+    scope: backend
+    description: >
+      hono/zod-validator and zod must be used for all request validation.
+    rationale: >
+      Ensures runtime validation aligned with schemas.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: FEAT-SERVER-03
+    category: database
+    priority: critical
+    scope: backend
+    description: >
+      Any create, update, or delete operation must be synchronized
+      with the database schema.
+    rationale: >
+      Prevents data and schema inconsistency.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: FEAT-SERVER-04
+    category: backend
+    priority: high
+    scope: backend
+    description: >
+      UUID must be used for generating entity identifiers.
+    rationale: >
+      Ensures globally unique identifiers.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  # =====================================================
+  # Naming Conventions
+  # =====================================================
+
+  - rule_id: NAME-01
+    category: naming
+    priority: critical
+    scope: global
+    description: >
+      All files and folders must use snake_case naming.
+    rationale: >
+      Maintains consistency and predictability.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: API-01
+    category: architecture
+    priority: high
+    scope: backend
+    description: >
+      Only the following API method names are allowed:
+      get, post, patch, delete.
+    rationale: >
+      Enforces consistent API semantics.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  # =====================================================
+  # Cleanup & Maintenance
+  # =====================================================
+
+  - rule_id: CLEAN-01
+    category: cleanup
+    priority: medium
+    scope: global
+    description: >
+      Deprecated or replaced files must be removed when new
+      implementations are introduced.
+    rationale: >
+      Keeps the codebase clean and maintainable.
+    enforcement:
+      type: soft
+      action_on_violation: warn
