@@ -19,6 +19,15 @@
 11. [Task 11: News Section UI Enhancements](#task-11-news-section-ui-enhancements)
 12. [Task 12: Fix Registration Form Data Persistence](#task-12-fix-registration-form-data-persistence)
 13. [Task 13: AI-Powered Form Redesign](#task-13-ai-powered-form-redesign)
+14. [Task 14: Enhanced Card Design & Detail Pages](#task-14-enhanced-card-design--detail-pages)
+15. [Task 15: Manager & Supervisor Control Panel Implementation](#task-15-manager--supervisor-control-panel-implementation)
+16. [Task 16: Project Cleanup & Optimization](#task-16-project-cleanup--optimization)
+17. [Task 17: Docker Containerization](#task-17-docker-containerization)
+18. [Task 18: Data Cleanup & Real Data Integration](#task-18-data-cleanup--real-data-integration)
+19. [Task 19: Home Section Design & Development](#task-19-home-section-design--development)
+20. [Task 20: Leadership & Incubators Content Strategy](#task-20-leadership--incubators-content-strategy)
+21. [Task 21: Contact Us Page Content Implementation](#task-21-contact-us-page-content-implementation)
+
 
 ---
 
@@ -1901,7 +1910,7 @@ WHATSAPP_WEBHOOK_URL="https://yourdomain.com/api/whatsapp/webhook"
 
 ## Task 10: Navigation Improvements
 
-### Status: � In Progress (Language Switcher Animated, Segment Pending)
+### Status: ✅ Completed
 
 ### Description
 
@@ -1984,9 +1993,165 @@ Detailed plan available in: `ai_form_redesign_plan.md`
 
 ### Subtasks
 
-- [ ] Phase 1: Foundation Layer (Types, Store, Hooks)
-- [ ] Phase 2: Shared Components Library
-- [ ] Phase 3: Collaborators Form Transformation
-- [ ] Phase 4: Innovators Form Transformation
-- [ ] Phase 5: Design Enhancement
-- [ ] Phase 6: Testing & Optimization
+- [x] Phase 1: Foundation Layer (Types, Store, Hooks)
+- [x] Phase 2: Shared Components Library
+- [x] Phase 3: Collaborators Form Transformation
+- [x] Phase 4: Innovators Form Transformation
+- [x] Phase 5: Design Enhancement
+- [x] Phase 6: Testing & Optimization
+
+---
+
+## Task 14: Enhanced Card Design & Detail Pages
+
+### Status: 🔴 Not Started
+
+### Description
+
+Redesign the cards for Collaborators and Innovators to display data more effectively and visually appealingly. Implement a detail page view when a card is clicked to show comprehensive information.
+
+### Subtasks
+
+#### 14.1 Card Redesign
+- [ ] Design new "Collaborator Card" with improved layout (logo, badges, key info).
+- [ ] Design new "Innovator Card" with improved layout (avatar, project status, key info).
+- [ ] Ensure cards are responsive and distinct.
+
+#### 14.2 Detail Pages
+- [ ] Create dynamic route `/collaborators/[id]` for detailed view.
+- [ ] Create dynamic route `/innovators/[id]` for detailed view.
+- [ ] Design detail page layout (hero section, tabs for info, media gallery).
+- [ ] Implement data fetching for individual records.
+
+---
+
+## Task 15: Manager & Supervisor Control Panel Implementation
+
+### Status: 🔴 Not Started
+
+### Description
+
+Verify and finalize the build of the control panel for supervisors and managers. This involves ensuring the dashboard is functional, role-based access is enforced, and necessary administrative features are present.
+
+### Subtasks
+
+- [ ] Verify existing "Manager Dashboard" (Task 4) implementation.
+- [ ] Ensure Role-Based Access Control (RBAC) restricts access correctly.
+- [ ] Implement missing widgets or controls (e.g., quick approval, stats).
+- [ ] Test workflows for supervisors vs. managers.
+
+---
+
+## Task 16: Project Cleanup & Optimization
+
+### Status: 🔴 Not Started
+
+### Description
+
+Clean up the project by removing unused assets, files, and dependencies to improve maintainability and build performance.
+
+### Subtasks
+
+- [ ] Audit and remove unused fonts (e.g., check `public/fonts`).
+- [ ] Audit and remove unused icons/images.
+- [ ] Remove unused components or dead code.
+- [ ] Optimize import paths and dependencies.
+
+---
+
+## Task 17: Docker Containerization
+
+### Status: 🔴 Not Started
+
+### Description
+
+Containerize the application using Docker to ensure consistent environments across development and production.
+
+### Subtasks
+
+- [ ] Create `Dockerfile` optimized for Next.js (standalone output).
+- [ ] Create `docker-compose.yml` (App + DB + Redis).
+- [ ] Configure environment variables for Docker.
+- [ ] Test build and runtime in Docker container.
+
+---
+
+## Task 18: Data Cleanup & Real Data Integration
+
+### Status: 🔴 Not Started
+
+### Priority: 🔴 HIGH
+
+### Description
+
+Clean the project of mock/false data in `src/mock` and replace it with real data from the provided "real data list" (second to last in the list). Ensure all components consuming this data are updated and types remain consistent.
+
+### Subtasks
+
+- [ ] Identify location of "real data list" (second to last version/document provided).
+- [ ] Audit `src/mock` for all files containing placeholder data (Collaborators, Innovators, etc.).
+- [ ] Map real data fields to existing TypeScript types.
+- [ ] Replace mock exports with real data objects.
+- [ ] Verify frontend rendering with new real data.
+- [ ] Remove any unused mock assets or files.
+
+---
+
+## Task 19: Home Section Design & Development
+
+### Status: ✅ Completed
+
+### Priority: 🔴 HIGH
+
+### Description
+
+Develop a new "Home" (Hero/Intro) section that appears at the top of the page, before the "News" section. The design should be elegant, simple, and modern, showcasing the Leadership Center and Business Incubators.
+
+### Subtasks
+
+- [x] Design the Hero section layout (Heading, Subheading, Call to Action).
+- [x] Implement the section with a focus on modern typography and subtle animations.
+- [x] Ensure it highlights the core mission of BOTH leadership and incubators.
+- [x] Integrate with the existing layout to appear before the News component.
+- [x] Responsive design check for mobile and large screens.
+
+---
+
+## Task 20: Leadership & Incubators Content Strategy
+
+### Status: ✅ Completed
+
+### Priority: 🟡 MEDIUM
+
+### Description
+
+Suggest and implement comprehensive ideas and content for the dedicated Leadership page and the Business Incubators page to provide value to visitors.
+
+### Subtasks
+
+- [x] Draft core messaging for the Leadership development programs.
+- [x] Draft content for Business Incubator services, phases, and success stories.
+- [x] Define the visual content (images/icons) needed for both pages.
+- [x] Create/Update the pages with the proposed content structure.
+- [x] Feedback loop with stakeholders for content refinement.
+
+---
+
+## Task 21: Contact Us Page Content Implementation
+
+### Status: ✅ Completed
+
+### Priority: 🟡 MEDIUM
+
+### Description
+
+Populate the "Contact Us" page with all essential business information to ensure users can reach the center easily.
+
+### Subtasks
+
+- [x] Add direct contact details (Email, Phone numbers).
+- [x] Include geographical location details (Address and potentially a Map embed).
+- [x] Document working hours and official working days.
+- [x] Design a simple contact form (if not already present).
+- [x] Ensure all info is bilingual (English/Arabic).
+

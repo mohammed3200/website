@@ -76,6 +76,7 @@ export default {
           '100': '#04050C',
           '200': '#131524',
         },
+        white: '#FAFAF9', // Stone 50 - Off-White standardization
       },
       borderRadius: {
         lg: 'var(--radius)',
