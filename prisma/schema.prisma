@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -19,13 +18,13 @@ model User {
   accounts                Account[]
   isTwoFactorEnabled      Boolean                @default(false)
   twoFactorConfirmation   TwoFactorConfirmation?
-  invitedBy               String?                // ID of user who invited this user
+  invitedBy               String? // ID of user who invited this user
   invitedByUser           User?                  @relation("UserInvitations", fields: [invitedBy], references: [id])
   invitedUsers            User[]                 @relation("UserInvitations")
   userInvitations         UserInvitation[]       @relation("InvitedBy")
   receivedInvitations     UserInvitation[]       @relation("InvitedUser")
   notifications           AdminNotification[]    @relation("UserNotifications")
-  notificationPreferences Json?                  // { emailNewSubmissions: true, emailSystemErrors: true, etc. }
+  notificationPreferences Json? // { emailNewSubmissions: true, emailSystemErrors: true, etc. }
   lastLoginAt             DateTime?
   isActive                Boolean                @default(true)
   createdAt               DateTime               @default(now())
@@ -36,7 +35,7 @@ model User {
 }
 
 model Account {
-  id                String  @id @default(cuid())
+  id                String   @id @default(cuid())
   userId            String
   type              String
   provider          String
@@ -57,10 +56,10 @@ model Account {
 }
 
 model VerificationToken {
-  id      String   @id @default(cuid())
-  email   String
-  token   String   @unique
-  expires DateTime
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -68,10 +67,10 @@ model VerificationToken {
 }
 
 model PasswordResetToken {
-  id      String   @id @default(cuid())
-  email   String
-  token   String   @unique
-  expires DateTime
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -79,10 +78,10 @@ model PasswordResetToken {
 }
 
 model TwoFactorToken {
-  id      String   @id @default(cuid())
-  email   String
-  token   String   @unique
-  expires DateTime
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -90,9 +89,9 @@ model TwoFactorToken {
 }
 
 model TwoFactorConfirmation {
-  id String @id @default(cuid())
-  userId  String
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -100,19 +99,19 @@ model TwoFactorConfirmation {
 }
 
 model Image {
-  id   String @id @default(cuid())
-  data Bytes  @db.MediumBlob
-  type String
-  size Int
+  id        String   @id @default(cuid())
+  data      Bytes    @db.MediumBlob
+  type      String
+  size      Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Media {
-  id   String @id @default(cuid())
-  data Bytes  @db.LongBlob
-  type String
-  size Int
+  id        String   @id @default(cuid())
+  data      Bytes    @db.LongBlob
+  type      String
+  size      Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -130,23 +129,23 @@ model News {
 }
 
 model Innovator {
-  id                 String                @id @default(cuid()) // Fixed for MySQL
+  id                 String                 @id @default(cuid()) // Fixed for MySQL
   name               String
   imageId            String?
   email              String
   phone              String
-  country            String                // NEW: Country from dropdown
-  city               String                // NEW: City/Address (free text)
-  specialization     String                // NEW: Scientific field specialization
+  country            String // NEW: Country from dropdown
+  city               String // NEW: City/Address (free text)
+  specialization     String // NEW: Scientific field specialization
   projectTitle       String
   projectDescription String?
   objective          String?
   stageDevelopment   StageDevelopment
-  status             RecordStatus          @default(PENDING)
-  isVisible          Boolean               @default(false)
-  createdAt          DateTime              @default(now())
-  updatedAt          DateTime              @updatedAt
-  emailLogs          EmailLog[]            @relation("InnovatorEmails")
+  status             RecordStatus           @default(PENDING)
+  isVisible          Boolean                @default(false)
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  emailLogs          EmailLog[]             @relation("InnovatorEmails")
   projectFiles       InnovatorProjectFile[] @relation("InnovatorFiles")
 
   @@index([email])
@@ -157,25 +156,25 @@ model Innovator {
 }
 
 model Collaborator {
-  id                         String       @id @default(cuid())
+  id                         String                       @id @default(cuid())
   companyName                String
   primaryPhoneNumber         String
   optionalPhoneNumber        String?
-  email                      String       // Made required
+  email                      String // Made required
   location                   String?
   site                       String?
   industrialSector           String
   specialization             String
-  experienceProvided         String?      @db.Text
-  machineryAndEquipment      String?      @db.Text
+  experienceProvided         String?                      @db.Text
+  machineryAndEquipment      String?                      @db.Text
   imageId                    String?
-  status                     RecordStatus @default(PENDING)
-  isVisible                  Boolean      @default(false)
-  createdAt                  DateTime     @default(now())
-  updatedAt                  DateTime     @updatedAt
+  status                     RecordStatus                 @default(PENDING)
+  isVisible                  Boolean                      @default(false)
+  createdAt                  DateTime                     @default(now())
+  updatedAt                  DateTime                     @updatedAt
   experienceProvidedMedia    ExperienceProvidedMedia[]
   machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
-  emailLogs                  EmailLog[]   @relation("CollaboratorEmails")
+  emailLogs                  EmailLog[]                   @relation("CollaboratorEmails")
 }
 
 model ExperienceProvidedMedia {
@@ -213,28 +212,28 @@ enum RecordStatus {
 
 // Role-based access control models
 model Role {
-  id              String             @id @default(cuid())
-  name            String             @unique
+  id              String           @id @default(cuid())
+  name            String           @unique
   description     String?
-  isSystem        Boolean            @default(false) // System roles cannot be deleted
+  isSystem        Boolean          @default(false) // System roles cannot be deleted
   users           User[]
   permissions     RolePermission[]
   userInvitations UserInvitation[]
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@index([name])
 }
 
 model Permission {
-  id          String             @id @default(cuid())
-  name        String             @unique
-  resource    String             // e.g., "news", "users", "collaborators"
-  action      String             // e.g., "create", "read", "update", "delete"
+  id          String           @id @default(cuid())
+  name        String           @unique
+  resource    String // e.g., "news", "users", "collaborators"
+  action      String // e.g., "create", "read", "update", "delete"
   description String?
   roles       RolePermission[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   @@unique([resource, action])
   @@index([resource])
@@ -254,20 +253,20 @@ model RolePermission {
 }
 
 model UserInvitation {
-  id          String            @id @default(cuid())
-  email       String
-  token       String            @unique
-  roleId      String
-  role        Role              @relation(fields: [roleId], references: [id])
-  invitedBy   String
-  inviter     User              @relation("InvitedBy", fields: [invitedBy], references: [id])
-  acceptedBy  String?
+  id           String           @id @default(cuid())
+  email        String
+  token        String           @unique
+  roleId       String
+  role         Role             @relation(fields: [roleId], references: [id])
+  invitedBy    String
+  inviter      User             @relation("InvitedBy", fields: [invitedBy], references: [id])
+  acceptedBy   String?
   acceptedUser User?            @relation("InvitedUser", fields: [acceptedBy], references: [id])
-  status      InvitationStatus  @default(PENDING)
-  expiresAt   DateTime
-  acceptedAt  DateTime?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  status       InvitationStatus @default(PENDING)
+  expiresAt    DateTime
+  acceptedAt   DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 
   @@index([email])
   @@index([token])
@@ -283,26 +282,26 @@ enum InvitationStatus {
 
 // Email tracking models
 model EmailLog {
-  id             String           @id @default(cuid())
+  id             String        @id @default(cuid())
   to             String
   from           String
   subject        String
   template       String
-  status         EmailStatus      @default(PENDING)
-  errorMessage   String?          @db.Text
+  status         EmailStatus   @default(PENDING)
+  errorMessage   String?       @db.Text
   metadata       Json?
   sentAt         DateTime?
   openedAt       DateTime?
   clickedAt      DateTime?
   bouncedAt      DateTime?
   complaintAt    DateTime?
-  messageId      String?          @unique
+  messageId      String?       @unique
   collaboratorId String?
-  collaborator   Collaborator?    @relation("CollaboratorEmails", fields: [collaboratorId], references: [id])
+  collaborator   Collaborator? @relation("CollaboratorEmails", fields: [collaboratorId], references: [id])
   innovatorId    String?
-  innovator      Innovator?       @relation("InnovatorEmails", fields: [innovatorId], references: [id])
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  innovator      Innovator?    @relation("InnovatorEmails", fields: [innovatorId], references: [id])
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
   @@index([to])
   @@index([status])
@@ -311,35 +310,35 @@ model EmailLog {
 }
 
 model EmailTemplate {
-  id          String               @id @default(cuid())
-  name        String               @unique
-  subject     String
-  body        String               @db.Text
-  variables   Json?                // JSON array of required variables
-  isActive    Boolean              @default(true)
-  category    EmailTemplateCategory
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
+  id        String                @id @default(cuid())
+  name      String                @unique
+  subject   String
+  body      String                @db.Text
+  variables Json? // JSON array of required variables
+  isActive  Boolean               @default(true)
+  category  EmailTemplateCategory
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
 
   @@index([name])
   @@index([category])
 }
 
 model EmailQueue {
-  id          String         @id @default(cuid())
-  to          String
-  subject     String
-  template    String
-  data        Json
-  priority    Int            @default(0)
-  attempts    Int            @default(0)
-  maxAttempts Int            @default(3)
-  status      QueueStatus    @default(PENDING)
-  error       String?        @db.Text
-  processedAt DateTime?
+  id           String      @id @default(cuid())
+  to           String
+  subject      String
+  template     String
+  data         Json
+  priority     Int         @default(0)
+  attempts     Int         @default(0)
+  maxAttempts  Int         @default(3)
+  status       QueueStatus @default(PENDING)
+  error        String?     @db.Text
+  processedAt  DateTime?
   scheduledFor DateTime?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
   emailActions EmailAction[]
 
@@ -349,17 +348,17 @@ model EmailQueue {
 }
 
 model EmailAction {
-  id             String      @id @default(cuid())
-  emailQueueId   String
-  emailQueue     EmailQueue  @relation(fields: [emailQueueId], references: [id], onDelete: Cascade)
-  tokenHash      String      @unique
-  actionTypes    Json
-  used           Boolean     @default(false)
-  usedAt         DateTime?
-  expiresAt      DateTime
-  data           Json?
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id           String     @id @default(cuid())
+  emailQueueId String
+  emailQueue   EmailQueue @relation(fields: [emailQueueId], references: [id], onDelete: Cascade)
+  tokenHash    String     @unique
+  actionTypes  Json
+  used         Boolean    @default(false)
+  usedAt       DateTime?
+  expiresAt    DateTime
+  data         Json?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   @@index([tokenHash])
   @@index([used])
@@ -396,20 +395,20 @@ enum EmailTemplateCategory {
 
 // Admin Notification model for Task 2
 model AdminNotification {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
-  type        String   // "NEW_REGISTRATION", "SYSTEM_ERROR", "SECURITY_ALERT", etc.
-  title       String
-  message     String   @db.Text
-  data        Json?    // Additional data for the notification
-  isRead      Boolean  @default(false)
-  readAt      DateTime?
-  actionUrl   String?  // Direct link to take action
-  priority    NotificationPriority @default(NORMAL)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id        String               @id @default(cuid())
+  userId    String
+  user      User                 @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  type      String // "NEW_REGISTRATION", "SYSTEM_ERROR", "SECURITY_ALERT", etc.
+  title     String
+  message   String               @db.Text
+  data      Json? // Additional data for the notification
+  isRead    Boolean              @default(false)
+  readAt    DateTime?
+  actionUrl String? // Direct link to take action
+  priority  NotificationPriority @default(NORMAL)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
   @@index([userId, isRead])
   @@index([createdAt])
   @@index([type])
@@ -425,19 +424,18 @@ enum NotificationPriority {
 
 // Innovator Project Files
 model InnovatorProjectFile {
-  id           String     @id @default(cuid())
-  innovatorId  String
-  innovator    Innovator  @relation("InnovatorFiles", fields: [innovatorId], references: [id], onDelete: Cascade)
-  fileName     String
-  fileType     String     // MIME type (application/pdf, image/jpeg, etc.)
-  fileSize     Int        // Size in bytes
-  mediaId      String     @unique // Reference to Media table for binary storage
-  description  String?    @db.Text // Optional file description
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  
+  id          String    @id @default(cuid())
+  innovatorId String
+  innovator   Innovator @relation("InnovatorFiles", fields: [innovatorId], references: [id], onDelete: Cascade)
+  fileName    String
+  fileType    String // MIME type (application/pdf, image/jpeg, etc.)
+  fileSize    Int // Size in bytes
+  mediaId     String    @unique // Reference to Media table for binary storage
+  description String?   @db.Text // Optional file description
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
   @@index([innovatorId])
   @@index([fileType])
   @@index([createdAt])
 }
-
