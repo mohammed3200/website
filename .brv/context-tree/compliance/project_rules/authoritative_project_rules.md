@@ -17,7 +17,7 @@ Update authoritative project rules from antigravity/rules.yaml
 **Flow:**
 Developer -> Consults Authoritative Rules Memory -> Implements Feature -> Architectural Compliance Check
 
-**Timestamp:** 2026-01-09
+**Timestamp:** 2026-01-10
 
 ## Narrative
 ### Structure
@@ -40,6 +40,6 @@ Developer -> Consults Authoritative Rules Memory -> Implements Feature -> Archit
 - **UI-01 (High)**: Only pre-defined shared components must be used.
 - **UI-02 (High)**: New components must be visually and functionally consistent with existing ones.
 - **NAME-01 (Critical)**: All files and folders must use `snake_case` naming. This overrides any other naming conventions.
-- **API-01 (High)**: Allowed API method names: `get`, `post`, `patch`, `delete`.
+- **API-01 (High)**: Only `get`, `post`, `patch`, `delete` are allowed for API methods.
 - **FEAT-SERVER-04 (High)**: UUID must be used for entity identifiers.
 - **CLEAN-01 (Medium)**: Deprecated/replaced files must be removed.
