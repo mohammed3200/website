@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { StepComponentProps } from '@/lib/forms/types';
-import { SelectField, EnhancedFileUpload } from '@/lib/forms/components/fields';
+import { SelectField, FileUpload } from '@/lib/forms/components';
 import { CompleteFormData } from '../schemas/step-schemas';
 import { StageDevelopment } from '../types/types';
 
@@ -72,7 +72,7 @@ export function ProjectDetailsStep({
             <CardDescription>{t('projectFilesHint')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <EnhancedFileUpload
+            <FileUpload
               label={t('uploadFiles')}
               files={(data.projectFiles as File[]) || []}
               onFilesChange={(files) => updateData({ projectFiles: files })}

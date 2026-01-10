@@ -6,7 +6,7 @@ import { StepComponentProps } from '@/lib/forms/types';
 import {
   TextInput,
   PhoneNumberInput,
-  EnhancedFileUpload,
+  FileUpload,
 } from '@/lib/forms/components/fields';
 import {
   Card,
@@ -125,7 +125,7 @@ export function PersonalInfoStep({
             <CardDescription>{t('profileImageDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <EnhancedFileUpload
+            <FileUpload
               label={t('image')}
               // description={t('imageDescription')} // Optional if card desc is enough
               files={

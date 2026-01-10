@@ -68,7 +68,7 @@ export const Introduction = () => {
       </div>
       <div
         dir={isArabic ? "rtl" : "ltr"}
-        className="row-span-1 md:col-span-3 items-center h-[50dvh] max-md:my-8 flex max-md:flex-row overflow-hidden"
+        className="row-span-1 md:col-span-3 items-center h-[50dvh] max-md:my-8 flex gap-4 overflow-hidden"
       >
         <AnimatedList
           direction="down"
@@ -76,12 +76,8 @@ export const Introduction = () => {
           pauseOnHover={true}
           layout="vertical"
           items={MockInnovatorsData}
-          renderItem={(_item, _index) => (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {MockInnovatorsData.map((innovator) => (
-                <CardInnovators key={innovator.id} innovator={innovator} />
-              ))}
-            </div>
+          renderItem={(innovator) => (
+            <CardInnovators key={innovator.id} innovator={innovator} />
           )}
         />
         <AnimatedList
@@ -90,12 +86,8 @@ export const Introduction = () => {
           pauseOnHover={true}
           layout="vertical"
           items={MockInnovatorsData}
-          renderItem={(_item, _index) => (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {MockInnovatorsData.map((innovator) => (
-                <CardInnovators key={innovator.id} innovator={innovator} />
-              ))}
-            </div>
+          renderItem={(innovator) => (
+            <CardInnovators key={innovator.id} innovator={innovator} />
           )}
         />
       </div>
