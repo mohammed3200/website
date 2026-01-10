@@ -322,5 +322,15 @@
       "RequestSuccess": "Your request was sent successfully",
       "RequestFailed": "Failed to send your request"
     }
+  },
+  "ImageUpload": {
+    "chooseProfilePicture": "Choose profile picture",
+    "chooseLogo": "Choose logo",
+    "changeImage": "Change image",
+    "removeImage": "Remove image",
+    "dragImageHere": "Drop image here",
+    "imageTooLarge": "Image is too large. Maximum size is {size}MB",
+    "imageTooSmall": "Image dimensions too small. Minimum {width}x{height}px",
+    "invalidImageType": "Invalid file type. Please upload PNG, JPG, or WEBP"
   }
 }

@@ -340,5 +340,21 @@
       "agreeTo": "أوافق على ",
       "phoneNumber": "رقم الهاتف"
     }
+  },
+  "FileUpload": {
+    "uploadFile": "تحميل ملف",
+    "dragOrDrop": "اسحب وأفلت ملفاتك هنا أو انقر للتحميل",
+    "dropIt": "أسقطه",
+    "modified": "معدل"
+  },
+  "ImageUpload": {
+    "chooseProfilePicture": "اختر صورة الملف الشخصي",
+    "chooseLogo": "اختر الشعار",
+    "changeImage": "تغيير الصورة",
+    "removeImage": "إزالة الصورة",
+    "dragImageHere": "أسقط الصورة هنا",
+    "imageTooLarge": "الصورة كبيرة جداً. الحد الأقصى {size} ميجابايت",
+    "imageTooSmall": "أبعاد الصورة صغيرة جداً. الحد الأدنى {width}×{height} بكسل",
+    "invalidImageType": "نوع ملف غير صالح. الرجاء تحميل PNG أو JPG أو WEBP"
   }
 }
