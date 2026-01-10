@@ -19,6 +19,7 @@ const nextConfig : NextConfig = {
       },
     ],
   },
+  serverExternalPackages: ['mariadb'],
   // Reduce file system operations to minimize EPERM errors on Windows
   webpack: (config, { isServer }) => {
     if (process.platform === 'win32') {
