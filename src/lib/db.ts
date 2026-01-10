@@ -1,16 +1,15 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaMariadb } from '@prisma/adapter-mariadb';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import mariadb from 'mariadb';
 
 const pool = mariadb.createPool({
-  host: process.env.DATABASE_HOST || 'localhost',
+  host: process.env.DATABASE_HOST,
   user: process.env.DATABASE_USER,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  connectionLimit: 5
 });
 
-const adapter = new PrismaMariadb(pool);
+const adapter = new PrismaMariaDb(pool as any);
 
 declare global {
   var prisma: PrismaClient | undefined;

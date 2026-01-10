@@ -384,7 +384,7 @@ export const MockCompaniesData = [
 
 // TODO: writing the Mock to comply with the new data for innovators
 
-type InnovatorStage = "STAGE" | "PROTOTYPE" | "DEVELOPMENT" | "TESTING" | "RELEASED";
+type InnovatorStage = "IDEA" | "PROTOTYPE" | "DEVELOPMENT" | "TESTING" | "MARKET_READY";
 
 export const MockInnovatorsData: {
   id: string;
@@ -415,7 +415,7 @@ export const MockInnovatorsData: {
     name: "Mohamed Ali",
     projectTitle: "Renewable Energy Storage",
     specialization: "CleanTech",
-    stageDevelopment: "STAGE",
+    stageDevelopment: "IDEA",
   },
   {
     id: "4",
@@ -430,7 +430,7 @@ export const MockInnovatorsData: {
     name: "Omar Khaled",
     projectTitle: "Remote Health Monitoring",
     specialization: "HealthTech",
-    stageDevelopment: "RELEASED",
+    stageDevelopment: "MARKET_READY",
   },
   {
     id: "6",
