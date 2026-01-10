@@ -25,10 +25,6 @@ export function FormContentArea({
 
     return (
         <main className={cn('flex-1 min-h-screen relative bg-transparent', className)}>
-            {/* Background decoration - Removed for transparency */}
-            {/* <div className="absolute inset-0 bg-slate-50/50 dark:bg-slate-900/20 -z-10" />
-            <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 -z-10 pointer-events-none" /> */}
-
             {/* Mobile Menu Button */}
             {onMenuClick && (
                 <div className="md:hidden fixed top-4 left-4 rtl:left-auto rtl:right-4 z-50">
