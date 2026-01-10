@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { StepComponentProps } from '@/lib/forms/types';
-import { TextArea, EnhancedFileUpload } from '@/lib/forms/components/fields';
+import { TextArea, FileUpload } from '@/lib/forms/components/fields';
 import { Collaborator } from '../types/types';
 import { StepLayout } from '@/lib/forms/components/shared/StepLayout';
 import {
@@ -51,7 +51,7 @@ export function CapabilitiesStep({
 
             />
 
-            <EnhancedFileUpload
+            <FileUpload
               label={t('experienceProvidedMedia')}
               files={(data.experienceProvidedMedia as unknown as File[]) || []}
               onFilesChange={(files) =>
@@ -90,7 +90,7 @@ export function CapabilitiesStep({
 
             />
 
-            <EnhancedFileUpload
+            <FileUpload
               label={t('machineryAndEquipmentMedia')}
               files={
                 (data.machineryAndEquipmentMedia as unknown as File[]) || []

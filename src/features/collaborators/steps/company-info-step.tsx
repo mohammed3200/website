@@ -6,7 +6,7 @@ import { StepComponentProps } from '@/lib/forms/types';
 import {
   TextInput,
   PhoneNumberInput,
-  EnhancedFileUpload,
+  FileUpload,
 } from '@/lib/forms/components/fields';
 import { Collaborator } from '../types/types';
 import { StepLayout } from '@/lib/forms/components/shared/StepLayout';
@@ -132,7 +132,7 @@ export function CompanyInfoStep({
             <CardDescription>{t('uploadLogoDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <EnhancedFileUpload
+            <FileUpload
               label={t('image')}
               files={
                 data.image
