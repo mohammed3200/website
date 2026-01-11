@@ -1,293 +1,187 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
-import useLanguage from '@/hooks/use-language';
 import {
+  MapPin,
   Phone,
   Mail,
   Globe,
-  MapPin,
   Building2,
-  LucideIcon,
-  Quote,
+  Quote
 } from 'lucide-react';
-import {
-  Modal,
-  ModalTrigger,
-  ModalBody,
-  ModalContent,
-} from '@/components/ui/animated-modal';
+import { cn } from '@/lib/utils';
 
-// 🧱 Data Contract
+// 🧱 Data Contract (Prisma Schema Aligned)
 export interface Collaborator {
+  id?: string;
   companyName: string;
   primaryPhoneNumber: string;
+  optionalPhoneNumber?: string | null;
   email: string;
-  site?: string;
-  location?: string;
+  location?: string | null;
+  site?: string | null;
   industrialSector: string;
   specialization: string;
-  logoUrl?: string;
-  image?: {
-    data: string;
-    type: string;
-  };
-  logoComponent?: React.ReactNode;
+  experienceProvided?: string | null;
+  machineryAndEquipment?: string | null;
+  imageId?: string | null;
+  status?: 'PENDING' | 'APPROVED' | 'REJECTED';
+  isVisible?: boolean;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
-// Legacy props support + new interface
-interface CardCompaniesProps extends Partial<Collaborator> {
+// Legacy & Flexible Props Support
+export interface CardCompaniesProps extends Partial<Collaborator> {
   className?: string;
+  onClick?: () => void;
+
+  // Legacy/Alternative Prop Names
   CompaniesName?: string;
   ExperienceProvided?: string;
   companyImage?: string;
+  logoUrl?: string;
+
+  // Support passing the full object directly
+  collaborator?: Collaborator;
 }
 
-// 🔧 Internal Components
-const LogoRenderer = ({
-  logoUrl,
-  image,
-  logoComponent,
-  companyName,
-}: {
-  logoUrl?: string;
-  image?: { data: string; type: string };
-  logoComponent?: React.ReactNode;
-  companyName: string;
-}) => {
-  if (logoComponent) return <>{logoComponent}</>;
+export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
+  // 🔄 Data Normalization Strategy
+  // Priority: Direct Prop > Collaborator Object Prop > Legacy Prop > Default
 
-  if (image?.data) {
-    const src = `data:${image.type};base64,${image.data}`;
-    return (
-      <img
-        src={src}
-        alt={`${companyName} logo`}
-        className="w-full h-full object-contain"
-      />
-    );
-  }
-
-  if (logoUrl) {
-    return (
-      <img
-        src={logoUrl}
-        alt={`${companyName} logo`}
-        className="w-full h-full object-contain"
-      />
-    );
-  }
-
-  return <Building2 className="w-1/2 h-1/2 text-primary/70" />;
-};
-
-const ContactItem = ({
-  icon: Icon,
-  text,
-  href,
-}: {
-  icon: LucideIcon;
-  text?: string;
-  href?: string;
-}) => {
-  if (!text) return null;
-
-  const content = (
-    <div className="flex items-center gap-2 text-gray-700">
-      <Icon className="w-4 h-4 shrink-0 stroke-[1.5]" />
-      <span className="text-xs font-medium truncate max-w-[150px]">{text}</span>
-    </div>
-  );
-
-  if (href) {
-    return (
-      <a
-        href={href}
-        target={href.startsWith('http') ? '_blank' : undefined}
-        rel="noopener noreferrer"
-        className="block hover:text-primary transition-colors"
-      >
-        {content}
-      </a>
-    );
-  }
-
-  return <div className="block">{content}</div>;
-};
-
-const CompanyDetailsModal = ({ data }: { data: Collaborator }) => {
-  const { isArabic } = useLanguage();
-
-  return (
-    <ModalBody>
-      <ModalContent>
-        <div className="space-y-6" dir={isArabic ? 'rtl' : 'ltr'}>
-          {/* Header */}
-          <div className="flex items-center gap-4 pb-4 border-b">
-            <div className="relative w-24 h-24 rounded-full bg-gray-100 p-4 flex items-center justify-center border border-border">
-              <LogoRenderer
-                logoUrl={data.logoUrl}
-                image={data.image}
-                logoComponent={data.logoComponent}
-                companyName={data.companyName}
-              />
-            </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-foreground">
-                {data.companyName}
-              </h2>
-              <p className="text-sm text-primary font-medium mt-1">
-                {data.industrialSector}
-              </p>
-            </div>
-          </div>
-
-          {/* Specialization */}
-          {data.specialization && (
-            <div>
-              <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wide mb-2">
-                {isArabic ? 'التخصص' : 'Specialization'}
-              </h3>
-              <p className="text-base font-normal text-foreground leading-relaxed">
-                {data.specialization}
-              </p>
-            </div>
-          )}
-
-          {/* Contact Information */}
-          <div className="space-y-3">
-            <ContactItem icon={MapPin} text={data.location} />
-            <ContactItem
-              icon={Phone}
-              text={data.primaryPhoneNumber}
-              href={`tel:${data.primaryPhoneNumber}`}
-            />
-            <ContactItem
-              icon={Mail}
-              text={data.email}
-              href={`mailto:${data.email}`}
-            />
-            <ContactItem
-              icon={Globe}
-              text={data.site?.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-              href={data.site}
-            />
-          </div>
-        </div>
-      </ModalContent>
-    </ModalBody>
-  );
-};
-
-export const CardCompanies = (props: CardCompaniesProps) => {
-  const { isArabic } = useLanguage();
-
-  const data: Collaborator = {
-    companyName: props.companyName || props.CompaniesName || '',
-    primaryPhoneNumber: props.primaryPhoneNumber || '',
-    email: props.email || '',
-    industrialSector: props.industrialSector || 'Industrial Sector',
-    specialization:
-      props.specialization || props.ExperienceProvided || 'Specialization',
-    logoUrl: props.logoUrl || props.companyImage,
-    image: props.image,
-    site: props.site,
-    location: props.location,
-    logoComponent: props.logoComponent,
+  const data = {
+    companyName: props.companyName || props.collaborator?.companyName || props.CompaniesName || "Unknown Company",
+    industrialSector: props.industrialSector || props.collaborator?.industrialSector || "General Sector",
+    specialization: props.specialization || props.collaborator?.specialization || props.ExperienceProvided || "Specialization",
+    location: props.location || props.collaborator?.location,
+    email: props.email || props.collaborator?.email || "",
+    primaryPhoneNumber: props.primaryPhoneNumber || props.collaborator?.primaryPhoneNumber || "",
+    site: props.site || props.collaborator?.site,
+    imageId: props.imageId || props.collaborator?.imageId || props.logoUrl || props.companyImage,
   };
 
-  const formattedSite = data.site
-    ?.replace(/^https?:\/\//, '')
-    .replace(/\/$/, '');
+  const displayUrl = data.site?.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
   return (
-    <Modal>
-      <ModalTrigger className="w-full max-w-4xl mx-auto text-start cursor-pointer transition-transform duration-300 hover:scale-[1.01] focus:outline-none rounded-[17px]">
-        <div
-          className={cn(
-            'flex flex-col md:flex-row w-full overflow-hidden rounded-[17px] bg-white shadow-sm border border-gray-100 h-auto md:h-[280px]', // Fixed height for desktop to ensure proportions
-            props.className,
+    <div
+      className={cn(
+        "group bg-white rounded-[20px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col md:flex-row relative cursor-pointer",
+        props.className
+      )}
+      onClick={props.onClick}
+    >
+      {/* 
+        1️⃣ LEFT SECTION: Identity 
+        - Fixed width on desktop
+        - Centered content
+      */}
+      <div className="w-full md:w-[280px] shrink-0 bg-white flex flex-col items-center justify-center p-8 border-b md:border-b-0 md:border-r border-gray-100">
+
+        {/* Logo Container */}
+        <div className="w-[140px] h-[140px] rounded-full border border-gray-100 flex items-center justify-center bg-gray-50/50 mb-6 p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+          {data.imageId ? (
+            <img
+              src={data.imageId}
+              alt={`${data.companyName} logo`}
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <Building2 className="w-16 h-16 text-gray-300 stroke-1" />
           )}
-          dir={isArabic ? 'rtl' : 'ltr'}
-        >
-          {/* 1️⃣ Left Panel - Logo & Name (25%) */}
-          <div className="w-full md:w-1/4 flex flex-col items-center justify-between border-b md:border-b-0 md:border-e border-gray-100 bg-white py-4 px-2 shrink-0">
-            {/* Logo Section (60%) */}
-            <div className="h-[60%] w-full flex items-center justify-center p-4">
-              <div className="w-24 h-24 relative flex items-center justify-center">
-                <LogoRenderer
-                  logoUrl={data.logoUrl}
-                  image={data.image}
-                  logoComponent={data.logoComponent}
-                  companyName={data.companyName}
-                />
-              </div>
-            </div>
-
-            {/* Separator */}
-            <div className="w-[80%] h-px bg-gray-200 my-2" />
-
-            {/* Name Section (40%) */}
-            <div className="h-[40%] w-full flex items-center justify-center text-center px-2">
-              <h3 className="font-bold text-lg md:text-xl text-black leading-tight break-words line-clamp-3">
-                {data.companyName}
-              </h3>
-            </div>
-          </div>
-
-          {/* 2️⃣ Right Panel - Content (75%) */}
-          <div className="w-full md:w-3/4 flex flex-col">
-            {/* Top Section - Industry & Specialization (50%) */}
-            <div className="flex-1 p-5 flex flex-col justify-start">
-              {/* Industry Sector - Aligned Start */}
-              <div className="w-full flex justify-between items-center mb-3">
-                <span className="text-sm font-semibold text-primary/80 uppercase tracking-wider">
-                  {data.industrialSector}
-                </span>
-              </div>
-
-              {/* Specialization - Centered with Big Quotes */}
-              <div className="flex-1 flex flex-col items-center justify-center relative px-8 py-2">
-                {/* Top Quote */}
-                <Quote className="w-8 h-8 text-primary/20 absolute top-0 left-4 rotate-180 transform -scale-x-100" />
-
-                <p className="text-center text-base md:text-lg font-bold italic text-gray-700 leading-snug mx-4 z-10">
-                  {data.specialization}
-                </p>
-
-                {/* Bottom Quote */}
-                <Quote className="w-8 h-8 text-primary/20 absolute bottom-0 right-4" />
-              </div>
-            </div>
-
-            {/* Bottom Section - Contact Info Badge (50%) */}
-            <div className="flex-1 p-5 flex items-end">
-              <div className="w-full bg-gray-50/80 hover:bg-gray-100 transition-colors rounded-xl p-4 border border-gray-100/50 group">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {/* Contact Items */}
-                  <ContactItem
-                    icon={Phone}
-                    text={data.primaryPhoneNumber}
-                    href={`tel:${data.primaryPhoneNumber}`}
-                  />
-                  <ContactItem
-                    icon={Mail}
-                    text={data.email}
-                    href={`mailto:${data.email}`}
-                  />
-                  <ContactItem
-                    icon={Globe}
-                    text={formattedSite}
-                    href={data.site}
-                  />
-                  <ContactItem icon={MapPin} text={data.location} />
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </ModalTrigger>
 
-      <CompanyDetailsModal data={data} />
-    </Modal>
+        {/* Horizontal Divider */}
+        <div className="w-16 h-px bg-gray-200 mb-6" />
+
+        {/* Company Name */}
+        <h3 className="text-xl md:text-2xl font-bold font-almarai text-center text-gray-900 leading-tight px-2">
+          {data.companyName}
+        </h3>
+      </div>
+
+      {/* 
+        2️⃣ RIGHT SECTION: Information
+        - Flexible width
+        - Content aligned to top-left
+      */}
+      <div className="flex-1 p-6 md:p-8 flex flex-col">
+
+        {/* Header: Sector Badge */}
+        <div className="mb-6">
+          <span className="inline-flex items-center justify-center px-6 py-2 rounded-full bg-[#FF6B00] text-white text-sm font-medium tracking-wide shadow-sm">
+            {data.industrialSector}
+          </span>
+        </div>
+
+        {/* Specialization with Quotes */}
+        <div className="relative mb-8 pl-8 pr-4">
+          {/* Opening Quote */}
+          <Quote className="absolute top-0 left-0 w-5 h-5 text-gray-300 rotate-180 -translate-y-1/3" />
+
+          <p className="text-gray-600 font-medium italic text-base md:text-lg leading-relaxed font-outfit">
+            {data.specialization}
+            <span className="text-gray-300 tracking-widest ml-2 select-none">.......</span>
+          </p>
+
+          {/* Closing Quote */}
+          <Quote className="absolute bottom-0 right-0 w-5 h-5 text-gray-300 translate-y-1/3" />
+        </div>
+
+        {/* Contact Details List */}
+        <div className="mt-auto space-y-4">
+
+          {/* Phone */}
+          <div className="flex items-center group/item">
+            <div className="w-8 flex justify-center shrink-0">
+              <Phone className="w-5 h-5 text-gray-900 stroke-[1.5]" />
+            </div>
+            <span className="text-gray-600 text-sm md:text-base font-outfit ml-2">
+              {data.primaryPhoneNumber}
+            </span>
+          </div>
+
+          {/* Email */}
+          <div className="flex items-center group/item">
+            <div className="w-8 flex justify-center shrink-0">
+              <Mail className="w-5 h-5 text-gray-900 stroke-[1.5]" />
+            </div>
+            <span className="text-gray-600 text-sm md:text-base font-outfit ml-2 truncate">
+              {data.email}
+            </span>
+          </div>
+
+          {/* Website */}
+          {data.site && (
+            <div className="flex items-center group/item">
+              <div className="w-8 flex justify-center shrink-0">
+                <Globe className="w-5 h-5 text-gray-900 stroke-[1.5]" />
+              </div>
+              <a
+                href={data.site}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 text-sm md:text-base font-outfit ml-2 hover:text-[#FF6B00] transition-colors truncate"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {displayUrl}
+              </a>
+            </div>
+          )}
+
+          {/* Location */}
+          {data.location && (
+            <div className="flex items-center group/item">
+              <div className="w-8 flex justify-center shrink-0">
+                <MapPin className="w-5 h-5 text-gray-900 stroke-[1.5]" />
+              </div>
+              <span className="text-gray-600 text-sm md:text-base font-outfit ml-2">
+                {data.location}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
+
+export default CardCompanies;
