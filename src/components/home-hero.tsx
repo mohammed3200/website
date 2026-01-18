@@ -1,209 +1,196 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import React from "react";
+import { motion, Variants } from "framer-motion";
+import { ArrowRight, Terminal, TrendingUp, ShieldCheck, Zap } from "lucide-react";
 import useLanguage from "@/hooks/use-language";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
-
-// Ensure Neat is only loaded on the client side
-// We can't use next/dynamic for the Neat render function directly usually, 
-// so we might need to strictly import it inside a useEffect or dynamic import the whole component if needed.
-// However, the user provided code snippet suggests direct usage. 
-// Let's use a dynamic import for the library to be safe.
-
-const neatConfig = {
-    colors: [
-        {
-            color: '#FF5373',
-            enabled: true,
-        },
-        {
-            color: '#17E7FF',
-            enabled: true,
-        },
-        {
-            color: '#FFC858',
-            enabled: true,
-        },
-        {
-            color: '#6D3BFF',
-            enabled: true,
-        },
-        {
-            color: '#f5e1e5',
-            enabled: false,
-        },
-    ],
-    speed: 6,
-    horizontalPressure: 7,
-    verticalPressure: 8,
-    waveFrequencyX: 1,
-    waveFrequencyY: 2,
-    waveAmplitude: 8,
-    shadows: 4,
-    highlights: 6,
-    colorBrightness: 0.95,
-    colorSaturation: -8,
-    wireframe: false,
-    colorBlending: 10,
-    backgroundColor: '#003FFF',
-    backgroundAlpha: 1,
-    grainScale: 4,
-    grainSparsity: 0,
-    grainIntensity: 0.25,
-    grainSpeed: 1,
-    resolution: 1,
-    yOffset: 756,
-    yOffsetWaveMultiplier: 6.2,
-    yOffsetColorMultiplier: 5.8,
-    yOffsetFlowMultiplier: 6.5,
-    flowDistortionA: 1.1,
-    flowDistortionB: 0.8,
-    flowScale: 1.6,
-    flowEase: 0.32,
-    flowEnabled: true,
-    mouseDistortionStrength: 0.1,
-    mouseDistortionRadius: 0.25,
-    mouseDecayRate: 0.96,
-    mouseDarken: 0.24,
-    enableProceduralTexture: false,
-    textureVoidLikelihood: 0.27,
-    textureVoidWidthMin: 60,
-    textureVoidWidthMax: 420,
-    textureBandDensity: 1.2,
-    textureColorBlending: 0.06,
-    textureSeed: 333,
-    textureEase: 0.22,
-    proceduralBackgroundColor: '#0E0707',
-    textureShapeTriangles: 20,
-    textureShapeCircles: 15,
-    textureShapeBars: 15,
-    textureShapeSquiggles: 10,
-};
 
 export const HomeHero = () => {
     const { isArabic } = useLanguage();
     const t = useTranslations("Home");
-    const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    useEffect(() => {
-        let neatInstance: any = null;
+    // Animation Variants
+    const containerVariants: Variants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+        }
+    };
 
-        const initNeat = async () => {
-            if (!canvasRef.current) return;
+    const itemVariants: Variants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.6, ease: "easeOut" }
+        }
+    };
 
-            try {
-                // Dynamic import to avoid SSR issues
-                const { NeatGradient } = await import("@firecms/neat");
-
-                neatInstance = new NeatGradient({
-                    ref: canvasRef.current,
-                    ...neatConfig
-                });
-            } catch (error) {
-                console.error("Failed to load Neat background:", error);
+    const floatingCard: Variants = {
+        animate: {
+            y: [0, -15, 0],
+            rotate: [0, 1, 0],
+            transition: {
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut"
             }
-        };
-
-        initNeat();
-
-        return () => {
-            // Cleanup if neat has a destroy method, though the library docs might not specify one explicitly.
-            // Often these libraries just attach to the canvas.
-            if (neatInstance && typeof neatInstance.destroy === 'function') {
-                neatInstance.destroy();
-            }
-        };
-    }, []);
+        }
+    };
 
     return (
         <section
-            className="relative min-h-screen flex items-center justify-center overflow-hidden"
+            className="relative min-h-[90vh] flex items-center overflow-hidden bg-background"
             dir={isArabic ? "rtl" : "ltr"}
         >
-            {/* Neat Dynamic Background */}
-            <canvas
-                ref={canvasRef}
-                className="absolute inset-0 z-0 w-full h-full"
-            />
+            {/* 📐 Technical Background Grid */}
+            <div className="absolute inset-0 z-0">
+                <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-70" />
+                <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
+            </div>
 
-            {/* Overlay for better text readability */}
-            <div className="absolute inset-0 bg-stone-900/10 z-10" />
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-            {/* Content */}
-            <div className="container mx-auto px-4 relative z-20">
-                <div className="max-w-6xl mx-auto text-center space-y-12">
-                    {/* Main Heading */}
+                    {/* 📝 Left Content: Strategy & Leadership */}
                     <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1, ease: "easeOut" }}
-                        className="space-y-8"
+                        variants={containerVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="max-w-2xl"
                     >
-                        <h1 className="font-din-bold text-5xl md:text-7xl lg:text-8xl text-white leading-tight tracking-tight drop-shadow-lg">
-                            {t("title")}
-                        </h1>
+                        {/* Tech Badge */}
+                        <motion.div variants={itemVariants} className="mb-6">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-200 rounded-md shadow-sm">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                                <span className="font-mono text-xs font-medium text-gray-500 tracking-wider uppercase">
+                                    {t("badge")}
+                                </span>
+                            </div>
+                        </motion.div>
 
-                        <p className="font-din-regular text-xl md:text-3xl text-stone-50/90 max-w-4xl mx-auto leading-relaxed drop-shadow-md">
+                        {/* Headline */}
+                        <motion.h1 variants={itemVariants} className="font-almarai font-extrabold text-5xl sm:text-6xl lg:text-7xl text-foreground leading-[1.1] tracking-tight mb-6">
+                            {t("titleLine1")} <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-400">
+                                {t("titleLine2")}
+                            </span>
+                        </motion.h1>
+
+                        {/* Subtitle */}
+                        <motion.p variants={itemVariants} className={`font-outfit text-lg text-gray-600 leading-relaxed mb-10 max-w-lg ${isArabic ? 'border-r-4 pr-6' : 'border-l-4 pl-6'} border-primary/20`}>
                             {t("subtitle")}
-                        </p>
+                        </motion.p>
+
+                        {/* Buttons */}
+                        <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
+                            <button className="group relative px-8 py-4 bg-foreground text-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all">
+                                <div className="absolute inset-0 w-full h-full bg-primary/0 group-hover:bg-primary/10 transition-colors" />
+                                <span className="relative flex items-center gap-3 font-bold">
+                                    {t("startJourney")}
+                                    <ArrowRight className={`w-4 h-4 group-hover:translate-x-1 transition-transform ${isArabic ? 'rotate-180 group-hover:-translate-x-1' : ''}`} />
+                                </span>
+                            </button>
+
+                            <button className="px-8 py-4 bg-white text-foreground border border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
+                                {t("learnMore")}
+                            </button>
+                        </motion.div>
+
+                        {/* Metrics / Trust */}
+                        <motion.div variants={itemVariants} className="mt-12 flex items-center gap-8 text-gray-400">
+                            <div className="flex items-center gap-2">
+                                <ShieldCheck className="w-5 h-5" />
+                                <span className="text-sm font-mono">SECURE_CORE</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <Zap className="w-5 h-5" />
+                                <span className="text-sm font-mono">HIGH_PERFORMANCE</span>
+                            </div>
+                        </motion.div>
                     </motion.div>
 
-                    {/* CTA Buttons */}
+                    {/* 💻 Right Visual: The "System" Interface */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-6"
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="relative hidden lg:block h-[600px]"
                     >
-                        <Link
-                            href={`/${isArabic ? "ar" : "en"}/innovators/registration`}
-                            className="group inline-flex items-center gap-3 px-10 py-5 bg-stone-50 hover:bg-white text-stone-900 font-din-bold text-xl rounded-full transition-all duration-300 shadow-2xl hover:shadow-3xl hover:scale-105"
-                        >
-                            <span>{t("startJourney")}</span>
-                            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                        </Link>
+                        {/* Abstract Background Blob */}
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-3xl" />
 
-                        <Link
-                            href={`/${isArabic ? "ar" : "en"}/entrepreneurship`}
-                            className="inline-flex items-center gap-3 px-10 py-5 bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-din-bold text-xl rounded-full border-2 border-white/30 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105"
+                        {/* 1. Main Dashboard Card */}
+                        <motion.div
+                            variants={floatingCard}
+                            animate="animate"
+                            className="absolute top-[10%] left-[10%] w-[80%] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 p-6 z-20"
                         >
-                            <span>{t("learnMore")}</span>
-                        </Link>
-                    </motion.div>
+                            <div className="flex items-center justify-between mb-6 border-b border-gray-100 pb-4">
+                                <div className="flex gap-2">
+                                    <div className="w-3 h-3 rounded-full bg-red-400" />
+                                    <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                                    <div className="w-3 h-3 rounded-full bg-green-400" />
+                                </div>
+                                <div className="font-mono text-xs text-gray-400 text-end">dashboard_v1.tsx</div>
+                            </div>
 
-                    {/* Stats */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
-                        className="grid sm:grid-cols-3 gap-8 max-w-4xl mx-auto pt-16"
-                    >
-                        {[
-                            { valueKey: "excellenceValue", labelKey: "excellence" },
-                            { valueKey: "communityValue", labelKey: "community" },
-                            { valueKey: "growthValue", labelKey: "growth" },
-                        ].map((stat, index) => (
-                            <motion.div
-                                key={stat.labelKey}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ duration: 0.6, delay: 0.7 + index * 0.15, ease: "easeOut" }}
-                                className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 hover:bg-white/15 transition-all duration-300"
-                            >
-                                <div className="font-din-bold text-5xl md:text-6xl text-white mb-2">
-                                    {t(stat.valueKey)}
+                            <div className="space-y-4">
+                                <div className="h-24 bg-gray-50 rounded-lg border border-dashed border-gray-200 flex items-center justify-center">
+                                    <TrendingUp className="w-8 h-8 text-primary/50" />
                                 </div>
-                                <div className="font-din-regular text-lg text-stone-100/80">
-                                    {t(stat.labelKey)}
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="h-2 bg-gray-100 rounded col-span-2" />
+                                    <div className="h-2 bg-primary/20 rounded col-span-1" />
                                 </div>
-                            </motion.div>
-                        ))}
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="h-2 bg-gray-100 rounded col-span-1" />
+                                    <div className="h-2 bg-gray-100 rounded col-span-2" />
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* 2. Floating Code Block (Dev) */}
+                        <motion.div
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.8 }}
+                            className={`absolute -bottom-4 ${isArabic ? '-right-4' : '-left-4'} bg-[#1e1e1e] text-white p-5 rounded-xl shadow-2xl z-30 max-w-[280px] font-mono text-xs`}
+                        >
+                            <div className="flex items-center gap-2 mb-3 text-gray-400">
+                                <Terminal className="w-4 h-4" />
+                                <span>deploy.sh</span>
+                            </div>
+                            <div className="space-y-1 opacity-80" dir="ltr">
+                                <p><span className="text-purple-400">const</span> <span className="text-blue-400">leader</span> = <span className="text-yellow-300">new</span> Visionary();</p>
+                                <p>leader.<span className="text-blue-400">init</span>(strategy);</p>
+                                <p><span className="text-green-400">✓ Build Successful</span></p>
+                            </div>
+                        </motion.div>
+
+                        {/* 3. Floating Stat Badge (Business) */}
+                        <motion.div
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ delay: 1 }}
+                            className={`absolute top-20 ${isArabic ? '-left-8' : '-right-8'} bg-white p-4 rounded-2xl shadow-[0_10px_40px_rgba(255,107,0,0.15)] border border-primary/10 z-30 flex items-center gap-4`}
+                        >
+                            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                                98%
+                            </div>
+                            <div className={isArabic ? "text-right" : ""}>
+                                <div className="text-xs text-gray-400 font-bold uppercase">{isArabic ? "معدل النمو" : "Growth Rate"}</div>
+                                <div className="text-sm font-bold text-foreground">{isArabic ? "تجاوز الأهداف" : "Exceeding Targets"}</div>
+                            </div>
+                        </motion.div>
+
                     </motion.div>
                 </div>
             </div>
         </section>
     );
 };
+
+export default HomeHero;
