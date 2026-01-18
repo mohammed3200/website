@@ -64,7 +64,7 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
   return (
     <div
       className={cn(
-        "group bg-white rounded-[20px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col md:flex-row relative cursor-pointer",
+        "group md:w-[600px] md:h-[320px] bg-white rounded-[20px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col md:flex-row relative cursor-pointer rtl:flex-row-reverse",
         props.className
       )}
       onClick={props.onClick}
@@ -74,10 +74,10 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
         - Fixed width on desktop
         - Centered content
       */}
-      <div className="w-full md:w-[280px] shrink-0 bg-white flex flex-col items-center justify-center p-8 border-b md:border-b-0 md:border-r border-gray-100">
+      <div className="w-full md:w-[240px] shrink-0 bg-white flex flex-col items-center justify-center p-6 border-b md:border-b-0 border-gray-100">
 
         {/* Logo Container */}
-        <div className="w-[140px] h-[140px] rounded-full border border-gray-100 flex items-center justify-center bg-gray-50/50 mb-6 p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+        <div className="w-[160px] h-[160px] rounded-full border border-gray-100 flex items-center justify-center bg-gray-50/50 mb-4 p-1 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden">
           {data.imageId ? (
             <img
               src={data.imageId}
@@ -90,68 +90,73 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
         </div>
 
         {/* Horizontal Divider */}
-        <div className="w-16 h-px bg-gray-200 mb-6" />
+        <div className="w-12 h-px bg-gray-200 mb-4" />
 
         {/* Company Name */}
-        <h3 className="text-xl md:text-2xl font-bold font-almarai text-center text-gray-900 leading-tight px-2">
+        <h3 className="text-lg md:text-xl font-bold font-almarai text-center text-gray-900 leading-tight px-2 w-full break-words">
           {data.companyName}
         </h3>
       </div>
+
+      {/* Vertical Divider */}
+      <div className="hidden md:block w-px bg-gray-200 self-stretch my-8" />
 
       {/* 
         2️⃣ RIGHT SECTION: Information
         - Flexible width
         - Content aligned to top-left
       */}
-      <div className="flex-1 p-6 md:p-8 flex flex-col">
+      <div className="flex-1 min-w-0 p-5 md:p-4 flex flex-col">
 
         {/* Header: Sector Badge */}
-        <div className="mb-6">
-          <span className="inline-flex items-center justify-center px-6 py-2 rounded-full bg-[#FF6B00] text-white text-sm font-medium tracking-wide shadow-sm">
+        <div className="my-4">
+          <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-primary text-[#ffffff] text-base font-medium tracking-wide shadow-sm font-almarai">
             {data.industrialSector}
           </span>
         </div>
 
         {/* Specialization with Quotes */}
-        <div className="relative mb-8 pl-8 pr-4">
-          {/* Opening Quote */}
-          <Quote className="absolute top-0 left-0 w-5 h-5 text-gray-300 rotate-180 -translate-y-1/3" />
-
-          <p className="text-gray-600 font-medium italic text-base md:text-lg leading-relaxed font-outfit">
+        <div className="relative mb-5">
+          <p className="text-gray-600 font-medium italic text-sm md:text-base leading-relaxed font-almarai line-clamp-4 break-words w-full rtl:text-right relative">
+            <span className="inline-block align-baseline me-4 rtl:ms-4 rtl:me-0">
+              <Quote className="w-4 h-4 text-gray-300 inline-block -translate-y-1 rotate-180 rtl:rotate-0" />
+            </span>
             {data.specialization}
-            <span className="text-gray-300 tracking-widest ml-2 select-none">.......</span>
+            <span className="inline-block align-baseline ms-4 rtl:me-4 rtl:ms-0">
+              <Quote className="w-4 h-4 text-gray-300 inline-block -translate-y-1" />
+            </span>
           </p>
-
-          {/* Closing Quote */}
-          <Quote className="absolute bottom-0 right-0 w-5 h-5 text-gray-300 translate-y-1/3" />
         </div>
 
+        {/* Separator Divider */}
+        <div className="h-px bg-gray-200 mb-5 w-[40%] self-center" />
+
         {/* Contact Details List */}
-        <div className="mt-auto space-y-4">
+        <div className="space-y-3">
 
           {/* Phone */}
-          <div className="flex items-center group/item">
+          <div className="flex items-center group/item rtl:flex-row-reverse">
             <div className="w-8 flex justify-center shrink-0">
               <Phone className="w-5 h-5 text-gray-900 stroke-[1.5]" />
             </div>
-            <span className="text-gray-600 text-sm md:text-base font-outfit ml-2">
+            <span className="text-gray-600 text-sm md:text-base font-outfit ms-2 rtl:me-2 rtl:ms-0">
               {data.primaryPhoneNumber}
             </span>
           </div>
 
           {/* Email */}
-          <div className="flex items-center group/item">
+          <div className="flex items-center group/item rtl:flex-row-reverse">
             <div className="w-8 flex justify-center shrink-0">
               <Mail className="w-5 h-5 text-gray-900 stroke-[1.5]" />
             </div>
-            <span className="text-gray-600 text-sm md:text-base font-outfit ml-2 truncate">
+            <span className="text-gray-600 text-sm md:text-base font-outfit ms-2 rtl:me-2 rtl:ms-0 truncate">
               {data.email}
             </span>
           </div>
 
           {/* Website */}
           {data.site && (
-            <div className="flex items-center group/item">
+            <div className="flex items-center group/item rtl:flex-row-reverse">
               <div className="w-8 flex justify-center shrink-0">
                 <Globe className="w-5 h-5 text-gray-900 stroke-[1.5]" />
               </div>
@@ -159,7 +164,7 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
                 href={data.site}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-600 text-sm md:text-base font-outfit ml-2 hover:text-[#FF6B00] transition-colors truncate"
+                className="text-gray-600 text-sm md:text-base font-outfit ms-2 rtl:me-2 rtl:ms-0 hover:text-[#FF6B00] transition-colors truncate"
                 onClick={(e) => e.stopPropagation()}
               >
                 {displayUrl}
@@ -169,11 +174,11 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
 
           {/* Location */}
           {data.location && (
-            <div className="flex items-center group/item">
+            <div className="flex items-center group/item rtl:flex-row-reverse">
               <div className="w-8 flex justify-center shrink-0">
                 <MapPin className="w-5 h-5 text-gray-900 stroke-[1.5]" />
               </div>
-              <span className="text-gray-600 text-sm md:text-base font-outfit ml-2">
+              <span className="text-gray-600 text-sm md:text-base font-outfit ms-2 rtl:me-2 rtl:ms-0">
                 {data.location}
               </span>
             </div>
