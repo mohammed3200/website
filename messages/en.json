@@ -21,7 +21,8 @@
     "established": "Established"
   },
   "News": {
-    "NoNews": "No news or announcements"
+    "NoNews": "No news or announcements",
+    "latestNews": "Latest News"
   },
   "ui": {
     "readMore": "read more",
@@ -32,8 +33,9 @@
     "subtitle": "You've got questions, we've got answers."
   },
   "Error": {
-    "title": "Something Went Wrong.",
-    "message": "We're experiencing a temporary issue. Please try again later."
+    "title": "Something went wrong",
+    "message": "We encountered an unexpected error while processing your request. Please try again later.",
+    "tryAgain": "Try Again"
   },
   "GlobalError": {
     "title": "Under Maintenance",
@@ -43,7 +45,9 @@
   "NotFound": {
     "title": "Page not found",
     "description": "We couldn't find the page you were looking for. Please check the URL or return to",
-    "homePage": "Home Page"
+    "homePage": "Home Page",
+    "goHome": "Go Home",
+    "goBack": "Go Back"
   },
   "Entrepreneurship": {
     "title": "Leadership & Entrepreneurship Development",
@@ -207,15 +211,16 @@
     "RemoveFile": "Remove file"
   },
   "Footer": {
-    "copyright": "Copyright © reserved to the Center for Entrepreneurship and Business Incubators {year}.",
+    "copyright": "© {year} Collaborator. All rights reserved.",
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
     "quickLinks": "Quick Links",
     "resources": "Resources",
     "contactUs": "Contact Us",
-    "backToTop": "Back to top",
+    "backToTop": "Back to Top",
     "address": "Libya, Misurata, College of Industrial Technology",
-    "subtitle": "Empowering innovation and entrepreneurship through expert guidance and comprehensive support."
+    "subtitle": "Empowering innovation through strategic partnerships.",
+    "faq": "FAQ"
   },
   "Validation": {
     "RequiredField": "Field is required",

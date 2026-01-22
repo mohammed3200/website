@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { InterfaceImage } from "@/constants";
+import React from "react";
+import { motion } from "framer-motion";
+import { Home, ArrowLeft } from "lucide-react";
 import useLanguage from "@/hooks/use-language";
-import { BackgroundBeams } from "@/components/ui/background-beams";
 import { NextIntlClientProvider, useTranslations } from "next-intl";
 import arMessages from "../../../messages/ar.json";
+import { useRouter } from "next/navigation";
 
 export default function NotFound() {
     return (
@@ -23,58 +22,62 @@ function NotFoundContent() {
     const router = useRouter();
 
     return (
-        <div className="relative min-h-screen w-full overflow-hidden bg-background">
-            <BackgroundBeams className="-z-10 opacity-40" />
-            <main className="flex h-screen w-full items-center justify-center p-4">
-                <div
-                    className="flex flex-col items-center justify-center gap-6 text-center z-10 max-w-lg mx-auto"
-                    dir={isArabic ? "rtl" : "ltr"}
-                >
-                    <div className="relative mb-4">
-                        <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-                        <Image
-                            src={InterfaceImage.Error404}
-                            alt="404 Not Found"
-                            width={300}
-                            height={300}
-                            className="object-contain relative z-10 drop-shadow-xl"
-                            priority
-                        />
-                    </div>
+        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-background" dir={isArabic ? "rtl" : "ltr"}>
+            {/* Background Beams Effect (CSS Implementation) */}
+            <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute -top-[50%] -left-[50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,rgba(255,107,0,0.05)_0%,transparent_50%)] animate-pulse" />
+                <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.3]" />
+            </div>
 
-                    <div className="space-y-2">
-                        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight lg:text-6xl text-primary">
+            <div className="relative z-10 text-center px-4">
+                {/* 404 Typography */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    className="relative"
+                >
+                    <h1 className="text-[12rem] md:text-[18rem] font-extrabold leading-none text-transparent bg-clip-text bg-gradient-to-b from-gray-100 to-white drop-shadow-sm select-none">
+                        404
+                    </h1>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <h1 className="text-[12rem] md:text-[18rem] font-extrabold leading-none text-gray-900/5 select-none blur-sm">
                             404
                         </h1>
-                        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-                            {t("title")}
-                        </h2>
                     </div>
+                </motion.div>
 
-                    <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="space-y-6 -mt-10 md:-mt-20 relative z-20"
+                >
+                    <h2 className="text-3xl md:text-4xl font-bold font-almarai text-foreground">
+                        {t("title")}
+                    </h2>
+                    <p className="text-gray-500 font-outfit text-lg max-w-md mx-auto">
                         {t("description")}
                     </p>
 
-                    <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
-                        <Button
-                            variant="default"
-                            size="lg"
+                    <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+                        <button
                             onClick={() => router.push(`/${lang}`)}
-                            className="gap-2 min-w-[140px]"
+                            className="px-8 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:bg-orange-600 transition-all flex items-center gap-2"
                         >
-                            <span className="font-semibold">{t("homePage")}</span>
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="lg"
+                            <Home className="w-4 h-4" />
+                            {t("goHome")}
+                        </button>
+                        <button
                             onClick={() => router.back()}
-                            className="gap-2 min-w-[140px]"
+                            className="px-8 py-3 bg-white text-foreground border border-gray-200 font-bold rounded-xl hover:bg-gray-50 transition-colors flex items-center gap-2"
                         >
-                            <span className="font-semibold">{isArabic ? "العودة" : "Go Back"}</span>
-                        </Button>
+                            <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
+                            {t("goBack")}
+                        </button>
                     </div>
-                </div>
-            </main>
+                </motion.div>
+            </div>
         </div>
     );
-}
+};

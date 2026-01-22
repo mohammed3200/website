@@ -534,26 +534,26 @@ Strategic Plan Preparation and Review Team
 export const socials = [
   {
     id: "0",
-    title: "facebook",
-    icon: socialsIcons.facebook,
+    title: "Facebook",
+    icon: socialsIcons.facebook, // We'll ignore the image icon property in the footer
     url: "#",
   },
   {
     id: "1",
-    title: "X",
+    title: "Twitter",
     icon: socialsIcons.X,
     url: "#",
   },
   {
     id: "2",
-    title: "Telegram",
-    icon: socialsIcons.Telegram,
+    title: "Linkedin",
+    icon: socialsIcons.Telegram, // Placeholder, won't be used
     url: "#",
   },
   {
     id: "3",
-    title: "Whatsapp",
-    icon: socialsIcons.Whatsapp,
+    title: "Instagram",
+    icon: socialsIcons.Whatsapp, // Placeholder, won't be used
     url: "#",
   },
 ];

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowRight, Newspaper } from 'lucide-react';
+import { useTranslations } from "next-intl";
 import useLanguage from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
 import { MockNewsData as MOCK_NEWS } from "@/mock"
@@ -13,6 +14,7 @@ const truncateString = (str: string, num: number) => str.length > num ? str.slic
 
 export const News = () => {
   const { isArabic } = useLanguage();
+  const t = useTranslations("News");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
@@ -66,7 +68,7 @@ export const News = () => {
             <div className="p-2.5 bg-primary/10 rounded-xl">
               <Newspaper className="w-6 h-6 text-primary" />
             </div>
-            <h2 className="text-3xl font-bold font-almarai text-foreground">Latest News</h2>
+            <h2 className="text-3xl font-bold font-almarai text-foreground">{t("latestNews")}</h2>
           </div>
 
           {/* Desktop Navigation */}
