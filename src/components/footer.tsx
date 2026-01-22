@@ -9,6 +9,8 @@ import { MainLogo, socials } from "@/constants";
 import { getNavItems } from "@/components/navigation/constants";
 import { Mail, Phone, ArrowUp } from "lucide-react";
 
+import { FooterMap } from "@/components/footer-map";
+
 export const Footer = () => {
   const { lang, isArabic } = useLanguage();
   const t = useTranslations("Footer");
@@ -69,17 +71,8 @@ export const Footer = () => {
                 </h3>
                 <ul className="flex flex-col gap-4">
                   {/* Google Map Embed */}
-                  <li className="w-full h-48 rounded-lg overflow-hidden border border-gray-200">
-                    <iframe
-                      src="https://maps.google.com/maps?q=32.37082,15.07411&z=15&output=embed"
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="Misurata College of Industrial Technology Location"
-                    ></iframe>
+                  <li className="w-full">
+                    <FooterMap />
                   </li>
                   <li className="flex items-center gap-3 text-gray-500">
                     <Phone className="size-5 text-primary shrink-0" />

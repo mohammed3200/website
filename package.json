@@ -75,6 +75,7 @@
     "libphonenumber-js": "^1.12.33",
     "lru-cache": "10",
     "lucide-react": "^0.562.0",
+    "maplibre-gl": "^5.16.0",
     "mariadb": "^3.4.5",
     "motion": "^12.23.26",
     "next": "^16.1.1",
