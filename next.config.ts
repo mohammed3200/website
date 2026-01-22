@@ -6,6 +6,7 @@ const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
 const nextConfig : NextConfig = {
+  output: 'standalone', // Enable standalone output for Docker optimization
   turbopack: {
     root: path.resolve(__dirname),
   },

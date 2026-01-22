@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ebic-website
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Database Configuration
+      DATABASE_URL: mysql://${DATABASE_USER:-root}:${DATABASE_PASSWORD:-root}@mysql:3306/${DATABASE_NAME:-citcoder_eitdc}
+
+      # Application Settings
+      NEXT_PUBLIC_APP_NAME: ${NEXT_PUBLIC_APP_NAME:-Misurata Entrepreneurship Center}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+
+      # Admin Configuration
+      INIT_ADMIN_USERNAME: ${INIT_ADMIN_USERNAME:-eitdc_admin}
+      INIT_ADMIN_PASSWORD: ${INIT_ADMIN_PASSWORD}
+      ADMIN_API_KEY: ${ADMIN_API_KEY}
+
+      # Email Configuration
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      EMAIL_FROM: ${EMAIL_FROM}
+      EMAIL_SUPPORT: ${EMAIL_SUPPORT}
+      EMAIL_ADMIN: ${EMAIL_ADMIN}
+      EMAIL_REPLY_TO: ${EMAIL_REPLY_TO}
+      ADMIN_NOTIFICATION_EMAIL: ${ADMIN_NOTIFICATION_EMAIL}
+      TEST_EMAIL: ${TEST_EMAIL}
+
+      # Redis Configuration
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+      # Security & Monitoring
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+
+      # Feature Flags
+      ENABLE_EMAIL_QUEUE: ${ENABLE_EMAIL_QUEUE:-true}
+      ENABLE_TWO_FACTOR_AUTH: ${ENABLE_TWO_FACTOR_AUTH:-true}
+      ENABLE_MONITORING: ${ENABLE_MONITORING:-true}
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ebic-network
+    healthcheck:
+      test: [ "CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: ebic-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD:-root}
+      MYSQL_DATABASE: ${DATABASE_NAME:-citcoder_eitdc}
+      MYSQL_USER: ${DATABASE_USER:-root}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-root}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - ebic-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DATABASE_PASSWORD:-root}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # Redis (for BullMQ Queue)
+  redis:
+    image: redis:7-alpine
+    container_name: ebic-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ebic-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    command: redis-server --appendonly yes
+
+networks:
+  ebic-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
