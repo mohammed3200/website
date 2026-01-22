@@ -1,178 +1,162 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { useTranslations } from 'next-intl';
-import Autoplay from 'embla-carousel-autoplay';
-
-import { MockNewsData } from '@/mock';
-
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight, ArrowRight, Newspaper } from 'lucide-react';
 import useLanguage from '@/hooks/use-language';
+import { cn } from '@/lib/utils';
+import { MockNewsData as MOCK_NEWS } from "@/mock"
 
-import { truncateString } from '@/lib/utils';
 
-import { ReadMore } from '@/components';
+const truncateString = (str: string, num: number) => str.length > num ? str.slice(0, num) + "..." : str;
 
-import { type CarouselApi } from '@/components/ui/carousel';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
-import { CircleOff } from 'lucide-react';
-
-import { Card } from '@/components/ui/card';
-import { DefaultImage } from '@/constants';
 
 export const News = () => {
-  const { isEnglish, lang } = useLanguage();
-  const t = useTranslations('News');
-  const [api, setApi] = useState<CarouselApi>();
+  const { isArabic } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const count = MockNewsData.length;
+  const [direction, setDirection] = useState(0);
 
+  // Auto-play
   useEffect(() => {
-    if (!api) return;
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [currentIndex]);
 
-    const handleSelect = () => {
-      setCurrentIndex(api.selectedScrollSnap());
-    };
+  const nextSlide = () => {
+    setDirection(1);
+    setCurrentIndex((prev) => (prev + 1) % MOCK_NEWS.length);
+  };
 
-    api.on('select', handleSelect);
+  const prevSlide = () => {
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev - 1 + MOCK_NEWS.length) % MOCK_NEWS.length);
+  };
 
-    return () => {
-      api.off('select', handleSelect);
-    };
-  }, [api]);
+  const goToSlide = (index: number) => {
+    setDirection(index > currentIndex ? 1 : -1);
+    setCurrentIndex(index);
+  };
+
+  const currentNews = MOCK_NEWS[currentIndex];
+
+  const variants = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 50 : -50,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction: number) => ({
+      x: direction > 0 ? -50 : 50,
+      opacity: 0,
+    })
+  };
 
   return (
-    <section className="flex flex-col items-center">
-      {MockNewsData.length > 0 ? (
-        <>
-          <Carousel
-            opts={{
-              align: 'start',
-            }}
-            className="max-w-[75vw] lg:max-w-6xl max-md:max-w-[70vw]"
-            dir="ltr"
-            setApi={setApi}
-            plugins={[Autoplay({ delay: 7000 })]}
-          >
-            <CarouselContent>
-              {MockNewsData.map((item) => (
-                <CarouselItem
-                  key={item.id}
-                  className="max-md:w-[80vw] h-auto"
-                  dir="rtl"
-                >
-                  <div className="grid grid-cols-1 items-center md:grid-cols-5">
-                    <div className="col-span-2 w-[90%]">
-                      {item.image ? (
-                        <Image
-                          src={item.image}
-                          alt={item.title}
-                          width={300} // Default width
-                          height={300} // Default height
-                          sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw" // Responsive sizes for mobile and desktop
-                          className="h-auto object-cover rounded-md"
-                        />
-                      ) : item.photoGallery.length > 0 ? (
-                        <Image
-                          src={item.photoGallery[0]}
-                          alt={item.title}
-                          width={300} // Default width
-                          height={300} // Default height
-                          sizes="(max-width: 640px) 100vw, (min-width: 641px) 50vw" // Responsive sizes for mobile and desktop
-                          className="h-auto object-cover rounded-md"
-                        />
-                      ) : (
-                        <Image
-                          src={DefaultImage.NewsDefault}
-                          alt={item.title}
-                          width={150} // Default width
-                          height={150} // Default height
-                          sizes="(max-width: 640px) 90vw, (min-width: 641px) 45vw" // Responsive sizes for mobile and desktop
-                          className="h-auto w-full object-cover rounded-lg"
-                        />
-                      )}
-                    </div>
-                    <div
-                      className="flex flex-col justify-center col-span-1 md:col-span-3 w-[90%]"
-                      dir={isEnglish ? 'ltr' : 'rtl'}
-                    >
-                      <p
-                        className="font-din-bold text-gray-900 text-lg md:text-xl mb-3 leading-tight break-words"
-                        dir={isEnglish && item.title_en ? 'ltr' : 'rtl'}
-                      >
-                        {isEnglish ? (item.title_en ?? item.title) : item.title}
-                      </p>
-                      {item.description || item.description_en ? (
-                        <div
-                          className="font-din-regular text-gray-600 text-sm md:text-base leading-relaxed break-words"
-                          dir={isEnglish ? 'ltr' : 'rtl'}
-                        >
-                          {isEnglish && item.description_en
-                            ? truncateString(item.description_en, 97)
-                            : truncateString(item.description, 97) ||
-                              truncateString(item.description_en, 97)}
-                          <ReadMore href={`${lang}/News/${item.id}`} />
-                        </div>
-                      ) : (
-                        <ReadMore href={`${lang}/News/${item.id}`} />
-                      )}
-                    </div>
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-          <div dir="ltr" className="flex flex-row gap-2 mt-2 md:mt-4">
-            {Array.from({ length: count }).map((_, index) => (
-              <motion.div
-                key={index}
-                animate={{
-                  opacity: currentIndex === index ? 1 : 0.5,
-                  scale: currentIndex === index ? 1.5 : 1,
-                  backgroundColor:
-                    currentIndex === index ? '#fe6601' : '#a2a2a2',
-                }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 700,
-                  damping: 40,
-                }}
-                className="w-2 h-2 rounded-full cursor-pointer"
-                onClick={() => {
-                  if (api) {
-                    api.scrollTo(index); // Scroll to the corresponding CarouselItem
-                    setCurrentIndex(index); // Update the current index
-                  }
-                }}
-              />
-            ))}
-          </div>
-        </>
-      ) : (
-        <Card className="w-full h-full bg-transparent">
-          <div
-            className={`w-full flex ${
-              isEnglish ? 'flex-row' : 'flex-row-reverse'
-            } items-center justify-center
-          gap-2 text-light-200`}
-            dir={isEnglish ? 'ltr' : 'rtl'}
-          >
-            <div className="font-din-bold text-base md:text-lg break-words">
-              {t('NoNews')}
+    <section className="w-full py-16 bg-background overflow-hidden" dir={isArabic ? "rtl" : "ltr"}>
+      <div className="container mx-auto px-4">
+
+        {/* Header */}
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-primary/10 rounded-xl">
+              <Newspaper className="w-6 h-6 text-primary" />
             </div>
-            <CircleOff className="size-10" />
+            <h2 className="text-3xl font-bold font-almarai text-foreground">Latest News</h2>
           </div>
-        </Card>
-      )}
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex gap-2">
+            <button
+              onClick={prevSlide}
+              className="p-3 rounded-full border border-gray-200 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 group"
+            >
+              <ChevronLeft className="w-5 h-5 rtl:rotate-180" />
+            </button>
+            <button
+              onClick={nextSlide}
+              className="p-3 rounded-full border border-gray-200 hover:bg-primary hover:text-white hover:border-primary transition-all duration-300 group"
+            >
+              <ChevronRight className="w-5 h-5 rtl:rotate-180" />
+            </button>
+          </div>
+        </div>
+
+        {/* Main Slider Card */}
+        <div className="relative w-full max-w-6xl mx-auto h-[500px] md:h-[400px]">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.div
+              key={currentIndex}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="absolute inset-0 w-full h-full"
+            >
+              <div className="w-full h-full bg-white rounded-3xl shadow-xl shadow-gray-100 overflow-hidden border border-gray-100 flex flex-col md:flex-row">
+
+                {/* Image Section */}
+                <div className="w-full md:w-1/2 h-1/2 md:h-full relative overflow-hidden group">
+                  <img
+                    src={currentNews.image}
+                    alt={currentNews.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:hidden" />
+
+                  {/* updatedTime Badge (Mobile) */}
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-primary md:hidden">
+                    {currentNews.updatedTime}
+                  </div>
+                </div>
+
+                {/* Content Section */}
+                <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center relative">
+                  {/* updatedTime Badge (Desktop) */}
+                  <div className="hidden md:inline-flex self-start mb-4 px-3 py-1 bg-primary/5 text-primary text-sm font-bold rounded-full border border-primary/10">
+                    {currentNews.updatedTime}
+                  </div>
+
+                  <h3 className="text-2xl md:text-3xl font-bold font-almarai text-foreground mb-4 leading-tight">
+                    {currentNews.title}
+                  </h3>
+
+                  <p className="text-gray-500 font-outfit text-base md:text-lg leading-relaxed mb-8">
+                    {truncateString(currentNews.description, 150)}
+                  </p>
+
+                  <button className="group inline-flex items-center gap-2 text-primary font-bold hover:text-orange-700 transition-colors self-start">
+                    Read Full Story
+                    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                  </button>
+                </div>
+
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Dots Navigation */}
+        <div className="flex justify-center gap-2 mt-8">
+          {MOCK_NEWS.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => goToSlide(idx)}
+              className={cn(
+                "h-2 rounded-full transition-all duration-300",
+                currentIndex === idx ? "w-8 bg-primary" : "w-2 bg-gray-300 hover:bg-primary/50"
+              )}
+            />
+          ))}
+        </div>
+
+      </div>
     </section>
   );
 };

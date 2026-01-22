@@ -1,5 +1,7 @@
+"use client";
+
+import { useState } from 'react';
 import useLanguage from '@/hooks/use-language';
-import React from 'react';
 import { FaqItem } from './faq-item';
 import { ListOfFaq } from '@/features/faqs/types';
 
@@ -8,27 +10,29 @@ interface FaqProps {
 }
 
 export const Faqs = ({ listOfFaq }: FaqProps) => {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
   const { isArabic } = useLanguage();
 
   return (
-    <div className="faq-container grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 gap-6">
       {listOfFaq.map((item, index) => (
-        <div key={index} className="faq-item relative z-10">
-          <FaqItem
-            item={
-              isArabic
-                ? {
-                    question: item.question_ar,
-                    answer: item.answer_ar,
-                  }
-                : {
-                    question: item.question_en,
-                    answer: item.answer_en,
-                  }
-            }
-            index={index}
-          />
-        </div>
+        <FaqItem
+          key={index}
+          index={index}
+          isOpen={openIndex === index}
+          toggle={() => setOpenIndex(openIndex === index ? null : index)}
+          item={
+            isArabic
+              ? {
+                question: item.question_ar,
+                answer: item.answer_ar,
+              }
+              : {
+                question: item.question_en,
+                answer: item.answer_en,
+              }
+          }
+        />
       ))}
     </div>
   );

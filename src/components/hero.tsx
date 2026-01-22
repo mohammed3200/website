@@ -1,4 +1,4 @@
-import React from "react";
+
 import { StrategicPlan, News, Faq, HomeHero } from "@/components";
 
 export const Hero = () => {

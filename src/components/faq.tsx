@@ -4,6 +4,7 @@ import useLanguage from "@/hooks/use-language";
 import { Faqs } from "@/features/faqs";
 
 import { MockFaqData } from "@/mock";
+import { HelpCircle } from "lucide-react";
 
 export const Faq = () => {
   const t = useTranslations("Faq");
@@ -11,19 +12,24 @@ export const Faq = () => {
 
   return (
     <section dir={isArabic ? "rtl" : "ltr"} className="flex flex-col px-4">
-      <div className="container relative z-2 py-10 ">
-        <div>
-          <h3 className="font-din-bold h4 max-md:h5 max-w-640 max-w-md mb-7">
-            {t("title")}
-          </h3>
-          <p className="font-din-regular body-1 max-lg:max-w-sm">
-            {t("subtitle")}
-          </p>
+
+      {/* Section Header */}
+      <div className="text-center mb-16 space-y-4">
+        <div className="inline-flex items-center justify-center p-3 bg-white border border-gray-100 rounded-xl shadow-sm mb-2">
+          <HelpCircle className="w-6 h-6 text-primary" />
         </div>
+        <h2 className="text-3xl md:text-4xl font-bold font-almarai text-foreground">
+          {t("title")}
+        </h2>
+        <p className="text-gray-500 font-outfit text-lg max-w-2xl mx-auto">
+          {t("subtitle")}
+        </p>
       </div>
+
       <div className="relative flex-1">
         <Faqs listOfFaq={MockFaqData} />
       </div>
+
     </section>
   );
 };
