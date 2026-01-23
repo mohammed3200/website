@@ -1,8 +1,9 @@
 export * from "./icons";
 export * from "./images";
 
-import { socialsIcons } from "./icons";
 import { strategicsImage } from "./images";
+import { Facebook, Twitter, Linkedin, MessageCircle } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 
 export const strategics = [
@@ -531,29 +532,34 @@ Strategic Plan Preparation and Review Team
   },
 ];
 
-export const socials = [
+export const socials: Array<{
+  id: string;
+  title: string;
+  icon: LucideIcon;
+  url: string;
+}> = [
   {
     id: "0",
     title: "Facebook",
-    icon: socialsIcons.facebook, // We'll ignore the image icon property in the footer
+    icon: Facebook,
     url: "#",
   },
   {
     id: "1",
     title: "Twitter",
-    icon: socialsIcons.X,
+    icon: Twitter,
     url: "#",
   },
   {
     id: "2",
     title: "Linkedin",
-    icon: socialsIcons.Telegram, // Placeholder, won't be used
+    icon: Linkedin,
     url: "#",
   },
   {
     id: "3",
-    title: "Instagram",
-    icon: socialsIcons.Whatsapp, // Placeholder, won't be used
+    title: "Whatsapp",
+    icon: MessageCircle, // Using MessageCircle as WhatsApp icon alternative
     url: "#",
   },
 ];

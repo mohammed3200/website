@@ -2,10 +2,14 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowUp, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
+import Image from "next/image";
+import { getNavItems } from "@/components/navigation/constants";
+import { ArrowUp, Mail, Phone, MapPin } from "lucide-react";
 import useLanguage from "@/hooks/use-language";
 import { useTranslations } from "next-intl";
-import { getNavItems } from "@/components/navigation/constants";
+import { Map, MapMarker } from "@/components/ui/map";
+import { MainLogo, socials } from "@/constants";
+
 
 export const Footer = () => {
   const { isArabic, lang } = useLanguage();
@@ -29,15 +33,17 @@ export const Footer = () => {
           {/* 1️⃣ Brand Section (Large) */}
           <div className="lg:col-span-4 space-y-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-primary/20">
-                C
+              <div className="relative w-12 h-12 shrink-0">
+                <Image
+                  src={MainLogo.Logo}
+                  alt="Entrepreneurship & Business Incubators Center"
+                  fill
+                  className="object-contain"
+                />
               </div>
               <div className="flex flex-col">
                 <span className="font-almarai font-bold text-xl text-foreground leading-none">
                   {tNav("centerName")}
-                </span>
-                <span className="font-outfit text-xs text-gray-500 tracking-widest uppercase mt-1">
-                  Partners
                 </span>
               </div>
             </div>
@@ -48,15 +54,19 @@ export const Footer = () => {
 
             {/* Social Icons */}
             <div className="flex gap-3">
-              {[Facebook, Twitter, Linkedin, Instagram].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all duration-300"
-                >
-                  <Icon className="w-5 h-5" />
-                </a>
-              ))}
+              {socials.map((social) => {
+                const IconComponent = social.icon;
+                
+                return (
+                  <a
+                    key={social.id}
+                    href={social.url}
+                    className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all duration-300"
+                  >
+                    <IconComponent className="w-5 h-5" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
@@ -125,18 +135,17 @@ export const Footer = () => {
           {/* 4️⃣ Map Section (Replaces FooterMap for stability) */}
           <div className="lg:col-span-3 space-y-6">
             <div className="w-full h-48 rounded-2xl overflow-hidden border border-gray-200 shadow-sm relative group">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3610.1786539269224!2d55.27218771500953!3d25.197197983896188!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43348a67e24b%3A0xff45e502e1ceb7e2!2sBurj%20Khalifa!5e0!3m2!1sen!2sae!4v1622285623635!5m2!1sen!2sae"
-                width="100%"
-                height="100%"
-                style={{ border: 0, filter: 'grayscale(100%)' }}
-                allowFullScreen
-                loading="lazy"
-                className="w-full h-full group-hover:grayscale-0 transition-all duration-500"
-              />
-              <div className="absolute top-3 right-3 bg-white p-2 rounded-lg shadow-md">
-                <MapPin className="w-4 h-4 text-primary" />
-              </div>
+              <Map
+                center={[15.07411, 32.37082]}
+                zoom={15}
+                className="w-full h-full"
+              >
+                <MapMarker longitude={15.07411} latitude={32.37082}>
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                    <MapPin className="w-5 h-5 text-white fill-white" />
+                  </div>
+                </MapMarker>
+              </Map>
             </div>
           </div>
 

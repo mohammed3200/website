@@ -55,7 +55,7 @@ const DesktopMenu = () => {
         >
           <div className="relative h-12 w-12 md:h-14 md:w-14">
             <Image
-              src={isArabic ? MainLogo.Logo : MainLogo.Logo}
+              src={MainLogo.Logo}
               alt="Center Logo"
               fill
               className="object-contain"
@@ -65,7 +65,7 @@ const DesktopMenu = () => {
           <div className="h-8 w-[1px] bg-gray-300" /> {/* Vertical divider */}
           <div className="relative h-12 w-12 md:h-14 md:w-14">
             <Image
-              src={isArabic ? MainLogo.LogoCollege : MainLogo.LogoCollege}
+              src={MainLogo.LogoCollege}
               alt="College Logo"
               fill
               className="object-contain"
