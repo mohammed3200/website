@@ -1,51 +1,52 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "mysql"
 }
 
+// ==== AUTHENTICATION & USERS ====
 model User {
-  id                      String                 @id @default(cuid())
-  name                    String?
-  email                   String?                @unique
-  emailVerified           DateTime?
-  image                   String?
-  password                String?
-  roleId                  String?
-  role                    Role?                  @relation(fields: [roleId], references: [id])
-  accounts                Account[]
-  isTwoFactorEnabled      Boolean                @default(false)
-  twoFactorConfirmation   TwoFactorConfirmation?
-  invitedBy               String? // ID of user who invited this user
-  invitedByUser           User?                  @relation("UserInvitations", fields: [invitedBy], references: [id])
-  invitedUsers            User[]                 @relation("UserInvitations")
-  userInvitations         UserInvitation[]       @relation("InvitedBy")
-  receivedInvitations     UserInvitation[]       @relation("InvitedUser")
-  notifications           AdminNotification[]    @relation("UserNotifications")
-  notificationPreferences Json? // { emailNewSubmissions: true, emailSystemErrors: true, etc. }
-  lastLoginAt             DateTime?
-  isActive                Boolean                @default(true)
-  createdAt               DateTime               @default(now())
-  updatedAt               DateTime               @updatedAt
+  id                    String                 @id @default(cuid())
+  name                  String?
+  email                 String?                @unique
+  emailVerified         DateTime?
+  image                 String?
+  password              String?
+  role                  UserRole               @default(GENERAL_MANAGER)
+  accounts              Account[]
+  isTwoFactorEnabled    Boolean                @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+  
+  // Audit trail
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  lastLoginAt           DateTime?
+  isActive              Boolean                @default(true)
+  
+  // Relations
+  auditLogs             AuditLog[]
+  createdNews           News[]                 @relation("NewsCreator")
+  updatedNews           News[]                 @relation("NewsUpdater")
 
-  @@index([email])
-  @@index([roleId])
+  @@index([email, role])
+  @@index([role, isActive])
 }
 
 model Account {
-  id                String   @id @default(cuid())
+  id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String? @db.Text
   session_state     String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -53,154 +54,338 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model VerificationToken {
-  id        String   @id @default(cuid())
-  email     String
-  token     String   @unique
-  expires   DateTime
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([email, token])
+  @@index([email])
+  @@index([expires])
 }
 
 model PasswordResetToken {
-  id        String   @id @default(cuid())
-  email     String
-  token     String   @unique
-  expires   DateTime
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([email, token])
+  @@index([email])
+  @@index([expires])
 }
 
 model TwoFactorToken {
-  id        String   @id @default(cuid())
-  email     String
-  token     String   @unique
-  expires   DateTime
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([email, token])
+  @@index([email])
+  @@index([expires])
 }
 
 model TwoFactorConfirmation {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id String @id @default(cuid())
+  userId  String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([userId])
 }
 
+// ==== MEDIA MANAGEMENT ====
 model Image {
-  id        String   @id @default(cuid())
-  data      Bytes    @db.MediumBlob
-  type      String
-  size      Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String @id @default(cuid())
+  filename    String
+  originalName String?
+  url         String // CDN URL instead of BLOB
+  mimeType    String
+  size        Int
+  width       Int?
+  height      Int?
+  alt         String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  news        News[]
+  innovators  Innovator[]
+  collaborators Collaborator[]
+  
+  @@index([filename])
+  @@index([mimeType])
+  StrategicPlan StrategicPlan[]
 }
 
 model Media {
-  id        String   @id @default(cuid())
-  data      Bytes    @db.LongBlob
-  type      String
-  size      Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String @id @default(cuid())
+  filename    String
+  originalName String?
+  url         String // CDN URL instead of BLOB
+  mimeType    String
+  size        Int
+  duration    Int? // for video/audio
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  experienceProvidedMedia    ExperienceProvidedMedia[]
+  machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
+  
+  @@index([filename])
+  @@index([mimeType])
 }
 
+// ==== CONTENT MANAGEMENT ====
 model News {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String
-  Duration  String
-  Active    Boolean
-  imageId   String?  @unique
-  galleryId String?  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid()) // Changed to String for consistency
+  title       String
+  slug        String   @unique // For SEO-friendly URLs
+  content     String   @db.Text
+  excerpt     String?  @db.Text
+  duration    String?  // Reading time
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  publishedAt DateTime?
+  
+  // Media relations
+  imageId     String?
+  image       Image?   @relation(fields: [imageId], references: [id])
+  galleryIds  String?  @db.Text // JSON array of image IDs
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  
+  // Audit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String?
+  updatedById String?
+  createdBy   User?    @relation("NewsCreator", fields: [createdById], references: [id])
+  updatedBy   User?    @relation("NewsUpdater", fields: [updatedById], references: [id])
+  
+  @@index([slug])
+  @@index([isActive, publishedAt])
+  @@index([isFeatured])
+  @@index([createdAt])
 }
 
+model StrategicPlan {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  content     String   @db.Text
+  excerpt     String?  @db.Text
+  category    String?  // e.g., "Annual", "5-Year", "Department"
+  priority    PlanPriority @default(MEDIUM)
+  status      PlanStatus @default(DRAFT)
+  isActive    Boolean  @default(true)
+  publishedAt DateTime?
+  
+  // Timeline
+  startDate   DateTime?
+  endDate     DateTime?
+  
+  // Media
+  imageId     String?
+  image       Image?   @relation(fields: [imageId], references: [id])
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  
+  // Audit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String?
+  updatedById String?
+  
+  @@index([slug])
+  @@index([isActive, publishedAt])
+  @@index([status])
+  @@index([category])
+}
+
+model FAQ {
+  id          String   @id @default(cuid())
+  question    String
+  answer      String   @db.Text
+  category    String?  // e.g., "General", "Technical", "Application"
+  order       Int      @default(0) // For sorting
+  isActive    Boolean  @default(true)
+  isSticky    Boolean  @default(false) // Pin to top
+  
+  // Multi-language support
+  questionAr  String?
+  answerAr    String?  @db.Text
+  
+  // Audit
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([isActive, order])
+  @@index([category])
+  @@index([isSticky])
+}
+
+// ==== SUBMISSIONS ====
 model Innovator {
-  id                 String                 @id @default(cuid()) // Fixed for MySQL
+  id                 String           @id @default(cuid())
   name               String
-  imageId            String?
   email              String
   phone              String
-  country            String // NEW: Country from dropdown
-  city               String // NEW: City/Address (free text)
-  specialization     String // NEW: Scientific field specialization
   projectTitle       String
-  projectDescription String?
-  objective          String?
+  projectDescription String?          @db.Text
+  objective          String?          @db.Text
   stageDevelopment   StageDevelopment
-  status             RecordStatus           @default(PENDING)
-  isVisible          Boolean                @default(false)
-  createdAt          DateTime               @default(now())
-  updatedAt          DateTime               @updatedAt
-  emailLogs          EmailLog[]             @relation("InnovatorEmails")
-  projectFiles       InnovatorProjectFile[] @relation("InnovatorFiles")
-
-  @@index([email])
-  @@index([phone])
+  status             RecordStatus     @default(PENDING)
+  isVisible          Boolean          @default(false)
+  
+  // Media
+  imageId            String?
+  image              Image?           @relation(fields: [imageId], references: [id])
+  
+  // Additional fields
+  location           String?
+  educationLevel     String?
+  fieldOfStudy       String?
+  workExperience     String?          @db.Text
+  
+  // Audit
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  reviewedAt         DateTime?
+  reviewedById       String?
+  
   @@index([status])
-  @@index([country])
-  @@index([specialization])
+  @@index([isVisible])
+  @@index([stageDevelopment])
+  @@index([createdAt])
+  @@index([email])
 }
 
 model Collaborator {
-  id                         String                       @id @default(cuid())
+  id                         String       @id @default(cuid())
   companyName                String
   primaryPhoneNumber         String
   optionalPhoneNumber        String?
-  email                      String // Made required
+  email                      String?
   location                   String?
-  site                       String?
+  website                    String?      // Renamed from 'site' for clarity
   industrialSector           String
   specialization             String
-  experienceProvided         String?                      @db.Text
-  machineryAndEquipment      String?                      @db.Text
+  experienceProvided         String?      @db.Text
+  machineryAndEquipment      String?      @db.Text
+  status                     RecordStatus @default(PENDING)
+  isVisible                  Boolean      @default(false)
+  
+  // Media
   imageId                    String?
-  status                     RecordStatus                 @default(PENDING)
-  isVisible                  Boolean                      @default(false)
-  createdAt                  DateTime                     @default(now())
-  updatedAt                  DateTime                     @updatedAt
+  image                      Image?       @relation(fields: [imageId], references: [id])
+  
+  // Additional fields
+  establishedYear            Int?
+  employeeCount              String?      // e.g., "1-10", "11-50", "51-200"
+  annualRevenue              String?      // Range for privacy
+  certifications             String?      @db.Text
+  
+  // Audit
+  createdAt                  DateTime     @default(now())
+  updatedAt                  DateTime     @updatedAt
+  reviewedAt                 DateTime?
+  reviewedById               String?
+  
+  // Relations
   experienceProvidedMedia    ExperienceProvidedMedia[]
   machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
-  emailLogs                  EmailLog[]                   @relation("CollaboratorEmails")
+  
+  @@index([status])
+  @@index([isVisible])
+  @@index([industrialSector])
+  @@index([createdAt])
+  @@index([email])
 }
 
 model ExperienceProvidedMedia {
   id             String        @id @default(cuid())
-  media          String
+  mediaId        String
+  media          Media         @relation(fields: [mediaId], references: [id])
   collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
   collaboratorId String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  
+  @@index([collaboratorId])
+  @@index([mediaId])
 }
 
 model MachineryAndEquipmentMedia {
   id             String        @id @default(cuid())
-  media          String
+  mediaId        String
+  media          Media         @relation(fields: [mediaId], references: [id])
   collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
   collaboratorId String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+  
+  @@index([collaboratorId])
+  @@index([mediaId])
 }
 
+// ==== AUDIT & LOGGING ====
+model AuditLog {
+  id          String     @id @default(cuid())
+  action      AuditAction
+  tableName   String     // e.g., "News", "Innovator"
+  recordId    String     // ID of the affected record
+  oldValues   String?    @db.Text // JSON
+  newValues   String?    @db.Text // JSON
+  userId      String?
+  user        User?      @relation(fields: [userId], references: [id])
+  ipAddress   String?
+  userAgent   String?    @db.Text
+  createdAt   DateTime   @default(now())
+  
+  @@index([action])
+  @@index([tableName])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?  @db.Text
+  isPublic    Boolean  @default(false) // Can be accessed by non-admin users
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([key])
+}
+
+// ==== ENUMS ====
 enum StageDevelopment {
-  STAGE
+  IDEA
   PROTOTYPE
   DEVELOPMENT
   TESTING
-  RELEASED
+  PILOT
+  MARKET_READY
 }
 
 enum RecordStatus {
@@ -208,234 +393,39 @@ enum RecordStatus {
   APPROVED
   REJECTED
   ARCHIVED
+  UNDER_REVIEW
 }
 
-// Role-based access control models
-model Role {
-  id              String           @id @default(cuid())
-  name            String           @unique
-  description     String?
-  isSystem        Boolean          @default(false) // System roles cannot be deleted
-  users           User[]
-  permissions     RolePermission[]
-  userInvitations UserInvitation[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-
-  @@index([name])
+enum UserRole {
+  GENERAL_MANAGER
+  NEWS_EDITOR
+  REQUEST_REVIEWER
+  CONTENT_MODERATOR
+  VIEWER
 }
 
-model Permission {
-  id          String           @id @default(cuid())
-  name        String           @unique
-  resource    String // e.g., "news", "users", "collaborators"
-  action      String // e.g., "create", "read", "update", "delete"
-  description String?
-  roles       RolePermission[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-
-  @@unique([resource, action])
-  @@index([resource])
-}
-
-model RolePermission {
-  id           String     @id @default(cuid())
-  roleId       String
-  permissionId String
-  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-  createdAt    DateTime   @default(now())
-
-  @@unique([roleId, permissionId])
-  @@index([roleId])
-  @@index([permissionId])
-}
-
-model UserInvitation {
-  id           String           @id @default(cuid())
-  email        String
-  token        String           @unique
-  roleId       String
-  role         Role             @relation(fields: [roleId], references: [id])
-  invitedBy    String
-  inviter      User             @relation("InvitedBy", fields: [invitedBy], references: [id])
-  acceptedBy   String?
-  acceptedUser User?            @relation("InvitedUser", fields: [acceptedBy], references: [id])
-  status       InvitationStatus @default(PENDING)
-  expiresAt    DateTime
-  acceptedAt   DateTime?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-
-  @@index([email])
-  @@index([token])
-  @@index([status])
-}
-
-enum InvitationStatus {
-  PENDING
-  ACCEPTED
-  EXPIRED
-  CANCELLED
-}
-
-// Email tracking models
-model EmailLog {
-  id             String        @id @default(cuid())
-  to             String
-  from           String
-  subject        String
-  template       String
-  status         EmailStatus   @default(PENDING)
-  errorMessage   String?       @db.Text
-  metadata       Json?
-  sentAt         DateTime?
-  openedAt       DateTime?
-  clickedAt      DateTime?
-  bouncedAt      DateTime?
-  complaintAt    DateTime?
-  messageId      String?       @unique
-  collaboratorId String?
-  collaborator   Collaborator? @relation("CollaboratorEmails", fields: [collaboratorId], references: [id])
-  innovatorId    String?
-  innovator      Innovator?    @relation("InnovatorEmails", fields: [innovatorId], references: [id])
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-
-  @@index([to])
-  @@index([status])
-  @@index([template])
-  @@index([sentAt])
-}
-
-model EmailTemplate {
-  id        String                @id @default(cuid())
-  name      String                @unique
-  subject   String
-  body      String                @db.Text
-  variables Json? // JSON array of required variables
-  isActive  Boolean               @default(true)
-  category  EmailTemplateCategory
-  createdAt DateTime              @default(now())
-  updatedAt DateTime              @updatedAt
-
-  @@index([name])
-  @@index([category])
-}
-
-model EmailQueue {
-  id           String      @id @default(cuid())
-  to           String
-  subject      String
-  template     String
-  data         Json
-  priority     Int         @default(0)
-  attempts     Int         @default(0)
-  maxAttempts  Int         @default(3)
-  status       QueueStatus @default(PENDING)
-  error        String?     @db.Text
-  processedAt  DateTime?
-  scheduledFor DateTime?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-
-  emailActions EmailAction[]
-
-  @@index([status])
-  @@index([priority])
-  @@index([scheduledFor])
-}
-
-model EmailAction {
-  id           String     @id @default(cuid())
-  emailQueueId String
-  emailQueue   EmailQueue @relation(fields: [emailQueueId], references: [id], onDelete: Cascade)
-  tokenHash    String     @unique
-  actionTypes  Json
-  used         Boolean    @default(false)
-  usedAt       DateTime?
-  expiresAt    DateTime
-  data         Json?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-
-  @@index([tokenHash])
-  @@index([used])
-  @@index([expiresAt])
-}
-
-enum EmailStatus {
-  PENDING
-  SENT
-  DELIVERED
-  OPENED
-  CLICKED
-  BOUNCED
-  COMPLAINT
-  FAILED
-}
-
-enum QueueStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-  CANCELLED
-}
-
-enum EmailTemplateCategory {
-  SUBMISSION_CONFIRMATION
-  ADMIN_NOTIFICATION
-  APPROVAL_NOTIFICATION
-  REJECTION_NOTIFICATION
-  SYSTEM
-  MARKETING
-}
-
-// Admin Notification model for Task 2
-model AdminNotification {
-  id        String               @id @default(cuid())
-  userId    String
-  user      User                 @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
-  type      String // "NEW_REGISTRATION", "SYSTEM_ERROR", "SECURITY_ALERT", etc.
-  title     String
-  message   String               @db.Text
-  data      Json? // Additional data for the notification
-  isRead    Boolean              @default(false)
-  readAt    DateTime?
-  actionUrl String? // Direct link to take action
-  priority  NotificationPriority @default(NORMAL)
-  createdAt DateTime             @default(now())
-  updatedAt DateTime             @updatedAt
-
-  @@index([userId, isRead])
-  @@index([createdAt])
-  @@index([type])
-  @@index([priority])
-}
-
-enum NotificationPriority {
+enum PlanPriority {
   LOW
-  NORMAL
+  MEDIUM
   HIGH
-  URGENT
+  CRITICAL
 }
 
-// Innovator Project Files
-model InnovatorProjectFile {
-  id          String    @id @default(cuid())
-  innovatorId String
-  innovator   Innovator @relation("InnovatorFiles", fields: [innovatorId], references: [id], onDelete: Cascade)
-  fileName    String
-  fileType    String // MIME type (application/pdf, image/jpeg, etc.)
-  fileSize    Int // Size in bytes
-  mediaId     String    @unique // Reference to Media table for binary storage
-  description String?   @db.Text // Optional file description
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+enum PlanStatus {
+  DRAFT
+  UNDER_REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
 
-  @@index([innovatorId])
-  @@index([fileType])
-  @@index([createdAt])
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  APPROVE
+  REJECT
+  ARCHIVE
+  LOGIN
+  LOGOUT
 }
