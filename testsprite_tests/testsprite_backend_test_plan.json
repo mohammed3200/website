@@ -1,0 +1,32 @@
+[
+  {
+    "id": "TC001",
+    "title": "get_all_active_published_strategic_plans",
+    "description": "Verify that the public GET /public endpoint returns only active and published strategic plans with correct caching headers for 5 minutes."
+  },
+  {
+    "id": "TC002",
+    "title": "get_strategic_plan_by_id_or_slug",
+    "description": "Test the public GET /public/{id} endpoint to retrieve a strategic plan by its ID or slug, including handling of non-existent IDs with a 404 response."
+  },
+  {
+    "id": "TC003",
+    "title": "admin_get_all_strategic_plans",
+    "description": "Ensure the admin GET / endpoint returns a list of all strategic plans with proper authentication and authorization checks."
+  },
+  {
+    "id": "TC004",
+    "title": "admin_create_strategic_plan_with_validation_and_slug_uniqueness",
+    "description": "Test the admin POST / endpoint for creating a new strategic plan, validating required fields, enforcing slug uniqueness, and returning 201 on success."
+  },
+  {
+    "id": "TC005",
+    "title": "admin_update_strategic_plan_with_validation_and_slug_uniqueness",
+    "description": "Verify the admin PATCH /{id} endpoint updates a strategic plan with proper validation, slug uniqueness enforcement, and returns 200 on success."
+  },
+  {
+    "id": "TC006",
+    "title": "admin_delete_strategic_plan",
+    "description": "Test the admin DELETE /{id} endpoint to delete a strategic plan by ID, ensuring authentication, authorization, and returning 200 on successful deletion."
+  }
+]

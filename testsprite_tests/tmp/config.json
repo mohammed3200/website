@@ -1,0 +1,17 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:3000/api/health",
+  "backendAuthType": "public",
+  "executionArgs": {
+    "projectName": "website",
+    "projectPath": "c:\\Users\\iG\\Documents\\Next.JS\\website",
+    "testIds": [],
+    "additionalInstruction": "CRITICAL AUTHENTICATION & ROUTING INSTRUCTIONS:\n\n1. Authentication is REQUIRED for all Admin endpoints (TC003, TC004, TC005, TC006).\n   - You MUST obtain a valid session before running these tests.\n   - Credentials: email=\"admin@example.com\", password=\"Admin@123456\"\n   - Method:\n     a) GET http://localhost:3000/api/auth/csrf to extract the \"csrfToken\" from the JSON response.\n     b) POST http://localhost:3000/api/auth/callback/credentials with form-data used by NextAuth:\n        - csrfToken: <token_from_step_a> (or handle cookie)\n        - email: \"admin@example.com\"\n        - password: \"Admin@123456\"\n        - json: \"true\"\n        - redirect: \"false\"\n     c) Capture the session cookie from the response headers.\n     d) Include this cookie in ALL subsequent requests to /api/strategic-plan endpoints.\n\n2. Correct API Base URL:\n   - The Strategic Plan API is mounted at: http://localhost:3000/api/strategic-plan\n   - Public List: GET http://localhost:3000/api/strategic-plan/public\n   - Single Item: GET http://localhost:3000/api/strategic-plan/public/{slug} or /public/{id}\n   - Admin List: GET http://localhost:3000/api/strategic-plan\n   - Create: POST http://localhost:3000/api/strategic-plan\n   - Update: PATCH http://localhost:3000/api/strategic-plan/{id}\n   - Delete: DELETE http://localhost:3000/api/strategic-plan/{id}\n\nPlease REWRITE the tests to strictly follow this authentication flow and URL structure.",
+    "envs": {
+      "API_KEY": "sk-user-lAOL9L841UValWT-YFKO-lMluc8_p1kul9aB5mwwisIHhjGONAod8_dJreVPTn3EYPovKcrjZJmSsFjyHR2bERU1oCrAvRgm3HPJrPsLbWxXoRgoT6V8qSoeFonm8MY6Vc4"
+    }
+  },
+  "proxy": "http://3949d833-093b-4545-9067-e7de1155d1a1:1kcwcmaKo9Mv1cAF1ZmiLQSQ8EPw1J5X@tun.testsprite.com:8080"
+}

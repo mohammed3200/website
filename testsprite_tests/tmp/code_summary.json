@@ -1,0 +1,167 @@
+{
+    "tech_stack": [
+        "TypeScript",
+        "Next.js",
+        "Prisma",
+        "Zod",
+        "Hono"
+    ],
+    "features": [
+        {
+            "name": "Strategic Plan API",
+            "description": "API for managing strategic plans, including public retrieval and admin CRUD operations.",
+            "files": [
+                "src/features/strategic-plan/server/route.ts",
+                "src/features/strategic-plan/schemas/strategic-plan-schema.ts",
+                "prisma/schema.prisma"
+            ],
+            "api_doc": {
+                "openapi": "3.0.0",
+                "info": {
+                    "title": "Strategic Plan API",
+                    "version": "1.0.0"
+                },
+                "paths": {
+                    "/public": {
+                        "get": {
+                            "summary": "Get all active published strategic plans",
+                            "responses": {
+                                "200": {
+                                    "description": "List of strategic plans"
+                                }
+                            }
+                        }
+                    },
+                    "/public/{id}": {
+                        "get": {
+                            "summary": "Get a strategic plan by ID or Slug",
+                            "parameters": [
+                                {
+                                    "name": "id",
+                                    "in": "path",
+                                    "required": true,
+                                    "schema": {
+                                        "type": "string"
+                                    }
+                                }
+                            ],
+                            "responses": {
+                                "200": {
+                                    "description": "Strategic plan details"
+                                },
+                                "404": {
+                                    "description": "Not found"
+                                }
+                            }
+                        }
+                    },
+                    "/": {
+                        "get": {
+                            "summary": "Get all strategic plans (Admin)",
+                            "responses": {
+                                "200": {
+                                    "description": "List of all plans"
+                                }
+                            }
+                        },
+                        "post": {
+                            "summary": "Create a strategic plan",
+                            "requestBody": {
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/CreateStrategicPlan"
+                                        }
+                                    }
+                                }
+                            },
+                            "responses": {
+                                "201": {
+                                    "description": "Created"
+                                }
+                            }
+                        }
+                    },
+                    "/{id}": {
+                        "patch": {
+                            "summary": "Update a strategic plan",
+                            "parameters": [
+                                {
+                                    "name": "id",
+                                    "in": "path",
+                                    "required": true,
+                                    "schema": {
+                                        "type": "string"
+                                    }
+                                }
+                            ],
+                            "responses": {
+                                "200": {
+                                    "description": "Updated"
+                                }
+                            }
+                        },
+                        "delete": {
+                            "summary": "Delete a strategic plan",
+                            "parameters": [
+                                {
+                                    "name": "id",
+                                    "in": "path",
+                                    "required": true,
+                                    "schema": {
+                                        "type": "string"
+                                    }
+                                }
+                            ],
+                            "responses": {
+                                "200": {
+                                    "description": "Deleted"
+                                }
+                            }
+                        }
+                    }
+                },
+                "components": {
+                    "schemas": {
+                        "CreateStrategicPlan": {
+                            "type": "object",
+                            "properties": {
+                                "title": {
+                                    "type": "string"
+                                },
+                                "slug": {
+                                    "type": "string"
+                                },
+                                "content": {
+                                    "type": "string"
+                                },
+                                "priority": {
+                                    "enum": [
+                                        "LOW",
+                                        "MEDIUM",
+                                        "HIGH",
+                                        "CRITICAL"
+                                    ]
+                                },
+                                "status": {
+                                    "enum": [
+                                        "DRAFT",
+                                        "UNDER_REVIEW",
+                                        "APPROVED",
+                                        "PUBLISHED",
+                                        "ARCHIVED"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "title",
+                                "slug",
+                                "content"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
