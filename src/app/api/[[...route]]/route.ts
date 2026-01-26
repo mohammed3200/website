@@ -6,6 +6,7 @@ import { logger } from "hono/logger";
 import collaborator from "@/features/collaborators/server/route";
 import innovators from "@/features/innovators/server/route";
 import admin from "@/features/admin/server/route";
+import strategicPlan from "@/features/strategic-plan/server/route";
 // import email from "@/features/email/server/route";
 
 
@@ -21,7 +22,8 @@ app.use("/*", logger());
 const routes = app
   .route("/collaborator", collaborator)
   .route("/innovators", innovators)
-  .route("/admin", admin);
+  .route("/admin", admin)
+  .route("/strategic-plan", strategicPlan);
   // .route("/email", email);
 
 // Error handling

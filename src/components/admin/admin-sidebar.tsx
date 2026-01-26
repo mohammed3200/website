@@ -11,12 +11,14 @@ import {
   Settings, 
   UserCheck,
   Mail,
+  FileText,
 } from "lucide-react";
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Collaborators', href: '/admin/collaborators', icon: UserCheck },
+  { name: 'Strategic Plans', href: '/admin/strategic-plans', icon: FileText },
   { name: 'Notifications', href: '/admin/notifications', icon: Bell },
   { name: 'Email Templates', href: '/admin/settings/email-templates', icon: Mail },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
