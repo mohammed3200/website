@@ -73,10 +73,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD:-root}
       MYSQL_DATABASE: ${DATABASE_NAME:-citcoder_eitdc}
-      MYSQL_USER: ${DATABASE_USER:-root}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-root}
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:

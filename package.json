@@ -14,7 +14,10 @@
     "seed:rbac": "tsx prisma/seed-rbac.ts",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
-    "db:reset": "prisma migrate reset --force"
+    "db:reset": "prisma migrate reset --force",
+    "db:test": "bun scripts/test-db-connection.ts",
+    "db:studio": "prisma studio",
+    "db:validate": "prisma validate"
   },
   "dependencies": {
     "@auth/core": "^0.40.0",
