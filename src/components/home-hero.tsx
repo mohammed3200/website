@@ -1,6 +1,9 @@
 "use client";
 
 
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import useLanguage from "@/hooks/use-language";
 import { motion, Variants } from "framer-motion";
 import {
     ArrowRight,
@@ -10,12 +13,12 @@ import {
     CheckCircle2,
     Timer
 } from "lucide-react";
-import useLanguage from "@/hooks/use-language";
-import { useTranslations } from "next-intl";
+import { ActiveButton } from "@/components/buttons";
 
 export const HomeHero = () => {
-    const { isArabic } = useLanguage();
+    const router = useRouter();
     const t = useTranslations("Home");
+    const { isArabic, lang } = useLanguage();
 
     // Animation Variants
     const containerVariants: Variants = {
@@ -70,7 +73,11 @@ export const HomeHero = () => {
                             <span className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-200 rounded-full shadow-sm">
                                 <Timer className="w-3.5 h-3.5 text-primary" />
                                 <span className="font-mono text-xs font-bold text-gray-600 tracking-wider uppercase">
-                                    {t("badge")}
+                                    {t("badge", {
+                                        date: isArabic
+                                            ? new Date().toLocaleDateString("ar-LY", { year: "numeric", month: "long" })
+                                            : new Date().toLocaleDateString("en-US", { year: "numeric", month: "long" })
+                                    })}
                                 </span>
                             </span>
                         </motion.div>
@@ -90,30 +97,29 @@ export const HomeHero = () => {
 
                         {/* Buttons */}
                         <motion.div variants={textVariants} className="flex flex-wrap gap-4">
-                            <button className="group px-8 py-4 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 hover:bg-orange-600 transition-all flex items-center gap-3">
+                            <ActiveButton
+                                className="px-8 py-4"
+                                containerClassName="group flex items-center gap-3"
+                                onClick={() => {
+                                    router.push(`/${lang}/entrepreneurship`);
+                                }}
+                            >
                                 {t("startJourney")}
                                 <ArrowRight className={`w-4 h-4 group-hover:translate-x-1 transition-transform ${isArabic ? 'rotate-180 group-hover:-translate-x-1' : ''}`} />
-                            </button>
+                            </ActiveButton>
 
-                            <button className="px-8 py-4 bg-white text-foreground border border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition-colors">
+                            <ActiveButton
+                                onClick={() => {
+                                    router.push(`/${lang}/StrategicPlan/2`);
+                                }}
+                                containerClassName="group flex items-center gap-3"
+                                className="bg-white text-foreground border border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition-colors">
                                 {t("learnMore")}
-                            </button>
-                        </motion.div>
-
-                        {/* Trust Metrics */}
-                        <motion.div variants={textVariants} className="mt-12 pt-8 border-t border-gray-200 flex gap-8">
-                            <div>
-                                <div className="text-2xl font-bold font-almarai text-foreground">500+</div>
-                                <div className="text-xs text-gray-500 font-outfit uppercase tracking-wide">Factories</div>
-                            </div>
-                            <div>
-                                <div className="text-2xl font-bold font-almarai text-foreground">24h</div>
-                                <div className="text-xs text-gray-500 font-outfit uppercase tracking-wide">Avg. Response</div>
-                            </div>
+                            </ActiveButton>
                         </motion.div>
                     </motion.div>
 
-                    {/* 🏭 Right Visual: The Smart Pipeline */}
+                    {/*  Right Visual: The Smart Pipeline */}
                     <motion.div
                         variants={pipelineVariants}
                         initial="hidden"
@@ -154,7 +160,7 @@ export const HomeHero = () => {
                                     <div className={`pt-2 ${isArabic ? 'text-right' : ''}`}>
                                         <div className={`flex items-center gap-2 mb-1 ${isArabic ? 'flex-row-reverse' : ''}`}>
                                             <h3 className="text-lg font-bold text-foreground">Smart Manufacturing</h3>
-                                            <span className="px-2 py-0.5 bg-primary text-white text-[10px] font-bold rounded-full animate-pulse">ACTIVE</span>
+                                            <span className="px-2 py-0.5 bg-primary item-center text-white text-[10px] font-bold rounded-full animate-pulse">ACTIVE</span>
                                         </div>
                                         <p className="text-sm text-gray-500 font-outfit">Automated production lines & QC.</p>
                                     </div>

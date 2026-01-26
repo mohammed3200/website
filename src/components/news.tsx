@@ -2,18 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ArrowRight, Newspaper } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Newspaper } from 'lucide-react';
 import { useTranslations } from "next-intl";
 import useLanguage from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
 import { MockNewsData as MOCK_NEWS } from "@/mock"
+import Image from 'next/image';
+import { ReadMore } from '@/components/buttons/read-more';
 
 
 const truncateString = (str: string, num: number) => str.length > num ? str.slice(0, num) + "..." : str;
 
 
 export const News = () => {
-  const { isArabic } = useLanguage();
+  const { isArabic, lang } = useLanguage();
   const t = useTranslations("News");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -105,7 +107,8 @@ export const News = () => {
 
                 {/* Image Section */}
                 <div className="w-full md:w-1/2 h-1/2 md:h-full relative overflow-hidden group">
-                  <img
+                  <Image
+                    fill
                     src={currentNews.image}
                     alt={currentNews.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -133,10 +136,9 @@ export const News = () => {
                     {truncateString(currentNews.description, 150)}
                   </p>
 
-                  <button className="group inline-flex items-center gap-2 text-primary font-bold hover:text-orange-700 transition-colors self-start">
-                    Read Full Story
-                    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
-                  </button>
+                  <div className="self-start">
+                    <ReadMore href={`/${lang}/News/${currentNews.id}`} />
+                  </div>
                 </div>
 
               </div>
