@@ -8,10 +8,25 @@ import { useTranslations } from "next-intl";
 import { ArrowUpLeft, ArrowUpRight } from "lucide-react";
 
 import useLanguage from "@/hooks/use-language";
-import { strategics } from "@/constants";
+import { useGetStrategicPlans } from "@/features/strategic-plan/api";
 
 import { WobbleCard } from "./ui/wobble-card";
 import { ActiveButton } from "@/components";
+
+interface StrategicPlanItem {
+  id: string;
+  icon: string | null;
+  arabic: {
+    caption: string;
+    title: string;
+    text: string;
+  };
+  english: {
+    caption: string;
+    title: string;
+    text: string;
+  };
+}
 
 export const StrategicPlan = () => {
   const router = useRouter();
@@ -19,6 +34,8 @@ export const StrategicPlan = () => {
   const { isArabic, lang } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // Default to the first card
   const isDesktop = useMedia("min-width: 640px", true);
+  
+  const { data, isLoading, error } = useGetStrategicPlans();
 
   const handleCardClick = (index: number) => {
     if (!isDesktop) {
@@ -27,6 +44,28 @@ export const StrategicPlan = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto w-full md:border-2 md:border-primary rounded-3xl p-4 overflow-hidden">
+        <div className="col-span-2 text-center py-8">
+          <p className="text-gray-500">Loading strategic plans...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (error || !data?.data) {
+    return (
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto w-full md:border-2 md:border-primary rounded-3xl p-4 overflow-hidden">
+        <div className="col-span-2 text-center py-8">
+          <p className="text-red-500">Failed to load strategic plans</p>
+        </div>
+      </section>
+    );
+  }
+
+  const strategics = data?.data || [];
+
   return (
     <section
       className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl
@@ -34,7 +73,7 @@ export const StrategicPlan = () => {
         rounded-3xl p-4 overflow-hidden"
       dir={isArabic ? "rtl" : "ltr"}
     >
-      {strategics.map((strategic, index) => {
+      {strategics.map((strategic: StrategicPlanItem, index: number) => {
         const isSelected = selectedIndex === index;
         const isFirst = index === 0;
 
@@ -54,15 +93,17 @@ export const StrategicPlan = () => {
             className="grid grid-row-1 md:grid-row-2 
             md:px-10 px-5 max-md:rounded-3xl overflow-hidden"
           >
-            <div className="-translate-y-8 row-span-1">
-              <Image
-                src={strategic.icon}
-                width={100}
-                height={100}
-                className="size-24 object-fill h-auto"
-                alt="Strategic Plan"
-              />
-            </div>
+            {strategic.icon && (
+              <div className="-translate-y-8 row-span-1">
+                <Image
+                  src={strategic.icon}
+                  width={100}
+                  height={100}
+                  className="size-24 object-fill h-auto"
+                  alt="Strategic Plan"
+                />
+              </div>
+            )}
             <div className="row-span-1 gap-2 flex flex-col justify-center">
               <p className="font-din-bold md:text-base text-sm">
                 {isArabic
