@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -15,38 +15,46 @@ model User {
   emailVerified         DateTime?
   image                 String?
   password              String?
-  role                  UserRole               @default(GENERAL_MANAGER)
+  roleId                String?
+  role                  Role?                  @relation(fields: [roleId], references: [id])
   accounts              Account[]
   isTwoFactorEnabled    Boolean                @default(false)
   twoFactorConfirmation TwoFactorConfirmation?
-  
-  // Audit trail
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  lastLoginAt           DateTime?
-  isActive              Boolean                @default(true)
-  
-  // Relations
-  auditLogs             AuditLog[]
-  createdNews           News[]                 @relation("NewsCreator")
-  updatedNews           News[]                 @relation("NewsUpdater")
+  invitedBy             String?
+  inviter               User?                  @relation("UserInvitedBy", fields: [invitedBy], references: [id])
+  invitedUsers          User[]                 @relation("UserInvitedBy")
 
-  @@index([email, role])
-  @@index([role, isActive])
+  // Audit trail
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  lastLoginAt             DateTime?
+  isActive                Boolean   @default(true)
+  notificationPreferences Json?
+
+  // Relations
+  auditLogs          AuditLog[]
+  createdNews        News[]              @relation("NewsCreator")
+  updatedNews        News[]              @relation("NewsUpdater")
+  invitationsSent    UserInvitation[]    @relation("UserInviter")
+  adminNotifications AdminNotification[]
+
+  @@index([email])
+  @@index([roleId])
+  @@index([isActive])
 }
 
 model Account {
-  id                String  @id @default(cuid())
+  id                String   @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?  @db.Text
   session_state     String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -58,10 +66,10 @@ model Account {
 }
 
 model VerificationToken {
-  id      String   @id @default(cuid())
-  email   String
-  token   String   @unique
-  expires DateTime
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -71,10 +79,10 @@ model VerificationToken {
 }
 
 model PasswordResetToken {
-  id      String   @id @default(cuid())
-  email   String
-  token   String   @unique
-  expires DateTime
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -84,10 +92,10 @@ model PasswordResetToken {
 }
 
 model TwoFactorToken {
-  id      String   @id @default(cuid())
-  email   String
-  token   String   @unique
-  expires DateTime
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -97,79 +105,142 @@ model TwoFactorToken {
 }
 
 model TwoFactorConfirmation {
-  id String @id @default(cuid())
-  userId  String
-  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([userId])
 }
 
-// ==== MEDIA MANAGEMENT ====
-model Image {
-  id          String @id @default(cuid())
-  filename    String
-  originalName String?
-  url         String // CDN URL instead of BLOB
-  mimeType    String
-  size        Int
-  width       Int?
-  height      Int?
-  alt         String?
+// ==== RBAC ====
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isSystem    Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
+  users       User[]
+  permissions RolePermission[]
+  invitations UserInvitation[]
+}
+
+model Permission {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g. "news:create"
+  resource    String
+  action      String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  roles RolePermission[]
+
+  @@unique([resource, action])
+}
+
+model RolePermission {
+  id           String   @id @default(cuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model UserInvitation {
+  id         String    @id @default(cuid())
+  email      String
+  token      String    @unique
+  roleId     String
+  invitedBy  String
+  status     String    @default("PENDING") // PENDING, ACCEPTED, EXPIRED
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  acceptedAt DateTime?
+  acceptedBy String?
+
+  role    Role @relation(fields: [roleId], references: [id])
+  inviter User @relation("UserInviter", fields: [invitedBy], references: [id])
+}
+
+// ==== MEDIA MANAGEMENT ====
+model Image {
+  id           String   @id @default(cuid())
+  filename     String?
+  originalName String?
+  url          String? // Optional CDN URL
+  data         Bytes? // Original BLOB support
+  type         String? // Original type support
+  mimeType     String?
+  size         Int?
+  width        Int?
+  height       Int?
+  alt          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
   // Relations
-  news        News[]
-  innovators  Innovator[]
+  news          News[]
+  innovators    Innovator[]
   collaborators Collaborator[]
-  
+  StrategicPlan StrategicPlan[]
+
   @@index([filename])
   @@index([mimeType])
-  StrategicPlan StrategicPlan[]
 }
 
 model Media {
-  id          String @id @default(cuid())
-  filename    String
+  id           String   @id @default(cuid())
+  filename     String?
   originalName String?
-  url         String // CDN URL instead of BLOB
-  mimeType    String
-  size        Int
-  duration    Int? // for video/audio
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  url          String? // Optional CDN URL
+  data         Bytes? // Original BLOB support
+  type         String? // Original type support
+  mimeType     String?
+  size         Int?
+  duration     Int? // for video/audio
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
   // Relations
   experienceProvidedMedia    ExperienceProvidedMedia[]
   machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
-  
+  innovatorProjectFiles      InnovatorProjectFile[]
+
   @@index([filename])
   @@index([mimeType])
 }
 
 // ==== CONTENT MANAGEMENT ====
 model News {
-  id          String   @id @default(cuid()) // Changed to String for consistency
+  id          String    @id @default(cuid()) // Changed to String for consistency
   title       String
-  slug        String   @unique // For SEO-friendly URLs
-  content     String   @db.Text
-  excerpt     String?  @db.Text
-  duration    String?  // Reading time
-  isActive    Boolean  @default(true)
-  isFeatured  Boolean  @default(false)
+  slug        String    @unique // For SEO-friendly URLs
+  content     String    @db.Text
+  excerpt     String?   @db.Text
+  duration    String? // Reading time
+  isActive    Boolean   @default(true)
+  isFeatured  Boolean   @default(false)
   publishedAt DateTime?
-  
+
   // Media relations
-  imageId     String?
-  image       Image?   @relation(fields: [imageId], references: [id])
-  galleryIds  String?  @db.Text // JSON array of image IDs
-  
+  imageId    String?
+  image      Image?  @relation(fields: [imageId], references: [id])
+  galleryIds String? @db.Text // JSON array of image IDs
+
   // SEO
   metaTitle       String?
   metaDescription String?
-  
+
   // Audit
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -177,7 +248,7 @@ model News {
   updatedById String?
   createdBy   User?    @relation("NewsCreator", fields: [createdById], references: [id])
   updatedBy   User?    @relation("NewsUpdater", fields: [updatedById], references: [id])
-  
+
   @@index([slug])
   @@index([isActive, publishedAt])
   @@index([isFeatured])
@@ -185,35 +256,35 @@ model News {
 }
 
 model StrategicPlan {
-  id          String   @id @default(cuid())
+  id          String       @id @default(cuid())
   title       String
-  slug        String   @unique
-  content     String   @db.Text
-  excerpt     String?  @db.Text
-  category    String?  // e.g., "Annual", "5-Year", "Department"
+  slug        String       @unique
+  content     String       @db.Text
+  excerpt     String?      @db.Text
+  category    String? // e.g., "Annual", "5-Year", "Department"
   priority    PlanPriority @default(MEDIUM)
-  status      PlanStatus @default(DRAFT)
-  isActive    Boolean  @default(true)
+  status      PlanStatus   @default(DRAFT)
+  isActive    Boolean      @default(true)
   publishedAt DateTime?
-  
+
   // Timeline
-  startDate   DateTime?
-  endDate     DateTime?
-  
+  startDate DateTime?
+  endDate   DateTime?
+
   // Media
-  imageId     String?
-  image       Image?   @relation(fields: [imageId], references: [id])
-  
+  imageId String?
+  image   Image?  @relation(fields: [imageId], references: [id])
+
   // SEO
   metaTitle       String?
   metaDescription String?
-  
+
   // Audit
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   createdById String?
   updatedById String?
-  
+
   @@index([slug])
   @@index([isActive, publishedAt])
   @@index([status])
@@ -221,22 +292,22 @@ model StrategicPlan {
 }
 
 model FAQ {
-  id          String   @id @default(cuid())
-  question    String
-  answer      String   @db.Text
-  category    String?  // e.g., "General", "Technical", "Application"
-  order       Int      @default(0) // For sorting
-  isActive    Boolean  @default(true)
-  isSticky    Boolean  @default(false) // Pin to top
-  
+  id       String  @id @default(cuid())
+  question String
+  answer   String  @db.Text
+  category String? // e.g., "General", "Technical", "Application"
+  order    Int     @default(0) // For sorting
+  isActive Boolean @default(true)
+  isSticky Boolean @default(false) // Pin to top
+
   // Multi-language support
-  questionAr  String?
-  answerAr    String?  @db.Text
-  
+  questionAr String?
+  answerAr   String? @db.Text
+
   // Audit
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([isActive, order])
   @@index([category])
   @@index([isSticky])
@@ -254,23 +325,28 @@ model Innovator {
   stageDevelopment   StageDevelopment
   status             RecordStatus     @default(PENDING)
   isVisible          Boolean          @default(false)
-  
+
   // Media
-  imageId            String?
-  image              Image?           @relation(fields: [imageId], references: [id])
-  
+  imageId String?
+  image   Image?  @relation(fields: [imageId], references: [id])
+
   // Additional fields
-  location           String?
-  educationLevel     String?
-  fieldOfStudy       String?
-  workExperience     String?          @db.Text
-  
+  country        String?
+  city           String?
+  location       String?
+  educationLevel String?
+  fieldOfStudy   String?
+  workExperience String? @db.Text
+
+  // Relations
+  projectFiles InnovatorProjectFile[]
+
   // Audit
-  createdAt          DateTime         @default(now())
-  updatedAt          DateTime         @updatedAt
-  reviewedAt         DateTime?
-  reviewedById       String?
-  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  reviewedAt   DateTime?
+  reviewedById String?
+
   @@index([status])
   @@index([isVisible])
   @@index([stageDevelopment])
@@ -279,40 +355,41 @@ model Innovator {
 }
 
 model Collaborator {
-  id                         String       @id @default(cuid())
-  companyName                String
-  primaryPhoneNumber         String
-  optionalPhoneNumber        String?
-  email                      String?
-  location                   String?
-  website                    String?      // Renamed from 'site' for clarity
-  industrialSector           String
-  specialization             String
-  experienceProvided         String?      @db.Text
-  machineryAndEquipment      String?      @db.Text
-  status                     RecordStatus @default(PENDING)
-  isVisible                  Boolean      @default(false)
-  
+  id                    String       @id @default(cuid())
+  companyName           String
+  primaryPhoneNumber    String
+  optionalPhoneNumber   String?
+  email                 String
+  location              String?
+  site                  String?
+  website               String? // Keep website as alias to avoid breakage if used elsewhere
+  industrialSector      String
+  specialization        String
+  experienceProvided    String?      @db.Text
+  machineryAndEquipment String?      @db.Text
+  status                RecordStatus @default(PENDING)
+  isVisible             Boolean      @default(false)
+
   // Media
-  imageId                    String?
-  image                      Image?       @relation(fields: [imageId], references: [id])
-  
+  imageId String?
+  image   Image?  @relation(fields: [imageId], references: [id])
+
   // Additional fields
-  establishedYear            Int?
-  employeeCount              String?      // e.g., "1-10", "11-50", "51-200"
-  annualRevenue              String?      // Range for privacy
-  certifications             String?      @db.Text
-  
+  establishedYear Int?
+  employeeCount   String? // e.g., "1-10", "11-50", "51-200"
+  annualRevenue   String? // Range for privacy
+  certifications  String? @db.Text
+
   // Audit
-  createdAt                  DateTime     @default(now())
-  updatedAt                  DateTime     @updatedAt
-  reviewedAt                 DateTime?
-  reviewedById               String?
-  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  reviewedAt   DateTime?
+  reviewedById String?
+
   // Relations
   experienceProvidedMedia    ExperienceProvidedMedia[]
   machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
-  
+
   @@index([status])
   @@index([isVisible])
   @@index([industrialSector])
@@ -322,47 +399,80 @@ model Collaborator {
 
 model ExperienceProvidedMedia {
   id             String        @id @default(cuid())
-  mediaId        String
-  media          Media         @relation(fields: [mediaId], references: [id])
+  media          String
+  mediaRecord    Media         @relation(fields: [media], references: [id])
   collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
   collaboratorId String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-  
+
   @@index([collaboratorId])
-  @@index([mediaId])
+  @@index([media])
 }
 
 model MachineryAndEquipmentMedia {
   id             String        @id @default(cuid())
-  mediaId        String
-  media          Media         @relation(fields: [mediaId], references: [id])
+  media          String
+  mediaRecord    Media         @relation(fields: [media], references: [id])
   collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
   collaboratorId String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
-  
+
   @@index([collaboratorId])
+  @@index([media])
+}
+
+model InnovatorProjectFile {
+  id          String    @id @default(cuid())
+  innovatorId String
+  innovator   Innovator @relation(fields: [innovatorId], references: [id])
+  fileName    String
+  fileType    String
+  fileSize    Int
+  mediaId     String
+  media       Media     @relation(fields: [mediaId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([innovatorId])
   @@index([mediaId])
 }
 
 // ==== AUDIT & LOGGING ====
 model AuditLog {
-  id          String     @id @default(cuid())
-  action      AuditAction
-  tableName   String     // e.g., "News", "Innovator"
-  recordId    String     // ID of the affected record
-  oldValues   String?    @db.Text // JSON
-  newValues   String?    @db.Text // JSON
-  userId      String?
-  user        User?      @relation(fields: [userId], references: [id])
-  ipAddress   String?
-  userAgent   String?    @db.Text
-  createdAt   DateTime   @default(now())
-  
+  id        String      @id @default(cuid())
+  action    AuditAction
+  tableName String // e.g., "News", "Innovator"
+  recordId  String // ID of the affected record
+  oldValues String?     @db.Text // JSON
+  newValues String?     @db.Text // JSON
+  userId    String?
+  user      User?       @relation(fields: [userId], references: [id])
+  ipAddress String?
+  userAgent String?     @db.Text
+  createdAt DateTime    @default(now())
+
   @@index([action])
   @@index([tableName])
   @@index([userId])
+  @@index([createdAt])
+}
+
+model EmailLog {
+  id           String      @id @default(cuid())
+  to           String
+  from         String
+  subject      String
+  template     String
+  status       EmailStatus
+  messageId    String?
+  errorMessage String?     @db.Text
+  sentAt       DateTime?
+  createdAt    DateTime    @default(now())
+
+  @@index([to])
+  @@index([status])
   @@index([createdAt])
 }
 
@@ -374,18 +484,17 @@ model SystemSetting {
   isPublic    Boolean  @default(false) // Can be accessed by non-admin users
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   @@index([key])
 }
 
 // ==== ENUMS ====
 enum StageDevelopment {
-  IDEA
+  STAGE
   PROTOTYPE
   DEVELOPMENT
   TESTING
-  PILOT
-  MARKET_READY
+  RELEASED
 }
 
 enum RecordStatus {
@@ -394,14 +503,6 @@ enum RecordStatus {
   REJECTED
   ARCHIVED
   UNDER_REVIEW
-}
-
-enum UserRole {
-  GENERAL_MANAGER
-  NEWS_EDITOR
-  REQUEST_REVIEWER
-  CONTENT_MODERATOR
-  VIEWER
 }
 
 enum PlanPriority {
@@ -419,6 +520,35 @@ enum PlanStatus {
   ARCHIVED
 }
 
+// ==== NOTIFICATIONS ====
+model AdminNotification {
+  id        String               @id @default(cuid())
+  userId    String
+  type      String // NotificationType enum in code
+  title     String
+  message   String               @db.Text
+  actionUrl String?
+  priority  NotificationPriority @default(NORMAL)
+  isRead    Boolean              @default(false)
+  readAt    DateTime?
+  data      Json? // Stores additional context
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+enum NotificationPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
 enum AuditAction {
   CREATE
   UPDATE
@@ -428,4 +558,9 @@ enum AuditAction {
   ARCHIVE
   LOGIN
   LOGOUT
+}
+
+enum EmailStatus {
+  SENT
+  FAILED
 }

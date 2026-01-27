@@ -1,17 +1,55 @@
+import 'dotenv/config';
 import { PrismaClient } from "@prisma/client";
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+import mariadb from 'mariadb';
 import bcrypt from "bcryptjs";
 import { SYSTEM_ROLES, ROLE_PERMISSIONS, RESOURCES, ACTIONS } from "../src/lib/rbac";
 
-const prisma = new PrismaClient();
+// Validate required environment variables
+const dbHost = process.env.DATABASE_HOST;
+const dbPort = process.env.DATABASE_PORT || '3306';
+const dbUser = process.env.DATABASE_USER || 'root';
+const dbPassword = process.env.DATABASE_PASSWORD || '';
+const dbName = process.env.DATABASE_NAME || 'citcoder_eitdc';
+
+if (!dbHost || !dbUser || !dbPassword || !dbName) {
+  console.error('❌ Missing required database environment variables');
+  process.exit(1);
+}
 
 async function main() {
   console.log("🌱 Starting RBAC system initialization...");
+
+  // Create MariaDB connection pool
+  const pool = mariadb.createPool({
+    host: dbHost,
+    port: parseInt(dbPort),
+    user: dbUser,
+    password: dbPassword,
+    database: dbName,
+    connectionLimit: 5,
+    acquireTimeout: 60000,
+  });
+
+  const adapter = new PrismaMariaDb({
+    host: dbHost,
+    port: parseInt(dbPort),
+    user: dbUser,
+    password: dbPassword,
+    database: dbName,
+    connectionLimit: 5,
+  });
+
+  const prisma = new PrismaClient({
+    adapter,
+    log: ['error'],
+  });
 
   try {
     // Step 1: Create all permissions
     console.log("Creating permissions...");
     const permissions = [];
-    
+
     for (const resource of Object.values(RESOURCES)) {
       for (const action of Object.values(ACTIONS)) {
         const permission = await prisma.permission.upsert({
@@ -30,13 +68,14 @@ async function main() {
           },
         });
         permissions.push(permission);
-        console.log(`  ✓ Created permission: ${permission.name}`);
+        // console.log(`  ✓ Created permission: ${permission.name}`);
       }
     }
+    console.log(`  ✓ Created/Verified ${permissions.length} permissions`);
 
     // Step 2: Create system roles
     console.log("\nCreating system roles...");
-    
+
     for (const [roleKey, rolePermissions] of Object.entries(ROLE_PERMISSIONS)) {
       const role = await prisma.role.upsert({
         where: { name: roleKey },
@@ -49,12 +88,12 @@ async function main() {
           isSystem: true,
         },
       });
-      
+
       console.log(`  ✓ Created role: ${role.name}`);
 
       // Step 3: Assign permissions to roles
-      console.log(`    Assigning permissions to ${role.name}...`);
-      
+      // console.log(`    Assigning permissions to ${role.name}...`);
+
       for (const perm of rolePermissions) {
         const permission = await prisma.permission.findUnique({
           where: {
@@ -79,17 +118,16 @@ async function main() {
               permissionId: permission.id,
             },
           });
-          console.log(`      ✓ Assigned ${permission.name}`);
         }
       }
     }
 
     // Step 4: Create super admin user if not exists
     console.log("\nCreating super admin user...");
-    
-    const adminEmail = process.env.INIT_ADMIN_USERNAME || "admin@example.com";
+
+    const adminEmail = process.env.INIT_ADMIN_EMAIL || "admin@example.com";
     const adminPassword = process.env.INIT_ADMIN_PASSWORD || "Admin@123456";
-    
+
     // Get super admin role
     const superAdminRole = await prisma.role.findUnique({
       where: { name: SYSTEM_ROLES.SUPER_ADMIN },
@@ -97,7 +135,7 @@ async function main() {
 
     if (superAdminRole) {
       const hashedPassword = await bcrypt.hash(adminPassword, 10);
-      
+
       const adminUser = await prisma.user.upsert({
         where: { email: adminEmail },
         update: {
@@ -118,7 +156,7 @@ async function main() {
 
     // Step 5: Migrate existing users to new role system (if any)
     console.log("\nMigrating existing users to new role system...");
-    
+
     const usersWithoutRole = await prisma.user.findMany({
       where: { roleId: null },
     });
@@ -143,28 +181,17 @@ async function main() {
     }
 
     console.log("\n✅ RBAC system initialization completed successfully!");
-    
-    // Display summary
-    const roleCount = await prisma.role.count();
-    const permissionCount = await prisma.permission.count();
-    const userCount = await prisma.user.count();
-    
-    console.log("\n📊 Summary:");
-    console.log(`  - Roles created: ${roleCount}`);
-    console.log(`  - Permissions created: ${permissionCount}`);
-    console.log(`  - Total users: ${userCount}`);
-    
+
   } catch (error) {
     console.error("❌ Error during RBAC initialization:", error);
     throw error;
+  } finally {
+    await prisma.$disconnect();
+    await pool.end();
   }
 }
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
