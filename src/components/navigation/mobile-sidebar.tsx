@@ -100,26 +100,48 @@ const MobileSidebar = () => {
                         )}
                     >
                         {/* Header */}
-                        <div className="p-6 border-b border-gray-200 bg-gradient-to-br from-orange-50 to-white">
-                            <div className="flex items-center gap-3">
-                                <Image
-                                    src={
-                                        isArabic
-                                            ? MainLogo.CenterLogoSmall
-                                            : MainLogo.CenterLogoSmallEnglish
-                                    }
-                                    alt="Center Logo"
-                                    width={50}
-                                    height={50}
-                                    className="rounded-full"
-                                />
-                                <div>
-                                    <h2 className="font-bold text-base text-gray-900">
-                                        {t("centerName")}
-                                    </h2>
-                                    <p className="text-xs text-gray-600">
-                                        {t("established")} 1944
-                                    </p>
+                        <div className="relative p-6 border-b border-gray-100 bg-white overflow-hidden">
+                            {/* Decorative accent blur */}
+                            <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-48 h-48 bg-orange-50/40 rounded-full blur-3xl pointer-events-none" />
+
+                            <div className="relative flex flex-col gap-6">
+                                {/* Center Branding (Main Section) */}
+                                <div className="flex items-center gap-4">
+                                    <div className="relative shrink-0">
+                                        <div className="absolute -inset-2 bg-gradient-to-tr from-orange-100/40 to-orange-50/20 rounded-2xl blur-lg" />
+                                        <div className="relative p-2 bg-white rounded-2xl border border-orange-100/80 shadow-[0_4px_20px_-4px_rgba(249,115,22,0.1)] transition-transform hover:scale-105 duration-300">
+                                            <Image
+                                                src={MainLogo.Logo}
+                                                alt="Center Logo"
+                                                width={52}
+                                                height={52}
+                                                className="object-contain"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="flex-1">
+                                        <h2 className="text-lg font-black text-gray-900 leading-[1.2] tracking-tight">
+                                            {t("centerName")}
+                                        </h2>
+                                    </div>
+                                </div>
+
+                                {/* College Affiliation (Secondary Section) */}
+                                <div className="flex items-center gap-3 ps-1 border-t border-gray-100/50 pt-5">
+                                    <div className="shrink-0 p-1.5 bg-gray-50/80 rounded-full border border-gray-100 shadow-sm">
+                                        <Image
+                                            src={MainLogo.LogoCollege}
+                                            alt="College Logo"
+                                            width={28}
+                                            height={28}
+                                            className="rounded-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-xs font-bold text-gray-600 leading-tight">
+                                            {t("collegeName")}
+                                        </h3>
+                                    </div>
                                 </div>
                             </div>
                         </div>
