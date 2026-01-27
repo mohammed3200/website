@@ -23,8 +23,8 @@ const routes = app
   .route("/collaborator", collaborator)
   .route("/innovators", innovators)
   .route("/admin", admin)
-  .route("/strategic-plan", strategicPlan);
-  // .route("/email", email);
+  .route("/strategicPlan", strategicPlan);
+// .route("/email", email);
 
 // Error handling
 app.onError((err, c) => {
