@@ -1,9 +1,7 @@
 // prisma/seed.ts
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
-import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import mariadb from 'mariadb';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 // Validate required environment variables
 const dbHost = process.env.DATABASE_HOST;
@@ -548,52 +546,8 @@ const STRATEGIC_PLANS_DATA = [{
 
 async function main() {
   console.log('🌱 Seeding database...');
-  console.log('📍 Host:', dbHost);
-  console.log('📍 Port:', dbPort);
-  console.log('📍 User:', dbUser);
-  console.log('📍 Database:', dbName);
 
-  // Create MariaDB connection pool with explicit configuration
-  const pool = mariadb.createPool({
-    host: dbHost,
-    port: parseInt(dbPort),
-    user: dbUser,
-    password: dbPassword,
-    database: dbName,
-    connectionLimit: 5,
-    // Explicitly set connection options to ensure credentials are used
-    acquireTimeout: 60000,
-  });
-
-  // Test pool connection before using adapter
-  try {
-    console.log('🔍 Testing pool connection...');
-    const testConn = await pool.getConnection();
-    await testConn.query('SELECT 1');
-    testConn.release();
-    console.log('✅ Pool connection test successful');
-  } catch (error: any) {
-    console.error('❌ Pool connection test failed:', error.message);
-    await pool.end();
-    throw error;
-  }
-
-  // Close test pool
-  await pool.end();
-
-  // Try passing connection config directly to adapter (matching working reference pattern)
-  const adapter = new PrismaMariaDb({
-    host: dbHost,
-    port: parseInt(dbPort),
-    user: dbUser,
-    password: dbPassword,
-    database: dbName,
-    connectionLimit: 5,
-  });
-
-  // Initialize PrismaClient with adapter
   const prisma = new PrismaClient({
-    adapter,
     log: ['error'],
   });
 

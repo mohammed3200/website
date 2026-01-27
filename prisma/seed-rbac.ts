@@ -1,7 +1,5 @@
 import 'dotenv/config';
 import { PrismaClient } from "@prisma/client";
-import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import mariadb from 'mariadb';
 import bcrypt from "bcryptjs";
 import { SYSTEM_ROLES, ROLE_PERMISSIONS, RESOURCES, ACTIONS } from "../src/lib/rbac";
 
@@ -20,28 +18,7 @@ if (!dbHost || !dbUser || !dbPassword || !dbName) {
 async function main() {
   console.log("🌱 Starting RBAC system initialization...");
 
-  // Create MariaDB connection pool
-  const pool = mariadb.createPool({
-    host: dbHost,
-    port: parseInt(dbPort),
-    user: dbUser,
-    password: dbPassword,
-    database: dbName,
-    connectionLimit: 5,
-    acquireTimeout: 60000,
-  });
-
-  const adapter = new PrismaMariaDb({
-    host: dbHost,
-    port: parseInt(dbPort),
-    user: dbUser,
-    password: dbPassword,
-    database: dbName,
-    connectionLimit: 5,
-  });
-
   const prisma = new PrismaClient({
-    adapter,
     log: ['error'],
   });
 
@@ -68,7 +45,6 @@ async function main() {
           },
         });
         permissions.push(permission);
-        // console.log(`  ✓ Created permission: ${permission.name}`);
       }
     }
     console.log(`  ✓ Created/Verified ${permissions.length} permissions`);
@@ -92,8 +68,6 @@ async function main() {
       console.log(`  ✓ Created role: ${role.name}`);
 
       // Step 3: Assign permissions to roles
-      // console.log(`    Assigning permissions to ${role.name}...`);
-
       for (const perm of rolePermissions) {
         const permission = await prisma.permission.findUnique({
           where: {
@@ -162,7 +136,6 @@ async function main() {
     });
 
     if (usersWithoutRole.length > 0) {
-      // Get viewer role as default
       const viewerRole = await prisma.role.findUnique({
         where: { name: SYSTEM_ROLES.VIEWER },
       });
@@ -187,7 +160,6 @@ async function main() {
     throw error;
   } finally {
     await prisma.$disconnect();
-    await pool.end();
   }
 }
 
