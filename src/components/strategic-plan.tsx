@@ -15,17 +15,20 @@ import { ActiveButton } from "@/components";
 
 interface StrategicPlanItem {
   id: string;
-  icon: string | null;
-  arabic: {
-    caption: string;
-    title: string;
-    text: string;
-  };
-  english: {
-    caption: string;
-    title: string;
-    text: string;
-  };
+  slug: string;
+  title: string;
+  content: string;
+  excerpt: string | null;
+  category: string | null;
+  priority: string;
+  status: string;
+  isActive: boolean;
+  publishedAt: string | null;
+  image: {
+    id: string;
+    url: string;
+    alt: string | null;
+  } | null;
 }
 
 export const StrategicPlan = () => {
@@ -34,12 +37,11 @@ export const StrategicPlan = () => {
   const { isArabic, lang } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState<number>(0); // Default to the first card
   const isDesktop = useMedia("min-width: 640px", true);
-  
+
   const { data, isLoading, error } = useGetStrategicPlans();
 
   const handleCardClick = (index: number) => {
     if (!isDesktop) {
-      // Only allow click to affect style on mobile
       setSelectedIndex(index);
     }
   };
@@ -64,7 +66,11 @@ export const StrategicPlan = () => {
     );
   }
 
-  const strategics = data?.data || [];
+  // Filter plans based on current language by slug suffix
+  const allPlans = (data?.data || []) as StrategicPlanItem[];
+  const strategics = allPlans.filter(plan =>
+    lang === 'ar' ? plan.slug.endsWith('-ar-1') || plan.slug.endsWith('-ar-2') : plan.slug.endsWith('-en-1') || plan.slug.endsWith('-en-2')
+  );
 
   return (
     <section
@@ -87,35 +93,33 @@ export const StrategicPlan = () => {
 
         return (
           <WobbleCard
-            key={index}
+            key={strategic.id}
             onClick={() => handleCardClick(index)}
             containerClassName={`col-span-1 h-full ${containerClassName}`}
             className="grid grid-row-1 md:grid-row-2 
             md:px-10 px-5 max-md:rounded-3xl overflow-hidden"
           >
-            {strategic.icon && (
+            {strategic.image && (
               <div className="-translate-y-8 row-span-1">
                 <Image
-                  src={strategic.icon}
+                  src={strategic.image.url}
                   width={100}
                   height={100}
                   className="size-24 object-fill h-auto"
-                  alt="Strategic Plan"
+                  alt={strategic.image.alt || strategic.title}
                 />
               </div>
             )}
             <div className="row-span-1 gap-2 flex flex-col justify-center">
               <p className="font-din-bold md:text-base text-sm">
-                {isArabic
-                  ? strategic.arabic.caption
-                  : strategic.english.caption}
+                {strategic.category || (isArabic ? "خطة إستراتيجية" : "Strategic Plan")}
               </p>
               <h2 className="font-din-regular max-w-400 md:h5 h6">
-                {isArabic ? strategic.arabic.title : strategic.english.title}
+                {strategic.title}
               </h2>
               <div className="w-full mt-2 px-4">
                 <ActiveButton
-                  onClick={() => router.push(`${lang}/StrategicPlan/${strategic.id}`)}
+                  onClick={() => router.push(`${lang}/StrategicPlan/${strategic.slug}`)}
                   className={`${isArabic ? "ml-auto" : "mr-auto"}`}
                 >
                   <div className="flex items-center gap-2">
@@ -136,4 +140,4 @@ export const StrategicPlan = () => {
       })}
     </section>
   );
-};
+};;
