@@ -23,8 +23,8 @@ export const usePostStrategicPlan = () => {
         json,
       });
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to create strategic plan');
+        const errorData = await response.json() as { message?: string; error?: string };
+        throw new Error(errorData.message || errorData.error || 'Failed to create strategic plan');
       }
       return await response.json();
     },

@@ -41,10 +41,10 @@ const app = new Hono()
           publishedAt: plan.publishedAt,
           image: plan.image
             ? {
-                id: plan.image.id,
-                url: plan.image.url,
-                alt: plan.image.alt,
-              }
+              id: plan.image.id,
+              url: plan.image.url,
+              alt: plan.image.alt,
+            }
             : null,
         };
       });
@@ -80,7 +80,7 @@ const app = new Hono()
       });
 
       if (!strategicPlan) {
-        return c.json({ error: 'Strategic plan not found' }, 404);
+        return c.json({ error: 'Strategic plan not found', message: 'Strategic plan not found' }, 404);
       }
 
       return c.json(
@@ -100,10 +100,10 @@ const app = new Hono()
             endDate: strategicPlan.endDate,
             image: strategicPlan.image
               ? {
-                  id: strategicPlan.image.id,
-                  url: strategicPlan.image.url,
-                  alt: strategicPlan.image.alt,
-                }
+                id: strategicPlan.image.id,
+                url: strategicPlan.image.url,
+                alt: strategicPlan.image.alt,
+              }
               : null,
           },
         },
@@ -126,7 +126,7 @@ const app = new Hono()
       const session = await auth();
 
       if (!session?.user) {
-        return c.json({ error: 'Unauthorized' }, 401);
+        return c.json({ error: 'Unauthorized', message: 'Unauthorized' }, 401);
       }
 
       // Check permissions
@@ -141,7 +141,7 @@ const app = new Hono()
       );
 
       if (!hasPermission) {
-        return c.json({ error: 'Insufficient permissions' }, 403);
+        return c.json({ error: 'Insufficient permissions', message: 'Insufficient permissions' }, 403);
       }
 
       const strategicPlans = await db.strategicPlan.findMany({
@@ -170,10 +170,10 @@ const app = new Hono()
           imageId: plan.imageId,
           image: plan.image
             ? {
-                id: plan.image.id,
-                url: plan.image.url,
-                alt: plan.image.alt,
-              }
+              id: plan.image.id,
+              url: plan.image.url,
+              alt: plan.image.alt,
+            }
             : null,
           createdAt: plan.createdAt,
           updatedAt: plan.updatedAt,
@@ -201,7 +201,7 @@ const app = new Hono()
         const session = await auth();
 
         if (!session?.user) {
-          return c.json({ error: 'Unauthorized' }, 401);
+          return c.json({ error: 'Unauthorized', message: 'Unauthorized' }, 401);
         }
 
         // Check permissions
@@ -216,7 +216,7 @@ const app = new Hono()
         );
 
         if (!hasPermission) {
-          return c.json({ error: 'Insufficient permissions' }, 403);
+          return c.json({ error: 'Insufficient permissions', message: 'Insufficient permissions' }, 403);
         }
 
         const validatedData = c.req.valid('json');
@@ -227,7 +227,7 @@ const app = new Hono()
         });
 
         if (existingSlug) {
-          return c.json({ error: 'A strategic plan with this slug already exists' }, 400);
+          return c.json({ error: 'A strategic plan with this slug already exists', message: 'A strategic plan with this slug already exists' }, 400);
         }
 
         const strategicPlan = await db.strategicPlan.create({
@@ -301,7 +301,7 @@ const app = new Hono()
         });
 
         if (!existingPlan) {
-          return c.json({ error: 'Strategic plan not found' }, 404);
+          return c.json({ error: 'Strategic plan not found', message: 'Strategic plan not found' }, 404);
         }
 
         // Check if slug is being updated and if it already exists
@@ -311,7 +311,7 @@ const app = new Hono()
           });
 
           if (existingSlug) {
-            return c.json({ error: 'A strategic plan with this slug already exists' }, 400);
+            return c.json({ error: 'A strategic plan with this slug already exists', message: 'A strategic plan with this slug already exists' }, 400);
           }
         }
 
@@ -387,7 +387,7 @@ const app = new Hono()
       const session = await auth();
 
       if (!session?.user) {
-        return c.json({ error: 'Unauthorized' }, 401);
+        return c.json({ error: 'Unauthorized', message: 'Unauthorized' }, 401);
       }
 
       // Check permissions
@@ -413,7 +413,7 @@ const app = new Hono()
       });
 
       if (!existingPlan) {
-        return c.json({ error: 'Strategic plan not found' }, 404);
+        return c.json({ error: 'Strategic plan not found', message: 'Strategic plan not found' }, 404);
       }
 
       await db.strategicPlan.delete({

@@ -15,8 +15,8 @@ export const useGetAllStrategicPlans = () => {
     queryFn: async () => {
       const response = await client.api.strategicPlan.$get();
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch strategic plans');
+        const errorData = await response.json() as { message?: string; error?: string };
+        throw new Error(errorData.message || errorData.error || 'Failed to fetch strategic plans');
       }
       return await response.json();
     },

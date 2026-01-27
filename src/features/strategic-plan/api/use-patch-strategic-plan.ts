@@ -22,8 +22,8 @@ export const usePatchStrategicPlan = () => {
         json,
       });
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update strategic plan');
+        const errorData = await response.json() as { message?: string; error?: string };
+        throw new Error(errorData.message || errorData.error || 'Failed to update strategic plan');
       }
       return await response.json();
     },

@@ -20,7 +20,7 @@ export const useGetStrategicPlan = (id: string) => {
         if (response.status === 404) {
           throw new Error('Strategic plan not found');
         }
-        const errorData = await response.json();
+        const errorData = await response.json() as { message?: string; error?: string };
         throw new Error(errorData.message || errorData.error || 'Failed to fetch strategic plan');
       }
       return await response.json();
