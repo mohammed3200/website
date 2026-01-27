@@ -25,11 +25,11 @@ export const step1Schema = (t: (key: string) => string) => {
       .string()
       .optional()
       .refine((phone) => !phone || /^\+[\d\s-]{6,15}$/.test(phone), {
-          message: t("InvalidPhoneNumber"),
+        message: t("InvalidPhoneNumber"),
       }),
     email: z.string().min(1, { message: t("RequiredField") }).email({ message: t("InvalidEmail") }),
     location: z.string().optional(),
-    site: z
+    website: z
       .string()
       .optional()
       .refine(
@@ -62,7 +62,7 @@ export const step3Schema = (t: (key: string) => string) => {
   return z.object({
     experienceProvided: z.string().optional(),
     experienceProvidedMedia: z
-    .custom<File[]>()
+      .custom<File[]>()
       .refine(
         (files) =>
           Array.isArray(files) &&
@@ -83,7 +83,7 @@ export const step3Schema = (t: (key: string) => string) => {
       )
       .optional()
       .default([]),
-      
+
     machineryAndEquipment: z.string().optional(),
     machineryAndEquipmentMedia: z
       .custom<File[]>()

@@ -12,7 +12,7 @@ import {
   statusUpdateSchema,
 } from '@/features/collaborators/schemas/step-schemas';
 
-import { emailService } from '@/lib/email/service'; 
+import { emailService } from '@/lib/email/service';
 
 const app = new Hono()
   // Public endpoint - only approved and visible collaborators
@@ -58,12 +58,12 @@ const app = new Hono()
           companyName: collaborator.companyName,
           image: image
             ? {
-                data: Buffer.isBuffer(image.data)
-                  ? image.data.toString('base64')
-                  : '',
-                type: image.type,
-                size: image.size,
-              }
+              data: Buffer.isBuffer(image.data)
+                ? image.data.toString('base64')
+                : '',
+              type: image.type,
+              size: image.size,
+            }
             : null,
           location: collaborator.location,
           site: collaborator.site,
@@ -145,7 +145,7 @@ const app = new Hono()
           imageId = imageRecord.id;
         }
 
-        
+
         // Create media records helper
         const createMediaRecords = async (
           files: File[],
