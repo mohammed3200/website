@@ -2,161 +2,161 @@ import { CorporateCompanies } from "@/constants";
 
 // FIXME: Remove feck data and create dashboard for control new, ads
 export const MockNewsData = [
-    {
-        id:"1",
-        title: "مركز الريادة يطلق برنامجًا جديدًا لدعم رواد الأعمال",
-        description: "أطلق مركز الريادة برنامجًا جديدًا يهدف إلى تقديم الدعم اللازم للرواد في مجالات متعددة، بما في ذلك التدريب والاستشارات.",
-        image: "https://picsum.photos/300/300",
-        creationDate: "2024-11-20",
-        updatedTime: "2024-11-22",
-        activated: true,
-        important: true,
-        title_en: "The Entrepreneurship Center Launches a New Program to Support Entrepreneurs",
-        description_en: "The Entrepreneurship Center has launched a new program aimed at providing necessary support to entrepreneurs in various fields, including training and consulting.",
-        photoGallery: [
-            "https://picsum.photos/seed/picsum/200/300",
-            "https://picsum.photos/300/300",
-            "https://picsum.photos/seed/300/300",
-        ]
-    },
-    {
-        id:"2",
-        title: "نجاح فعالية يوم الريادة العالمي في المركز",
-        description: "استضاف مركز الريادة فعالية يوم الريادة العالمي، حيث اجتمع العديد من رواد الأعمال لمشاركة تجاربهم وأفكارهم.",
-        image: "https://picsum.photos/200/300",
-        creationDate: "2024-11-18",
-        updatedTime: "2024-11-19",
-        activated: true,
-        important: false,
-        title_en: "Success of the Global Entrepreneurship Day Event at the Center",
-        description_en: "The Entrepreneurship Center hosted the Global Entrepreneurship Day event, where many entrepreneurs gathered to share their experiences and ideas.",
-        photoGallery: []
-    },
-    {
-        id:"3",
-        title: "مركز الريادة يعلن عن ورشة عمل جديدة لتطوير المهارات",
-        description: "ينظم مركز الريادة ورشة عمل جديدة تركز على تطوير المهارات الأساسية للرواد، مع خبراء في هذا المجال.",
-        image: "https://picsum.photos/500/500",
-        creationDate: "2024-11-15",
-        updatedTime: "2024-11-16",
-        activated: true,
-        important: true,
-        title_en: "The Entrepreneurship Center Announces a New Workshop to Develop Skills",
-        description_en: "The Entrepreneurship Center organizes a new workshop focusing on developing essential skills for entrepreneurs, with experts in the field.",
-        photoGallery: [
-            "https://picsum.photos/500/500",
-        ]
-    },
-    {
-        id:"4",
-        title: "مركز الريادة يطلق مسابقة جديدة للأفكار الابتكارية",
-        description: "أعلن مركز الريادة عن إطلاق مسابقة جديدة تهدف إلى تشجيع الابتكار وتطوير الأفكار المبدعة بين رواد الأعمال.",
-        image: "https://picsum.photos/400/400",
-        creationDate: "2024-11-10",
-        updatedTime: "2024-11-12",
-        activated: false,
-        important: true,
-        title_en: "The Entrepreneurship Center Launches a New Competition for Innovative Ideas",
-        description_en: "The Entrepreneurship Center announced the launch of a new competition aimed at encouraging innovation and developing creative ideas among entrepreneurs.",
-        photoGallery: [
-            "https://picsum.photos/400/500",
-        ]
-    },
-    {
-        id:"5",
-        title: "ورشة عمل عن التسويق الرقمي في مركز الريادة",
-        description: "ينظم مركز الريادة ورشة عمل شاملة حول التسويق الرقمي، تتناول استراتيجيات التسويق عبر الإنترنت.",
-        image: "https://picsum.photos/400/300",
-        creationDate: "2024-11-05",
-        updatedTime: "2024-11-07",
-        activated: true,
-        important: false,
-        title_en: "Workshop on Digital Marketing at the Entrepreneurship Center",
-        description_en: "The Entrepreneurship Center organizes a comprehensive workshop on digital marketing, covering online marketing strategies.",
-        photoGallery: [
-            "https://picsum.photos/400/400",
-        ]
-    }
+  {
+    id: "1",
+    title: "مركز الريادة يطلق برنامجًا جديدًا لدعم رواد الأعمال",
+    description: "أطلق مركز الريادة برنامجًا جديدًا يهدف إلى تقديم الدعم اللازم للرواد في مجالات متعددة، بما في ذلك التدريب والاستشارات.",
+    image: "https://picsum.photos/300/300",
+    creationDate: "2024-11-20",
+    updatedTime: "2024-11-22",
+    activated: true,
+    important: true,
+    title_en: "The Entrepreneurship Center Launches a New Program to Support Entrepreneurs",
+    description_en: "The Entrepreneurship Center has launched a new program aimed at providing necessary support to entrepreneurs in various fields, including training and consulting.",
+    photoGallery: [
+      "https://picsum.photos/seed/picsum/200/300",
+      "https://picsum.photos/300/300",
+      "https://picsum.photos/seed/300/300",
+    ]
+  },
+  {
+    id: "2",
+    title: "نجاح فعالية يوم الريادة العالمي في المركز",
+    description: "استضاف مركز الريادة فعالية يوم الريادة العالمي، حيث اجتمع العديد من رواد الأعمال لمشاركة تجاربهم وأفكارهم.",
+    image: "https://picsum.photos/200/300",
+    creationDate: "2024-11-18",
+    updatedTime: "2024-11-19",
+    activated: true,
+    important: false,
+    title_en: "Success of the Global Entrepreneurship Day Event at the Center",
+    description_en: "The Entrepreneurship Center hosted the Global Entrepreneurship Day event, where many entrepreneurs gathered to share their experiences and ideas.",
+    photoGallery: []
+  },
+  {
+    id: "3",
+    title: "مركز الريادة يعلن عن ورشة عمل جديدة لتطوير المهارات",
+    description: "ينظم مركز الريادة ورشة عمل جديدة تركز على تطوير المهارات الأساسية للرواد، مع خبراء في هذا المجال.",
+    image: "https://picsum.photos/500/500",
+    creationDate: "2024-11-15",
+    updatedTime: "2024-11-16",
+    activated: true,
+    important: true,
+    title_en: "The Entrepreneurship Center Announces a New Workshop to Develop Skills",
+    description_en: "The Entrepreneurship Center organizes a new workshop focusing on developing essential skills for entrepreneurs, with experts in the field.",
+    photoGallery: [
+      "https://picsum.photos/500/500",
+    ]
+  },
+  {
+    id: "4",
+    title: "مركز الريادة يطلق مسابقة جديدة للأفكار الابتكارية",
+    description: "أعلن مركز الريادة عن إطلاق مسابقة جديدة تهدف إلى تشجيع الابتكار وتطوير الأفكار المبدعة بين رواد الأعمال.",
+    image: "https://picsum.photos/400/400",
+    creationDate: "2024-11-10",
+    updatedTime: "2024-11-12",
+    activated: false,
+    important: true,
+    title_en: "The Entrepreneurship Center Launches a New Competition for Innovative Ideas",
+    description_en: "The Entrepreneurship Center announced the launch of a new competition aimed at encouraging innovation and developing creative ideas among entrepreneurs.",
+    photoGallery: [
+      "https://picsum.photos/400/500",
+    ]
+  },
+  {
+    id: "5",
+    title: "ورشة عمل عن التسويق الرقمي في مركز الريادة",
+    description: "ينظم مركز الريادة ورشة عمل شاملة حول التسويق الرقمي، تتناول استراتيجيات التسويق عبر الإنترنت.",
+    image: "https://picsum.photos/400/300",
+    creationDate: "2024-11-05",
+    updatedTime: "2024-11-07",
+    activated: true,
+    important: false,
+    title_en: "Workshop on Digital Marketing at the Entrepreneurship Center",
+    description_en: "The Entrepreneurship Center organizes a comprehensive workshop on digital marketing, covering online marketing strategies.",
+    photoGallery: [
+      "https://picsum.photos/400/400",
+    ]
+  }
 ];
 
 export const MockFaqData = [
-    {
-      id: "0",
-      question_en: "How can I start my own business?",
-      answer_en: "Starting your own business involves identifying a business idea, conducting market research, and developing a business plan.",
-      question_ar: "كيف يمكنني بدء عملي الخاص؟",
-      answer_ar: "بدء عملك الخاص يتضمن تحديد فكرة العمل، إجراء أبحاث السوق، وتطوير خطة عمل.",
-    },
-    {
-      id: "1",
-      question_en: "What resources do incubators provide?",
-      answer_en: "Incubators typically offer mentorship, funding, networking opportunities, and access to workspace.",
-      question_ar: "ما الموارد التي توفرها الحاضنات؟",
-      answer_ar: "عادةً ما تقدم الحاضنات التوجيه، التمويل، فرص التواصل، والوصول إلى مساحة العمل.",
-    },
-    {
-      id: "2",
-      question_en: "How long can I stay in an incubator?",
-      answer_en: "The duration varies, but most incubators offer programs that last from a few months to a couple of years.",
-      question_ar: "ما مدة بقائي في الحاضنة؟",
-      answer_ar: "تختلف المدة، لكن معظم الحاضنات تقدم برامج تستمر من عدة أشهر إلى بضع سنوات.",
-    },
-    {
-      id: "3",
-      question_en: "What are the benefits of joining an incubator?",
-      answer_en: "Joining an incubator can provide valuable support, resources, and guidance that increase your chances of success.",
-      question_ar: "ما فوائد الانضمام إلى حاضنة؟",
-      answer_ar: "يمكن أن يوفر الانضمام إلى حاضنة دعمًا قيمًا، موارد، وإرشادات تزيد من فرص نجاحك.",
-    },
-    {
-      id: "4",
-      question_en: "Do I need to give up equity to join an incubator?",
-      answer_en: "Some incubators require equity in exchange for their support, while others may charge a fee.",
-      question_ar: "هل يجب علي التخلي عن حقوق الملكية للانضمام إلى حاضنة؟",
-      answer_ar: "بعض الحاضنات تتطلب حقوق ملكية مقابل دعمها، بينما قد تفرض أخرى رسومًا.",
-    },
-    {
-      id: "5",
-      question_en: "How do I apply for an incubator program?",
-      answer_en: "Applications usually involve submitting a business plan and attending an interview or pitch session.",
-      question_ar: "كيف أقدم طلبًا لبرنامج حاضنة؟",
-      answer_ar: "عادةً ما تتضمن الطلبات تقديم خطة عمل وحضور مقابلة أو جلسة عرض.",
-    },
-    {
-      id: "6",
-      question_en: "Can incubators help with funding?",
-      answer_en: "Yes, many incubators have connections with investors and can help you secure funding for your business.",
-      question_ar: "هل يمكن أن تساعد الحاضنات في التمويل؟",
-      answer_ar: "نعم، العديد من الحاضنات لديها اتصالات مع مستثمرين ويمكن أن تساعدك في تأمين التمويل لعملك.",
-    },
-    {
-      id: "7",
-      question_en: "What types of businesses can join an incubator?",
-      answer_en: "Incubators often focus on specific industries, such as tech, healthcare, or social enterprises, but many accept a variety of business types.",
-      question_ar: "ما أنواع الأعمال التي يمكن أن تنضم إلى حاضنة؟",
-      answer_ar: "غالبًا ما تركز الحاضنات على صناعات محددة، مثل التكنولوجيا أو الرعاية الصحية، ولكن العديد منها يقبل أنواعًا متنوعة من الأعمال.",
-    },
-    {
-      id: "8",
-      question_en: "Do incubators offer training programs?",
-      answer_en: "Yes, most incubators provide workshops and training sessions to help entrepreneurs develop their skills.",
-      question_ar: "هل تقدم الحاضنات برامج تدريب؟",
-      answer_ar: "نعم، تقدم معظم الحاضنات ورش عمل وجلسات تدريب لمساعدة رواد الأعمال على تطوير مهاراتهم.",
-    },
-    {
-      id: "9",
-      question_en: "What happens after the incubation period?",
-      answer_en: "After the incubation period, businesses typically continue on their own or may join an accelerator for further growth.",
-      question_ar: "ماذا يحدث بعد فترة الحضانة؟",
-      answer_ar: "بعد فترة الحضانة، عادة ما تستمر الأعمال بمفردها أو قد تنضم إلى مسرع لنمو إضافي.",
-    },
-    {
-      id: "10",
-      question_en: "How can I measure the success of my startup?",
-      answer_en: "Success can be measured through various metrics, including revenue growth, customer acquisition, and market impact.",
-      question_ar: "كيف يمكنني قياس نجاح شركتي الناشئة؟",
-      answer_ar: "يمكن قياس النجاح من خلال مقاييس متنوعة، بما في ذلك نمو الإيرادات، اكتساب العملاء، وتأثير السوق.",
-    },
+  {
+    id: "0",
+    question_en: "How can I start my own business?",
+    answer_en: "Starting your own business involves identifying a business idea, conducting market research, and developing a business plan.",
+    question_ar: "كيف يمكنني بدء عملي الخاص؟",
+    answer_ar: "بدء عملك الخاص يتضمن تحديد فكرة العمل، إجراء أبحاث السوق، وتطوير خطة عمل.",
+  },
+  {
+    id: "1",
+    question_en: "What resources do incubators provide?",
+    answer_en: "Incubators typically offer mentorship, funding, networking opportunities, and access to workspace.",
+    question_ar: "ما الموارد التي توفرها الحاضنات؟",
+    answer_ar: "عادةً ما تقدم الحاضنات التوجيه، التمويل، فرص التواصل، والوصول إلى مساحة العمل.",
+  },
+  {
+    id: "2",
+    question_en: "How long can I stay in an incubator?",
+    answer_en: "The duration varies, but most incubators offer programs that last from a few months to a couple of years.",
+    question_ar: "ما مدة بقائي في الحاضنة؟",
+    answer_ar: "تختلف المدة، لكن معظم الحاضنات تقدم برامج تستمر من عدة أشهر إلى بضع سنوات.",
+  },
+  {
+    id: "3",
+    question_en: "What are the benefits of joining an incubator?",
+    answer_en: "Joining an incubator can provide valuable support, resources, and guidance that increase your chances of success.",
+    question_ar: "ما فوائد الانضمام إلى حاضنة؟",
+    answer_ar: "يمكن أن يوفر الانضمام إلى حاضنة دعمًا قيمًا، موارد، وإرشادات تزيد من فرص نجاحك.",
+  },
+  {
+    id: "4",
+    question_en: "Do I need to give up equity to join an incubator?",
+    answer_en: "Some incubators require equity in exchange for their support, while others may charge a fee.",
+    question_ar: "هل يجب علي التخلي عن حقوق الملكية للانضمام إلى حاضنة؟",
+    answer_ar: "بعض الحاضنات تتطلب حقوق ملكية مقابل دعمها، بينما قد تفرض أخرى رسومًا.",
+  },
+  {
+    id: "5",
+    question_en: "How do I apply for an incubator program?",
+    answer_en: "Applications usually involve submitting a business plan and attending an interview or pitch session.",
+    question_ar: "كيف أقدم طلبًا لبرنامج حاضنة؟",
+    answer_ar: "عادةً ما تتضمن الطلبات تقديم خطة عمل وحضور مقابلة أو جلسة عرض.",
+  },
+  {
+    id: "6",
+    question_en: "Can incubators help with funding?",
+    answer_en: "Yes, many incubators have connections with investors and can help you secure funding for your business.",
+    question_ar: "هل يمكن أن تساعد الحاضنات في التمويل؟",
+    answer_ar: "نعم، العديد من الحاضنات لديها اتصالات مع مستثمرين ويمكن أن تساعدك في تأمين التمويل لعملك.",
+  },
+  {
+    id: "7",
+    question_en: "What types of businesses can join an incubator?",
+    answer_en: "Incubators often focus on specific industries, such as tech, healthcare, or social enterprises, but many accept a variety of business types.",
+    question_ar: "ما أنواع الأعمال التي يمكن أن تنضم إلى حاضنة؟",
+    answer_ar: "غالبًا ما تركز الحاضنات على صناعات محددة، مثل التكنولوجيا أو الرعاية الصحية، ولكن العديد منها يقبل أنواعًا متنوعة من الأعمال.",
+  },
+  {
+    id: "8",
+    question_en: "Do incubators offer training programs?",
+    answer_en: "Yes, most incubators provide workshops and training sessions to help entrepreneurs develop their skills.",
+    question_ar: "هل تقدم الحاضنات برامج تدريب؟",
+    answer_ar: "نعم، تقدم معظم الحاضنات ورش عمل وجلسات تدريب لمساعدة رواد الأعمال على تطوير مهاراتهم.",
+  },
+  {
+    id: "9",
+    question_en: "What happens after the incubation period?",
+    answer_en: "After the incubation period, businesses typically continue on their own or may join an accelerator for further growth.",
+    question_ar: "ماذا يحدث بعد فترة الحضانة؟",
+    answer_ar: "بعد فترة الحضانة، عادة ما تستمر الأعمال بمفردها أو قد تنضم إلى مسرع لنمو إضافي.",
+  },
+  {
+    id: "10",
+    question_en: "How can I measure the success of my startup?",
+    answer_en: "Success can be measured through various metrics, including revenue growth, customer acquisition, and market impact.",
+    question_ar: "كيف يمكنني قياس نجاح شركتي الناشئة؟",
+    answer_ar: "يمكن قياس النجاح من خلال مقاييس متنوعة، بما في ذلك نمو الإيرادات، اكتساب العملاء، وتأثير السوق.",
+  },
 ];
 // FIXME: Re -writing the Mock to comply with the new data for collaborators
 export const MockCompaniesData = [
@@ -384,60 +384,101 @@ export const MockCompaniesData = [
 
 // TODO: writing the Mock to comply with the new data for innovators
 
-type InnovatorStage = "IDEA" | "PROTOTYPE" | "DEVELOPMENT" | "TESTING" | "MARKET_READY";
+import type { Innovator } from "@/features/innovators/types/types";
 
-export const MockInnovatorsData: {
-  id: string;
-  name: string;
-  image?: string;
-  projectTitle: string;
-  specialization: string;
-  stageDevelopment: InnovatorStage;
-}[] = [
+export const MockInnovatorsData: Innovator[] = [
   {
     id: "1",
     name: "Ahmed Al-Farsi",
-    image: "https://picsum.photos/seed/innovator1/300/300",
+    imageId: "https://picsum.photos/seed/innovator1/300/300",
+    email: "ahmed.alfarsi@example.com",
+    phone: "+966-50-123-4567",
     projectTitle: "Smart Irrigation System",
+    projectDescription: "An IoT-based irrigation system that optimizes water usage for agricultural lands using AI and sensor technology.",
+    objective: "To reduce water consumption in agriculture by 40% while increasing crop yield through intelligent irrigation management.",
     specialization: "AgriTech",
     stageDevelopment: "PROTOTYPE",
+    status: "APPROVED",
+    isVisible: true,
+    city: "Riyadh",
+    country: "Saudi Arabia",
   },
   {
     id: "2",
     name: "Sarah Johnson",
-    image: "https://picsum.photos/seed/innovator2/300/300",
+    imageId: "https://picsum.photos/seed/innovator2/300/300",
+    email: "sarah.johnson@example.com",
+    phone: "+1-555-234-5678",
     projectTitle: "AI-Powered Education Platform",
+    projectDescription: "A personalized learning platform that uses artificial intelligence to adapt to each student's learning style and pace.",
+    objective: "To make quality education accessible to all students by providing personalized learning experiences at scale.",
     specialization: "EdTech",
     stageDevelopment: "DEVELOPMENT",
+    status: "APPROVED",
+    isVisible: true,
+    city: "San Francisco",
+    country: "USA",
   },
   {
     id: "3",
     name: "Mohamed Ali",
+    email: "mohamed.ali@example.com",
+    phone: "+20-10-345-6789",
     projectTitle: "Renewable Energy Storage",
+    projectDescription: "Advanced battery technology for storing renewable energy efficiently and cost-effectively.",
+    objective: "To develop affordable energy storage solutions that enable wider adoption of renewable energy sources.",
     specialization: "CleanTech",
     stageDevelopment: "IDEA",
+    status: "PENDING",
+    isVisible: true,
+    city: "Cairo",
+    country: "Egypt",
   },
   {
     id: "4",
     name: "Layla Hassan",
-    image: "https://picsum.photos/seed/innovator4/300/300",
+    imageId: "https://picsum.photos/seed/innovator4/300/300",
+    email: "layla.hassan@example.com",
+    phone: "+971-50-456-7890",
     projectTitle: "Blockchain Supply Chain",
+    projectDescription: "A blockchain-based platform for transparent and efficient supply chain management across industries.",
+    objective: "To eliminate fraud and increase transparency in global supply chains using distributed ledger technology.",
     specialization: "FinTech",
     stageDevelopment: "TESTING",
+    status: "APPROVED",
+    isVisible: true,
+    city: "Dubai",
+    country: "UAE",
   },
   {
     id: "5",
     name: "Omar Khaled",
+    email: "omar.khaled@example.com",
+    phone: "+966-55-567-8901",
     projectTitle: "Remote Health Monitoring",
+    projectDescription: "Wearable devices and mobile app for continuous health monitoring and early disease detection.",
+    objective: "To improve healthcare outcomes through continuous patient monitoring and early intervention.",
     specialization: "HealthTech",
     stageDevelopment: "MARKET_READY",
+    status: "APPROVED",
+    isVisible: true,
+    city: "Jeddah",
+    country: "Saudi Arabia",
   },
   {
     id: "6",
     name: "Fatima Zohra",
-    image: "https://picsum.photos/seed/innovator6/300/300",
+    imageId: "https://picsum.photos/seed/innovator6/300/300",
+    email: "fatima.zohra@example.com",
+    phone: "+213-55-678-9012",
     projectTitle: "Eco-Friendly Packaging",
+    projectDescription: "Biodegradable packaging materials made from agricultural waste as an alternative to plastic.",
+    objective: "To reduce plastic waste by providing sustainable packaging solutions for the food and beverage industry.",
     specialization: "Sustainability",
     stageDevelopment: "PROTOTYPE",
+    status: "APPROVED",
+    isVisible: true,
+    city: "Algiers",
+    country: "Algeria",
   }
 ];

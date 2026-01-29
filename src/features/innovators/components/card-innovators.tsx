@@ -1,255 +1,262 @@
 // src/features/innovators/components/card-innovators.tsx
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { Lightbulb, Rocket, MapPin, Mail, Phone, Code, FlaskConical, Zap, ChevronRight, User } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MapPin, ArrowRight, User, X, Mail, Phone, Quote, Rocket } from "lucide-react";
 import useLanguage from "@/hooks/use-language";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { Modal, ModalTrigger, ModalBody, ModalContent } from "@/components/ui/animated-modal";
-
-// 🧱 Data Contract
-export interface Innovator {
-    id: string;
-    name: string;
-    image?: string | { data: string; type: string };
-    imageId?: string;
-    email?: string;
-    phone?: string;
-    country?: string;
-    city?: string;
-    specialization: string;
-    projectTitle: string;
-    projectDescription?: string;
-    objective?: string;
-    stageDevelopment: "IDEA" | "PROTOTYPE" | "DEVELOPMENT" | "TESTING" | "MARKET_READY";
-}
+import type { Innovator } from "../types/types";
 
 interface CardInnovatorsProps {
     innovator: Innovator;
     className?: string;
 }
 
-const getStageConfig = (stage: Innovator["stageDevelopment"]) => {
-    switch (stage) {
-        case "IDEA":
-            return { icon: Lightbulb, color: "bg-blue-100 text-blue-700 hover:bg-blue-200 border-blue-200" };
-        case "PROTOTYPE":
-            return { icon: FlaskConical, color: "bg-purple-100 text-purple-700 hover:bg-purple-200 border-purple-200" };
-        case "DEVELOPMENT":
-            return { icon: Code, color: "bg-orange-100 text-orange-700 hover:bg-orange-200 border-orange-200" };
-        case "TESTING":
-            return { icon: Zap, color: "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 border-yellow-200" };
-        case "MARKET_READY":
-            return { icon: Rocket, color: "bg-green-100 text-green-700 hover:bg-green-200 border-green-200" };
-        default:
-            return { icon: Lightbulb, color: "bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200" };
-    }
-};
-
-const stageLabels = {
-    IDEA: { ar: "فكرة", en: "Idea" },
-    PROTOTYPE: { ar: "نموذج أولي", en: "Prototype" },
-    DEVELOPMENT: { ar: "تحت التطوير", en: "Development" },
-    TESTING: { ar: "اختبار", en: "Testing" },
-    MARKET_READY: { ar: "جاهز", en: "Market Ready" },
-};
-
-const InnovatorDetailsModal = ({ innovator }: { innovator: Innovator }) => {
-    const { isArabic } = useLanguage();
-    const stageConfig = getStageConfig(innovator.stageDevelopment);
-    const StageIcon = stageConfig.icon;
-
-    let imageSrc = "";
-    if (innovator.image) {
-        if (typeof innovator.image === "string") {
-            imageSrc = innovator.image;
-        } else if (innovator.image.data) {
-            imageSrc = `data:${innovator.image.type};base64,${innovator.image.data}`;
-        }
-    }
-
-    return (
-        <ModalBody>
-            <ModalContent>
-                <div className="space-y-6" dir={isArabic ? "rtl" : "ltr"}>
-                    {/* Header */}
-                    <div className="flex items-center gap-4 pb-4 border-b">
-                        <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-background shadow-sm ring-1 ring-border/50">
-                            {imageSrc ? (
-                                <Image
-                                    src={imageSrc}
-                                    alt={innovator.name}
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-                                    <User className="w-10 h-10 text-primary/70" />
-                                </div>
-                            )}
-                        </div>
-                        <div className="flex-1">
-                            <h2 className="text-2xl font-din-bold text-foreground">{innovator.name}</h2>
-                            <p className="text-sm text-primary font-din-medium mt-1">{innovator.specialization}</p>
-                        </div>
-                    </div>
-
-                    {/* Project */}
-                    <div>
-                        <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-din-bold text-muted-foreground uppercase tracking-wide">
-                                {isArabic ? "المشروع" : "Project"}
-                            </h3>
-                            <Badge variant="outline" className={cn("gap-1.5", stageConfig.color)}>
-                                <StageIcon size={12} />
-                                <span className="font-din-bold text-xs">
-                                    {isArabic ? stageLabels[innovator.stageDevelopment].ar : stageLabels[innovator.stageDevelopment].en}
-                                </span>
-                            </Badge>
-                        </div>
-                        <h4 className="text-xl font-din-bold text-foreground mb-2">{innovator.projectTitle}</h4>
-                        {innovator.projectDescription && (
-                            <p className="text-sm font-din-regular text-muted-foreground leading-relaxed">
-                                {innovator.projectDescription}
-                            </p>
-                        )}
-                    </div>
-
-                    {/* Objective */}
-                    {innovator.objective && (
-                        <div>
-                            <h3 className="text-sm font-din-bold text-muted-foreground uppercase tracking-wide mb-2">
-                                {isArabic ? "الهدف" : "Objective"}
-                            </h3>
-                            <p className="text-sm font-din-regular text-foreground leading-relaxed">
-                                {innovator.objective}
-                            </p>
-                        </div>
-                    )}
-
-                    {/* Contact */}
-                    <div>
-                        <h3 className="text-sm font-din-bold text-muted-foreground uppercase tracking-wide mb-3">
-                            {isArabic ? "معلومات الاتصال" : "Contact Information"}
-                        </h3>
-                        <div className="space-y-3">
-                            {(innovator.city || innovator.country) && (
-                                <div className="flex items-start gap-3">
-                                    <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                    <span className="text-sm font-din-regular">
-                                        {[innovator.city, innovator.country].filter(Boolean).join(", ")}
-                                    </span>
-                                </div>
-                            )}
-                            {innovator.email && (
-                                <div className="flex items-start gap-3">
-                                    <Mail className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                    <a href={`mailto:${innovator.email}`} className="text-sm font-din-regular hover:text-primary transition-colors">
-                                        {innovator.email}
-                                    </a>
-                                </div>
-                            )}
-                            {innovator.phone && (
-                                <div className="flex items-start gap-3">
-                                    <Phone className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                                    <a href={`tel:${innovator.phone}`} className="text-sm font-din-regular hover:text-primary transition-colors">
-                                        {innovator.phone}
-                                    </a>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </ModalContent>
-        </ModalBody>
-    );
-};
-
 export const CardInnovators: React.FC<CardInnovatorsProps> = ({
     innovator,
     className,
 }) => {
     const { isArabic } = useLanguage();
-    const stageConfig = getStageConfig(innovator.stageDevelopment);
-    const StageIcon = stageConfig.icon;
+    const [isOpen, setIsOpen] = useState(false);
 
-    let imageSrc = "";
-    if (innovator.image) {
-        if (typeof innovator.image === "string") {
-            imageSrc = innovator.image;
-        } else if (innovator.image.data) {
-            imageSrc = `data:${innovator.image.type};base64,${innovator.image.data}`;
-        }
-    }
+    const locationString = [innovator.city, innovator.country].filter(Boolean).join(", ");
+
+    // Modal Component
+    const modalContent = (
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsOpen(false)}
+                        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                    />
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        className="relative w-full max-w-2xl bg-card rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                        dir={isArabic ? "rtl" : "ltr"}
+                    >
+                        {/* Close Button */}
+                        <button
+                            onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
+                            className={cn(
+                                "absolute top-4 p-2 bg-card/50 hover:bg-muted rounded-full transition-colors z-20",
+                                isArabic ? "left-4" : "right-4"
+                            )}
+                        >
+                            <X className="w-5 h-5 text-muted-foreground" />
+                        </button>
+
+                        <div
+                            className={cn(
+                                "overflow-y-auto p-0",
+                                // Custom scrollbar styling
+                                "[&::-webkit-scrollbar]:w-2",
+                                "[&::-webkit-scrollbar-track]:bg-transparent",
+                                "[&::-webkit-scrollbar-thumb]:bg-border",
+                                "[&::-webkit-scrollbar-thumb]:rounded-full",
+                                "[&::-webkit-scrollbar-thumb]:hover:bg-border/80"
+                            )}
+                        >
+
+                            {/* Modal Header */}
+                            <div className="bg-muted/30 p-8 flex items-center gap-6 border-b border-border/50">
+                                <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-card shadow-sm shrink-0 bg-card">
+                                    {innovator.imageId ? (
+                                        <Image
+                                            src={innovator.imageId}
+                                            alt={innovator.name}
+                                            width={96}
+                                            height={96}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center">
+                                            <User className="w-8 h-8 text-muted-foreground" />
+                                        </div>
+                                    )}
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl md:text-3xl font-din-bold text-foreground">{innovator.name}</h2>
+                                    <p className="text-primary font-din-medium">{innovator.specialization}</p>
+                                    {locationString && (
+                                        <div className="flex items-center gap-1.5 text-muted-foreground text-sm mt-1">
+                                            <MapPin className="w-3.5 h-3.5" />
+                                            <span className="font-din-regular">{locationString}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Modal Body */}
+                            <div className="p-8 space-y-8">
+
+                                {/* Project */}
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-2 text-primary font-din-bold uppercase text-xs tracking-wider">
+                                        <Rocket className="w-4 h-4" />
+                                        {isArabic ? "المشروع" : "Project"}
+                                    </div>
+                                    <h3 className="text-xl font-din-bold text-foreground">{innovator.projectTitle}</h3>
+                                    <p className="text-muted-foreground leading-relaxed font-din-regular">
+                                        {innovator.projectDescription}
+                                    </p>
+                                </div>
+
+                                {/* Objective */}
+                                {innovator.objective && (
+                                    <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10">
+                                        <div className="flex items-center gap-2 text-primary font-din-bold uppercase text-xs tracking-wider mb-3">
+                                            <Quote className="w-4 h-4" />
+                                            {isArabic ? "الهدف" : "Objective"}
+                                        </div>
+                                        <p className="text-foreground/80 text-sm leading-relaxed font-din-medium">
+                                            {innovator.objective}
+                                        </p>
+                                    </div>
+                                )}
+
+                                {/* Contact */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-border/50">
+                                    {innovator.email && (
+                                        <a
+                                            href={`mailto:${innovator.email}`}
+                                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors group"
+                                        >
+                                            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white transition-colors">
+                                                <Mail className="w-4 h-4" />
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <p className="text-xs text-muted-foreground font-din-bold uppercase">
+                                                    {isArabic ? "البريد الإلكتروني" : "Email"}
+                                                </p>
+                                                <p className="text-sm font-din-medium text-foreground truncate">{innovator.email}</p>
+                                            </div>
+                                        </a>
+                                    )}
+                                    {innovator.phone && (
+                                        <a
+                                            href={`tel:${innovator.phone}`}
+                                            className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors group"
+                                        >
+                                            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white transition-colors">
+                                                <Phone className="w-4 h-4" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs text-muted-foreground font-din-bold uppercase">
+                                                    {isArabic ? "الهاتف" : "Phone"}
+                                                </p>
+                                                <p className="text-sm font-din-medium text-foreground">{innovator.phone}</p>
+                                            </div>
+                                        </a>
+                                    )}
+                                </div>
+
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>
+    );
 
     return (
-        <Modal>
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ y: -2 }}
-                transition={{ duration: 0.3 }}
+        <>
+            <div
+                onClick={() => setIsOpen(true)}
                 className={cn(
-                    "group relative overflow-hidden bg-card border border-border/50 rounded-xl hover:border-primary/30 hover:shadow-md transition-all duration-300",
+                    "group bg-card rounded-2xl border border-border overflow-hidden hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-full",
                     className
                 )}
                 dir={isArabic ? "rtl" : "ltr"}
             >
-                {/* Thin gradient accent bar */}
-                <div className="h-1 bg-gradient-to-r from-primary to-primary/70" />
+                {/* Top Decorative Header */}
+                <div className={cn(
+                    "h-24 bg-gradient-to-r from-muted/50 to-muted relative",
+                    isArabic && "bg-gradient-to-l"
+                )}>
+                    <div className={cn(
+                        "absolute top-4",
+                        isArabic ? "left-4" : "right-4"
+                    )}>
+                        <span className="px-3 py-1 bg-card/80 backdrop-blur-sm rounded-full text-xs font-din-bold text-muted-foreground border border-border/50 shadow-sm">
+                            {innovator.specialization}
+                        </span>
+                    </div>
+                </div>
 
-                <div className="p-4 flex items-center gap-4">
-                    {/* Avatar (smaller) */}
-                    <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-background shadow-sm ring-1 ring-border/50 shrink-0">
-                        {imageSrc ? (
-                            <Image
-                                src={imageSrc}
-                                alt={innovator.name}
-                                fill
-                                className="object-cover transition-transform duration-500 group-hover:scale-110"
-                            />
-                        ) : (
-                            <div className="w-full h-full bg-primary/10 flex items-center justify-center">
-                                <span className="text-primary font-din-bold text-xl">
-                                    {innovator.name.charAt(0).toUpperCase()}
-                                </span>
+                {/* Card Content */}
+                <div className="px-6 pb-6 flex-1 flex flex-col relative">
+
+                    {/* Avatar (Overlapping) */}
+                    <div className="-mt-12 mb-4">
+                        <div className="w-20 h-20 rounded-2xl border-4 border-card bg-card shadow-sm overflow-hidden">
+                            {innovator.imageId ? (
+                                <Image
+                                    src={innovator.imageId}
+                                    alt={innovator.name}
+                                    width={80}
+                                    height={80}
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-full bg-muted flex items-center justify-center">
+                                    <User className="w-8 h-8 text-muted-foreground" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Identity */}
+                    <div className="mb-4">
+                        <h3 className="text-xl font-din-bold text-foreground group-hover:text-primary transition-colors">
+                            {innovator.name}
+                        </h3>
+                        {locationString && (
+                            <div className="flex items-center gap-1.5 text-muted-foreground text-sm mt-1">
+                                <MapPin className="w-3.5 h-3.5" />
+                                <span className="font-din-regular">{locationString}</span>
                             </div>
                         )}
                     </div>
 
-                    {/* Info */}
-                    <div className="flex-1 min-w-0">
-                        <h3 className="font-din-bold text-base text-foreground leading-tight mb-0.5 truncate">
-                            {innovator.name}
-                        </h3>
-                        <p className="text-xs text-primary font-din-medium mb-1 truncate">
-                            {innovator.specialization}
+                    {/* Project Info */}
+                    <div className="mb-6 flex-1">
+                        <h4 className="text-base font-din-bold text-foreground mb-2 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                            {innovator.projectTitle}
+                        </h4>
+                        <p className="text-muted-foreground text-sm font-din-regular leading-relaxed line-clamp-3">
+                            {innovator.projectDescription || (isArabic ? "لا يوجد وصف متاح." : "No description available.")}
                         </p>
-                        <div className="flex items-center gap-2">
-                            <p className="text-xs text-muted-foreground font-din-regular truncate">
-                                {innovator.projectTitle}
-                            </p>
-                            <Badge variant="outline" className={cn("gap-1 px-1.5 py-0.5 shrink-0", stageConfig.color)}>
-                                <StageIcon size={10} />
-                                <span className="text-[10px] font-din-bold">
-                                    {isArabic ? stageLabels[innovator.stageDevelopment].ar : stageLabels[innovator.stageDevelopment].en}
-                                </span>
-                            </Badge>
+                    </div>
+
+                    {/* Footer Action */}
+                    <div className="pt-4 border-t border-border/50 flex items-center justify-between mt-auto">
+                        <span className="text-xs font-din-bold text-muted-foreground uppercase tracking-wider">
+                            {isArabic ? "عرض التفاصيل" : "View Details"}
+                        </span>
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:bg-primary group-hover:text-white transition-colors">
+                            <ArrowRight className={cn(
+                                "w-4 h-4",
+                                isArabic && "rotate-180"
+                            )} />
                         </div>
                     </div>
 
-                    {/* View Details Button */}
-                    <ModalTrigger className="shrink-0 px-3 py-1.5 bg-primary hover:bg-primary/90 text-white text-xs font-din-medium rounded-lg transition-colors flex items-center gap-1.5">
-                        <span>{isArabic ? "التفاصيل" : "Details"}</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
-                    </ModalTrigger>
                 </div>
-            </motion.div>
+            </div>
 
-            <InnovatorDetailsModal innovator={innovator} />
-        </Modal>
+            {/* Modal - Rendered via Portal to document.body */}
+            {typeof window !== 'undefined' && createPortal(modalContent, document.body)}
+        </>
     );
 };
