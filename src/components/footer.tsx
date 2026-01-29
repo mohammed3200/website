@@ -56,7 +56,7 @@ export const Footer = () => {
             <div className="flex gap-3">
               {socials.map((social) => {
                 const IconComponent = social.icon;
-                
+
                 return (
                   <a
                     key={social.id}
@@ -112,10 +112,10 @@ export const Footer = () => {
                   <Phone className="w-4 h-4" />
                 </div>
                 <div>
-                  <a href="tel:+218910000000" className="block font-bold text-foreground hover:text-primary transition-colors">
-                    +218 91 000 0000
+                  <a href={`tel:${(process.env.NEXT_PUBLIC_CONTACT_PHONE || "+218910000000").replace(/\s/g, '')}`} className="block font-bold text-foreground hover:text-primary transition-colors">
+                    {process.env.NEXT_PUBLIC_CONTACT_PHONE || "+218 91 000 0000"}
                   </a>
-                  <span className="text-xs text-gray-400">Mon-Fri, 9am-5pm</span>
+                  <span className="text-xs text-gray-400">{process.env.NEXT_PUBLIC_WORKING_HOURS || "Sun-Thu, 8am-3pm"}</span>
                 </div>
               </li>
               <li className="flex items-start gap-3">
@@ -123,8 +123,8 @@ export const Footer = () => {
                   <Mail className="w-4 h-4" />
                 </div>
                 <div>
-                  <a href="mailto:info@cit.edu.ly" className="block font-bold text-foreground hover:text-primary transition-colors">
-                    info@cit.edu.ly
+                  <a href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || "ebic@cit.edu.ly"}`} className="block font-bold text-foreground hover:text-primary transition-colors">
+                    {process.env.NEXT_PUBLIC_CONTACT_EMAIL || "ebic@cit.edu.ly"}
                   </a>
                   <span className="text-xs text-gray-400">Online Support</span>
                 </div>
