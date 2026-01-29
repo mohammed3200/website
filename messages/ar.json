@@ -119,7 +119,11 @@
     "workingDaysValue": "الأحد - الخميس",
     "hours": "ساعات الدوام",
     "hoursValue": "8:00 صباحاً - 3:00 مساءً",
-    "findUs": "اعثر علينا على الخريطة"
+    "findUs": "اعثر علينا على الخريطة",
+    "openDays": "الأحد - الخميس",
+    "openTime": "09:00 ص - 03:00 م",
+    "closedDays": "الجمعة والسبت",
+    "closedText": "مغلق"
   },
   "Faq": {
     "title": "الاستفسار يعزز الفهم، فهو يؤدي إلى رؤى قيمة.",
@@ -242,11 +246,11 @@
       "Renewable Energy": "الطاقة المتجددة"
     },
     "StageDevelopment": {
-      "IDEA": "فكرة",
-      "PROTOTYPE": "نموذج أولي",
-      "TESTING": "اختبار",
-      "PRODUCTION": "إنتاج",
-      "MARKET_READY": "جاهز للسوق"
+      "STAGE": "مرحلة الفكرة",
+      "PROTOTYPE": "النموذج الأولي",
+      "DEVELOPMENT": "قيد الانشاء",
+      "TESTING": "مرحلة التقييم",
+      "RELEASED": "جاهز للاطلاق"
     }
   },
   "Collaborators": {

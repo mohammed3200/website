@@ -384,7 +384,7 @@ export const MockCompaniesData = [
 
 // TODO: writing the Mock to comply with the new data for innovators
 
-import type { Innovator } from "@/features/innovators/types/types";
+import { StageDevelopment, type Innovator } from "@/features/innovators/types/types";
 
 export const MockInnovatorsData: Innovator[] = [
   {
@@ -397,7 +397,7 @@ export const MockInnovatorsData: Innovator[] = [
     projectDescription: "An IoT-based irrigation system that optimizes water usage for agricultural lands using AI and sensor technology.",
     objective: "To reduce water consumption in agriculture by 40% while increasing crop yield through intelligent irrigation management.",
     specialization: "AgriTech",
-    stageDevelopment: "PROTOTYPE",
+    stageDevelopment: StageDevelopment.PROTOTYPE,
     status: "APPROVED",
     isVisible: true,
     city: "Riyadh",
@@ -413,7 +413,7 @@ export const MockInnovatorsData: Innovator[] = [
     projectDescription: "A personalized learning platform that uses artificial intelligence to adapt to each student's learning style and pace.",
     objective: "To make quality education accessible to all students by providing personalized learning experiences at scale.",
     specialization: "EdTech",
-    stageDevelopment: "DEVELOPMENT",
+    stageDevelopment: StageDevelopment.DEVELOPMENT,
     status: "APPROVED",
     isVisible: true,
     city: "San Francisco",
@@ -428,7 +428,7 @@ export const MockInnovatorsData: Innovator[] = [
     projectDescription: "Advanced battery technology for storing renewable energy efficiently and cost-effectively.",
     objective: "To develop affordable energy storage solutions that enable wider adoption of renewable energy sources.",
     specialization: "CleanTech",
-    stageDevelopment: "IDEA",
+    stageDevelopment: StageDevelopment.STAGE,
     status: "PENDING",
     isVisible: true,
     city: "Cairo",
@@ -444,7 +444,7 @@ export const MockInnovatorsData: Innovator[] = [
     projectDescription: "A blockchain-based platform for transparent and efficient supply chain management across industries.",
     objective: "To eliminate fraud and increase transparency in global supply chains using distributed ledger technology.",
     specialization: "FinTech",
-    stageDevelopment: "TESTING",
+    stageDevelopment: StageDevelopment.TESTING,
     status: "APPROVED",
     isVisible: true,
     city: "Dubai",
@@ -459,7 +459,7 @@ export const MockInnovatorsData: Innovator[] = [
     projectDescription: "Wearable devices and mobile app for continuous health monitoring and early disease detection.",
     objective: "To improve healthcare outcomes through continuous patient monitoring and early intervention.",
     specialization: "HealthTech",
-    stageDevelopment: "MARKET_READY",
+    stageDevelopment: StageDevelopment.RELEASED,
     status: "APPROVED",
     isVisible: true,
     city: "Jeddah",
@@ -475,7 +475,7 @@ export const MockInnovatorsData: Innovator[] = [
     projectDescription: "Biodegradable packaging materials made from agricultural waste as an alternative to plastic.",
     objective: "To reduce plastic waste by providing sustainable packaging solutions for the food and beverage industry.",
     specialization: "Sustainability",
-    stageDevelopment: "PROTOTYPE",
+    stageDevelopment: StageDevelopment.PROTOTYPE,
     status: "APPROVED",
     isVisible: true,
     city: "Algiers",

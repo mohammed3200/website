@@ -1,4 +1,10 @@
-export type StageDevelopment = "IDEA" | "PROTOTYPE" | "DEVELOPMENT" | "TESTING" | "MARKET_READY";
+export enum StageDevelopment {
+  STAGE = "STAGE",
+  PROTOTYPE = "PROTOTYPE",
+  DEVELOPMENT = "DEVELOPMENT",
+  TESTING = "TESTING",
+  RELEASED = "RELEASED"
+}
 
 export interface Innovator {
   id: string;

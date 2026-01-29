@@ -121,7 +121,11 @@
     "workingDaysValue": "Sunday - Thursday",
     "hours": "Office Hours",
     "hoursValue": "8:00 AM - 3:00 PM",
-    "findUs": "Find Us on the Map"
+    "findUs": "Find Us on the Map",
+    "openDays": "Sunday - Thursday",
+    "openTime": "09:00 AM - 03:00 PM",
+    "closedDays": "Friday & Saturday",
+    "closedText": "Closed"
   },
   "collaboratingPartners": {
     "title": "Our slogan",
@@ -256,6 +260,13 @@
       "Telecommunications": "Telecommunications",
       "Technology": "Technology",
       "Renewable Energy": "Renewable Energy"
+    },
+    "StageDevelopment": {
+      "STAGE": "Idea Stage",
+      "PROTOTYPE": "Prototype",
+      "DEVELOPMENT": "Development",
+      "TESTING": "Testing & Evaluation",
+      "RELEASED": "Ready to Launch"
     }
   },
   "Collaborators": {
