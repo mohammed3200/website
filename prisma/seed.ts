@@ -1,6 +1,8 @@
 // prisma/seed.ts
 import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../src/generated/prisma/client';
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import mariadb from "mariadb";
 import bcrypt from 'bcryptjs';
 
 // Validate required environment variables
@@ -547,7 +549,15 @@ const STRATEGIC_PLANS_DATA = [{
 async function main() {
   console.log('🌱 Seeding database...');
 
+  // Use DATABASE_URL if available, otherwise construct it
+  // Note: seed.ts defines constants for dbHost etc above, but we can rely on DATABASE_URL usually.
+  // We'll fallback to constructing it if needed based on the logic visible in file.
+  const dbUrl = process.env.DATABASE_URL || `mysql://${process.env.DATABASE_USER || 'root'}:${process.env.DATABASE_PASSWORD || ''}@${process.env.DATABASE_HOST || 'localhost'}:${process.env.DATABASE_PORT || '3306'}/${process.env.DATABASE_NAME || 'citcoder_eitdc'}`;
+
+  const adapter = new PrismaMariaDb(dbUrl);
+
   const prisma = new PrismaClient({
+    adapter,
     log: ['error'],
   });
 

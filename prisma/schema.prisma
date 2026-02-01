@@ -1,11 +1,12 @@
 generator client {
-  provider   = "prisma-client-js"
-  engineType = "library"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "mysql"
-  url      = env("DATABASE_URL")
+  // url moved to prisma.config.ts for Prisma 7
+  // url      = env("DATABASE_URL")
 }
 
 model User {

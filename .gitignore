@@ -48,10 +48,8 @@ next-env.d.ts
 # gitIgnore
 .gitignore
 
-# prisma
-# Ignore the Prisma schema file if you don't want to commit it.
-# If you want to commit it, remove the line below.
-/generated/prisma
+# prisma - Generated Prisma Client (Prisma 7)
+/src/generated/
 
 # Ignore everything under migrations? No—keep them versioned!
 prisma/migrations/

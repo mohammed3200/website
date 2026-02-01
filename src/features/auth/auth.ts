@@ -20,7 +20,9 @@ export const {
   signOut,
   unstable_update
 } = NextAuth({
-  adapter: PrismaAdapter(db),
+  // Cast to any to bypass type mismatch due to Prisma 7 removing $use
+  // @ts-ignore
+  adapter: PrismaAdapter(db as any),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,

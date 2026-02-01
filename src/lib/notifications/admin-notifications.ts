@@ -1,6 +1,6 @@
 // src/lib/notifications/admin-notifications.ts
 import { db } from '@/lib/db';
-import { NotificationPriority } from '@prisma/client';
+import { NotificationPriority } from '../../generated/prisma/client';
 
 export type NotificationType =
   | 'NEW_REGISTRATION'

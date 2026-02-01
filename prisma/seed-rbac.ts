@@ -1,5 +1,7 @@
 import 'dotenv/config';
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import mariadb from "mariadb";
 import bcrypt from "bcryptjs";
 import { SYSTEM_ROLES, ROLE_PERMISSIONS, RESOURCES, ACTIONS } from "../src/lib/rbac";
 
@@ -18,7 +20,13 @@ if (!dbHost || !dbUser || !dbPassword || !dbName) {
 async function main() {
   console.log("🌱 Starting RBAC system initialization...");
 
+  // Use DATABASE_URL if available, otherwise construct it
+  const connectionString = process.env.DATABASE_URL || `mysql://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}`;
+  
+  const adapter = new PrismaMariaDb(connectionString);
+
   const prisma = new PrismaClient({
+    adapter,
     log: ['error'],
   });
 
