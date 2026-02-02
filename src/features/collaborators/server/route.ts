@@ -36,8 +36,8 @@ const app = new Hono()
 
       // Collect all image IDs
       const imageIds: string[] = collaborators
-        .map((collaborator) => collaborator.imageId)
-        .filter((id): id is string => !!id);
+        .map((collaborator: { imageId: string | null }) => collaborator.imageId)
+        .filter((id: string | null): id is string => !!id);
 
       // Fetch all related images in bulk
       const images = await db.image.findMany({
@@ -45,10 +45,12 @@ const app = new Hono()
       });
 
       // Create lookup map for quick access
-      const imageMap = new Map(images.map((img) => [img.id, img]));
+      const imageMap = new Map<string, typeof images[0]>(
+        images.map((img: any) => [img.id, img])
+      );
 
       // Transform the data
-      const transformedCollaborators = collaborators.map((collaborator) => {
+      const transformedCollaborators = collaborators.map((collaborator: typeof collaborators[0]) => {
         const image = collaborator.imageId
           ? imageMap.get(collaborator.imageId)
           : null;

@@ -2,7 +2,7 @@
 import nodemailer from 'nodemailer';
 import { createNodemailerTransport } from '@/lib/email/transports/nodemailer';
 import { db } from '@/lib/db';
-import { EmailStatus } from '../../generated/prisma/client';
+import { EmailStatus } from '@prisma/client';
 import {
   renderSubmissionConfirmation,
   renderStatusUpdate,
@@ -336,7 +336,7 @@ export class EmailService {
       };
     }
   }
-  
+
   /**
    * Send verification email
    */

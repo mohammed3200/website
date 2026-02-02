@@ -3,7 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { auth } from '@/auth';
 import { db } from '@/lib/db';
-import { NotificationPriority } from '../../../generated/prisma/client';
+import { NotificationPriority } from '@prisma/client';
 import type { Session } from 'next-auth';
 
 // Define the variables explicitly

@@ -1,30 +1,15 @@
 import 'dotenv/config';
-import { PrismaClient } from "../src/generated/prisma/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
-import mariadb from "mariadb";
+import { PrismaClient } from '@prisma/client';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import bcrypt from "bcryptjs";
 import { SYSTEM_ROLES, ROLE_PERMISSIONS, RESOURCES, ACTIONS } from "../src/lib/rbac";
 
-// Validate required environment variables
-const dbHost = process.env.DATABASE_HOST;
-const dbPort = process.env.DATABASE_PORT || '3306';
-const dbUser = process.env.DATABASE_USER || 'root';
-const dbPassword = process.env.DATABASE_PASSWORD || '';
-const dbName = process.env.DATABASE_NAME || 'citcoder_eitdc';
 
-if (!dbHost || !dbUser || !dbPassword || !dbName) {
-  console.error('❌ Missing required database environment variables');
-  process.exit(1);
-}
 
 async function main() {
   console.log("🌱 Starting RBAC system initialization...");
 
-  // Use DATABASE_URL if available, otherwise construct it
-  const connectionString = process.env.DATABASE_URL || `mysql://${dbUser}:${dbPassword}@${dbHost}:${dbPort}/${dbName}`;
-  
-  const adapter = new PrismaMariaDb(connectionString);
-
+  const adapter = new PrismaMariaDb(process.env.DATABASE_URL!);
   const prisma = new PrismaClient({
     adapter,
     log: ['error'],

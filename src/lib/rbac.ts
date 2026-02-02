@@ -113,8 +113,8 @@ export async function hasPermission(
 
     // Check for manage permission (overrides all)
     const hasManagePermission = user.role.permissions.some(
-      (rp) => 
-        rp.permission.resource === resource && 
+      (rp: any) =>
+        rp.permission.resource === resource &&
         rp.permission.action === ACTIONS.MANAGE
     );
 
@@ -122,7 +122,7 @@ export async function hasPermission(
 
     // Check for specific permission
     return user.role.permissions.some(
-      (rp) =>
+      (rp: any) =>
         rp.permission.resource === resource &&
         rp.permission.action === action
     );
@@ -152,7 +152,7 @@ export async function getUserPermissions(userId: string) {
 
     if (!user || !user.role) return [];
 
-    return user.role.permissions.map((rp) => ({
+    return user.role.permissions.map((rp: any) => ({
       resource: rp.permission.resource,
       action: rp.permission.action,
     }));
