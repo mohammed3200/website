@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider = "mysql"
   // url moved to prisma.config.ts for Prisma 7
-  // url      = env("DATABASE_URL")
 }
 
 model User {
