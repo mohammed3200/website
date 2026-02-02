@@ -27,7 +27,7 @@ const app = new Hono()
       });
 
       // Transform the data to match frontend expectations
-      const transformedPlans = strategicPlans.map((plan) => {
+      const transformedPlans = strategicPlans.map((plan: any) => {
         return {
           id: plan.id,
           slug: plan.slug,
@@ -153,7 +153,7 @@ const app = new Hono()
         },
       });
 
-      const transformedPlans = strategicPlans.map((plan) => {
+      const transformedPlans = strategicPlans.map((plan: any) => {
         return {
           id: plan.id,
           slug: plan.slug,

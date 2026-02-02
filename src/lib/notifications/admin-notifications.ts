@@ -1,6 +1,6 @@
 // src/lib/notifications/admin-notifications.ts
 import { db } from '@/lib/db';
-import { NotificationPriority } from '../../generated/prisma/client';
+import { NotificationPriority } from '@prisma/client';
 
 export type NotificationType =
   | 'NEW_REGISTRATION'
@@ -60,11 +60,11 @@ async function getEligibleAdmins(requiredPermission?: string): Promise<
                 { resource: 'dashboard', action: 'read' },
                 ...(requiredPermission
                   ? [
-                      {
-                        resource: requiredPermission.split(':')[0],
-                        action: requiredPermission.split(':')[1] || 'manage',
-                      },
-                    ]
+                    {
+                      resource: requiredPermission.split(':')[0],
+                      action: requiredPermission.split(':')[1] || 'manage',
+                    },
+                  ]
                   : []),
               ],
             },
@@ -85,7 +85,7 @@ async function getEligibleAdmins(requiredPermission?: string): Promise<
     },
   });
 
-  return users.map((user) => ({
+  return users.map((user: any) => ({
     id: user.id,
     email: user.email!,
     name: user.name,

@@ -1,30 +1,28 @@
-import mariadb from 'mariadb';
+import { PrismaClient } from '@prisma/client';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
 
-dotenv.config();
+// Load environment variables correctly in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+dotenv.config({ path: resolve(__dirname, '../.env') });
 
-const pool = mariadb.createPool({
-  host: process.env.DATABASE_HOST,
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE_NAME,
-  port: Number(process.env.DATABASE_PORT),
-  connectionLimit: 5
-});
+const adapter = new PrismaMariaDb(process.env.DATABASE_URL!);
+const prisma = new PrismaClient({ adapter });
 
 async function testConnection() {
-  let conn;
   try {
-    console.log(`Connecting to ${process.env.DATABASE_HOST}:${process.env.DATABASE_PORT}...`);
-    conn = await pool.getConnection();
+    console.log(`Connecting via Prisma with MariaDB Adapter...`);
+    await prisma.$connect();
     console.log("Connected successfully!");
-    const rows = await conn.query("SELECT 1 as val");
-    console.log("Query Result:", rows);
+    const result = await prisma.$queryRaw`SELECT 1 as val`;
+    console.log("Query Result:", result);
   } catch (err) {
     console.error("Connection failed:", err);
   } finally {
-    if (conn) conn.end();
-    await pool.end();
+    await prisma.$disconnect();
   }
 }
 
