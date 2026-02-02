@@ -27,6 +27,7 @@
 19. [Task 19: Home Section Design & Development](#task-19-home-section-design--development)
 20. [Task 20: Leadership & Incubators Content Strategy](#task-20-leadership--incubators-content-strategy)
 21. [Task 21: Contact Us Page Content Implementation](#task-21-contact-us-page-content-implementation)
+22. [Task 22: Architectural Debt Elimination & System Hardening](#task-22-architectural-debt-elimination--system-hardening)
 
 
 ---
@@ -2154,4 +2155,73 @@ Populate the "Contact Us" page with all essential business information to ensure
 - [x] Document working hours and official working days.
 - [x] Design a simple contact form (if not already present).
 - [x] Ensure all info is bilingual (English/Arabic).
+
+---
+
+## Task 22: Architectural Debt Elimination & System Hardening
+
+### Status: 🔴 NOT STARTED
+
+### Priority: 🔥 CRITICAL / BLOCKER
+
+### Description
+
+This section addresses severe architectural flaws that compromise the stability, scalability, and maintainability of the system. **These tasks are mandatory corrective actions**, not optional improvements. Ignoring them *guarantees* production failure under load.
+
+### 1. Redis & Queue Architecture
+
+**Context:** The project currently includes `bullmq` and `Redis` dependencies and an `ENABLE_EMAIL_QUEUE` flag, but there is NO worker process. Emails are sent synchronously. This creates dead code and a fragile user experience where API requests hang until email providers respond.
+
+**Decision Required:**
+- **Option A (Simplify):** Completely REMOVE `Redis`, `bullmq`, and all related queue code. Accept synchronous email sending (simpler, but slower user experience).
+- **Option B (Fix):** Implement a REAL asynchronous queue system.
+
+**Required Actions (If Option B is chosen):**
+- [ ] **Define Worker Process:** Create a dedicated worker entry point (e.g., `src/worker.ts`) that runs independently of the Next.js app.
+- [ ] **Startup Command:** Add a script to `package.json` to run the worker (e.g., `"worker": "tsx src/worker.ts"`).
+- [ ] **Docker Integration:** Define the worker as a separate service in `docker-compose.yml`.
+- [ ] **Failure Handling:** Configure BullMQ retry logic (exponential backoff) and dead-letter queues.
+- [ ] **Monitoring:** Implement basic logging or usage of BullMQ-Dashboard to monitor queue health.
+
+**Blocking:** This task MUST be resolved before claiming "Production Readiness".
+
+### 2. Media Storage Refactor
+
+**Context:** The system currently stores images and media files as **BLOBs (Bytes)** directly inside the MariaDB database via Prisma.
+
+**Why this is a Disaster:**
+1.  **Database Bloat:** The database size will grow exponentially (GBs in days).
+2.  **Memory Crashes:** API queries fetching `Innovator` or `News` records will try to load entire image buffers into RAM, causing Node.js OOM (Out Of Memory) crashes.
+3.  **Backup Failures:** Database dumps will become too large to handle easily.
+4.  **No CDN:** Images cannot be served via a global CDN, resulting in slow load times for users.
+
+**Required Actions:**
+- [ ] **Implement Object Storage:** Integrate an S3-compatible provider (AWS S3, Cloudflare R2, MinIO, or DigitalOcean Spaces) or a local file system storage for MVP.
+- [ ] **Schema Refactor:**
+    - Change `Image` and `Media` models to store `url`, `path`, and `metadata` ONLY.
+    - Remove `data Bytes` fields.
+- [ ] **Migration Strategy:**
+    - Create a script to extract existing BLOBs from DB, upload them to storage, and update the DB records with the new URLs.
+    - Verify data integrity after migration.
+- [ ] **API Updates:** Update upload endpoints to stream files to storage instead of buffering into the DB.
+
+### 3. Impact & Risk Annotation
+
+| Feature | Consequence of Inaction | Severity |
+| :--- | :--- | :--- |
+| **Media Storage** | Database will lock up; Backups will fail; App requires massive RAM to serve simple pages. | **CATASTROPHIC** |
+| **Email Queue** | User registration hangs for 3-5s; If SMTP is slow, requests timeout; "Ghost" dependencies confuse developers. | **HIGH** |
+| **Docker** | Inconsistent environments; "It works on my machine" bugs; Deployment nightmares. | **HIGH** |
+
+### Technical Debt Verdict
+
+**Is the current architecture production-safe?**
+**NO.**
+
+**Verdict:**
+The system is currently a "Proof of Concept" (PoC) disguised as a production app. Storing media in the database is a fundamental engineering error that prevents any real-world usage beyond a few test users. The missing worker process indicates unfinished scaffolding.
+
+**Corrective Action:**
+**STOP** all feature development (Tasks 4-16) until Task 22 (Media Storage) is fully resolved. It is irresponsible to add more features on top of a crumbling foundation.
+
 
