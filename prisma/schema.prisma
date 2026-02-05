@@ -168,7 +168,9 @@ model Image {
   id            String          @id @default(cuid())
   filename      String?
   originalName  String?
-  url           String?
+  url           String? // S3 public URL
+  s3Key         String? // S3 object key
+  s3Bucket      String? // S3 bucket name
   mimeType      String?
   size          Int?
   width         Int?
@@ -176,8 +178,8 @@ model Image {
   alt           String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  data          Bytes?
-  type          String?
+  data          Bytes? // DEPRECATED: Will be removed after migration
+  type          String? // DEPRECATED: Use mimeType instead
   collaborators Collaborator[]
   innovators    Innovator[]
   news          News[]
@@ -185,26 +187,30 @@ model Image {
 
   @@index([filename])
   @@index([mimeType])
+  @@index([s3Key])
 }
 
 model Media {
   id                         String                       @id @default(cuid())
   filename                   String?
   originalName               String?
-  url                        String?
+  url                        String? // S3 public URL
+  s3Key                      String? // S3 object key
+  s3Bucket                   String? // S3 bucket name
   mimeType                   String?
   size                       Int?
   duration                   Int?
   createdAt                  DateTime                     @default(now())
   updatedAt                  DateTime                     @updatedAt
-  data                       Bytes?
-  type                       String?
+  data                       Bytes? // DEPRECATED: Will be removed after migration
+  type                       String? // DEPRECATED: Use mimeType instead
   experienceProvidedMedia    ExperienceProvidedMedia[]
   innovatorProjectFiles      InnovatorProjectFile[]
   machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
 
   @@index([filename])
   @@index([mimeType])
+  @@index([s3Key])
 }
 
 model News {

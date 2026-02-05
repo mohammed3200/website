@@ -23,6 +23,8 @@
     "@auth/core": "^0.40.0",
     "@auth/nextjs": "^0.0.0-380f8d56",
     "@auth/prisma-adapter": "^2.11.1",
+    "@aws-sdk/client-s3": "^3.983.0",
+    "@aws-sdk/s3-request-presigner": "^3.983.0",
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
     "@firecms/neat": "^0.5.0",
