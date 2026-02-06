@@ -18,10 +18,11 @@ COPY package.json package-lock.json* pnpm-lock.yaml* bun.lock* ./
 # Install dependencies based on lockfile
 # Note: We need sharp validation here potentially
 # Skip postinstall scripts here since prisma schema isn't copied yet
+# Prefer npm for Docker builds (more stable), fallback to pnpm/bun
 RUN \
-  if [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile --ignore-scripts; \
+  if [ -f package-lock.json ]; then npm ci --ignore-scripts; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile --ignore-scripts; \
   elif [ -f bun.lock ]; then npm install -g bun && bun install --ignore-scripts; \
-  elif [ -f package-lock.json ]; then npm ci --ignore-scripts; \
   else echo "Lockfile not found." && exit 1; \
   fi
 
@@ -38,17 +39,18 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Run Prisma Generate (CRITICAL for Type Safety and Runtime access)
+# Generate Prisma Client with dummy DATABASE_URL
 # This must run before build
 RUN \
-  if [ -f pnpm-lock.yaml ]; then corepack enable pnpm && DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate; \
-  elif [ -f bun.lock ]; then DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate; \
+  if [ -f package-lock.json ]; then DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate; \
   else DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate; \
   fi
 
 # Build Next.js app
 RUN \
-  if [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  elif [ -f bun.lock ]; then npm run build; \
+  if [ -f package-lock.json ]; then npm run build; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
   else npm run build; \
   fi
 
