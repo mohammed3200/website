@@ -4,6 +4,7 @@ import { zValidator } from "@hono/zod-validator";
 import { db } from "@/lib/db";
 import { completeRegistrationSchema } from "../schemas/step-schemas";
 import { StageDevelopment } from "@prisma/client";
+import { s3Service } from "@/lib/storage/s3-service";
 
 const app = new Hono().post(
   "/",
@@ -45,14 +46,27 @@ const app = new Hono().post(
           message: "Phone number already exists"
         }, 400);
 
-      // Create image record if image exists
+      // Create image record if image exists (UPDATED - S3 Storage)
         let imageId: string | null = null;
         if (image instanceof File) {
+          const imageBuffer = Buffer.from(await image.arrayBuffer());
+          const imageKey = s3Service.generateKey('image', image.name, uuidv4());
+          
+          const { url, s3Key, bucket } = await s3Service.uploadFile(
+            imageBuffer,
+            imageKey,
+            image.type
+          );
+
           const imageRecord = await db.image.create({
             data: {
-              data: Buffer.from(await image.arrayBuffer()),
-              type: image.type,
+              url,
+              s3Key,
+              s3Bucket: bucket,
+              mimeType: image.type,
               size: image.size,
+              originalName: image.name,
+              filename: imageKey,
             },
           });
           imageId = imageRecord.id;
@@ -132,12 +146,25 @@ const app = new Hono().post(
             }, 400);
           }
 
-          // Store in Media table
+          // Store in Media table (UPDATED - S3 Storage)
+          const mediaBuffer = Buffer.from(await file.arrayBuffer());
+          const mediaKey = s3Service.generateKey('media', file.name, uuidv4());
+          
+          const { url, s3Key, bucket } = await s3Service.uploadFile(
+            mediaBuffer,
+            mediaKey,
+            file.type
+          );
+
           const media = await db.media.create({
             data: {
-              data: Buffer.from(await file.arrayBuffer()),
-              type: file.type,
+              url,
+              s3Key,
+              s3Bucket: bucket,
+              mimeType: file.type,
               size: file.size,
+              originalName: file.name,
+              filename: mediaKey,
             },
           });
 

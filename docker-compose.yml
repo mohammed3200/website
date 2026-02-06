@@ -14,17 +14,14 @@ services:
       - DATABASE_URL=mysql://root:root@db:3306/citcoder_eitdc
       - NEXTAUTH_URL=http://localhost:3000
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
       # Add other necessary env vars here, but DO NOT commit secrets
     depends_on:
       - db
-      - redis
     networks:
       - app-network
 
   db:
-    image: mariadb:10.11
+    image: mysql:8.0
     container_name: website-db
     restart: always
     environment:
@@ -36,24 +33,7 @@ services:
       - db-data:/var/lib/mysql
     networks:
       - app-network
-    command: --max_allowed_packet=64M # Increased for BLOBs (Temporary fix for bad architecture)
-
-  redis:
-    image: redis:7.4-alpine
-    container_name: website-redis
-    restart: always
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis-data:/data
-    networks:
-      - app-network
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ['CMD', 'redis-cli', 'ping']
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    command: --default-authentication-plugin=mysql_native_password --max_allowed_packet=64M
 
   minio:
     image: minio/minio:latest
@@ -78,7 +58,6 @@ services:
 
 volumes:
   db-data:
-  redis-data:
   minio-data:
 
 networks:

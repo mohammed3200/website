@@ -6,13 +6,14 @@ import { zValidator } from '@hono/zod-validator';
 import { auth } from '@/auth';
 import { db } from '@/lib/db';
 
+import { s3Service } from '@/lib/storage/s3-service';
 import { RecordStatus } from '@/features/collaborators/types/types';
+import { emailService } from '@/lib/email/service';
+
 import {
   completeCollaboratorRegistrationSchemaServer,
   statusUpdateSchema,
 } from '@/features/collaborators/schemas/step-schemas';
-
-import { emailService } from '@/lib/email/service';
 
 const app = new Hono()
   // Public endpoint - only approved and visible collaborators
@@ -49,7 +50,7 @@ const app = new Hono()
         images.map((img: any) => [img.id, img])
       );
 
-      // Transform the data
+      // Transform the data (UPDATED - S3 URLs)
       const transformedCollaborators = collaborators.map((collaborator: typeof collaborators[0]) => {
         const image = collaborator.imageId
           ? imageMap.get(collaborator.imageId)
@@ -60,11 +61,10 @@ const app = new Hono()
           companyName: collaborator.companyName,
           image: image
             ? {
-              data: Buffer.isBuffer(image.data)
-                ? image.data.toString('base64')
-                : '',
-              type: image.type,
+              url: image.url,           // Direct S3 URL
+              mimeType: image.mimeType,
               size: image.size,
+              alt: image.alt,
             }
             : null,
           location: collaborator.location,
@@ -134,33 +134,62 @@ const app = new Hono()
             400,
           );
 
-        // Create image record if image exists
+        // Create image record if image exists (UPDATED - S3 Storage)
         let imageId: string | null = null;
         if (image instanceof File) {
+          const imageBuffer = Buffer.from(await image.arrayBuffer());
+          const imageKey = s3Service.generateKey('image', image.name, uuidv4());
+          
+          const { url, s3Key, bucket } = await s3Service.uploadFile(
+            imageBuffer,
+            imageKey,
+            image.type
+          );
+
           const imageRecord = await db.image.create({
             data: {
-              data: Buffer.from(await image.arrayBuffer()),
-              type: image.type,
+              url,
+              s3Key,
+              s3Bucket: bucket,
+              mimeType: image.type,
               size: image.size,
+              originalName: image.name,
+              filename: imageKey,
             },
           });
           imageId = imageRecord.id;
         }
 
 
-        // Create media records helper
+        // Create media records helper (UPDATED - S3 Storage)
         const createMediaRecords = async (
           files: File[],
           type: 'experience' | 'machinery',
         ) => {
+          
+          
           return Promise.all(
             files.map(async (file) => {
-              // Create media record
+              // Upload to S3
+              const mediaBuffer = Buffer.from(await file.arrayBuffer());
+              const mediaKey = s3Service.generateKey('media', file.name, uuidv4());
+              
+              const { url, s3Key, bucket } = await s3Service.uploadFile(
+                mediaBuffer,
+                mediaKey,
+                file.type
+              );
+
+              // Create media record with S3 data
               const mediaRecord = await db.media.create({
                 data: {
-                  data: Buffer.from(await file.arrayBuffer()),
-                  type: file.type,
+                  url,
+                  s3Key,
+                  s3Bucket: bucket,
+                  mimeType: file.type,
                   size: file.size,
+                  originalName: file.name,
+                  filename: mediaKey,
                 },
               });
 

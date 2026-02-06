@@ -178,8 +178,6 @@ model Image {
   alt           String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  data          Bytes? // DEPRECATED: Will be removed after migration
-  type          String? // DEPRECATED: Use mimeType instead
   collaborators Collaborator[]
   innovators    Innovator[]
   news          News[]
@@ -202,8 +200,6 @@ model Media {
   duration                   Int?
   createdAt                  DateTime                     @default(now())
   updatedAt                  DateTime                     @updatedAt
-  data                       Bytes? // DEPRECATED: Will be removed after migration
-  type                       String? // DEPRECATED: Use mimeType instead
   experienceProvidedMedia    ExperienceProvidedMedia[]
   innovatorProjectFiles      InnovatorProjectFile[]
   machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
