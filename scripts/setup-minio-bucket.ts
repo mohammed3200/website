@@ -3,19 +3,21 @@
  * Creates the 'website-media' bucket with public access policy
  */
 
+import 'dotenv/config';
 import { S3Client, CreateBucketCommand, PutBucketPolicyCommand, HeadBucketCommand } from '@aws-sdk/client-s3';
 
+// Read from environment variables (consistent with s3-service.ts)
 const client = new S3Client({
-    endpoint: 'http://localhost:9000',
-    region: 'us-east-1',
+    endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',
+    region: process.env.AWS_REGION || 'us-east-1',
     credentials: {
-        accessKeyId: 'minioadmin',
-        secretAccessKey: 'minioadmin',
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'minioadmin',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'minioadmin',
     },
     forcePathStyle: true,
 });
 
-const bucketName = 'website-media';
+const bucketName = process.env.S3_BUCKET_NAME || 'website-media';
 
 async function createBucket() {
     try {
@@ -57,9 +59,9 @@ async function createBucket() {
         console.log(`✅ Set public access policy for bucket: ${bucketName}`);
         console.log(`\n🎉 MinIO bucket setup complete!`);
         console.log(`📦 Bucket: ${bucketName}`);
-        console.log(`🌐 URL: http://localhost:9000/${bucketName}`);
-        console.log(`🖥️  Console: http://localhost:9001`);
-        console.log(`👤 Login: minioadmin / minioadmin\n`);
+        console.log(`🌐 URL: ${process.env.S3_ENDPOINT || 'http://localhost:9000'}/${bucketName}`);
+        console.log(`🖥️  Console: ${process.env.S3_ENDPOINT?.replace(':9000', ':9001') || 'http://localhost:9001'}`);
+        console.log(`👤 Login: ${process.env.AWS_ACCESS_KEY_ID || 'minioadmin'} / ${process.env.AWS_SECRET_ACCESS_KEY || 'minioadmin'}\n`);
 
     } catch (error) {
         console.error('❌ Error setting up MinIO bucket:', error);
