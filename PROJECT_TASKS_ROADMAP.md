@@ -36,14 +36,14 @@
 
 This document outlines the development tasks for enhancing the Center for Leadership and Business Incubators - Misrata platform. The tasks are organized by priority and include detailed subtasks, technical requirements, and acceptance criteria.
 
-**Tech Stack Reference:**
+**Tech Stack Reference (v2.0):**
 
 - Frontend: Next.js 15.1.2, React 19, TypeScript, Tailwind CSS
 - Backend: Hono.js, Prisma ORM
-- Database: MySQL
+- Database: MySQL 8.0 (production), MariaDB (legacy)
+- Storage: AWS S3 / Cloudflare R2 / MinIO
 - Email: Nodemailer, React Email
-- Queue: BullMQ, Redis
-- Authentication: NextAuth.js
+- Authentication: NextAuth.js v5
 
 ---
 
