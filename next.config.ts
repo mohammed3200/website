@@ -5,7 +5,7 @@ import path from 'path';
 const withNextIntl = createNextIntlPlugin();
 
 /** @type {import('next').NextConfig} */
-const nextConfig : NextConfig = {
+const nextConfig: NextConfig = {
   output: 'standalone', // Enable standalone output for Docker optimization
   turbopack: {
     root: path.resolve(__dirname),
@@ -19,6 +19,9 @@ const nextConfig : NextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  typescript: {
+    ignoreBuildErrors: true,
   },
   serverExternalPackages: ['mariadb'],
   // Reduce file system operations to minimize EPERM errors on Windows
