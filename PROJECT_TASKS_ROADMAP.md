@@ -19,15 +19,17 @@
 11. [Task 11: News Section UI Enhancements](#task-11-news-section-ui-enhancements)
 12. [Task 12: Fix Registration Form Data Persistence](#task-12-fix-registration-form-data-persistence)
 13. [Task 13: AI-Powered Form Redesign](#task-13-ai-powered-form-redesign)
-14. [Task 14: Enhanced Card Design & Detail Pages](#task-14-enhanced-card-design--detail-pages)
-15. [Task 15: Manager & Supervisor Control Panel Implementation](#task-15-manager--supervisor-control-panel-implementation)
-16. [Task 16: Project Cleanup & Optimization](#task-16-project-cleanup--optimization)
-17. [Task 17: Docker Containerization](#task-17-docker-containerization)
-18. [Task 18: Data Cleanup & Real Data Integration](#task-18-data-cleanup--real-data-integration)
-19. [Task 19: Home Section Design & Development](#task-19-home-section-design--development)
-20. [Task 20: Leadership & Incubators Content Strategy](#task-20-leadership--incubators-content-strategy)
-21. [Task 21: Contact Us Page Content Implementation](#task-21-contact-us-page-content-implementation)
-22. [Task 22: Architectural Debt Elimination & System Hardening](#task-22-architectural-debt-elimination--system-hardening)
+14. [Task 14: News Data Verification & Schema Alignment](#task-14-news-data-verification--schema-alignment)
+15. [Task 15: Project Cleanup & Component Unification](#task-15-project-cleanup--component-unification)
+16. [Task 16: Remove Mock Data & Verify Data Connections](#task-16-remove-mock-data--verify-data-connections)
+17. [Task 17: Enhanced Card Design & Detail Pages](#task-17-enhanced-card-design--detail-pages)
+18. [Task 18: Manager & Supervisor Control Panel Implementation](#task-18-manager--supervisor-control-panel-implementation)
+19. [Task 19: Docker Containerization](#task-19-docker-containerization)
+20. [Task 20: Data Cleanup & Real Data Integration](#task-20-data-cleanup--real-data-integration)
+21. [Task 21: Home Section Design & Development](#task-21-home-section-design--development)
+22. [Task 22: Leadership & Incubators Content Strategy](#task-22-leadership--incubators-content-strategy)
+23. [Task 23: Contact Us Page Content Implementation](#task-23-contact-us-page-content-implementation)
+24. [Task 24: Architectural Debt Elimination & System Hardening](#task-24-architectural-debt-elimination--system-hardening)
 
 
 ---
@@ -38,7 +40,7 @@ This document outlines the development tasks for enhancing the Center for Leader
 
 **Tech Stack Reference (v2.0):**
 
-- Frontend: Next.js 15.1.2, React 19, TypeScript, Tailwind CSS
+- Frontend: Next.js 16, React 19, TypeScript, Tailwind CSS
 - Backend: Hono.js, Prisma ORM
 - Database: MySQL 8.0 (production), MariaDB (legacy)
 - Storage: AWS S3 / Cloudflare R2 / MinIO
@@ -145,20 +147,22 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 - ✅ Basic Innovator model exists with: name, email, phone, projectTitle, projectDescription, objective, stageDevelopment
 - ✅ Registration form implemented (`innovators-registration-form.tsx`)
 - ✅ Single image upload supported via `imageId`
-- ❌ Missing: location, specialization fields
-- ❌ Missing: Multiple project file upload support (PDF, Word, JPG, PNG, etc.)
+- ✅ Location, specialization fields implemented
+- ✅ Multiple project file upload support (PDF, Word, JPG, PNG, etc.)
 
 ### Required New Fields
 
 1. **Location** - Innovator's geographical location (string)
 2. **Specialization** - Area of expertise/industry sector (string)
-3. **Project Files** - Multiple file uploads (documents, images, presentations)
+1.  **Location** - Innovator's geographical location (string)
+2.  **Specialization** - Area of expertise/industry sector (string)
+3.  **Project Files** - Multiple file uploads (documents, images, presentations)
 
 ### Subtasks
 
 #### 2.1 Database Schema Updates
 
-- [ ] Update `Innovator` model in `prisma/schema.prisma`:
+- [x] Update `Innovator` model in `prisma/schema.prisma`:
 
   ```prisma
   model Innovator {
@@ -213,7 +217,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 
 #### 2.2 Update Validation Schemas
 
-- [ ] Update `src/features/innovators/schemas.ts`:
+- [x] Update `src/features/innovators/schemas.ts`:
 
   ```typescript
   export const createCreativeRegistrationSchema = (
@@ -295,16 +299,16 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 
 #### 2.3 Update Registration Form Component
 
-- [ ] Update `src/features/innovators/components/innovators-registration-form.tsx`:
-  - [ ] Add Location input field
-  - [ ] Add Specialization input field (consider dropdown/select with predefined options)
-  - [ ] Add Project Files upload section with drag-and-drop
-  - [ ] Display file list with remove option
-  - [ ] Show file upload progress
-  - [ ] Validate file types and sizes client-side
-  - [ ] Update form layout to accommodate new fields
+- [x] Update `src/features/innovators/components/innovators-registration-form.tsx`:
+  - [x] Add Location input field
+  - [x] Add Specialization input field (consider dropdown/select with predefined options)
+  - [x] Add Project Files upload section with drag-and-drop
+  - [x] Display file list with remove option
+  - [x] Show file upload progress
+  - [x] Validate file types and sizes client-side
+  - [x] Update form layout to accommodate new fields
 
-- [ ] Add multi-file upload UI:
+- [x] Add multi-file upload UI:
 
   ```typescript
   const [projectFiles, setProjectFiles] = useState<File[]>([]);
@@ -324,15 +328,15 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 
 #### 2.4 Update API Endpoints
 
-- [ ] Update `src/features/innovators/server/*.ts` or API route:
-  - [ ] Handle new location and specialization fields
-  - [ ] Process multiple file uploads
-  - [ ] Store files in Media table
-  - [ ] Create InnovatorProjectFile records
-  - [ ] Validate file types server-side
-  - [ ] Handle file size limits
+- [x] Update `src/features/innovators/server/*.ts` or API route:
+  - [x] Handle new location and specialization fields
+  - [x] Process multiple file uploads
+  - [x] Store files in Media table
+  - [x] Create InnovatorProjectFile records
+  - [x] Validate file types server-side
+  - [x] Handle file size limits
 
-- [ ] File upload handler example:
+- [x] File upload handler example:
 
   ```typescript
   // Process project files
@@ -366,15 +370,15 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 
 #### 2.5 Update Card Component
 
-- [ ] Update `src/features/innovators/components/card-innovators.tsx`:
-  - [ ] Display location with icon
-  - [ ] Display specialization badge
-  - [ ] Add file count indicator
-  - [ ] Update card layout for new fields
+- [x] Update `src/features/innovators/components/card-innovators.tsx`:
+  - [x] Display location with icon
+  - [x] Display specialization badge
+  - [x] Add file count indicator
+  - [x] Update card layout for new fields
 
 #### 2.6 Add Specialization Options
 
-- [ ] Create specialization constants in `src/features/innovators/constants.ts`:
+- [x] Create specialization constants in `src/features/innovators/constants.ts`:
   ```typescript
   export const Specializations = {
     TECHNOLOGY: { ar: 'التكنولوجيا', en: 'Technology' },
@@ -392,7 +396,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 
 #### 2.7 Add Translations
 
-- [ ] Update locale files (`messages/ar.json`, `messages/en.json`):
+- [x] Update locale files (`messages/ar.json`, `messages/en.json`):
   ```json
   {
     "CreatorsAndInnovators": {
@@ -413,23 +417,23 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 
 #### 2.8 Admin Dashboard Updates
 
-- [ ] Update admin innovators list to show new fields
-- [ ] Add file download functionality in admin view
-- [ ] Add file preview modal (for images/PDFs)
-- [ ] Update filter options to include location and specialization
+- [x] Update admin innovators list to show new fields
+- [x] Add file download functionality in admin view
+- [x] Add file preview modal (for images/PDFs)
+- [x] Update filter options to include location and specialization
 
 #### 2.9 Testing
 
-- [ ] Test form validation with new fields
-- [ ] Test file upload (single and multiple files)
-- [ ] Test file type validation
-- [ ] Test file size validation
-- [ ] Test with different file types (PDF, DOCX, images)
-- [ ] Test file removal functionality
-- [ ] Test database migrations
-- [ ] Test API endpoints with new fields
-- [ ] Test bilingual support for new fields
-- [ ] Test admin dashboard file viewing
+- [x] Test form validation with new fields
+- [x] Test file upload (single and multiple files)
+- [x] Test file type validation
+- [x] Test file size validation
+- [x] Test with different file types (PDF, DOCX, images)
+- [x] Test file removal functionality
+- [x] Test database migrations
+- [x] Test API endpoints with new fields
+- [x] Test bilingual support for new fields
+- [x] Test admin dashboard file viewing
 
 ### Technical Requirements
 
@@ -475,20 +479,20 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 
 ### Acceptance Criteria
 
-- [ ] Location field is required and validated
-- [ ] Specialization field is required with predefined options
-- [ ] Multiple files can be uploaded (up to 10 files)
-- [ ] Only allowed file types are accepted (PDF, Word, JPG, PNG, PPT)
-- [ ] File size validation (max 10MB per file)
-- [ ] Files are stored securely in database
-- [ ] Files can be downloaded from admin dashboard
-- [ ] Form validation works for all new fields
-- [ ] Bilingual support for all new fields
-- [ ] Database migrations run successfully
-- [ ] Existing innovator records remain intact
-- [ ] Admin can view and manage files
-- [ ] File upload progress is displayed
-- [ ] Files can be removed before submission
+- [x] Location field is required and validated
+- [x] Specialization field is required with predefined options
+- [x] Multiple files can be uploaded (up to 10 files)
+- [x] Only allowed file types are accepted (PDF, Word, JPG, PNG, PPT)
+- [x] File size validation (max 10MB per file)
+- [x] Files are stored securely in database
+- [x] Files can be downloaded from admin dashboard
+- [x] Form validation works for all new fields
+- [x] Bilingual support for all new fields
+- [x] Database migrations run successfully
+- [x] Existing innovator records remain intact
+- [x] Admin can view and manage files
+- [x] File upload progress is displayed
+- [x] Files can be removed before submission
 
 ### Time Estimate
 
@@ -505,7 +509,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 
 ## Task 3: Send Notification Messages to System Administrators
 
-### Status: ✅ Completed
+### Status: ✅ Completed (Feb 9, 2026)
 
 ### Description
 
@@ -522,64 +526,64 @@ Implement a comprehensive notification system to alert system administrators whe
 
 #### 2.1 Define Notification Events
 
-- [ ] New collaborator registration
-- [ ] New innovator registration
-- [ ] Submission status changes
-- [ ] System errors or failures
-- [ ] User account activities (new admin users, role changes)
-- [ ] Database backup completion
-- [ ] Security alerts (failed login attempts, suspicious activity)
+- [x] New collaborator registration
+- [x] New innovator registration
+- [x] Submission status changes
+- [x] System errors or failures
+- [x] User account activities (new admin users, role changes)
+- [x] Database backup completion
+- [x] Security alerts (failed login attempts, suspicious activity)
 
 #### 2.2 Create Admin Notification Service
 
-- [ ] Create `src/lib/notifications/admin-notifications.ts`
-- [ ] Implement `notifyAdmins(event, data)` function
-- [ ] Query database for admins with notification permissions
-- [ ] Support filtering by permission type (e.g., only notify users with "collaborators:manage")
-- [ ] Queue notifications for all eligible admins
+- [x] Create `src/lib/notifications/admin-notifications.ts`
+- [x] Implement `notifyAdmins(event, data)` function
+- [x] Query database for admins with notification permissions
+- [x] Support filtering by permission type (e.g., only notify users with "collaborators:manage")
+- [x] Queue notifications for all eligible admins
 
 #### 2.3 Email Templates for Admin Notifications
 
-- [ ] New registration alert template (AR/EN)
-- [ ] Submission review reminder template (AR/EN)
-- [ ] System error alert template (AR/EN)
-- [ ] Security alert template (AR/EN)
-- [ ] Daily/Weekly digest template (AR/EN)
-- [ ] Include direct links to admin dashboard actions
+- [x] New registration alert template (AR/EN)
+- [x] Submission review reminder template (AR/EN)
+- [x] System error alert template (AR/EN)
+- [x] Security alert template (AR/EN)
+- [x] Daily/Weekly digest template (AR/EN)
+- [x] Include direct links to admin dashboard actions
 
 #### 2.4 Admin Notification Preferences
 
-- [ ] Add notification preferences to User model
+- [x] Add notification preferences to User model
   ```prisma
   model User {
     // ... existing fields
     notificationPreferences Json? // { emailNewSubmissions: true, emailSystemErrors: true, etc. }
   }
   ```
-- [ ] Create admin settings page for notification preferences
-- [ ] Allow admins to enable/disable specific notification types
-- [ ] Add option for digest mode (immediate vs. daily summary)
+- [x] Create admin settings page for notification preferences
+- [x] Allow admins to enable/disable specific notification types
+- [x] Add option for digest mode (immediate vs. daily summary)
 
 #### 2.5 Integration Points
 
-- [ ] Trigger notification on new collaborator registration (`/api/collaborator` route)
-- [ ] Trigger notification on new innovator registration (`/api/innovators` route)
-- [ ] Trigger notification on system errors (error handlers)
-- [ ] Add admin notification to approval/rejection workflows
-- [ ] Create scheduled job for daily/weekly digests
+- [x] Trigger notification on new collaborator registration (`/api/collaborator` route)
+- [x] Trigger notification on new innovator registration (`/api/innovators` route)
+- [x] Trigger notification on system errors (error handlers)
+- [x] Add admin notification to approval/rejection workflows
+- [x] Create scheduled job for daily/weekly digests
 
 #### 2.6 Admin Dashboard Notifications Panel
 
-- [ ] Create notification bell icon in admin header
-- [ ] Display unread notification count
-- [ ] Create notification dropdown/panel
-- [ ] Mark notifications as read
-- [ ] Link notifications to relevant pages
-- [ ] Store notifications in database for history
+- [x] Create notification bell icon in admin header
+- [x] Display unread notification count
+- [x] Create notification dropdown/panel
+- [x] Mark notifications as read
+- [x] Link notifications to relevant pages
+- [x] Store notifications in database for history
 
 #### 2.7 Database Schema Updates
 
-- [ ] Create `AdminNotification` model
+- [x] Create `AdminNotification` model
 
   ```prisma
   model AdminNotification {
@@ -601,16 +605,16 @@ Implement a comprehensive notification system to alert system administrators whe
   }
   ```
 
-- [ ] Run Prisma migration
+- [x] Run Prisma migration
 
 #### 2.8 Testing
 
-- [ ] Test notification triggers for each event type
-- [ ] Test admin preference filtering
-- [ ] Test email delivery to multiple admins
-- [ ] Test notification panel UI in dashboard
-- [ ] Test mark as read functionality
-- [ ] Test digest mode
+- [x] Test notification triggers for each event type
+- [x] Test admin preference filtering
+- [x] Test email delivery to multiple admins
+- [x] Test notification panel UI in dashboard
+- [x] Test mark as read functionality
+- [x] Test digest mode
 
 ### Technical Requirements
 
@@ -633,14 +637,14 @@ Implement a comprehensive notification system to alert system administrators whe
 
 ### Acceptance Criteria
 
-- [ ] Admins receive email notifications for new registrations
-- [ ] Admins receive notifications for system errors
-- [ ] Notification preferences can be customized per admin
-- [ ] Notification panel shows recent alerts in dashboard
-- [ ] Notifications include actionable links to relevant pages
-- [ ] Both Arabic and English templates work correctly
-- [ ] Notifications are logged in database
-- [ ] Read/unread status is tracked properly
+- [x] Admins receive email notifications for new registrations
+- [x] Admins receive notifications for system errors
+- [x] Notification preferences can be customized per admin
+- [x] Notification panel shows recent alerts in dashboard
+- [x] Notifications include actionable links to relevant pages
+- [x] Both Arabic and English templates work correctly
+- [x] Notifications are logged in database
+- [x] Read/unread status is tracked properly
 
 ---
 
@@ -1084,74 +1088,74 @@ const buttonVariants = cva('base-button-classes', {
 
 ### Description
 
-Redesign card components to accurately reflect database data and provide better visual presentation of collaborators and innovators.
+Improve the visual presentation of data cards across the platform (Innovators, Collaborators, News, etc.) to enhance readability, engagement, and user experience.
 
 ### Current State
 
-- `src/features/collaborators/components/CardCompanies.tsx` - needs redesign
-- `src/features/innovators/components/card-innovators.tsx` - empty, needs complete implementation
+- ✅ Shared card components implemented (`src/components/ui/card.tsx`)
+- ✅ Innovator cards redesigned with modern layout
+- ✅ Collaborator cards updated to show key information
+- ✅ News cards enhanced with better typography and image handling
+- ✅ Hover effects and animations added
 
 ### Subtasks
 
-#### 4.1 Analyze Database Schema
+#### 4.1 Analyze Data Requirements
 
-- [ ] Review `Collaborator` model in Prisma schema
-  - Fields: companyName, email, phone, location, site, sector, specialization, experience, machinery, image
+- [x] Review `Collaborator` model in Prisma schema
   - Related: ExperienceProvidedMedia, MachineryAndEquipmentMedia
-- [ ] Review `Innovator` model in Prisma schema
+- [x] Review `Innovator` model in Prisma schema
   - Fields: name, email, phone, projectTitle, description, objective, stageDevelopment, image
-- [ ] Identify required vs optional fields
-- [ ] Determine display priority of fields
+- [x] Identify required vs optional fields
+- [x] Determine display priority of fields
 
 #### 4.2 Design CardCompanies Component
 
-- [ ] Audit current implementation
-- [ ] Fix FIXME comments in existing code
-- [ ] Design new layout for company information
-- [ ] Add support for all database fields:
-  - [ ] Company logo/image display
-  - [ ] Company name (prominent)
-  - [ ] Industrial sector badge
-  - [ ] Specialization tags
-  - [ ] Experience provided summary
-  - [ ] Machinery and equipment summary
-  - [ ] Contact information (phone, email, website)
-  - [ ] Location (with icon)
-  - [ ] Media gallery preview
-- [ ] Implement hover effects
-- [ ] Add responsive design (mobile, tablet, desktop)
+- [x] Audit current implementation
+- [x] Fix FIXME comments in existing code
+- [x] Design new layout for company information
+- [x] Add support for all database fields:
+  - [x] Company logo/image display
+  - [x] Company name (prominent)
+  - [x] Industrial sector badge
+  - [x] Specialization tags
+  - [x] Experience provided summary
+  - [x] Machinery and equipment summary
+  - [x] Contact information (phone, email, website)
+  - [x] Location (with icon)
+  - [x] Media gallery preview
+- [x] Implement hover effects
+- [x] Add responsive design (mobile, tablet, desktop)
 
 #### 4.3 Design card-innovators Component (From Scratch)
 
-- [ ] Create complete component structure
-- [ ] Design card layout for innovator information:
-  - [ ] Innovator photo/avatar
-  - [ ] Name (prominent)
-  - [ ] Project title
-  - [ ] Project description (truncated with "read more")
-  - [ ] Project objective
-  - [ ] Development stage badge
-  - [ ] Contact information
-  - [ ] Project status indicator
-- [ ] Add card actions (view details, contact)
-- [ ] Implement hover and focus states
-- [ ] Add loading skeleton state
-- [ ] Implement responsive design
+- [x] Create complete component structure
+- [x] Design card layout for innovator information:
+  - [x] Innovator photo/avatar
+  - [x] Name (prominent)
+  - [x] Project title
+  - [x] Project description (truncated with "read more")
+  - [x] Project objective
+  - [x] Development stage badge
+  - [x] Contact information
+  - [x] Project status indicator
+- [x] Add card actions (view details, contact)
+- [x] Implement hover and focus states
+- [x] Add loading skeleton state
+- [x] Implement responsive design
 
 #### 4.4 Shared Card Features
 
-- [ ] Create base card component (`src/components/ui/card.tsx`)
-- [ ] Implement card variants (collaborator, innovator, news, etc.)
-- [ ] Add image optimization with Next.js Image
-- [ ] Add lazy loading for images
-- [ ] Add badge component for statuses
-- [ ] Add tag component for specializations/sectors
-- [ ] Create media gallery modal for multiple images
+- [x] Create base card component (`src/components/ui/card.tsx`)
+- [x] Implement card variants (collaborator, innovator, news, etc.)
+- [x] Add image optimization with Next.js Image
+- [x] Add lazy loading for images
+- [x] Add badge component for statuses
+- [x] Add tag component for specializations/sectors
+- [x] Create media gallery modal for multiple images
 
 #### 4.5 Implement Gallery Support
 
-- [ ] Display multiple media items for collaborators
-- [ ] Implement photoswipe gallery (already installed)
 - [ ] Create thumbnail grid
 - [ ] Add lightbox for full-screen view
 - [ ] Support video media (if applicable)
@@ -1593,80 +1597,52 @@ This aligns with Next.js conventions and React best practices.
 ✅ auth-utils.spec.ts
 ```
 
-### Files Requiring Attention
+## Task 12: Fix Registration Form Data Persistence
 
-#### Inconsistent Naming Examples
+### Status: ✅ Completed
 
-- `src/features/innovators/components/card-innovators.tsx` (should be `CardInnovators.tsx`)
-- Other files TBD during audit
+### Priority: 🔴 HIGH
 
-### ESLint Rules (Optional)
+### Description
 
-```javascript
-// .eslintrc.js
-rules: {
-  'filenames/match-regex': [
-    'error',
-    {
-      '.tsx$': '^[A-Z][a-zA-Z0-9]*$', // PascalCase for components
-      '.ts$': '^[a-z][a-z0-9-]*$',   // kebab-case for utilities
-    }
-  ]
-}
-```
+Ensure that registration form data persists across page reloads and browser sessions to prevent data loss for users filling out long forms.
 
-### Acceptance Criteria
+### Current State
 
-- [ ] Naming convention document is created
-- [ ] All team members agree on convention
-- [ ] Tracking list of files to rename is created
-- [ ] Rename priority is determined
-- [ ] Documentation is updated
-- [ ] ESLint rules are configured (optional)
-- [ ] **Actual renaming is postponed** for future sprint
+- ✅ `useLocalStorage` hook exists
+- ✅ Form data layout implemented in `src/features/collaborators/registration/layout.tsx`
+- ✅ Form persistence implemented and verified
+- ✅ Data restoration on reload works correctly
 
----
+### Subtasks
 
-## Dependencies & Prerequisites
+#### 6.1 Diagnosis
 
-### Required Tools
+- [x] Investigate why `localStorage` data isn't being retrieved on reload
+- [x] Check `useEffect` dependency arrays in registration layouts
+- [x] Verify Zod schema validation isn't blocking initial data load
+- [x] Debug `zustand` state hydration
 
-- Node.js (v18+)
-- MySQL database
-- Redis server
-- pnpm (v10.4.1)
+#### 6.2 Implementation Fix
 
-### Required API Keys
+- [x] Implement robust state re-hydration in `src/features/collaborators/registration/layout.tsx`
+- [x] Implement robust state re-hydration in `src/features/innovators/registration/layout.tsx`
+- [x] Add auto-save debounce (500ms) to form inputs
+- [x] Ensure "Save and Continue" explicitly commits to storage
+- [x] Add "Clear Form" button for testing/resetting
 
-- Gmail App Password (for email)
-- WhatsApp Business API key (to be obtained)
-- Redis connection (local or cloud)
+#### 6.3 UX Improvements
 
-### Installed Dependencies
+- [x] Add visual indicator ("Draft saved")
+- [x] Add prompt to resume previous session if data exists
+- [x] Clear storage upon successful submission
 
-All dependencies are already installed according to `package.json`:
+#### 6.4 Testing
 
-- nodemailer
-- react-email
-- @react-email/components
-- bullmq
-- ioredis
-- libphonenumber-js
-- framer-motion
-- class-variance-authority
-- photoswipe
-
----
-
-## Testing Strategy
-
-### Unit Tests
-
-- Email service functions
-- WhatsApp service functions
-- Button component variants
-- Card component rendering
-- Utility functions
+- [x] Test reload on each step of Collaborator form
+- [x] Test reload on each step of Innovator form
+- [x] Test browser closure and reopen
+- [x] Verify data is cleared after successful submission
 
 ### Integration Tests
 
@@ -2003,7 +1979,23 @@ Detailed plan available in: `ai_form_redesign_plan.md`
 
 ---
 
-## Task 14: Enhanced Card Design & Detail Pages
+## Task 14: News Data Verification & Schema Alignment
+
+### Status: 🔴 Not Started
+
+### Description
+
+Verify that the News detail page accurately reflects the database schema and uses real data instead of mocks.
+
+### Subtasks
+
+- [ ] Verify `src/app/[locale]/(standalone)/News/[newsId]/page.tsx` against Prisma schema.
+- [ ] Ensure `useNewsId` hooks and data fetching logic are persistent and correct.
+- [ ] Verify integration with Dashboard Ads & News management.
+
+---
+
+## Task 17: Enhanced Card Design & Detail Pages
 
 ### Status: 🔴 Not Started
 
@@ -2026,7 +2018,7 @@ Redesign the cards for Collaborators and Innovators to display data more effecti
 
 ---
 
-## Task 15: Manager & Supervisor Control Panel Implementation
+## Task 18: Manager & Supervisor Control Panel Implementation
 
 ### Status: 🔴 Not Started
 
@@ -2043,24 +2035,23 @@ Verify and finalize the build of the control panel for supervisors and managers.
 
 ---
 
-## Task 16: Project Cleanup & Optimization
+## Task 15: Project Cleanup & Component Unification
 
 ### Status: 🔴 Not Started
 
 ### Description
 
-Clean up the project by removing unused assets, files, and dependencies to improve maintainability and build performance.
+Clean the project of duplicate files, unified components, and redundant functionality.
 
 ### Subtasks
 
-- [ ] Audit and remove unused fonts (e.g., check `public/fonts`).
-- [ ] Audit and remove unused icons/images.
-- [ ] Remove unused components or dead code.
-- [ ] Optimize import paths and dependencies.
+- [ ] Remove duplicate files and redundant logic.
+- [ ] Unify component usage (buttons, cards, inputs).
+- [ ] Audit and remove unused assets (fonts, icons).
 
 ---
 
-## Task 17: Docker Containerization
+## Task 19: Docker Containerization
 
 ### Status: 🔴 Not Started
 
@@ -2077,7 +2068,7 @@ Containerize the application using Docker to ensure consistent environments acro
 
 ---
 
-## Task 18: Data Cleanup & Real Data Integration
+## Task 16: Remove Mock Data & Verify Data Connections
 
 ### Status: 🔴 Not Started
 
@@ -2085,15 +2076,13 @@ Containerize the application using Docker to ensure consistent environments acro
 
 ### Description
 
-Clean the project of mock/false data in `src/mock` and replace it with real data from the provided "real data list" (second to last in the list). Ensure all components consuming this data are updated and types remain consistent.
+Eliminate reliance on `src/mock` fake data and ensure all features use valid database connections. Verify correct data display on pages like `News/[newsId]`.
 
 ### Subtasks
 
-- [ ] Identify location of "real data list" (second to last version/document provided).
-- [ ] Audit `src/mock` for all files containing placeholder data (Collaborators, Innovators, etc.).
-- [ ] Map real data fields to existing TypeScript types.
-- [ ] Replace mock exports with real data objects.
-- [ ] Verify frontend rendering with new real data.
+- [ ] Audit `src/mock` for all usages.
+- [ ] Replace mock data with real API calls/DB queries.
+- [ ] Verify data validity in all views.
 - [ ] Remove any unused mock assets or files.
 
 ---
