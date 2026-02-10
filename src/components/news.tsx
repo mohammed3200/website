@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, Newspaper } from 'lucide-react';
 import { useTranslations } from "next-intl";
 import useLanguage from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
-import { MockNewsData as MOCK_NEWS } from "@/mock"
+import { useGetLatestNews } from "@/features/news/api/use-get-latest-news";
 import Image from 'next/image';
 import { ReadMore } from '@/components/buttons/read-more';
 
@@ -17,25 +17,27 @@ const truncateString = (str: string, num: number) => str.length > num ? str.slic
 export const News = () => {
   const { isArabic, lang } = useLanguage();
   const t = useTranslations("News");
+  const { data: news = [], isLoading } = useGetLatestNews(6);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
   // Auto-play
   useEffect(() => {
+    if (news.length === 0) return;
     const timer = setInterval(() => {
       nextSlide();
     }, 6000);
     return () => clearInterval(timer);
-  }, [currentIndex]);
+  }, [currentIndex, news.length]);
 
   const nextSlide = () => {
     setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % MOCK_NEWS.length);
+    setCurrentIndex((prev) => (prev + 1) % news.length);
   };
 
   const prevSlide = () => {
     setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + MOCK_NEWS.length) % MOCK_NEWS.length);
+    setCurrentIndex((prev) => (prev - 1 + news.length) % news.length);
   };
 
   const goToSlide = (index: number) => {
@@ -43,7 +45,20 @@ export const News = () => {
     setCurrentIndex(index);
   };
 
-  const currentNews = MOCK_NEWS[currentIndex];
+  if (isLoading) {
+    return <div className="w-full py-16 flex justify-center"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
+  }
+
+  if (news.length === 0) return null;
+
+  const currentItem = news[currentIndex];
+  // Map DB fields to UI
+  const title = isArabic ? currentItem.title : (currentItem.titleEn || currentItem.title);
+  const description = isArabic ? currentItem.content : (currentItem.contentEn || currentItem.content);
+  // Strip HTML tags for description preview if needed, or just take substring
+  const cleanDescription = description.replace(/<[^>]*>?/gm, '');
+  const image = currentItem.image?.url || '/images/placeholders/news-placeholder.jpg';
+  const updatedTime = new Date(currentItem.updatedAt).toLocaleDateString(isArabic ? 'ar-EG' : 'en-US');
 
   const variants = {
     enter: (direction: number) => ({
@@ -109,35 +124,37 @@ export const News = () => {
                 <div className="w-full md:w-1/2 h-1/2 md:h-full relative overflow-hidden group">
                   <Image
                     fill
-                    src={currentNews.image}
-                    alt={currentNews.title}
+                    src={image}
+                    alt={title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:hidden" />
 
                   {/* updatedTime Badge (Mobile) */}
+                  {/* updatedTime Badge (Mobile) */}
                   <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-primary md:hidden">
-                    {currentNews.updatedTime}
+                    {updatedTime}
                   </div>
                 </div>
 
                 {/* Content Section */}
                 <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center relative">
                   {/* updatedTime Badge (Desktop) */}
+                  {/* updatedTime Badge (Desktop) */}
                   <div className="hidden md:inline-flex self-start mb-4 px-3 py-1 bg-primary/5 text-primary text-sm font-bold rounded-full border border-primary/10">
-                    {currentNews.updatedTime}
+                    {updatedTime}
                   </div>
 
                   <h3 className="text-2xl md:text-3xl font-bold font-almarai text-foreground mb-4 leading-tight">
-                    {currentNews.title}
+                    {title}
                   </h3>
 
                   <p className="text-gray-500 font-outfit text-base md:text-lg leading-relaxed mb-8">
-                    {truncateString(currentNews.description, 150)}
+                    {truncateString(cleanDescription, 150)}
                   </p>
 
                   <div className="self-start">
-                    <ReadMore href={`/${lang}/News/${currentNews.id}`} />
+                    <ReadMore href={`/${lang}/News/${currentItem.id}`} />
                   </div>
                 </div>
 
@@ -148,7 +165,7 @@ export const News = () => {
 
         {/* Dots Navigation */}
         <div className="flex justify-center gap-2 mt-8">
-          {MOCK_NEWS.map((_, idx) => (
+          {news.map((_, idx) => (
             <button
               key={idx}
               onClick={() => goToSlide(idx)}
