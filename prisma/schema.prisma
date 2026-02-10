@@ -212,9 +212,13 @@ model Media {
 model News {
   id              String    @id @default(cuid())
   title           String
+  titleEn         String?
   slug            String    @unique
   content         String    @db.Text
+  contentEn       String?   @db.Text
   excerpt         String?   @db.Text
+  excerptEn       String?   @db.Text
+  tags            String?   @db.Text // Comma-separated tags
   duration        String?
   isActive        Boolean   @default(true)
   isFeatured      Boolean   @default(false)
