@@ -26,6 +26,7 @@ import {
   Trash2,
   Filter,
   X,
+  RefreshCw,
 } from 'lucide-react';
 import {
   AlertDialog,
@@ -93,7 +94,7 @@ export default function NotificationsPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [notificationToDelete, setNotificationToDelete] = useState<string | null>(null);
 
-  const { data, isLoading, error } = useNotifications({
+  const { data, isLoading, error, refetch, isFetching } = useNotifications({
     page,
     limit: 20,
     ...filters,
@@ -150,21 +151,35 @@ export default function NotificationsPage() {
     await markAllRead.mutateAsync();
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-    <div>
+        <div>
           <h1 className="text-3xl font-bold text-gray-900">Notifications</h1>
           <p className="text-gray-600 mt-1">
             Manage and review system notifications
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={isFetching}
+          >
+            <RefreshCw className={cn("h-4 w-4 mr-2", isFetching && "animate-spin")} />
+            Refresh
+          </Button>
           {data?.pagination.total && data.pagination.total > 0 && (
             <Button
               variant="outline"
+              size="sm"
               onClick={handleMarkAllRead}
               disabled={markAllRead.isPending}
             >
@@ -384,7 +399,7 @@ export default function NotificationsPage() {
                   </div>
                 </div>
               ))}
-    </div>
+            </div>
 
             {/* Pagination */}
             {data?.pagination.totalPages && data.pagination.totalPages > 1 && (
