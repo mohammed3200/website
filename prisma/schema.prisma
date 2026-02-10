@@ -178,6 +178,8 @@ model Image {
   alt           String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  collaborators Collaborator[]
+  innovators    Innovator[]
   news          News[]
   StrategicPlan StrategicPlan[]
 
@@ -187,17 +189,20 @@ model Image {
 }
 
 model Media {
-  id           String   @id @default(cuid())
-  filename     String?
-  originalName String?
-  url          String? // S3 public URL
-  s3Key        String? // S3 object key
-  s3Bucket     String? // S3 bucket name
-  mimeType     String?
-  size         Int?
-  duration     Int?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                         String                       @id @default(cuid())
+  filename                   String?
+  originalName               String?
+  url                        String? // S3 public URL
+  s3Key                      String? // S3 object key
+  s3Bucket                   String? // S3 bucket name
+  mimeType                   String?
+  size                       Int?
+  duration                   Int?
+  createdAt                  DateTime                     @default(now())
+  updatedAt                  DateTime                     @updatedAt
+  experienceProvidedMedia    ExperienceProvidedMedia[]
+  innovatorProjectFiles      InnovatorProjectFile[]
+  machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
 
   @@index([filename])
   @@index([mimeType])
@@ -282,7 +287,116 @@ model FAQ {
   @@index([isSticky])
 }
 
-// Registration models removed for isolation baseline
+model Innovator {
+  id                 String                 @id @default(cuid())
+  name               String
+  email              String
+  phone              String
+  projectTitle       String
+  projectDescription String?                @db.Text
+  objective          String?                @db.Text
+  stageDevelopment   StageDevelopment
+  status             RecordStatus           @default(PENDING)
+  isVisible          Boolean                @default(false)
+  imageId            String?
+  location           String?
+  educationLevel     String?
+  fieldOfStudy       String?
+  workExperience     String?                @db.Text
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+  reviewedAt         DateTime?
+  reviewedById       String?
+  city               String?
+  country            String?
+  image              Image?                 @relation(fields: [imageId], references: [id])
+  projectFiles       InnovatorProjectFile[]
+
+  @@index([status])
+  @@index([isVisible])
+  @@index([stageDevelopment])
+  @@index([createdAt])
+  @@index([email])
+  @@index([imageId], map: "Innovator_imageId_fkey")
+}
+
+model Collaborator {
+  id                         String                       @id @default(cuid())
+  companyName                String
+  primaryPhoneNumber         String
+  optionalPhoneNumber        String?
+  email                      String
+  location                   String?
+  website                    String?
+  industrialSector           String
+  specialization             String
+  experienceProvided         String?                      @db.Text
+  machineryAndEquipment      String?                      @db.Text
+  status                     RecordStatus                 @default(PENDING)
+  isVisible                  Boolean                      @default(false)
+  imageId                    String?
+  establishedYear            Int?
+  employeeCount              String?
+  annualRevenue              String?
+  certifications             String?                      @db.Text
+  createdAt                  DateTime                     @default(now())
+  updatedAt                  DateTime                     @updatedAt
+  reviewedAt                 DateTime?
+  reviewedById               String?
+  site                       String?
+  image                      Image?                       @relation(fields: [imageId], references: [id])
+  experienceProvidedMedia    ExperienceProvidedMedia[]
+  machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
+
+  @@index([status])
+  @@index([isVisible])
+  @@index([industrialSector])
+  @@index([createdAt])
+  @@index([email])
+  @@index([imageId], map: "Collaborator_imageId_fkey")
+}
+
+model ExperienceProvidedMedia {
+  id             String        @id @default(cuid())
+  collaboratorId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  media          String
+  collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
+  mediaRecord    Media         @relation(fields: [media], references: [id])
+
+  @@index([collaboratorId])
+  @@index([media])
+}
+
+model MachineryAndEquipmentMedia {
+  id             String        @id @default(cuid())
+  collaboratorId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  media          String
+  collaborator   Collaborator? @relation(fields: [collaboratorId], references: [id])
+  mediaRecord    Media         @relation(fields: [media], references: [id])
+
+  @@index([collaboratorId])
+  @@index([media])
+}
+
+model InnovatorProjectFile {
+  id          String    @id @default(cuid())
+  innovatorId String
+  fileName    String
+  fileType    String
+  fileSize    Int
+  mediaId     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  innovator   Innovator @relation(fields: [innovatorId], references: [id])
+  media       Media     @relation(fields: [mediaId], references: [id])
+
+  @@index([innovatorId])
+  @@index([mediaId])
+}
 
 model AuditLog {
   id        String      @id @default(cuid())
@@ -350,6 +464,14 @@ model AdminNotification {
   @@index([userId])
   @@index([isRead])
   @@index([createdAt])
+}
+
+enum StageDevelopment {
+  STAGE
+  PROTOTYPE
+  DEVELOPMENT
+  TESTING
+  RELEASED
 }
 
 enum RecordStatus {
