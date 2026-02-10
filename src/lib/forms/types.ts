@@ -98,3 +98,8 @@ export interface FormActions<T> {
 }
 
 export type FormStore<T> = FormState<T> & FormActions<T>;
+
+export interface SelectOption {
+  value: string;
+  label: string | { ar: string; en: string };
+}
