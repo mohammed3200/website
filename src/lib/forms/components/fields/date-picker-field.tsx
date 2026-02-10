@@ -1,10 +1,9 @@
-
 'use client';
 
 import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FormFieldWrapper } from './form-field-wrapper';
 import { Button } from '@/components/ui/button';
@@ -36,7 +35,7 @@ export function DatePickerField({
     disabled,
     minDate,
     maxDate,
-    placeholder = 'Pick a date',
+    placeholder = 'Select date',
     className,
     wrapperClassName,
 }: DatePickerFieldProps) {
@@ -51,7 +50,10 @@ export function DatePickerField({
             required={required}
             className={wrapperClassName}
         >
-            <div className={cn('relative', className)}>
+            <div className={cn('relative group', className)}>
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-gray-400 group-focus-within:text-primary transition-colors">
+                    <Calendar className="w-5 h-5" />
+                </div>
                 <DatePicker
                     selected={value}
                     onChange={onChange}
@@ -59,46 +61,61 @@ export function DatePickerField({
                     minDate={minDate}
                     maxDate={maxDate}
                     placeholderText={placeholder}
+                    className="w-full"
                     customInput={
                         <Button
-                            variant={'outline'}
+                            variant="outline"
                             className={cn(
-                                'w-full justify-start text-left font-normal',
-                                !value && 'text-muted-foreground',
-                                error && 'border-destructive'
+                                'w-full h-12 justify-start text-left font-normal bg-white border-2 border-gray-200 rounded-xl pl-11',
+                                'transition-all duration-300',
+                                'hover:border-orange-300 hover:shadow-form hover:bg-white',
+                                'focus:border-primary focus:shadow-form-focus focus:ring-0',
+                                !value && 'text-gray-400',
+                                error && 'border-destructive',
+                                'relative overflow-hidden'
                             )}
                             id={id}
                         >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {value ? value.toLocaleDateString() : <span>{placeholder}</span>}
+                            <span className="relative z-10">{value ? value.toLocaleDateString() : placeholder}</span>
+                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-brand opacity-0 group-focus-within:opacity-100 transition-opacity" />
                         </Button>
                     }
                 />
             </div>
-            {/* Overrides for react-datepicker to match theme */}
             <style jsx global>{`
         .react-datepicker-wrapper {
           width: 100%;
         }
         .react-datepicker {
           font-family: inherit;
-          border-radius: var(--radius);
-          border-color: hsl(var(--border));
-          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+          border-radius: 1rem;
+          border: 2px solid #e5e7eb;
+          box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+          overflow: hidden;
         }
         .react-datepicker__header {
-          background-color: hsl(var(--muted));
-          border-bottom-color: hsl(var(--border));
-          border-top-left-radius: var(--radius);
-          border-top-right-radius: var(--radius);
+          background: linear-gradient(135deg, #FE6601 0%, #ed847e 100%);
+          border-bottom: none;
+          padding-top: 1rem;
+        }
+        .react-datepicker__current-month,
+        .react-datepicker__day-name {
+          color: white;
+          font-weight: 600;
         }
         .react-datepicker__day--selected,
         .react-datepicker__day--keyboard-selected {
-          background-color: hsl(var(--primary)) !important;
-          color: hsl(var(--primary-foreground)) !important;
+          background: #FE6601 !important;
+          color: white !important;
+          border-radius: 0.5rem;
         }
         .react-datepicker__day:hover {
-            background-color: hsl(var(--accent));
+          background: #fff7ed;
+          color: #FE6601;
+          border-radius: 0.5rem;
+        }
+        .react-datepicker__navigation-icon::before {
+          border-color: white;
         }
       `}</style>
         </FormFieldWrapper>

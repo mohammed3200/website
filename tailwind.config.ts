@@ -86,6 +86,15 @@ export default {
       boxShadow: {
         'input-phone':
           '0px 2px 3px -1px rgba(0, 0, 0, 0.1), 0px 1px 0px 0px rgba(25, 28, 33, 0.02), 0px 0px 0px 1px rgba(25, 28, 33, 0.08)',
+        'form': '0 4px 20px -2px rgba(254, 102, 1, 0.1)',
+        'form-focus': '0 0 0 4px rgba(254, 102, 1, 0.15)',
+        'card': '0 20px 40px -10px rgba(0, 0, 0, 0.08)',
+        'card-hover': '0 25px 50px -12px rgba(254, 102, 1, 0.15)',
+      },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-brand': 'linear-gradient(135deg, #FE6601 0%, #ed847e 100%)',
       },
       fontFamily: {
         sans: ['var(--font-almarai)', ...defaultTheme.fontFamily.sans],
@@ -122,6 +131,14 @@ export default {
             transform: 'translateY(-0.1em)',
           },
         },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        float: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
       },
       animation: {
         scroll:
@@ -130,6 +147,8 @@ export default {
           'scroll-vertical var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite',
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'shimmer': 'shimmer 2s linear infinite',
+        'float': 'float 6s ease-in-out infinite',
       },
     },
   },

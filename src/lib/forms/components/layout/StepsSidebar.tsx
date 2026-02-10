@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Check, HelpCircle, Save } from 'lucide-react';
+import { Check, HelpCircle, Save, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { FormStep } from '@/lib/forms/types';
@@ -10,126 +10,156 @@ import { Button } from '@/components/ui/button';
 interface StepsSidebarProps {
     steps: FormStep[];
     currentStepIndex: number;
-    completedSteps?: number[]; // indices of completed steps
+    completedSteps?: number[];
     onStepClick?: (index: number) => void;
     className?: string;
+    progress: number;
+    isMobile?: boolean;
 }
 
 export function StepsSidebar({
     steps,
     currentStepIndex,
-    completedSteps = [], // Default to empty if not provided, though logic usually infers from current index
+    completedSteps = [],
     onStepClick,
     className,
+    progress,
+    isMobile = false,
 }: StepsSidebarProps) {
     const locale = useLocale();
-    const t = useTranslations('Navigation'); // Using Navigation namespace for generic terms
+    const t = useTranslations('Navigation');
     const isRtl = locale === 'ar';
 
     return (
         <div
             className={cn(
-                'w-64 flex-shrink-0 min-h-screen bg-transparent border-r border-slate-200 dark:border-slate-800 flex flex-col',
+                'h-full flex flex-col bg-white border-r border-gray-200',
+                isMobile ? 'w-full' : 'w-80 sticky top-0 h-screen',
                 className
             )}
         >
-            {/* Header / Logo Area */}
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800/50 bg-transparent">
-                <div className="flex items-center gap-2 font-bold text-xl text-primary">
-                    {/* You might want to import your Logo component here */}
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <div className="w-4 h-4 bg-primary rounded-full" />
+            {/* Header */}
+            <div className="p-6 border-b border-gray-100">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center shadow-lg shadow-orange-500/25">
+                        <div className="w-5 h-5 bg-white rounded-full" />
                     </div>
-                    <span>Incubator</span>
+                    <div>
+                        <h1 className="font-bold text-gray-900 text-lg">Incubator</h1>
+                        <p className="text-xs text-gray-500">{isRtl ? 'مركز ريادة الأعمال' : 'Entrepreneurship Center'}</p>
+                    </div>
+                </div>
+
+                {/* Progress Overview */}
+                <div className="mt-6">
+                    <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            {isRtl ? 'التقدم' : 'Progress'}
+                        </span>
+                        <span className="text-sm font-bold text-primary">{Math.round(progress)}%</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <motion.div
+                            className="h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${progress}%` }}
+                            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Steps List */}
-            <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto bg-transparent">
+            <nav className="flex-1 overflow-y-auto p-4 space-y-2">
                 {steps.map((step, index) => {
                     const isCompleted = index < currentStepIndex || completedSteps.includes(index);
                     const isActive = index === currentStepIndex;
-                    const isPending = !isCompleted && !isActive;
-
-                    // Allow clicking only if completed or active (navigation logic usually handled by parent)
                     const isClickable = (isCompleted || isActive) && !!onStepClick;
                     const Icon = step.icon;
 
                     return (
-                        <div key={step.id} className="relative">
+                        <motion.div
+                            key={step.id}
+                            initial={false}
+                            animate={isActive ? { scale: 1.02 } : { scale: 1 }}
+                            className={cn(
+                                'relative flex items-center gap-3 p-3 rounded-xl transition-all duration-300',
+                                isClickable ? 'cursor-pointer' : 'cursor-default',
+                                isActive
+                                    ? 'bg-orange-50 border-2 border-primary shadow-md'
+                                    : isCompleted
+                                        ? 'bg-gray-50 border-2 border-transparent hover:bg-orange-50/50'
+                                        : 'bg-transparent border-2 border-transparent opacity-60'
+                            )}
+                            onClick={() => isClickable && onStepClick?.(index)}
+                        >
+                            {/* Status Indicator */}
                             <div
                                 className={cn(
-                                    'relative flex items-center gap-3 p-3 rounded-xl transition-all duration-200',
-                                    isClickable ? 'cursor-pointer hover:bg-slate-100/50 dark:hover:bg-slate-800/50' : 'cursor-default',
-                                    isActive && 'bg-white/10 dark:bg-slate-800/20 shadow-sm ring-1 ring-slate-200/50 dark:ring-slate-700/50'
+                                    'w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 flex-shrink-0',
+                                    isCompleted
+                                        ? 'bg-green-100 text-green-600'
+                                        : isActive
+                                            ? 'bg-primary text-white shadow-lg shadow-orange-500/30'
+                                            : 'bg-gray-200 text-gray-400'
                                 )}
-                                onClick={() => isClickable && onStepClick?.(index)}
                             >
-                                {/* Status Indicator / Icon */}
-                                <div
-                                    className={cn(
-                                        'relative z-10 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300 border',
-                                        isCompleted
-                                            ? 'bg-green-100/20 border-green-200/30 text-green-600 dark:bg-green-900/10 dark:border-green-800/30'
-                                            : isActive
-                                                ? 'bg-primary/10 border-primary/20 text-primary'
-                                                : 'bg-slate-50/10 border-slate-200/20 text-slate-400 dark:bg-slate-800/10 dark:border-slate-700/20'
-                                    )}
-                                >
-                                    {isCompleted ? (
-                                        <Check className="w-4 h-4" />
-                                    ) : (
-                                        Icon ? <Icon className="w-4 h-4" /> : <span className="text-xs font-mono">{index + 1}</span>
-                                    )}
-                                </div>
-
-                                {/* Text Content */}
-                                <div className="flex-1 min-w-0">
-                                    <p
-                                        className={cn(
-                                            'text-sm font-medium truncate',
-                                            isActive ? 'text-primary' : isCompleted ? 'text-slate-700 dark:text-slate-200' : 'text-slate-500'
-                                        )}
-                                    >
-                                        {isRtl ? step.title.ar : step.title.en}
-                                    </p>
-                                </div>
-
-                                {/* Active Indicator (Right Border/Dot) */}
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="activeStep"
-                                        className={cn(
-                                            "absolute w-1 h-8 bg-primary rounded-full",
-                                            isRtl ? "left-0" : "right-0"
-                                        )}
-                                    />
+                                {isCompleted ? (
+                                    <Check className="w-5 h-5" />
+                                ) : Icon ? (
+                                    <Icon className="w-5 h-5" />
+                                ) : (
+                                    <span className="text-sm font-bold">{index + 1}</span>
                                 )}
                             </div>
 
-                            {/* Connecting Line (Horizontal separator instead of vertical connector) */}
-                            {index !== steps.length - 1 && (
-                                <div
+                            {/* Step Info */}
+                            <div className="flex-1 min-w-0">
+                                <p
                                     className={cn(
-                                        "mx-auto my-1 h-[2px] w-[80%] rounded-full opacity-30",
-                                        isCompleted ? "bg-green-500" : "bg-slate-200 dark:bg-slate-800"
+                                        'text-sm font-bold truncate transition-colors',
+                                        isActive ? 'text-primary' : isCompleted ? 'text-gray-700' : 'text-gray-500'
                                     )}
-                                />
+                                >
+                                    {isRtl ? step.title.ar : step.title.en}
+                                </p>
+                                {step.description && (
+                                    <p className="text-xs text-gray-400 truncate">
+                                        {isRtl ? step.description.ar : step.description.en}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Arrow for active */}
+                            {isActive && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: isRtl ? 10 : -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="text-primary"
+                                >
+                                    {isRtl ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
+                                </motion.div>
                             )}
-                        </div>
+                        </motion.div>
                     );
                 })}
             </nav>
 
             {/* Footer Actions */}
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800/50 space-y-2 bg-transparent">
-                <Button variant="ghost" className="w-full justify-start gap-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100/50 dark:hover:bg-slate-800/50">
-                    <HelpCircle className="w-4 h-4" />
-                    {isRtl ? 'المساعدة والدعم' : 'Help & Support'}
+            <div className="p-4 border-t border-gray-100 space-y-2 bg-gray-50/50">
+                <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-3 text-gray-600 hover:text-primary hover:bg-orange-50 rounded-xl h-11"
+                >
+                    <HelpCircle className="w-5 h-5" />
+                    <span className="font-medium">{isRtl ? 'المساعدة' : 'Help & Support'}</span>
                 </Button>
-                <Button variant="ghost" className="w-full justify-start gap-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100/50 dark:hover:bg-slate-800/50">
-                    <Save className="w-4 h-4" />
-                    {isRtl ? 'حفظ وخروج' : 'Save & Exit'}
+                <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-3 text-gray-600 hover:text-primary hover:bg-orange-50 rounded-xl h-11"
+                >
+                    <Save className="w-5 h-5" />
+                    <span className="font-medium">{isRtl ? 'حفظ المسودة' : 'Save Draft'}</span>
                 </Button>
             </div>
         </div>

@@ -19,7 +19,6 @@ export * from './fields';
 
 // === Layout Components ===
 export * from './layout/FormContentArea';
-export * from './layout/MobileProgressBanner';
 export * from './layout/RegistrationLayout';
 export * from './layout/StepsSidebar';
 

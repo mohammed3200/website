@@ -9,7 +9,7 @@ import {
   useMarkNotificationRead,
   useNotifications,
   type Notification,
-} from '../api/use-notifications';
+} from '@/features/admin/api/use-notifications';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
