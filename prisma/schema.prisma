@@ -178,10 +178,10 @@ model Image {
   alt           String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
-  collaborators Collaborator[]
-  innovators    Innovator[]
   news          News[]
   StrategicPlan StrategicPlan[]
+  innovators    Innovator[]
+  collaborators Collaborator[]
 
   @@index([filename])
   @@index([mimeType])
@@ -189,20 +189,20 @@ model Image {
 }
 
 model Media {
-  id                         String                       @id @default(cuid())
-  filename                   String?
-  originalName               String?
-  url                        String? // S3 public URL
-  s3Key                      String? // S3 object key
-  s3Bucket                   String? // S3 bucket name
-  mimeType                   String?
-  size                       Int?
-  duration                   Int?
-  createdAt                  DateTime                     @default(now())
-  updatedAt                  DateTime                     @updatedAt
-  experienceProvidedMedia    ExperienceProvidedMedia[]
-  innovatorProjectFiles      InnovatorProjectFile[]
-  machineryAndEquipmentMedia MachineryAndEquipmentMedia[]
+  id                          String                       @id @default(cuid())
+  filename                    String?
+  originalName                String?
+  url                         String? // S3 public URL
+  s3Key                       String? // S3 object key
+  s3Bucket                    String? // S3 bucket name
+  mimeType                    String?
+  size                        Int?
+  duration                    Int?
+  createdAt                   DateTime                     @default(now())
+  updatedAt                   DateTime                     @updatedAt
+  experienceProvidedMedias    ExperienceProvidedMedia[]
+  machineryAndEquipmentMedias MachineryAndEquipmentMedia[]
+  innovatorProjectFiles       InnovatorProjectFile[]
 
   @@index([filename])
   @@index([mimeType])
