@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { zValidator } from "@hono/zod-validator";
 import { db } from "@/lib/db";
+import { zValidator } from "@hono/zod-validator";
 import { getLatestNewsSchema, getNewsByIdSchema } from "../schemas";
 
 const app = new Hono()
