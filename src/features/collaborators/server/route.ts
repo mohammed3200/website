@@ -361,6 +361,7 @@ const app = new Hono()
               message: `Collaborator "${collaborator.companyName}" has been ${validatedData.status.toLowerCase()}.`,
               actionUrl: `/admin/collaborators?id=${collaborator.id}`,
               priority: NotificationPriority.NORMAL,
+              requiredPermission: 'collaborators:manage',
               data: {
                 collaboratorId: collaborator.id,
                 status: validatedData.status,

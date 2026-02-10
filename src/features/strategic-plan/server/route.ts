@@ -32,12 +32,19 @@ const app = new Hono()
           id: plan.id,
           slug: plan.slug,
           title: plan.title,
+          titleAr: plan.titleAr,
           content: plan.content,
+          contentAr: plan.contentAr,
           excerpt: plan.excerpt,
+          excerptAr: plan.excerptAr,
           category: plan.category,
+          categoryAr: plan.categoryAr,
           priority: plan.priority,
           status: plan.status,
           isActive: plan.isActive,
+          progress: plan.progress,
+          phase: plan.phase,
+          phaseAr: plan.phaseAr,
           publishedAt: plan.publishedAt,
           image: plan.image
             ? {
@@ -89,12 +96,19 @@ const app = new Hono()
             id: strategicPlan.id,
             slug: strategicPlan.slug,
             title: strategicPlan.title,
+            titleAr: strategicPlan.titleAr,
             content: strategicPlan.content,
+            contentAr: strategicPlan.contentAr,
             excerpt: strategicPlan.excerpt,
+            excerptAr: strategicPlan.excerptAr,
             category: strategicPlan.category,
+            categoryAr: strategicPlan.categoryAr,
             priority: strategicPlan.priority,
             status: strategicPlan.status,
             isActive: strategicPlan.isActive,
+            progress: strategicPlan.progress,
+            phase: strategicPlan.phase,
+            phaseAr: strategicPlan.phaseAr,
             publishedAt: strategicPlan.publishedAt,
             startDate: strategicPlan.startDate,
             endDate: strategicPlan.endDate,
@@ -158,12 +172,19 @@ const app = new Hono()
           id: plan.id,
           slug: plan.slug,
           title: plan.title,
+          titleAr: plan.titleAr,
           content: plan.content,
+          contentAr: plan.contentAr,
           excerpt: plan.excerpt,
+          excerptAr: plan.excerptAr,
           category: plan.category,
+          categoryAr: plan.categoryAr,
           priority: plan.priority,
           status: plan.status,
           isActive: plan.isActive,
+          progress: plan.progress,
+          phase: plan.phase,
+          phaseAr: plan.phaseAr,
           publishedAt: plan.publishedAt,
           startDate: plan.startDate,
           endDate: plan.endDate,
@@ -234,13 +255,20 @@ const app = new Hono()
           data: {
             id: uuidv4(),
             title: validatedData.title,
+            titleAr: validatedData.titleAr || null,
             slug: validatedData.slug,
             content: validatedData.content,
+            contentAr: validatedData.contentAr || null,
             excerpt: validatedData.excerpt || null,
+            excerptAr: validatedData.excerptAr || null,
             category: validatedData.category || null,
+            categoryAr: validatedData.categoryAr || null,
             priority: validatedData.priority,
             status: validatedData.status,
             isActive: validatedData.isActive,
+            progress: validatedData.progress,
+            phase: validatedData.phase || null,
+            phaseAr: validatedData.phaseAr || null,
             publishedAt: validatedData.publishedAt ? new Date(validatedData.publishedAt) : null,
             startDate: validatedData.startDate ? new Date(validatedData.startDate) : null,
             endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
@@ -323,17 +351,29 @@ const app = new Hono()
         if (validatedData.title !== undefined) {
           updateData.title = validatedData.title;
         }
+        if (validatedData.titleAr !== undefined) {
+          updateData.titleAr = validatedData.titleAr;
+        }
         if (validatedData.slug !== undefined) {
           updateData.slug = validatedData.slug;
         }
         if (validatedData.content !== undefined) {
           updateData.content = validatedData.content;
         }
+        if (validatedData.contentAr !== undefined) {
+          updateData.contentAr = validatedData.contentAr;
+        }
         if (validatedData.excerpt !== undefined) {
           updateData.excerpt = validatedData.excerpt;
         }
+        if (validatedData.excerptAr !== undefined) {
+          updateData.excerptAr = validatedData.excerptAr;
+        }
         if (validatedData.category !== undefined) {
           updateData.category = validatedData.category;
+        }
+        if (validatedData.categoryAr !== undefined) {
+          updateData.categoryAr = validatedData.categoryAr;
         }
         if (validatedData.priority !== undefined) {
           updateData.priority = validatedData.priority;
@@ -343,6 +383,15 @@ const app = new Hono()
         }
         if (validatedData.isActive !== undefined) {
           updateData.isActive = validatedData.isActive;
+        }
+        if (validatedData.progress !== undefined) {
+          updateData.progress = validatedData.progress;
+        }
+        if (validatedData.phase !== undefined) {
+          updateData.phase = validatedData.phase;
+        }
+        if (validatedData.phaseAr !== undefined) {
+          updateData.phaseAr = validatedData.phaseAr;
         }
         if (validatedData.publishedAt !== undefined) {
           updateData.publishedAt = validatedData.publishedAt ? new Date(validatedData.publishedAt) : null;

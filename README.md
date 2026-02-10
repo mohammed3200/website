@@ -162,7 +162,7 @@ Professional 4-step workflows with smart validation and auto-save:
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Framework:** Next.js 15.1.2 (App Router)
+- **Framework:** Next.js 16.1.1 (App Router)
 - **UI Library:** React 19
 - **Language:** TypeScript (strict mode)
 - **Styling:** Tailwind CSS + shadcn/ui

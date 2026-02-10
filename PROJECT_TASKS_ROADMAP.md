@@ -24,12 +24,13 @@
 16. [Task 16: Remove Mock Data & Verify Data Connections](#task-16-remove-mock-data--verify-data-connections)
 17. [Task 17: Enhanced Card Design & Detail Pages](#task-17-enhanced-card-design--detail-pages)
 18. [Task 18: Manager & Supervisor Control Panel Implementation](#task-18-manager--supervisor-control-panel-implementation)
-19. [Task 19: Docker Containerization](#task-19-docker-containerization)
-20. [Task 20: Data Cleanup & Real Data Integration](#task-20-data-cleanup--real-data-integration)
-21. [Task 21: Home Section Design & Development](#task-21-home-section-design--development)
-22. [Task 22: Leadership & Incubators Content Strategy](#task-22-leadership--incubators-content-strategy)
-23. [Task 23: Contact Us Page Content Implementation](#task-23-contact-us-page-content-implementation)
-24. [Task 24: Architectural Debt Elimination & System Hardening](#task-24-architectural-debt-elimination--system-hardening)
+19. [Task 19: Project Cleanup & Component Unification](#task-19-project-cleanup--component-unification)
+20. [Task 20: Docker Containerization](#task-20-docker-containerization)
+21. [Task 21: Remove Mock Data & Verify Data Connections](#task-21-remove-mock-data--verify-data-connections)
+22. [Task 22: Home Section Design & Development](#task-22-home-section-design--development)
+23. [Task 23: Leadership & Incubators Content Strategy](#task-23-leadership--incubators-content-strategy)
+24. [Task 24: Contact Us Page Content Implementation](#task-24-contact-us-page-content-implementation)
+25. [Task 25: Architectural Debt Elimination & System Hardening](#task-25-architectural-debt-elimination--system-hardening)
 
 
 ---
@@ -154,9 +155,7 @@ Redesign and enhance the Innovators & Creators feature to include additional req
 
 1. **Location** - Innovator's geographical location (string)
 2. **Specialization** - Area of expertise/industry sector (string)
-1.  **Location** - Innovator's geographical location (string)
-2.  **Specialization** - Area of expertise/industry sector (string)
-3.  **Project Files** - Multiple file uploads (documents, images, presentations)
+3. **Project Files** - Multiple file uploads (documents, images, presentations)
 
 ### Subtasks
 
@@ -2035,7 +2034,7 @@ Verify and finalize the build of the control panel for supervisors and managers.
 
 ---
 
-## Task 15: Project Cleanup & Component Unification
+## Task 19: Project Cleanup & Component Unification
 
 ### Status: 🔴 Not Started
 
@@ -2051,7 +2050,7 @@ Clean the project of duplicate files, unified components, and redundant function
 
 ---
 
-## Task 19: Docker Containerization
+## Task 20: Docker Containerization
 
 ### Status: 🔴 Not Started
 
@@ -2068,7 +2067,7 @@ Containerize the application using Docker to ensure consistent environments acro
 
 ---
 
-## Task 16: Remove Mock Data & Verify Data Connections
+## Task 21: Remove Mock Data & Verify Data Connections
 
 ### Status: 🔴 Not Started
 
@@ -2087,7 +2086,7 @@ Eliminate reliance on `src/mock` fake data and ensure all features use valid dat
 
 ---
 
-## Task 19: Home Section Design & Development
+## Task 22: Home Section Design & Development
 
 ### Status: ✅ Completed
 
@@ -2107,7 +2106,7 @@ Develop a new "Home" (Hero/Intro) section that appears at the top of the page, b
 
 ---
 
-## Task 20: Leadership & Incubators Content Strategy
+## Task 23: Leadership & Incubators Content Strategy
 
 ### Status: ✅ Completed
 
@@ -2127,7 +2126,7 @@ Suggest and implement comprehensive ideas and content for the dedicated Leadersh
 
 ---
 
-## Task 21: Contact Us Page Content Implementation
+## Task 24: Contact Us Page Content Implementation
 
 ### Status: ✅ Completed
 
@@ -2147,7 +2146,7 @@ Populate the "Contact Us" page with all essential business information to ensure
 
 ---
 
-## Task 22: Architectural Debt Elimination & System Hardening
+## Task 25: Architectural Debt Elimination & System Hardening
 
 ### Status: 🔴 NOT STARTED
 

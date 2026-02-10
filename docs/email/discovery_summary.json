@@ -1,10 +1,10 @@
 {
   "discoveryDate": "2025-10-05",
   "projectName": "Misurata Entrepreneurship Center",
-  "runtime": "Next.js 15 App Router (Node.js + Edge optional)",
+  "runtime": "Next.js 16 App Router (Node.js + Edge optional)",
   "framework": {
     "name": "Next.js",
-    "version": "15.1.2",
+    "version": "16.1.1",
     "routing": "App Router",
     "language": "TypeScript 5.8.3"
   },
@@ -33,7 +33,10 @@
       "TwoFactorConfirmation"
     ],
     "migrationStatus": "Up to date",
-    "seedScripts": ["prisma/seed.ts", "prisma/seed-rbac.ts"]
+    "seedScripts": [
+      "prisma/seed.ts",
+      "prisma/seed-rbac.ts"
+    ]
   },
   "apiRoutes": [
     "src/app/api/[[...route]]/route.ts",
@@ -46,7 +49,11 @@
     "name": "Hono.js",
     "version": "4.8.3",
     "adapter": "hono/vercel",
-    "middleware": ["cors", "logger", "zod-validator"]
+    "middleware": [
+      "cors",
+      "logger",
+      "zod-validator"
+    ]
   },
   "existingEmailInfrastructure": {
     "nodemailer": {
@@ -216,7 +223,11 @@
         "createdAt": "DateTime @default(now())",
         "updatedAt": "DateTime @updatedAt"
       },
-      "indexes": ["tokenHash", "used", "expiresAt"],
+      "indexes": [
+        "tokenHash",
+        "used",
+        "expiresAt"
+      ],
       "relations": [
         "emailQueue: EmailQueue @relation(fields: [emailQueueId], references: [id], onDelete: Cascade)"
       ]
@@ -239,7 +250,11 @@
       "exists": false,
       "required": true,
       "path": "src/lib/email/utils/token.ts",
-      "features": ["HMAC signing", "Token verification", "SHA-256 hashing"]
+      "features": [
+        "HMAC signing",
+        "Token verification",
+        "SHA-256 hashing"
+      ]
     },
     "emailService": {
       "exists": false,
@@ -277,7 +292,9 @@
   "testStrategy": {
     "framework": "Jest 29.7.0",
     "testingLibrary": "@testing-library/react 16.3.0",
-    "existingTests": ["tests/admin-middleware.test.ts"],
+    "existingTests": [
+      "tests/admin-middleware.test.ts"
+    ],
     "testTransportStrategy": "File-based JSON output to tests/outgoing/",
     "integrationTestApproach": "RPC call → DB assertion → File output verification",
     "ciIntegration": "GitHub Actions (needs email test job)"
@@ -300,8 +317,14 @@
   },
   "i18n": {
     "framework": "next-intl 3.26.5",
-    "locales": ["en", "ar"],
-    "messageFiles": ["messages/en.json", "messages/ar.json"],
+    "locales": [
+      "en",
+      "ar"
+    ],
+    "messageFiles": [
+      "messages/en.json",
+      "messages/ar.json"
+    ],
     "rtlSupport": true,
     "routingStrategy": "Domain-based with [locale] folder"
   },
@@ -327,7 +350,10 @@
     "linting": {
       "eslint": "9.30.0",
       "config": "eslint.config.js",
-      "plugins": ["@typescript-eslint", "unused-imports"]
+      "plugins": [
+        "@typescript-eslint",
+        "unused-imports"
+      ]
     },
     "formatting": {
       "rules": "Consistent with existing codebase",
