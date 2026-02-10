@@ -196,7 +196,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Responsive design (mobile-first)
 
 #### Technical Infrastructure
-- **Frontend:** Next.js 15.1.2 (App Router), React 19, TypeScript
+- **Frontend:** Next.js 16.1.1 (App Router), React 19, TypeScript
 - **Styling:** Tailwind CSS, shadcn/ui components
 - **Backend:** Hono.js API routes
 - **Database:** MySQL with Prisma ORM

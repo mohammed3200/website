@@ -4,7 +4,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 
 ## Project Overview
 
-This is a bilingual (Arabic/English) web platform for the Misurata Center for Entrepreneurship & Business Incubators, built with Next.js 15, TypeScript, Prisma, and MySQL. The platform features automatic internationalization, role-based access control (RBAC), and an admin dashboard for managing content and submissions.
+This is a bilingual (Arabic/English) web platform for the Misurata Center for Entrepreneurship & Business Incubators, built with Next.js 16, TypeScript, Prisma, and MySQL. The platform features automatic internationalization, role-based access control (RBAC), and an admin dashboard for managing content and submissions.
 
 ## Development Commands
 
@@ -61,7 +61,7 @@ npx prisma migrate dev --create-only
 ## Architecture Overview
 
 ### Tech Stack
-- **Frontend**: Next.js 15 (App Router) + TypeScript + Tailwind CSS + Radix UI
+- **Frontend**: Next.js 16 (App Router) + TypeScript + Tailwind CSS + Radix UI
 - **Backend**: Hono.js (API routes) + Prisma ORM
 - **Database**: MySQL
 - **Authentication**: NextAuth.js v5 with custom credential provider
@@ -301,7 +301,7 @@ Key environment variables required (see `.env`):
 ## Additional Resources
 
 - **Prisma Docs**: https://www.prisma.io/docs
-- **Next.js 15 Docs**: https://nextjs.org/docs
+- **Next.js 16 Docs**: https://nextjs.org/docs
 - **Hono.js Docs**: https://hono.dev
 - **TanStack Query**: https://tanstack.com/query
 - **next-intl**: https://next-intl-docs.vercel.app
