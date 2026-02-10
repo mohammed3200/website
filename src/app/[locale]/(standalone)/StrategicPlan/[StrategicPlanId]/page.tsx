@@ -12,7 +12,7 @@ import { useGetStrategicPlan } from "@/features/strategic-plan/api";
 const PageStrategicPlan = () => {
   const StrategicPlanId = useStrategicPlanId();
   const { isArabic } = useLanguage();
-  
+
   const { data, isLoading, error } = useGetStrategicPlan(StrategicPlanId);
 
   if (isLoading) {
@@ -36,6 +36,13 @@ const PageStrategicPlan = () => {
   }
 
   const StrategicPlan = data.data;
+
+  // Bilingual values
+  const title = isArabic ? (StrategicPlan.titleAr || StrategicPlan.title) : StrategicPlan.title;
+  const content = isArabic ? (StrategicPlan.contentAr || StrategicPlan.content) : StrategicPlan.content;
+  const excerpt = isArabic ? (StrategicPlan.excerptAr || StrategicPlan.excerpt) : StrategicPlan.excerpt;
+  const phase = isArabic ? (StrategicPlan.phaseAr || StrategicPlan.phase) : StrategicPlan.phase;
+  const progress = StrategicPlan.progress || 0;
 
   if (!StrategicPlan) {
     return (
@@ -61,8 +68,8 @@ const PageStrategicPlan = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { 
-        duration: 0.5, 
+      transition: {
+        duration: 0.5,
         ease: [0.17, 0.67, 0.83, 0.67] // easeOut cubic bezier
       }
     }
@@ -80,9 +87,9 @@ const PageStrategicPlan = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8 relative z-10 max-w-5xl">
-        
+
         {/* Navigation / Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex justify-between items-center mb-12"
@@ -104,23 +111,23 @@ const PageStrategicPlan = () => {
                 {isArabic ? "خطة استراتيجية" : "Strategic Initiative"}
               </span>
             </motion.div>
-            
+
             <motion.h1 variants={itemVariants} className="text-4xl md:text-5xl lg:text-6xl font-black font-almarai leading-tight mb-4 text-foreground">
-              {StrategicPlan.title}
+              {title}
             </motion.h1>
-            
-            {StrategicPlan.excerpt && (
+
+            {excerpt && (
               <motion.div variants={itemVariants} className="flex items-center gap-4">
                 <div className="h-1.5 w-24 bg-gradient-to-r from-primary to-orange-300 rounded-full" />
                 <p className="text-xl md:text-2xl text-muted-foreground font-light font-outfit">
-                  {StrategicPlan.excerpt}
+                  {excerpt}
                 </p>
               </motion.div>
             )}
           </div>
 
           {/* Main Content Card */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             className="grid md:grid-cols-[2fr_1fr] gap-8 mt-12"
           >
@@ -128,10 +135,10 @@ const PageStrategicPlan = () => {
             <div className="bg-card border border-gray-100 shadow-xl shadow-gray-200/40 rounded-3xl p-8 md:p-10 relative overflow-hidden group">
               {/* Decorative gradient blob */}
               <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-700" />
-              
+
               <div className="prose prose-lg prose-gray max-w-none font-almarai relative z-10">
-                {StrategicPlan.content ? (
-                  StrategicPlan.content.split('\n\n').map((paragraph: string, idx: number) => (
+                {content ? (
+                  content.split('\n\n').map((paragraph: string, idx: number) => (
                     <p key={idx} className="text-gray-600 leading-relaxed mb-6 last:mb-0 whitespace-pre-line">
                       {paragraph}
                     </p>
@@ -157,13 +164,16 @@ const PageStrategicPlan = () => {
                     <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                   </div>
                   <span className="font-bold text-foreground">
-                    {isArabic ? "نشط وجاري العمل" : "Active & In Progress"}
+                    {StrategicPlan.status === 'PUBLISHED' ? (isArabic ? "نشط وجاري العمل" : "Active & In Progress") : (isArabic ? "تحت المراجعة" : "Under Review")}
                   </span>
                 </div>
                 <div className="w-full bg-gray-100 rounded-full h-2 mt-2">
-                  <div className="bg-primary h-2 rounded-full w-[65%]" />
+                  <div
+                    className="bg-primary h-2 rounded-full transition-all duration-1000"
+                    style={{ width: `${progress}%` }}
+                  />
                 </div>
-                <p className="text-xs text-right text-gray-400 mt-1">65%</p>
+                <p className="text-xs text-right text-gray-400 mt-1">{progress}%</p>
               </div>
 
               {/* Quick Stats */}
@@ -174,7 +184,7 @@ const PageStrategicPlan = () => {
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 font-bold uppercase">{isArabic ? "المرحلة" : "Phase"}</p>
-                    <p className="font-bold text-foreground">{isArabic ? "التنفيذ" : "Execution"}</p>
+                    <p className="font-bold text-foreground">{phase || (isArabic ? "قيد التنفيذ" : "Execution")}</p>
                   </div>
                 </div>
 
@@ -183,12 +193,12 @@ const PageStrategicPlan = () => {
                     <BarChart3 className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 font-bold uppercase">{isArabic ? "التأثير" : "Impact"}</p>
-                    <p className="font-bold text-foreground">{isArabic ? "عالي" : "High Priority"}</p>
+                    <p className="text-xs text-gray-500 font-bold uppercase">{isArabic ? "الأولوية" : "Priority"}</p>
+                    <p className="font-bold text-foreground">{StrategicPlan.priority}</p>
                   </div>
                 </div>
               </div>
-              
+
               {/* Action Button */}
               <button className="w-full py-4 rounded-xl bg-foreground text-background font-bold hover:bg-primary hover:text-white transition-all duration-300 shadow-lg shadow-gray-200 flex items-center justify-center gap-2 group">
                 <span>{isArabic ? "تحميل التقرير الكامل" : "Download Full Report"}</span>

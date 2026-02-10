@@ -242,14 +242,21 @@ model News {
 
 model StrategicPlan {
   id              String       @id @default(cuid())
-  title           String
+  title           String // title in English
+  titleAr         String? // title in Arabic
   slug            String       @unique
-  content         String       @db.Text
+  content         String       @db.Text // content in English
+  contentAr       String?      @db.Text // content in Arabic
   excerpt         String?      @db.Text
+  excerptAr       String?      @db.Text
   category        String?
+  categoryAr      String?
   priority        PlanPriority @default(MEDIUM)
   status          PlanStatus   @default(DRAFT)
   isActive        Boolean      @default(true)
+  progress        Int          @default(0) // 0-100
+  phase           String? // phase in English (e.g., "Execution")
+  phaseAr         String? // phase in Arabic
   publishedAt     DateTime?
   startDate       DateTime?
   endDate         DateTime?
