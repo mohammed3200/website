@@ -101,7 +101,7 @@ const NewsIdPage = () => {
               </div>
               <h1
                 className="text-2xl md:text-4xl lg:text-5xl font-bold font-almarai leading-tight max-w-4xl shadow-sm"
-                dir={isEnglish && news.titleEn ? "ltr" : isArabic ? "rtl" : "ltr"}
+                dir={news.titleEn && isEnglish ? "ltr" : "rtl"}
               >
                 {title}
               </h1>
@@ -115,7 +115,7 @@ const NewsIdPage = () => {
               <div className="prose prose-lg prose-gray max-w-none">
                 <p
                   className="text-lg md:text-xl text-gray-600 leading-relaxed font-outfit whitespace-pre-line"
-                  dir={isEnglish ? "ltr" : "rtl"}
+                  dir={news.contentEn && isEnglish ? "ltr" : "rtl"}
                 >
                   {description}
                 </p>

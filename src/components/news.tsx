@@ -25,10 +25,20 @@ export const News = () => {
   useEffect(() => {
     if (news.length === 0) return;
     const timer = setInterval(() => {
-      nextSlide();
+      setDirection(1);
+      setCurrentIndex((prev) => (prev + 1) % news.length);
     }, 6000);
     return () => clearInterval(timer);
-  }, [currentIndex, news.length]);
+  }, [news.length]);
+
+  // Handle news changes - ensure index is within bounds
+  useEffect(() => {
+    if (news.length > 0) {
+      setCurrentIndex((prev) => Math.min(prev, Math.max(0, news.length - 1)));
+    } else {
+      setCurrentIndex(0);
+    }
+  }, [news.length]);
 
   const nextSlide = () => {
     setDirection(1);

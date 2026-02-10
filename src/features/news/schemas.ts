@@ -19,7 +19,7 @@ export const baseNewsSchema = z.object({
     tags: z.string().optional().nullable(), // Comma separated tags
     isActive: z.boolean().default(true),
     isFeatured: z.boolean().default(false),
-    publishedAt: z.date().optional().nullable(),
+    publishedAt: z.coerce.date().optional().nullable(),
     imageId: z.string().optional().nullable(),
     galleryIds: z.string().optional().nullable(),
 });
@@ -39,8 +39,8 @@ export const newsSchema = baseNewsSchema.extend({
         url: z.string().nullable(),
         alt: z.string().nullable().optional(),
     }).nullable().optional(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
+    createdAt: z.coerce.date(),
+    updatedAt: z.coerce.date(),
     createdBy: z.object({
         name: z.string().nullable(),
         image: z.string().nullable(),

@@ -28,8 +28,8 @@ const app = new Hono()
         async (c) => {
             const { id } = c.req.valid("param");
 
-            const news = await db.news.findUnique({
-                where: { id },
+            const news = await db.news.findFirst({
+                where: { id, isActive: true },
                 include: {
                     image: true,
                     createdBy: {
