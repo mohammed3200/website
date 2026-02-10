@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { completeRegistrationSchema } from "../schemas/step-schemas";
 import { StageDevelopment } from "@prisma/client";
 import { s3Service } from "@/lib/storage/s3-service";
+import { notifyNewInnovator } from "@/lib/notifications/admin-notifications";
 
 const app = new Hono().post(
   "/",
@@ -47,30 +48,30 @@ const app = new Hono().post(
         }, 400);
 
       // Create image record if image exists (UPDATED - S3 Storage)
-        let imageId: string | null = null;
-        if (image instanceof File) {
-          const imageBuffer = Buffer.from(await image.arrayBuffer());
-          const imageKey = s3Service.generateKey('image', image.name, uuidv4());
-          
-          const { url, s3Key, bucket } = await s3Service.uploadFile(
-            imageBuffer,
-            imageKey,
-            image.type
-          );
+      let imageId: string | null = null;
+      if (image instanceof File) {
+        const imageBuffer = Buffer.from(await image.arrayBuffer());
+        const imageKey = s3Service.generateKey('image', image.name, uuidv4());
 
-          const imageRecord = await db.image.create({
-            data: {
-              url,
-              s3Key,
-              s3Bucket: bucket,
-              mimeType: image.type,
-              size: image.size,
-              originalName: image.name,
-              filename: imageKey,
-            },
-          });
-          imageId = imageRecord.id;
-        }
+        const { url, s3Key, bucket } = await s3Service.uploadFile(
+          imageBuffer,
+          imageKey,
+          image.type
+        );
+
+        const imageRecord = await db.image.create({
+          data: {
+            url,
+            s3Key,
+            s3Bucket: bucket,
+            mimeType: image.type,
+            size: image.size,
+            originalName: image.name,
+            filename: imageKey,
+          },
+        });
+        imageId = imageRecord.id;
+      }
 
       const mapStageDevelopment = (stage: string): StageDevelopment => {
         switch (stage) {
@@ -149,7 +150,7 @@ const app = new Hono().post(
           // Store in Media table (UPDATED - S3 Storage)
           const mediaBuffer = Buffer.from(await file.arrayBuffer());
           const mediaKey = s3Service.generateKey('media', file.name, uuidv4());
-          
+
           const { url, s3Key, bucket } = await s3Service.uploadFile(
             mediaBuffer,
             mediaKey,
@@ -181,6 +182,19 @@ const app = new Hono().post(
           });
         }
       }
+
+      // Notify admins about new innovator
+      try {
+        await notifyNewInnovator({
+          id: innovator.id,
+          name: innovator.name,
+          projectTitle: innovator.projectTitle,
+          email: innovator.email,
+        });
+      } catch (notifyError) {
+        console.error('Failed to notify admins:', notifyError);
+      }
+
       return c.json({
         message: "The innovator has been successfully created",
       });

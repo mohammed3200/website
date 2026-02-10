@@ -9,11 +9,16 @@ import { db } from '@/lib/db';
 import { s3Service } from '@/lib/storage/s3-service';
 import { RecordStatus } from '@/features/collaborators/types/types';
 import { emailService } from '@/lib/email/service';
+import {
+  notifyNewCollaborator,
+  notifyAdmins,
+} from '@/lib/notifications/admin-notifications';
 
 import {
   completeCollaboratorRegistrationSchemaServer,
   statusUpdateSchema,
 } from '@/features/collaborators/schemas/step-schemas';
+import { NotificationPriority } from '@prisma/client';
 
 const app = new Hono()
   // Public endpoint - only approved and visible collaborators
@@ -139,7 +144,7 @@ const app = new Hono()
         if (image instanceof File) {
           const imageBuffer = Buffer.from(await image.arrayBuffer());
           const imageKey = s3Service.generateKey('image', image.name, uuidv4());
-          
+
           const { url, s3Key, bucket } = await s3Service.uploadFile(
             imageBuffer,
             imageKey,
@@ -166,14 +171,14 @@ const app = new Hono()
           files: File[],
           type: 'experience' | 'machinery',
         ) => {
-          
-          
+
+
           return Promise.all(
             files.map(async (file) => {
               // Upload to S3
               const mediaBuffer = Buffer.from(await file.arrayBuffer());
               const mediaKey = s3Service.generateKey('media', file.name, uuidv4());
-              
+
               const { url, s3Key, bucket } = await s3Service.uploadFile(
                 mediaBuffer,
                 mediaKey,
@@ -250,6 +255,18 @@ const app = new Hono()
             ? pathSegments[1]
             : 'en';
 
+        // Notify admins about new registration
+        try {
+          await notifyNewCollaborator({
+            id: collaborator.id,
+            companyName: collaborator.companyName,
+            email: collaborator.email,
+            sector: collaborator.industrialSector,
+          });
+        } catch (notifyError) {
+          console.error('Failed to notify admins:', notifyError);
+        }
+
         // Send confirmation email using new email service
         try {
           const emailResult = await emailService.sendSubmissionConfirmation(
@@ -262,10 +279,7 @@ const app = new Hono()
             lang as 'ar' | 'en',
           );
 
-          // FIXME: create table for log email
-          if (emailResult.success) {
-
-          } else {
+          if (!emailResult.success) {
             console.error('❌ Failed to send confirmation email:', emailResult.error);
           }
         } catch (emailError) {
@@ -332,6 +346,32 @@ const app = new Hono()
           },
         });
 
+        // Notify admins about status update (if approved or rejected)
+        if (
+          validatedData.status === 'APPROVED' ||
+          validatedData.status === 'REJECTED'
+        ) {
+          try {
+            await notifyAdmins({
+              type:
+                validatedData.status === 'APPROVED'
+                  ? 'SUBMISSION_APPROVED'
+                  : 'SUBMISSION_REJECTED',
+              title: `Collaborator ${validatedData.status === 'APPROVED' ? 'Approved' : 'Rejected'}`,
+              message: `Collaborator "${collaborator.companyName}" has been ${validatedData.status.toLowerCase()}.`,
+              actionUrl: `/admin/collaborators?id=${collaborator.id}`,
+              priority: NotificationPriority.NORMAL,
+              data: {
+                collaboratorId: collaborator.id,
+                status: validatedData.status,
+                reason: validatedData.reason,
+              },
+            });
+          } catch (notifyError) {
+            console.error('Failed to notify admins about status update:', notifyError);
+          }
+        }
+
         // ✅ Send status update email using new email service
         try {
           const emailResult = await emailService.sendStatusUpdate(
@@ -349,9 +389,7 @@ const app = new Hono()
             },
           );
 
-          if (emailResult.success) {
-
-          } else {
+          if (!emailResult.success) {
             console.error('❌ Failed to send status update email:', emailResult.error);
           }
         } catch (emailError) {
