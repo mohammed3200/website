@@ -2,174 +2,146 @@
 
 import { useState, useEffect } from 'react';
 import { Bell } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import {
-  useUnreadNotificationCount,
-  useMarkNotificationRead,
-  useNotifications,
-  type Notification,
-} from '@/features/admin/api/use-notifications';
-import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import Link from 'next/link';
+import { formatDistanceToNow } from 'date-fns';
+import { useRouter } from 'next/navigation';
 
-function formatTimeAgo(date: Date): string {
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
-  if (diffInSeconds < 60) return 'just now';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-  return date.toLocaleDateString();
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  isRead: boolean;
+  createdAt: string;
+  actionUrl?: string;
 }
 
 export function NotificationBell() {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
-  const { data: unreadCount = 0 } = useUnreadNotificationCount();
-  const markRead = useMarkNotificationRead();
 
-  // Fetch recent notifications when dropdown opens
-  const { data: notificationsData, refetch, isLoading } = useNotifications({
-    limit: 10,
-    isRead: false,
-  });
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch('/api/admin/notifications');
+      if (response.ok) {
+        const data = await response.json();
+        setNotifications(data.notifications);
+        setUnreadCount(data.unreadCount);
+      }
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error);
+    }
+  };
 
-  // Refetch when dropdown opens
   useEffect(() => {
-    if (isOpen) {
-      refetch();
-    }
-  }, [isOpen, refetch]);
+    fetchNotifications();
+    // Poll for new notifications every 60 seconds
+    const interval = setInterval(fetchNotifications, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const handleNotificationClick = async (notification: Notification) => {
-    if (!notification.isRead) {
-      await markRead.mutateAsync(notification.id);
-    }
-    setIsOpen(false);
-    if (notification.actionUrl) {
-      router.push(notification.actionUrl);
+  const markAsRead = async (id: string) => {
+    try {
+      await fetch(`/api/admin/notifications/${id}/read`, {
+        method: 'PATCH',
+      });
+      fetchNotifications();
+    } catch (error) {
+      console.error('Failed to mark notification as read:', error);
     }
   };
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'URGENT':
-        return 'bg-red-500';
-      case 'HIGH':
-        return 'bg-orange-500';
-      case 'NORMAL':
-        return 'bg-blue-500';
-      case 'LOW':
-        return 'bg-gray-500';
-      default:
-        return 'bg-gray-500';
+  const markAllAsRead = async () => {
+    try {
+      await fetch('/api/admin/notifications/mark-all-read', {
+        method: 'PATCH'
+      });
+      fetchNotifications();
+    } catch (error) {
+      console.error('Failed to mark all as read:', error);
     }
-  };
+  }
 
   return (
-    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative"
-          aria-label="Notifications"
-        >
-          <Bell className="h-5 w-5" />
+        <button className="relative p-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none">
+          <Bell className="h-5 w-5 text-gray-600" />
           {unreadCount > 0 && (
-            <span
-              className={cn(
-                'absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-xs font-semibold text-white',
-                unreadCount > 9 ? 'px-1 text-[10px]' : '',
-                getPriorityColor('HIGH')
-              )}
-            >
-              {unreadCount > 99 ? '99+' : unreadCount}
+            <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
+              {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
-        </Button>
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-80 p-0">
-        <div className="flex items-center justify-between border-b px-4 py-3">
-          <h3 className="font-semibold">Notifications</h3>
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+          <h3 className="font-semibold text-sm text-gray-900">Notifications</h3>
           {unreadCount > 0 && (
-            <Link
-              href="/admin/notifications"
-              className="text-sm text-blue-600 hover:text-blue-700"
-              onClick={() => setIsOpen(false)}
+            <button
+              onClick={markAllAsRead}
+              className="text-xs text-orange-600 hover:text-orange-700 font-medium"
             >
-              View all
-            </Link>
+              Mark all as read
+            </button>
           )}
         </div>
-        <div className="max-h-[400px] overflow-y-auto">
-          {isLoading ? (
-            <div className="flex items-center justify-center p-8">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
-            </div>
-          ) : notificationsData?.notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-center">
-              <Bell className="h-12 w-12 text-gray-300 mb-2" />
-              <p className="text-sm text-gray-500">No new notifications</p>
+        <div className="max-h-96 overflow-y-auto">
+          {notifications.length === 0 ? (
+            <div className="px-4 py-8 text-center">
+              <p className="text-sm text-gray-500">No notifications yet</p>
             </div>
           ) : (
-            <div className="divide-y">
-              {notificationsData?.notifications.map((notification) => (
-                <button
-                  key={notification.id}
-                  onClick={() => handleNotificationClick(notification)}
-                  className={cn(
-                    'w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors',
-                    !notification.isRead && 'bg-blue-50'
-                  )}
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className={cn(
-                        'mt-1 h-2 w-2 rounded-full flex-shrink-0',
-                        getPriorityColor(notification.priority)
-                      )}
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p
-                        className={cn(
-                          'text-sm font-medium truncate',
-                          !notification.isRead && 'font-semibold'
-                        )}
-                      >
-                        {notification.title}
-                      </p>
-                      <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-                        {notification.message}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {formatTimeAgo(new Date(notification.createdAt))}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
+            notifications.map((notification) => (
+              <DropdownMenuItem
+                key={notification.id}
+                className={cn(
+                  "flex flex-col items-start gap-1 p-4 cursor-pointer focus:bg-gray-50 border-b border-gray-50 last:border-0",
+                  !notification.isRead && "bg-orange-50/50"
+                )}
+                onClick={() => {
+                  if (!notification.isRead) markAsRead(notification.id);
+                  if (notification.actionUrl) router.push(notification.actionUrl);
+                }}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <span className={cn(
+                    "text-xs font-semibold px-2 py-0.5 rounded-full capitalize",
+                    notification.type === 'NEW_INNOVATOR' ? 'bg-blue-100 text-blue-700' :
+                      notification.type === 'NEW_COLLABORATOR' ? 'bg-purple-100 text-purple-700' :
+                        'bg-gray-100 text-gray-700'
+                  )}>
+                    {notification.type.replace('_', ' ').toLowerCase()}
+                  </span>
+                  <span className="text-[10px] text-gray-400">
+                    {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                  </span>
+                </div>
+                <p className="text-sm font-medium text-gray-900 line-clamp-1">{notification.title}</p>
+                <p className="text-xs text-gray-500 line-clamp-2">{notification.message}</p>
+              </DropdownMenuItem>
+            ))
           )}
         </div>
-        <div className="border-t p-2">
-          <Link
-            href="/admin/notifications"
-            className="block w-full text-center text-sm text-blue-600 hover:text-blue-700 py-2"
-            onClick={() => setIsOpen(false)}
-          >
-            View all notifications
-          </Link>
-        </div>
+        {notifications.length > 0 && (
+          <div className="px-4 py-2 border-t border-gray-100">
+            <button
+              onClick={() => router.push('/admin/notifications')}
+              className="w-full text-center text-xs text-gray-500 hover:text-gray-900 py-1"
+            >
+              View all notifications
+            </button>
+          </div>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
-

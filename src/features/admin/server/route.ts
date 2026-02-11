@@ -71,7 +71,7 @@ const app = new Hono<{ Variables: Variables }>()
       if (isRead !== undefined) where.isRead = isRead === 'true';
       if (priority) where.priority = priority as NotificationPriority;
 
-      const [notifications, total] = await Promise.all([
+      const [notifications, total, unreadCount] = await Promise.all([
         db.adminNotification.findMany({
           where,
           orderBy: { createdAt: 'desc' },
@@ -79,10 +79,17 @@ const app = new Hono<{ Variables: Variables }>()
           take: limitNum,
         }),
         db.adminNotification.count({ where }),
+        db.adminNotification.count({
+          where: {
+            userId: user.id,
+            isRead: false,
+          },
+        }),
       ]);
 
       return c.json({
         notifications,
+        unreadCount,
         pagination: {
           page: pageNum,
           limit: limitNum,
@@ -274,6 +281,121 @@ const app = new Hono<{ Variables: Variables }>()
         return c.json({ error: 'Failed to update preferences' }, 500);
       }
     },
+  )
+
+  // --- Reports Section ---
+
+  // GET /api/admin/reports - List generated reports
+  .get('/reports', async (c) => {
+    try {
+      const user = c.get('user');
+      const reports = await db.report.findMany({
+        where: { createdById: user.id },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return c.json({ reports });
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      return c.json({ error: 'Failed to fetch reports' }, 500);
+    }
+  })
+
+  // POST /api/admin/reports - Trigger a new report generation
+  .post(
+    '/reports',
+    zValidator(
+      'json',
+      z.object({
+        name: z.string(),
+        type: z.enum(['SUBMISSIONS_SUMMARY', 'USER_ACTIVITY', 'STRATEGIC_PLANS', 'FULL_PLATFORM']),
+        format: z.enum(['PDF', 'CSV']),
+        parameters: z.record(z.string(), z.any()).optional(),
+      }),
+    ),
+    async (c) => {
+      try {
+        const user = c.get('user');
+        const { name, type, format, parameters } = c.req.valid('json');
+
+        const report = await db.report.create({
+          data: {
+            name,
+            type,
+            format,
+            status: 'PENDING',
+            parameters: (parameters as any) || {},
+            createdById: user.id,
+          },
+        });
+
+        // Simulate async generation
+        (async () => {
+          try {
+            await db.report.update({
+              where: { id: report.id },
+              data: { status: 'GENERATING' },
+            });
+
+            // Simulate work delay
+            await new Promise((resolve) => setTimeout(resolve, 3000));
+
+            // Mark as completed - in a real app, this would involve S3 upload
+            await db.report.update({
+              where: { id: report.id },
+              data: {
+                status: 'COMPLETED',
+                generatedAt: new Date(),
+                fileUrl: `/api/admin/reports/download/${report.id}`, // Placeholder
+              },
+            });
+          } catch (error) {
+            console.error('Async report generation failed:', error);
+            await db.report.update({
+              where: { id: report.id },
+              data: { status: 'FAILED' },
+            });
+          }
+        })();
+
+        return c.json({ report });
+      } catch (error) {
+        console.error('Error creating report:', error);
+        return c.json({ error: 'Failed to create report' }, 500);
+      }
+    },
+  )
+
+  // DELETE /api/admin/reports/:id - Delete a report
+  .delete(
+    '/reports/:id',
+    zValidator(
+      'param',
+      z.object({
+        id: z.string(),
+      })
+    ),
+    async (c) => {
+      try {
+        const user = c.get('user');
+        const { id } = c.req.valid('param');
+
+        const report = await db.report.findFirst({
+          where: { id, createdById: user.id }
+        });
+
+        if (!report) {
+          return c.json({ error: 'Report not found' }, 404);
+        }
+
+        await db.report.delete({ where: { id } });
+
+        return c.json({ success: true });
+      } catch (error) {
+        console.error('Error deleting report:', error);
+        return c.json({ error: 'Failed to delete report' }, 500);
+      }
+    }
   );
 
 export default app;

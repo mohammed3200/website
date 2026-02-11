@@ -141,7 +141,12 @@ export default async function ContentManagementPage({
                     <h2 className="text-xl font-semibold text-gray-900">
                         {isArabic ? 'محتوى ريادة الأعمال' : 'Entrepreneurship Content'}
                     </h2>
-                    <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary/90">
+                    <button
+                        disabled
+                        aria-disabled="true"
+                        title={isArabic ? 'قريباً' : 'Coming Soon'}
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary/50 rounded-md cursor-not-allowed"
+                    >
                         <Plus className="h-4 w-4" />
                         {isArabic ? 'إضافة محتوى' : 'Add Content'}
                     </button>
@@ -155,7 +160,12 @@ export default async function ContentManagementPage({
                     <h2 className="text-xl font-semibold text-gray-900">
                         {isArabic ? 'محتوى حاضنات الأعمال' : 'Incubators Content'}
                     </h2>
-                    <button className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary rounded-md hover:bg-primary/90">
+                    <button
+                        disabled
+                        aria-disabled="true"
+                        title={isArabic ? 'قريباً' : 'Coming Soon'}
+                        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary/50 rounded-md cursor-not-allowed"
+                    >
                         <Plus className="h-4 w-4" />
                         {isArabic ? 'إضافة محتوى' : 'Add Content'}
                     </button>
