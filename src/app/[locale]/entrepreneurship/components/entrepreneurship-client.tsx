@@ -78,7 +78,7 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                 {programsContent.length > 0 ? (
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {programsContent.map((program, index) => {
-                            const Icon = program.icon ? iconMap[program.icon] || Target : Target;
+                            const Icon = iconMap[program.icon || ''] ?? BookOpen;
                             return (
                                 <motion.div
                                     key={program.id}
@@ -137,8 +137,8 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                         animate={{ opacity: 1 }}
                         className="flex flex-wrap justify-center gap-6"
                     >
-                        {valuesContent.map((value) => {
-                            const Icon = value.icon ? iconMap[value.icon] || Award : Award;
+                        {valuesContent.map((value, index) => {
+                            const Icon = iconMap[value.icon || ''] ?? Target;
                             return (
                                 <div
                                     key={value.id}

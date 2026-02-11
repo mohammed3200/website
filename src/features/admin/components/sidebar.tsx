@@ -72,7 +72,9 @@ export default function Sidebar({ locale }: { locale: string }) {
                             <ul role="list" className="-mx-2 space-y-1">
                                 {navigation.map((item) => {
                                     const href = item.href.replace('#LOCALE#', `/${locale}`);
-                                    const isActive = pathname === href;
+                                    const isActive =
+                                        pathname === href ||
+                                        (href !== `/${locale}/admin` && pathname.startsWith(href + '/'));
 
                                     return (
                                         <li key={item.name.en}>

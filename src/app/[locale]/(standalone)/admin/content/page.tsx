@@ -79,10 +79,20 @@ export default async function ContentManagementPage({
                             </div>
 
                             <div className="flex gap-2 ml-4">
-                                <button className="inline-flex items-center justify-center p-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                <button
+                                    disabled
+                                    aria-disabled="true"
+                                    title={isArabic ? 'قريباً' : 'Coming Soon'}
+                                    className="inline-flex items-center justify-center p-2 text-sm font-semibold text-gray-400 bg-gray-50 border border-gray-200 rounded-md cursor-not-allowed"
+                                >
                                     <Edit className="h-4 w-4" />
                                 </button>
-                                <button className="inline-flex items-center justify-center p-2 text-sm font-semibold text-white bg-red-600 rounded-md hover:bg-red-700">
+                                <button
+                                    disabled
+                                    aria-disabled="true"
+                                    title={isArabic ? 'قريباً' : 'Coming Soon'}
+                                    className="inline-flex items-center justify-center p-2 text-sm font-semibold text-white bg-red-300 rounded-md cursor-not-allowed"
+                                >
                                     <Trash2 className="h-4 w-4" />
                                 </button>
                             </div>

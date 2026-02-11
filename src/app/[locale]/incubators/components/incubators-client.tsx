@@ -78,7 +78,7 @@ export default function IncubatorsClient({ locale, content }: Props) {
                 {phasesContent.length > 0 ? (
                     <div className="grid md:grid-cols-3 gap-8">
                         {phasesContent.map((phase, index) => {
-                            const Icon = phase.icon ? iconMap[phase.icon] : Lightbulb;
+                            const Icon = iconMap[phase.icon || ''] ?? Lightbulb;
                             return (
                                 <motion.div
                                     key={phase.id}
@@ -137,7 +137,7 @@ export default function IncubatorsClient({ locale, content }: Props) {
                 {resourcesContent.length > 0 ? (
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                         {resourcesContent.map((resource, index) => {
-                            const Icon = resource.icon ? iconMap[resource.icon] : Users;
+                            const Icon = iconMap[resource.icon || ''] ?? Users;
                             return (
                                 <motion.div
                                     key={resource.id}

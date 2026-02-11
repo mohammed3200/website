@@ -110,11 +110,21 @@ export default async function SubmissionsPage({
                                             <Eye className="h-4 w-4" />
                                             {isArabic ? 'عرض' : 'View'}
                                         </a>
-                                        <button className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-md hover:bg-green-700">
+                                        <button
+                                            disabled
+                                            aria-disabled="true"
+                                            title={isArabic ? 'قريباً' : 'Coming Soon'}
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-green-300 rounded-md cursor-not-allowed"
+                                        >
                                             <CheckCircle className="h-4 w-4" />
                                             {isArabic ? 'قبول' : 'Approve'}
                                         </button>
-                                        <button className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-md hover:bg-red-700">
+                                        <button
+                                            disabled
+                                            aria-disabled="true"
+                                            title={isArabic ? 'قريباً' : 'Coming Soon'}
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-red-300 rounded-md cursor-not-allowed"
+                                        >
                                             <XCircle className="h-4 w-4" />
                                             {isArabic ? 'رفض' : 'Reject'}
                                         </button>
@@ -184,11 +194,21 @@ export default async function SubmissionsPage({
                                             <Eye className="h-4 w-4" />
                                             {isArabic ? 'عرض' : 'View'}
                                         </a>
-                                        <button className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-green-600 rounded-md hover:bg-green-700">
+                                        <button
+                                            disabled
+                                            aria-disabled="true"
+                                            title={isArabic ? 'قريباً' : 'Coming Soon'}
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-green-300 rounded-md cursor-not-allowed"
+                                        >
                                             <CheckCircle className="h-4 w-4" />
                                             {isArabic ? 'قبول' : 'Approve'}
                                         </button>
-                                        <button className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-md hover:bg-red-700">
+                                        <button
+                                            disabled
+                                            aria-disabled="true"
+                                            title={isArabic ? 'قريباً' : 'Coming Soon'}
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-red-300 rounded-md cursor-not-allowed"
+                                        >
                                             <XCircle className="h-4 w-4" />
                                             {isArabic ? 'رفض' : 'Reject'}
                                         </button>
