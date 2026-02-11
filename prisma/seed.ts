@@ -602,8 +602,100 @@ async function main() {
   // Seed strategic plans
   await seedStrategicPlans(prisma);
 
+  // Seed page content
+  await seedPageContent(prisma);
+
   // Cleanup
   await prisma.$disconnect();
+}
+
+async function seedPageContent(prisma: PrismaClient) {
+  console.log('Seeding page content...');
+
+  const contentItems = [
+    // Entrepreneurship Page
+    {
+      page: 'entrepreneurship',
+      section: 'hero',
+      order: 0,
+      titleEn: 'Entrepreneurship Development',
+      titleAr: 'تطوير ريادة الأعمال',
+      contentEn: 'We empower the next generation of business leaders with tools, mentorship, and community.',
+      contentAr: 'نحن نمكن الجيل القادم من قادة الأعمال بالأدوات والإرشاد والمجتمع.',
+    },
+    {
+      page: 'entrepreneurship',
+      section: 'programs',
+      order: 0,
+      titleEn: 'Start-up Bootcamps',
+      titleAr: 'مخيمات بدء التشغيل',
+      contentEn: 'Intensive training to turn your idea into a viable business model.',
+      contentAr: 'تدريب مكثف لتحويل فكرتك إلى نموذج عمل قابل للتطبيق.',
+      icon: 'Rocket',
+    },
+    {
+      page: 'entrepreneurship',
+      section: 'values',
+      order: 0,
+      titleEn: 'Innovation First',
+      titleAr: 'الابتكار أولاً',
+      contentEn: 'We encourage bold ideas and creative problem solving.',
+      contentAr: 'نحن نشجع الأفكار الجريئة وحل المشكلات بطرق إبداعية.',
+      icon: 'Lightbulb',
+    },
+    // Incubators Page
+    {
+      page: 'incubators',
+      section: 'hero',
+      order: 0,
+      titleEn: 'Business Incubation Program',
+      titleAr: 'برنامج حاضنة الأعمال',
+      contentEn: 'Structured support for early-stage companies to accelerate growth.',
+      contentAr: 'دعم منظم للشركات في مراحلها الأولى لتسريع النمو.',
+    },
+    {
+      page: 'incubators',
+      section: 'phases',
+      order: 0,
+      titleEn: 'Pre-Incubation',
+      titleAr: 'ما قبل الحضانة',
+      contentEn: 'Refining the concept and validating the market fit.',
+      contentAr: 'صقل المفهوم والتحقق من ملاءمة السوق.',
+      icon: 'Lightbulb',
+    },
+    {
+      page: 'incubators',
+      section: 'metrics',
+      order: 0,
+      titleEn: 'Startups Supported',
+      titleAr: 'شركة ناشئة تم دعمها',
+      metadata: { number: 150 },
+    },
+    {
+      page: 'incubators',
+      section: 'metrics',
+      order: 1,
+      titleEn: 'Jobs Created',
+      titleAr: 'وظيفة تم توفيرها',
+      metadata: { number: 450 },
+    },
+  ];
+
+  for (const item of contentItems) {
+    await prisma.pageContent.upsert({
+      where: {
+        page_section_order: {
+          page: item.page,
+          section: item.section,
+          order: item.order,
+        },
+      },
+      update: item,
+      create: item,
+    });
+  }
+
+  console.log('✅ Page content seeded');
 }
 
 async function seedStrategicPlans(prisma: PrismaClient) {

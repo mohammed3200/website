@@ -8,6 +8,7 @@ import innovators from "@/features/innovators/server/route";
 import admin from "@/features/admin/server/route";
 import strategicPlan from "@/features/strategic-plan/server/route";
 import news from "@/features/news/server/route";
+import pageContent from "@/features/page-content/server/route";
 // import email from "@/features/email/server/route";
 
 
@@ -25,7 +26,8 @@ const routes = app
   .route("/innovators", innovators)
   .route("/admin", admin)
   .route("/strategicPlan", strategicPlan)
-  .route("/news", news);
+  .route("/news", news)
+  .route("/pageContent", pageContent);
 // .route("/email", email);
 
 // Error handling
