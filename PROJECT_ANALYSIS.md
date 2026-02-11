@@ -199,6 +199,7 @@ src/
 2. **Task 7**: Email & WhatsApp Integration
 3. **Task 9**: WhatsApp Integration System
 4. **Task 10/11**: UI/Navigation Improvements
+5. **Task 27**: Phase 2 - Admin Dashboard, OTP & Content Pages (Planned - Feb 11, 2026)
 
 ---
 
@@ -378,4 +379,153 @@ The architecture is scalable and maintainable. With focused effort on the pendin
 
 **Last Updated**: January 3, 2026  
 **Next Review**: After completing Phase 1 quick wins
+
+
+---
+
+## Phase 2: Admin Dashboard, OTP & Content Pages (Task 27)
+
+**Status**: 🟡 Partially Implemented (Feb 11, 2026)  
+**Priority**: 🔴 HIGH
+
+### Overview
+
+Phase 2 focuses on building a comprehensive admin dashboard, enhancing the OTP authentication system, implementing report generation, and transforming the static entrepreneurship and incubators pages into database-driven, admin-manageable content.
+
+### Key Components
+
+#### 1. Admin Dashboard (NEW)
+- **Status**: ✅ Partially Implemented (Core layout, sidebar, stats, and content UI live)
+- **Scope**: Full dashboard UI with sidebar layout at /[locale]/(standalone)/admin/
+- **Pages**:
+  - Overview (stats cards, recent activity, quick actions)
+  - Submissions (review Innovator & Collaborator registrations)
+  - Content (manage Entrepreneurship & Incubators pages)
+  - Strategic Plans, News, Reports, Settings
+- **Features**:
+  - ✅ Auth-gated layout with RBAC permissions
+  - ✅ Sidebar navigation with 7 main sections
+  - ✅ Notification bell integration placeholder
+  - 🟡 Approve/reject actions (UI implemented, wiring pending)
+  - 🟡 Data tables with filtering (UI shell implemented)
+
+#### 2. OTP Email Authentication Enhancement
+- **Current State**: 2FA OTP system exists (TwoFactorToken model + emailService.send2FA())
+- **Enhancements**:
+  - Polished 6-digit code input UI with auto-focus
+  - Resend OTP button with cooldown timer
+  - Rate-limiting (max 5 per 15 min)
+  - Configurable OTP expiry via SystemSetting model
+  - Refined email template with branding
+
+#### 3. Report Generation (NEW)
+- **Database**: New Report model with types (Submissions Summary, User Activity, Strategic Plans, Full Platform)
+- **API**: Generate and download reports (PDF/CSV)
+- **Dashboard**: Report generation section with date range picker, history table
+- **Formats**: PDF and CSV support
+
+#### 4. Entrepreneurship Page Overhaul
+- **Current State**: Static Hero-only page with hardcoded next-intl translations
+- **New Architecture**:
+  - Database-driven bilingual content via PageContent model
+  - Sections: Hero, Programs Grid, Core Values, Success Stories, Mission, CTA
+  - Admin-manageable via content management UI
+  - Fallback to i18n translations if no DB content
+
+#### 5. Incubators Page Overhaul
+- **Same approach as Entrepreneurship page**
+- **Sections**: Hero, Incubation Phases, Resources Grid, Success Metrics, CTA
+
+#### 6. Admin Content Management UI (NEW)
+- **Location**: /admin/content/page.tsx
+- **Features**:
+  - Tab-based UI (Entrepreneurship | Incubators)
+  - Inline editing with rich text
+  - Drag-and-drop reordering
+  - Preview mode
+
+### Database Changes
+
+#### New Models
+`prisma
+model PageContent {
+  id          String   @id @default(cuid())
+  page        String   // "entrepreneurship" | "incubators"
+  section     String   // "hero" | "programs" | "values" | etc.
+  titleEn     String?
+  titleAr     String?
+  contentEn   String?  @db.Text
+  contentAr   String?  @db.Text
+  icon        String?
+  color       String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Report {
+  id          String       @id @default(cuid())
+  name        String
+  type        ReportType
+  format      ReportFormat @default(PDF)
+  status      ReportStatus @default(PENDING)
+  parameters  Json?
+  fileUrl     String?
+  generatedAt DateTime?
+  scheduleCron String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  createdById String?
+}
+`
+
+### Implementation Order
+
+1. Schema Updates (PageContent + Report)
+2. Admin Dashboard Layout (Sidebar + Layout)
+3. Overview Page (Stats + Activity)
+4. Submissions Review (Approve/Reject)
+5. Page Content API (CRUD Routes)
+6. Entrepreneurship Overhaul (Dynamic Content)
+7. Incubators Overhaul (Dynamic Content)
+8. Admin Content Management (Edit UI)
+9. Report Generation (API + Dashboard)
+10. OTP Enhancement (UI + Rate Limit)
+11. Verification & Git Push to eature/admin-dashboard
+
+### Technical Requirements
+
+- Next.js App Router for dashboard pages
+- Hono.js API routes for backend
+- Prisma migrations for new models
+- Existing email service integration
+- RBAC permission checks
+- PDF generation library (e.g., jsPDF or Puppeteer)
+- CSV export functionality
+
+### Time Estimate
+
+**40-50 hours** total:
+- Admin Dashboard: 12-15 hours
+- OTP Enhancement: 3-4 hours
+- Report Generation: 8-10 hours
+- Entrepreneurship Page: 6-8 hours
+- Incubators Page: 6-8 hours
+- Admin Content UI: 5-7 hours
+
+### Acceptance Criteria
+
+- [ ] Admin dashboard accessible at /admin with all pages
+- [ ] Submission review flow works (approve/reject with email)
+- [ ] OTP login flow enhanced with resend and rate-limiting
+- [ ] Reports can be generated and downloaded (PDF/CSV)
+- [ ] Entrepreneurship page displays dynamic content from DB
+- [ ] Incubators page displays dynamic content from DB
+- [ ] Admin can edit both pages via content management UI
+- [ ] All pages work in both English and Arabic
+- [ ] Changes pushed to eature/admin-dashboard branch
+
+---
 

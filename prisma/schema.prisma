@@ -477,6 +477,47 @@ model AdminNotification {
   @@index([createdAt])
 }
 
+model PageContent {
+  id        String   @id @default(cuid())
+  page      String // "entrepreneurship" | "incubators"
+  section   String // "hero" | "programs" | "values" | "mission" | "phases" | "resources" | "metrics" | "cta"
+  titleEn   String?
+  titleAr   String?
+  contentEn String?  @db.Text
+  contentAr String?  @db.Text
+  icon      String? // Lucide icon name
+  color     String? // gradient class
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  metadata  Json? // for extra fields like numberKey, labelKey, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([page, section, order])
+  @@index([page, isActive])
+  @@index([section])
+}
+
+model Report {
+  id           String       @id @default(cuid())
+  name         String
+  type         ReportType
+  format       ReportFormat @default(PDF)
+  status       ReportStatus @default(PENDING)
+  parameters   Json?
+  fileUrl      String?
+  generatedAt  DateTime?
+  scheduleCron String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  createdById  String?
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@index([createdById])
+}
+
 enum StageDevelopment {
   STAGE
   PROTOTYPE
@@ -528,5 +569,24 @@ enum AuditAction {
 
 enum EmailStatus {
   SENT
+  FAILED
+}
+
+enum ReportType {
+  SUBMISSIONS_SUMMARY
+  USER_ACTIVITY
+  STRATEGIC_PLANS
+  FULL_PLATFORM
+}
+
+enum ReportFormat {
+  PDF
+  CSV
+}
+
+enum ReportStatus {
+  PENDING
+  GENERATING
+  COMPLETED
   FAILED
 }

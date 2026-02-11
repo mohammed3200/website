@@ -1,19 +1,19 @@
-"use client";
+import { db } from '@/lib/db';
+import IncubatorsClient from './components/incubators-client';
 
-import React from 'react';
+export default async function IncubatorsPage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
+  // Fetch page content from database
+  const content = await db.pageContent.findMany({
+    where: {
+      page: 'incubators',
+      isActive: true,
+    },
+    orderBy: [{ section: 'asc' }, { order: 'asc' }],
+  });
 
-import useLanguage from '@/hooks/use-language';
-
-import { Hero } from './components';
-
-const Page = () => {
-  const { isArabic } = useLanguage();
-
-  return (
-    <section dir={isArabic ? "rtl" : "ltr"}>
-      <Hero />
-    </section>
-  );
-};
-
-export default Page;
+  return <IncubatorsClient locale={locale} content={content} />;
+}

@@ -32,6 +32,7 @@
 24. [Task 24: Contact Us Page Content Implementation](#task-24-contact-us-page-content-implementation)
 25. [Task 25: Architectural Debt Elimination & System Hardening](#task-25-architectural-debt-elimination--system-hardening)
 26. [Task 26: Redis Caching Implementation](#task-26-redis-caching-implementation)
+27. [Task 27: Phase 2 - Admin Dashboard, OTP & Content Pages](#task-27-phase-2---admin-dashboard-otp--content-pages)
 
 
 ---
@@ -2335,3 +2336,262 @@ Implement Redis as a caching layer for the main database to improve performance 
 - [ ] Read performance improved for cached endpoints
 - [ ] Data consistency maintained via proper invalidation
 - [ ] Redis handles connection failures gracefully (fallback to DB)
+# Task 27: Phase 2 - Admin Dashboard, OTP & Content Pages (Implemented)
+
+This plan builds on the existing project architecture: **NextAuth** (credentials/OAuth/2FA), **Hono** API routes, **Prisma** with MySQL, **RBAC** (Role â†’ Permission), and a **Nodemailer email service** with 2FA, verification, and notification templates.
+
+---
+
+## Current State Assessment
+
+| Area | Status |
+|---|---|
+| Auth System | âœ… NextAuth + 2FA + RBAC (fully functional) |
+| Admin Dashboard UI | ✅ **Partially Implemented** — Core layout and sidebar live |
+| Email Service | âœ… Nodemailer with 2FA, verification, welcome, password reset, admin notification templates |
+| Entrepreneurship Page | âڑ ï¸ڈ Static Hero-only page driven by `next-intl` translations |
+| Incubators Page | âڑ ï¸ڈ Static Hero-only page driven by `next-intl` translations |
+| Report Generation | â‌Œ Not implemented |
+
+---
+
+## Proposed Changes
+
+### Component 1: Admin Dashboard
+
+> [!IMPORTANT]
+> This is a **new feature** â€” the project currently has zero admin dashboard UI pages.
+
+The dashboard will be a protected area at `/[locale]/(standalone)/admin/` with a sidebar layout.
+
+#### [NEW] Admin Dashboard Layout & Pages
+
+| Page | Route | Purpose |
+|---|---|---|
+| Overview | `/admin` | Stats cards, recent activity, quick actions |
+| Submissions | `/admin/submissions` | Review Innovator & Collaborator registrations |
+| Content | `/admin/content` | Manage Entrepreneurship & Incubators page content |
+| Strategic Plans | `/admin/strategic-plans` | Manage strategic plan entries |
+| News | `/admin/news` | Manage news articles |
+| Reports | `/admin/reports` | Generate & download reports |
+| Settings | `/admin/settings` | System settings, notification preferences |
+
+#### Key Files
+
+##### [NEW] [layout.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/layout.tsx)
+- Auth-gated layout with sidebar, topbar with notification bell, and breadcrumbs
+- Uses existing RBAC permissions (`dashboard:read` / `dashboard:manage`)
+
+##### [NEW] [page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/page.tsx)
+- Overview dashboard with stats cards (total submissions, pending reviews, active plans, recent users)
+- Quick-action buttons for common admin tasks
+- Recent activity feed from `AuditLog`
+
+##### [NEW] [submissions/page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/submissions/page.tsx)
+- Data table listing Innovators & Collaborators with status filtering
+- Approve/Reject actions that trigger email notifications via existing `emailService.sendStatusUpdate()`
+- Detail drawer/modal for reviewing full submission data
+
+##### [NEW] [Sidebar.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/features/admin/components/sidebar.tsx)
+- Collapsible sidebar with navigation links, icons, and active state
+- Responsive: drawer on mobile, fixed on desktop
+
+---
+
+### Component 2: OTP Email Authentication
+
+> [!NOTE]
+> The project **already has** a 2FA OTP system (`TwoFactorToken` model + `emailService.send2FA()`). This component enhances and refines it.
+
+#### Enhancements
+
+##### [MODIFY] [login-form.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/features/auth/components/login-form.tsx)
+- Polish the 2FA code input UI (6-digit code input with auto-focus)
+- Add "Resend OTP" button with cooldown timer
+- Add countdown timer showing OTP expiry
+
+##### [MODIFY] [login.ts](file:///c:/Users/iG/Documents/Next.JS/website/src/features/auth/actions/login.ts)
+- Add rate-limiting check before generating new OTP (e.g., max 5 per 15 min)
+- Make OTP expiry configurable via `SystemSetting` model
+
+##### [MODIFY] [service.ts](file:///c:/Users/iG/Documents/Next.JS/website/src/lib/email/service.ts)
+- Refine the 2FA email template for a more professional look with branding
+
+---
+
+### Component 3: Report Generation
+
+#### [MODIFY] [schema.prisma](file:///c:/Users/iG/Documents/Next.JS/website/prisma/schema.prisma)
+Add a `Report` model:
+```prisma
+model Report {
+  id          String       @id @default(cuid())
+  name        String
+  type        ReportType
+  format      ReportFormat @default(PDF)
+  status      ReportStatus @default(PENDING)
+  parameters  Json?
+  fileUrl     String?
+  generatedAt DateTime?
+  scheduleCron String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  createdById String?
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum ReportType {
+  SUBMISSIONS_SUMMARY
+  USER_ACTIVITY
+  STRATEGIC_PLANS
+  FULL_PLATFORM
+}
+
+enum ReportFormat {
+  PDF
+  CSV
+}
+
+enum ReportStatus {
+  PENDING
+  GENERATING
+  COMPLETED
+  FAILED
+}
+```
+
+#### [NEW] [report/server/route.ts](file:///c:/Users/iG/Documents/Next.JS/website/src/features/report/server/route.ts)
+- `GET /api/reports` â€” List reports with pagination
+- `POST /api/reports/generate` â€” Trigger report generation (submission counts, user activity, etc.)
+- `GET /api/reports/:id/download` â€” Download generated report file
+
+#### [NEW] [reports/page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/reports/page.tsx)
+- Report type selector (Submissions Summary, User Activity, Strategic Plans, Full Platform)
+- Date range picker
+- Generate button + download links for completed reports
+- History table of past reports
+
+---
+
+### Component 4: Entrepreneurship Page Overhaul
+
+> [!IMPORTANT]
+> The current page uses only a static Hero component with hardcoded `next-intl` translations. We will make content **database-driven** and **admin-manageable** while preserving the existing i18n keys as fallbacks.
+
+#### [MODIFY] [schema.prisma](file:///c:/Users/iG/Documents/Next.JS/website/prisma/schema.prisma)
+Add a flexible `PageContent` model for both pages:
+```prisma
+model PageContent {
+  id          String   @id @default(cuid())
+  page        String   // "entrepreneurship" | "incubators"
+  section     String   // "hero" | "programs" | "values" | "mission" | "phases" | "resources" | "metrics" | "cta"
+  titleEn     String?
+  titleAr     String?
+  contentEn   String?  @db.Text
+  contentAr   String?  @db.Text
+  icon        String?  // Lucide icon name
+  color       String?  // gradient class
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  metadata    Json?    // for extra fields like numberKey, labelKey, etc.
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([page, section, order])
+  @@index([page, isActive])
+}
+```
+
+#### [NEW] [page-content/server/route.ts](file:///c:/Users/iG/Documents/Next.JS/website/src/features/page-content/server/route.ts)
+- `GET /api/pageContent/public/:page` â€” Fetch active content for a page
+- `GET /api/pageContent/:page` â€” Admin: fetch all content (including inactive)
+- `POST /api/pageContent` â€” Create new content block
+- `PATCH /api/pageContent/:id` â€” Update content block
+- `DELETE /api/pageContent/:id` â€” Delete content block
+
+#### [MODIFY] [entrepreneurship/page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/entrepreneurship/page.tsx)
+Redesigned page structure:
+1. **Hero**: Dynamic title, subtitle, background
+2. **Programs Grid**: Cards fetched from DB (`section: "programs"`)
+3. **Core Values**: Animated badges (`section: "values"`)
+4. **Success Stories / Stats**: Metrics cards (`section: "metrics"`)
+5. **Mission Statement**: Rich text block (`section: "mission"`)
+6. **CTA Section**: Dynamic call-to-action
+
+#### [MODIFY] [entrepreneurship/components/Hero.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/entrepreneurship/components/Hero.tsx)
+- Accept data props from parent instead of using hardcoded arrays
+- Display bilingual content based on locale
+- Fall back to `next-intl` translations if no DB content exists
+
+---
+
+### Component 5: Incubators Page Overhaul
+
+Same architecture and approach as Component 4, but for the Incubators page.
+
+#### [MODIFY] [incubators/page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/incubators/page.tsx)
+Redesigned page structure:
+1. **Hero**: Dynamic title and subtitle
+2. **Incubation Phases**: Timeline/cards (`section: "phases"`)
+3. **Resources Grid**: Animated resource cards (`section: "resources"`)
+4. **Success Metrics**: Counters with animations (`section: "metrics"`)
+5. **CTA Section**: Dynamic call-to-action
+
+#### [MODIFY] [incubators/components/Hero.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/incubators/components/Hero.tsx)
+- Same pattern as entrepreneurship: accept data props, render bilingual content
+
+---
+
+### Component 6: Admin Content Management UI
+
+#### [NEW] [admin/content/page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/content/page.tsx)
+- Tab-based UI: **Entrepreneurship** | **Incubators**
+- Each tab shows editable content blocks sorted by section and order
+- Inline editing with rich text for content fields
+- Drag-and-drop reordering
+- Preview mode to see how the page will look
+
+---
+
+## Verification Plan
+
+### Automated Tests
+```bash
+npx prisma generate          # Regenerate client with new models
+npm run build                 # Full production build check
+```
+
+### Manual Verification
+- Navigate to `/admin` and verify dashboard loads with correct stats
+- Test submission review flow (approve/reject with email)
+- Test OTP login flow (send, resend, expiry)
+- Generate a report and verify download
+- Edit entrepreneurship content via admin and verify public page updates
+- Edit incubators content via admin and verify public page updates
+- Test all pages in both English and Arabic
+- Push to `feature/admin-dashboard` for **CodeRabbit** review
+
+---
+
+## Implementation Order
+
+```mermaid
+graph TD
+    A["1. Schema Updates<br/>(PageContent + Report)"] --> B["2. Admin Dashboard Layout<br/>(Sidebar + Layout)"]
+    B --> C["3. Overview Page<br/>(Stats + Activity)"]
+    B --> D["4. Submissions Review<br/>(Approve/Reject)"]
+    A --> E["5. Page Content API<br/>(CRUD Routes)"]
+    E --> F["6. Entrepreneurship Overhaul<br/>(Dynamic Content)"]
+    E --> G["7. Incubators Overhaul<br/>(Dynamic Content)"]
+    B --> H["8. Admin Content Management<br/>(Edit UI)"]
+    A --> I["9. Report Generation<br/>(API + Dashboard)"]
+    B --> J["10. OTP Enhancement<br/>(UI + Rate Limit)"]
+    F --> K["11. Verification & Git Push"]
+    G --> K
+    H --> K
+    I --> K
+    J --> K
+```
