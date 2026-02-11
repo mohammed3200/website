@@ -31,7 +31,7 @@ export function FormFieldWrapper({
     return (
         <div className={cn('space-y-2', className)}>
             {label && (
-                <div className={cn('flex items-center gap-2', isRtl && 'flex-row-reverse')}>
+                <div className={cn('flex items-center gap-2')}>
                     <Label
                         htmlFor={wrapperId}
                         className={cn(
@@ -62,8 +62,7 @@ export function FormFieldWrapper({
 
             {error && (
                 <div className={cn(
-                    'flex items-start gap-2 animate-in slide-in-from-top-1 fade-in duration-200',
-                    isRtl && 'flex-row-reverse'
+                    'flex items-start gap-2 animate-in slide-in-from-top-1 fade-in duration-200'
                 )}>
                     <AlertCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
                     <p className={cn('text-xs font-semibold text-destructive leading-relaxed', isRtl && 'text-right flex-1')}>

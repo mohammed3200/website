@@ -41,10 +41,7 @@ export const PhoneNumberInput = forwardRef<any, PhoneNumberInputProps>(
                 required={required}
                 className={wrapperClassName}
             >
-                <div className={cn('relative group phone-input-wrapper', className)}>
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10 text-gray-400 group-focus-within:text-primary transition-colors">
-                        <Phone className="w-5 h-5" />
-                    </div>
+                <div className={cn('relative group', className)}>
                     <PhoneInput
                         international
                         defaultCountry="LY"
@@ -58,7 +55,7 @@ export const PhoneNumberInput = forwardRef<any, PhoneNumberInputProps>(
                             name: name,
                             ref: ref,
                             className: cn(
-                                'h-12 bg-white border-2 border-gray-200 rounded-xl pl-11',
+                                'h-12 bg-white border-2 border-gray-200 rounded-xl px-4',
                                 'transition-all duration-300',
                                 'hover:border-orange-300 hover:shadow-form',
                                 'focus:border-primary focus:shadow-form-focus focus:ring-0',
