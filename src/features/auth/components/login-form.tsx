@@ -43,6 +43,10 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || DEFAULT_LOGIN_REDIRECT;
+  const urlError =
+    searchParams.get('error') === 'OAuthAccountNotLinked'
+      ? 'Email already in use with different provider!'
+      : '';
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -327,5 +331,4 @@ export function LoginForm() {
       </div>
     </div>
   );
-}
-
+};

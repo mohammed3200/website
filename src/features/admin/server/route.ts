@@ -310,7 +310,7 @@ const app = new Hono<{ Variables: Variables }>()
         name: z.string(),
         type: z.enum(['SUBMISSIONS_SUMMARY', 'USER_ACTIVITY', 'STRATEGIC_PLANS', 'FULL_PLATFORM']),
         format: z.enum(['PDF', 'CSV']),
-        parameters: z.record(z.any()).optional(),
+        parameters: z.record(z.string(), z.any()).optional(),
       }),
     ),
     async (c) => {
@@ -324,7 +324,7 @@ const app = new Hono<{ Variables: Variables }>()
             type,
             format,
             status: 'PENDING',
-            parameters: parameters || {},
+            parameters: (parameters as any) || {},
             createdById: user.id,
           },
         });
