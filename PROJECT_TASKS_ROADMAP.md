@@ -31,6 +31,7 @@
 23. [Task 23: Leadership & Incubators Content Strategy](#task-23-leadership--incubators-content-strategy)
 24. [Task 24: Contact Us Page Content Implementation](#task-24-contact-us-page-content-implementation)
 25. [Task 25: Architectural Debt Elimination & System Hardening](#task-25-architectural-debt-elimination--system-hardening)
+26. [Task 26: Redis Caching Implementation](#task-26-redis-caching-implementation)
 
 
 ---
@@ -812,6 +813,75 @@ Create new permission resources:
 
 ### Description
 
+Standardize button designs across the entire platform while giving send buttons a distinctive look. Create a consistent design system for all interactive elements.
+
+### Current State
+
+- ✅ Existing button components:
+  - `src/components/buttons/SubmitButton.tsx`
+  - `src/components/buttons/ActiveButton.tsx`
+  - `src/components/buttons/TranslateButton.tsx`
+  - `src/components/ui/button.tsx`
+
+### Subtasks
+
+#### 3.1 Audit Current Buttons
+
+- [ ] List all button usage across the platform
+- [ ] Document current button styles and variants
+- [ ] Identify inconsistencies in design
+- [ ] Screenshot all button types for reference
+
+#### 3.2 Design System Planning
+
+- [ ] Define button hierarchy (primary, secondary, tertiary)
+- [ ] Define button states (default, hover, active, disabled, loading)
+- [ ] Define button sizes (sm, md, lg, xl)
+- [ ] Define special buttons (send, delete, cancel)
+- [ ] Create color palette for buttons
+- [ ] Design focus states for accessibility
+
+#### 3.3 Create Base Button Component
+
+- [ ] Refactor `src/components/ui/button.tsx` with variants
+- [ ] Implement CVA (class-variance-authority) for variants
+- [ ] Add proper TypeScript types
+- [ ] Support all HTML button attributes
+- [ ] Add loading state with spinner
+- [ ] Add icon support (left/right)
+
+#### 3.4 Create Specialized Buttons
+
+- [ ] **SubmitButton** (send buttons with distinctive design)
+  - Enhance animation for loading state
+  - Add distinctive gradient or glow effect
+  - Implement success animation
+- [ ] **PrimaryButton** (main actions)
+- [ ] **SecondaryButton** (secondary actions)
+- [ ] **OutlineButton** (tertiary actions)
+- [ ] **DangerButton** (delete, reject actions)
+- [ ] **IconButton** (icon-only buttons)
+- [ ] **LinkButton** (button styled as link)
+
+#### 3.5 Send Button Distinctive Design
+
+- [ ] Create unique visual style for send buttons
+- [ ] Add animation on click (paper plane flying, etc.)
+- [ ] Add success feedback animation
+- [ ] Implement distinctive hover effects
+- [ ] Add sound effect (optional)
+- [ ] Test on all forms (contact, registration, etc.)
+
+#### 3.6 Implement Across Platform
+
+---
+
+## Task 9: Build WhatsApp Integration System
+
+### Status: 🔴 Not Started
+
+### Description
+
 Build a notification system similar to the email system but using WhatsApp for instant messaging. This will provide an alternative communication channel for users who prefer WhatsApp.
 
 ### Architecture Overview
@@ -1087,7 +1157,7 @@ const buttonVariants = cva('base-button-classes', {
 
 ### Description
 
-Improve the visual presentation of data cards across the platform (Innovators, Collaborators, News, etc.) to enhance readability, engagement, and user experience.
+Enhance the design and layout of various card components used throughout the application (e.g., entity cards, news cards, partner cards) to improve readability, visual appeal, and responsiveness.
 
 ### Current State
 
@@ -2094,7 +2164,7 @@ Eliminate reliance on `src/mock` fake data and ensure all features use valid dat
 
 ### Description
 
-Develop a new "Home" (Hero/Intro) section that appears at the top of the page, before the "News" section. The design should be elegant, simple, and modern, showcasing the Leadership Center and Business Incubators.
+Design and develop the main landing page sections, including the Hero section, Features, Statistics, and Partners, to create a compelling first impression.
 
 ### Subtasks
 
@@ -2134,7 +2204,8 @@ Suggest and implement comprehensive ideas and content for the dedicated Leadersh
 
 ### Description
 
-Populate the "Contact Us" page with all essential business information to ensure users can reach the center easily.
+ implement the Contact Us page with a working contact form, map integration, and contact information.
+ to ensure users can reach the center easily.
 
 ### Subtasks
 
@@ -2213,3 +2284,54 @@ The system is currently a "Proof of Concept" (PoC) disguised as a production app
 **STOP** all feature development (Tasks 4-16) until Task 22 (Media Storage) is fully resolved. It is irresponsible to add more features on top of a crumbling foundation.
 
 
+
+---
+
+## Task 26: Redis Caching Implementation
+
+### Status: 🔴 Not Started
+
+### Priority: 🟡 Medium
+
+### Description
+
+Implement Redis as a caching layer for the main database to improve performance and reduce database load. This involves setting up Redis, configuring caching strategies for frequently accessed data, and integrating it with the existing Prisma ORM.
+
+### Subtasks
+
+#### 26.1 Redis Setup & Configuration
+
+- [ ] Install and configure Redis (local and production)
+- [ ] Set up Redis connection in `src/lib/redis.ts`
+- [ ] Configure environment variables (`REDIS_URL`)
+
+#### 26.2 Caching Strategy
+
+- [ ] Identify read-heavy endpoints and data (e.g., strategic plans, news, FAQs)
+- [ ] Implement caching utility functions (get, set, invalidate)
+- [ ] Define cache invalidation rules (TTL, on-update)
+
+#### 26.3 Implementation
+
+- [ ] Integrate Redis caching for `src/features/strategic-plan`
+- [ ] Integrate Redis caching for `src/features/news`
+- [ ] Integrate Redis caching for `src/features/innovators` (public views)
+- [ ] Integrate Redis caching for `src/features/collaborators` (public views)
+
+#### 26.4 Testing & Performance
+
+- [ ] Unit tests for caching logic
+- [ ] Integration tests with Redis
+- [ ] Performance benchmarking (before vs after)
+
+### Technical Requirements
+
+- Redis instance (Upstash or self-hosted)
+- `ioredis` or similar client library
+- Caching abstraction layer
+
+### Acceptance Criteria
+
+- [ ] Read performance improved for cached endpoints
+- [ ] Data consistency maintained via proper invalidation
+- [ ] Redis handles connection failures gracefully (fallback to DB)

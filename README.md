@@ -174,9 +174,11 @@ Professional 4-step workflows with smart validation and auto-save:
 - **API:** Hono.js (lightweight, fast)
 - **ORM:** Prisma (type-safe database access)
 - **Database:** MySQL 8.0
-- **Auth:** NextAuth.js v5
-- **Storage:** AWS S3 / Cloudflare R2 / MinIO
-- **Email:** Nodemailer + React Email
+- **Auth:** NextAuth.js v5 (Credentials + OAuth + 2FA)
+- **Storage:** AWS S3 / Cloudflare R2 / MinIO (Replaced DB BLOBs)
+- **Email:** Nodemailer + React Email (Direct SMTP)
+- **Cache:** Redis (Caching Layer)
+- **i18n:** next-intl (Arabic/English with RTL support)
 
 ### DevOps
 - **Containerization:** Docker (multi-stage builds)
