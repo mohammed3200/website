@@ -21,7 +21,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePostStrategicPlan } from '@/features/strategic-plan/api';
-import { CreateStrategicPlanInput, PlanPriority, PlanStatus } from '@/features/strategic-plan/schemas/strategic-plan-schema';
+import {
+  CreateStrategicPlanInput,
+  PlanPriority,
+  PlanStatus,
+} from '@/features/strategic-plan/schemas/strategic-plan-schema';
 import { generateSlug } from '@/features/strategic-plan/utils/slug';
 
 interface CreateStrategicPlanDialogProps {
@@ -42,6 +46,7 @@ export function CreateStrategicPlanDialog({
     priority: 'MEDIUM',
     status: 'DRAFT',
     isActive: true,
+    progress: 0,
     publishedAt: null,
     startDate: null,
     endDate: null,
@@ -65,7 +70,7 @@ export function CreateStrategicPlanDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const submitData = {
       ...formData,
       slug: autoGenerateSlug ? generatedSlug : formData.slug,
@@ -85,6 +90,7 @@ export function CreateStrategicPlanDialog({
             priority: 'MEDIUM',
             status: 'DRAFT',
             isActive: true,
+            progress: 0,
             publishedAt: null,
             startDate: null,
             endDate: null,
@@ -94,7 +100,7 @@ export function CreateStrategicPlanDialog({
           });
           setAutoGenerateSlug(true);
         },
-      }
+      },
     );
   };
 
@@ -104,7 +110,8 @@ export function CreateStrategicPlanDialog({
         <DialogHeader>
           <DialogTitle>Create Strategic Plan</DialogTitle>
           <DialogDescription>
-            Create a new strategic plan record. Each record represents one language version.
+            Create a new strategic plan record. Each record represents one
+            language version.
           </DialogDescription>
         </DialogHeader>
 
@@ -112,7 +119,7 @@ export function CreateStrategicPlanDialog({
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Basic Information</h3>
-            
+
             <div className="space-y-2">
               <Label htmlFor="title">Title *</Label>
               <Input
@@ -123,7 +130,10 @@ export function CreateStrategicPlanDialog({
                   if (autoGenerateSlug) {
                     const baseSlug = generateSlug(e.target.value);
                     const hasArabic = /[\u0600-\u06FF]/.test(e.target.value);
-                    setFormData(prev => ({ ...prev, slug: hasArabic ? `${baseSlug}-ar` : `${baseSlug}-en` }));
+                    setFormData((prev) => ({
+                      ...prev,
+                      slug: hasArabic ? `${baseSlug}-ar` : `${baseSlug}-en`,
+                    }));
                   }
                 }}
                 required
@@ -142,8 +152,13 @@ export function CreateStrategicPlanDialog({
                       setAutoGenerateSlug(e.target.checked);
                       if (e.target.checked && formData.title) {
                         const baseSlug = generateSlug(formData.title);
-                        const hasArabic = /[\u0600-\u06FF]/.test(formData.title);
-                        setFormData(prev => ({ ...prev, slug: hasArabic ? `${baseSlug}-ar` : `${baseSlug}-en` }));
+                        const hasArabic = /[\u0600-\u06FF]/.test(
+                          formData.title,
+                        );
+                        setFormData((prev) => ({
+                          ...prev,
+                          slug: hasArabic ? `${baseSlug}-ar` : `${baseSlug}-en`,
+                        }));
                       }
                     }}
                     className="w-4 h-4"
@@ -154,14 +169,17 @@ export function CreateStrategicPlanDialog({
               <Input
                 id="slug"
                 value={autoGenerateSlug ? generatedSlug : formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, slug: e.target.value })
+                }
                 disabled={autoGenerateSlug}
                 required
                 placeholder="url-friendly-slug"
                 pattern="^[a-z0-9-]+$"
               />
               <p className="text-xs text-gray-500">
-                URL-friendly identifier (lowercase letters, numbers, and hyphens only)
+                URL-friendly identifier (lowercase letters, numbers, and hyphens
+                only)
               </p>
             </div>
 
@@ -170,7 +188,9 @@ export function CreateStrategicPlanDialog({
               <Input
                 id="excerpt"
                 value={formData.excerpt || ''}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value || null })}
+                onChange={(e) =>
+                  setFormData({ ...formData, excerpt: e.target.value || null })
+                }
                 placeholder="Short description or caption"
               />
             </div>
@@ -180,7 +200,9 @@ export function CreateStrategicPlanDialog({
               <Textarea
                 id="content"
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, content: e.target.value })
+                }
                 rows={12}
                 required
                 placeholder="Enter the full strategic plan content"
@@ -191,14 +213,19 @@ export function CreateStrategicPlanDialog({
           {/* Metadata */}
           <div className="space-y-4 pt-4 border-t">
             <h3 className="font-semibold text-lg">Metadata</h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="category">Category</Label>
                 <Input
                   id="category"
                   value={formData.category || ''}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value || null })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      category: e.target.value || null,
+                    })
+                  }
                   placeholder="e.g., Annual, 5-Year"
                 />
               </div>
@@ -207,7 +234,9 @@ export function CreateStrategicPlanDialog({
                 <Label htmlFor="priority">Priority</Label>
                 <Select
                   value={formData.priority}
-                  onValueChange={(value: PlanPriority) => setFormData({ ...formData, priority: value })}
+                  onValueChange={(value: PlanPriority) =>
+                    setFormData({ ...formData, priority: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -225,7 +254,9 @@ export function CreateStrategicPlanDialog({
                 <Label htmlFor="status">Status</Label>
                 <Select
                   value={formData.status}
-                  onValueChange={(value: PlanStatus) => setFormData({ ...formData, status: value })}
+                  onValueChange={(value: PlanStatus) =>
+                    setFormData({ ...formData, status: value })
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -245,7 +276,9 @@ export function CreateStrategicPlanDialog({
                   <input
                     type="checkbox"
                     checked={formData.isActive}
-                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, isActive: e.target.checked })
+                    }
                     className="w-4 h-4"
                   />
                   <span>Active</span>

@@ -1,5 +1,12 @@
 // tests/notifications/admin-notifications.test.ts
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  jest,
+} from '@jest/globals';
 import {
   notifyAdmins,
   notifyNewCollaborator,
@@ -9,7 +16,7 @@ import {
   notifyFailedLoginAttempts,
 } from '@/lib/notifications/admin-notifications';
 import { db } from '@/lib/db';
-import { NotificationPriority } from '../../src/generated/prisma/client';
+import { NotificationPriority } from '@prisma/client';
 
 // Mock the database
 jest.mock('@/lib/db', () => ({
@@ -174,9 +181,7 @@ describe('Admin Notifications', () => {
     });
 
     it('should handle errors gracefully', async () => {
-      (db.user.findMany as any).mockRejectedValue(
-        new Error('Database error'),
-      );
+      (db.user.findMany as any).mockRejectedValue(new Error('Database error'));
 
       const result = await notifyAdmins({
         type: 'SYSTEM_ERROR',

@@ -9,7 +9,7 @@ import admin from "@/features/admin/server/route";
 import strategicPlan from "@/features/strategic-plan/server/route";
 import news from "@/features/news/server/route";
 import pageContent from "@/features/page-content/server/route";
-// import email from "@/features/email/server/route";
+
 
 
 const app = new Hono().basePath("/api");
@@ -28,7 +28,7 @@ const routes = app
   .route("/strategicPlan", strategicPlan)
   .route("/news", news)
   .route("/pageContent", pageContent);
-// .route("/email", email);
+
 
 // Error handling
 app.onError((err, c) => {

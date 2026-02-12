@@ -17,12 +17,14 @@
 ## 🎯 Highlights
 
 ### ✨ Production Ready (v2.0)
+
 - **100% deployment-ready** for Virtuozzo Application Platform
 - Comprehensive deployment documentation
 - Production secrets generated and secured
 - **40% infrastructure cost reduction** achieved
 
 ### 🚀 Key Achievements
+
 - **97% storage cost savings** - S3 migration complete (AWS/Cloudflare R2)
 - **15-20% hosting cost reduction** - Redis removed, optimized architecture
 - **Enterprise-grade security** - RBAC with automated integrity verification
@@ -50,21 +52,25 @@
 ### User-Facing Features
 
 #### **Multi-Page Registration Forms** ✅
+
 Professional 4-step workflows with smart validation and auto-save:
 
 **Innovators & Creators:**
+
 1. Personal Information (name, contact, location)
 2. Project Overview (title, description, category)
 3. Project Details (goals, stage, funding)
 4. Review & Submit
 
 **Collaborators & Supporters:**
+
 1. Company Information (name, contact, website)
 2. Industry & Expertise (sector, capabilities)
 3. Resources & Support (services, funding)
 4. Review & Submit
 
 **Features:**
+
 - ✅ Form state persistence (localStorage)
 - ✅ Step-by-step validation (React Hook Form + Zod)
 - ✅ Progress indicators
@@ -73,12 +79,14 @@ Professional 4-step workflows with smart validation and auto-save:
 - ✅ Mobile-responsive design
 
 #### **Content Management**
+
 - **News & Activities** - Latest updates and events
 - **Strategic Plans** - College and center goals/milestones
 - **FAQ Section** - Quick answers and knowledge base
 - **About Pages** - Entrepreneurship center, Business incubators
 
 #### **Internationalization (i18n)** 🌍
+
 - Full bilingual support (Arabic default, English)
 - **RTL (Right-to-Left)** layout for Arabic
 - **LTR (Left-to-Right)** layout for English
@@ -88,21 +96,25 @@ Professional 4-step workflows with smart validation and auto-save:
 ### Admin Features
 
 #### **Dashboard** 📊
+
 - Analytics overview (pending approvals, user stats)
 - Quick actions and shortcuts
 - Notification center
 
 #### **Content Management**
+
 - **News Management** - Create, edit, publish articles
 - **FAQ Management** - Organize Q&A content
 - **Strategic Plans** - Publish goals and strategies
 
 #### **Submission Review**
+
 - **Innovators** - Review and approve/reject projects
 - **Collaborators** - Review and approve/reject sponsors
 - Status updates with email notifications
 
 #### **User Management**
+
 - Role-Based Access Control (RBAC)
 - User invitations
 - Permission management
@@ -113,6 +125,7 @@ Professional 4-step workflows with smart validation and auto-save:
   - Viewer (read-only)
 
 #### **Email Templates**
+
 - Customizable email templates
 - Bilingual support
 - Preview before send
@@ -120,6 +133,7 @@ Professional 4-step workflows with smart validation and auto-save:
 ### Security Features 🔒
 
 #### **Authentication & Authorization**
+
 - NextAuth.js v5 with database sessions
 - Credentials authentication
 - OAuth providers (Google, GitHub)
@@ -127,6 +141,7 @@ Professional 4-step workflows with smart validation and auto-save:
 - Password reset flow
 
 #### **RBAC System**
+
 - Resource-action permission model
 - Role inheritance
 - Middleware-based route protection
@@ -138,6 +153,7 @@ Professional 4-step workflows with smart validation and auto-save:
 ### Infrastructure Features 🏗️
 
 #### **S3 Storage System** ✅ (v2.0)
+
 - **97% cost reduction** vs database BLOBs
 - AWS S3 support (Free Tier Year 1)
 - Cloudflare R2 support (Free 10GB forever)
@@ -146,12 +162,14 @@ Professional 4-step workflows with smart validation and auto-save:
 - CDN-ready URLs
 
 #### **Email System**
+
 - Transactional emails (submission confirmations, status updates)
 - React Email templates
 - SMTP configuration (Gmail, SendGrid)
 - Email logging and tracking
 
 #### **Database**
+
 - **MySQL 8.0** (production)
 - Prisma ORM with type safety
 - Automated migrations
@@ -162,6 +180,7 @@ Professional 4-step workflows with smart validation and auto-save:
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **Framework:** Next.js 16.1.1 (App Router)
 - **UI Library:** React 19
 - **Language:** TypeScript (strict mode)
@@ -171,6 +190,7 @@ Professional 4-step workflows with smart validation and auto-save:
 - **i18n:** next-intl (bilingual support)
 
 ### Backend
+
 - **API:** Hono.js (lightweight, fast)
 - **ORM:** Prisma (type-safe database access)
 - **Database:** MySQL 8.0
@@ -181,24 +201,27 @@ Professional 4-step workflows with smart validation and auto-save:
 - **i18n:** next-intl (Arabic/English with RTL support)
 
 ### DevOps
+
 - **Containerization:** Docker (multi-stage builds)
 - **Deployment:** Virtuozzo Application Platform
 - **CI/CD:** GitHub Actions (ready)
 - **Testing:** Jest + React Testing Library
 
 ### **Tech Stack Evolution (v2.0)**
-| Component | Before | After v2.0 | Impact |
-|-----------|--------|------------|--------|
-| **Storage** | Database BLOBs | S3 (AWS/R2) | **-97% cost** |
-| **Database** | MariaDB 10.11 | MySQL 8.0 | Production compatible |
-| **Queue** | Redis + BullMQ | Direct SMTP | **-20% cost** |
-| **Total Savings** | - | - | **-40% infrastructure cost** |
+
+| Component         | Before         | After v2.0  | Impact                                 |
+| ----------------- | -------------- | ----------- | -------------------------------------- |
+| **Storage**       | Database BLOBs | S3 (AWS/R2) | **-97% cost**                          |
+| **Database**      | MariaDB 10.11  | MySQL 8.0   | Production compatible                  |
+| **Email Queue**   | Redis + BullMQ | Direct SMTP | **-20% cost**, simplified architecture |
+| **Total Savings** | -              | -           | **-40% infrastructure cost**           |
 
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - **Node.js** v18+ (v20 recommended)
 - **Package Manager:** bun (recommended) or npm
 - **Database:** MySQL 8.0
@@ -207,12 +230,14 @@ Professional 4-step workflows with smart validation and auto-save:
 ### Installation
 
 #### 1. Clone Repository
+
 ```bash
 git clone https://github.com/mohammed3200/website.git
 cd website
 ```
 
 #### 2. Install Dependencies
+
 ```bash
 # Using bun (recommended)
 bun install
@@ -222,6 +247,7 @@ npm install
 ```
 
 #### 3. Configure Environment
+
 ```bash
 # Copy template
 cp .env.example .env
@@ -231,6 +257,7 @@ cp .env.example .env
 ```
 
 #### 4. Set Up Database
+
 ```bash
 # Generate Prisma Client
 bunx prisma generate
@@ -251,6 +278,7 @@ bun run rbac:verify
 #### 5. Set Up S3 (Choose one)
 
 **Option A: MinIO (Local Development)**
+
 ```bash
 # Start MinIO with docker-compose
 docker-compose up -d minio
@@ -260,6 +288,7 @@ bun run setup:minio
 ```
 
 **Option B: AWS S3 (Production)**
+
 ```bash
 # Create S3 bucket in AWS Console
 # Get access credentials
@@ -267,6 +296,7 @@ bun run setup:minio
 ```
 
 **Option C: Cloudflare R2 (Production)**
+
 ```bash
 # Create R2 bucket in Cloudflare Dashboard
 # Get access credentials
@@ -274,6 +304,7 @@ bun run setup:minio
 ```
 
 #### 6. Run Development Server
+
 ```bash
 bun run dev
 # Visit http://localhost:3000
@@ -318,6 +349,7 @@ S3_PUBLIC_ACCESS="true"
 ### Quick Deploy (Recommended: Git-Based)
 
 1. **Push to Git Repository**
+
    ```bash
    git push origin main
    ```
@@ -339,6 +371,7 @@ S3_PUBLIC_ACCESS="true"
    - Configure S3 credentials
 
 5. **Initialize Database**
+
    ```bash
    # SSH into container
    bunx prisma migrate deploy
@@ -351,6 +384,7 @@ S3_PUBLIC_ACCESS="true"
    - Enable Let's Encrypt SSL
 
 ### Documentation
+
 - **Complete Deployment Guide:** `docs/Final_Production_Deployment_Checklist.md`
 - **Alternative Strategies:** `docs/Alternative_Deployment_Strategies.md`
 - **Secrets Management:** `docs/Production_Secrets.md`
@@ -364,17 +398,20 @@ src/
 ├── app/                      # Next.js App Router
 │   ├── [locale]/            # Internationalized routes (ar/en)
 │   │   ├── (public)/        # Public pages (home, news, faq)
+│   │   ├── (standalone)/admin/  # Admin dashboard (primary)
 │   │   ├── innovators/      # Innovator registration
 │   │   └── collaborators/   # Collaborator registration
-│   ├── admin/               # Admin dashboard (protected)
 │   └── api/                 # API routes (Hono.js)
 ├── features/                # Domain modules
 │   ├── auth/               # Authentication & RBAC
 │   ├── collaborators/      # Collaborator submissions
 │   ├── innovators/         # Innovator projects
+│   ├── admin/              # Admin features (notifications, sidebar)
 │   ├── email/              # Email service
 │   ├── news/               # News articles
-│   └── strategic-plan/     # Strategic plans
+│   ├── strategic-plan/     # Strategic plans
+│   ├── page-content/       # Dynamic page content
+│   └── faqs/               # FAQ management
 ├── components/              # Reusable UI components
 │   ├── ui/                 # shadcn/ui components
 │   ├── forms/              # Form components
@@ -385,6 +422,7 @@ src/
 │   ├── email/             # Email templates & service
 │   ├── s3/                # S3 storage service
 │   ├── forms/             # Form utilities
+│   ├── notifications/     # Admin notifications
 │   └── rbac.ts            # RBAC definitions
 ├── i18n/                    # Internationalization
 │   ├── routing.ts          # i18n configuration
@@ -463,6 +501,7 @@ bun test:coverage
 ```
 
 ### Test Structure
+
 ```
 src/features/
 └── [feature]/
@@ -478,16 +517,19 @@ src/features/
 ## 📚 Documentation
 
 ### Key Documents
+
 - **[CHANGELOG.md](./CHANGELOG.md)** - Version history and changes
-- **[PROJECT_TASKS_ROADMAP.md](./PROJECT_TASKS_ROADMAP.md)** - Development roadmap (22 tasks)
+- **[PROJECT_TASKS_ROADMAP.md](./PROJECT_TASKS_ROADMAP.md)** - Development roadmap (27+ tasks)
 - **[PROJECT_ANALYSIS.md](./PROJECT_ANALYSIS.md)** - Architecture analysis
 
 ### Deployment Guides
+
 - **[Final Production Deployment Checklist](./docs/Final_Production_Deployment_Checklist.md)**
 - **[Alternative Deployment Strategies](./docs/Alternative_Deployment_Strategies.md)**
 - **[Production Secrets](./docs/Production_Secrets.md)**
 
 ### Feature Documentation
+
 - **[Email System](./docs/email/)** - Email templates and configuration
 - More documentation in `docs/` folder
 
@@ -502,6 +544,7 @@ src/features/
 5. Open a Pull Request
 
 ### Code Standards
+
 - TypeScript strict mode
 - ESLint + Prettier
 - Test coverage for new features

@@ -18,8 +18,8 @@ Thank you for your interest in contributing to the Misurata Center for Entrepren
      ```
 3. **Install dependencies & test**
    ```bash
-   npm install
-   npm test
+   bun install
+   bun test
    ```
 4. **Make your changes**
    - Follow the existing code style (Prettier, ESLint).
@@ -27,7 +27,7 @@ Thank you for your interest in contributing to the Misurata Center for Entrepren
    - Add tests for new functionality or bugs fixed.
 5. **Run the project locally**
    ```bash
-   npm run dev
+   bun run dev
    ```
 6. **Commit & push**
    ```bash
@@ -44,12 +44,13 @@ Thank you for your interest in contributing to the Misurata Center for Entrepren
 
 - **Language & Framework**: TypeScript, React, Next.js
 - **Formatting**: Use Prettier for code formatting. Do not commit changes that cause linting errors.
-- **Linting**: Ensure `npm run lint` passes without errors.
+- **Linting**: Ensure `bun run lint` passes without errors.
 - **Testing**: Aim for good test coverage. Use Jest and React Testing Library for unit and integration tests.
 
 ## 3. Issue Reporting
 
 When reporting a bug or requesting a feature, please include:
+
 - A descriptive title
 - Steps to reproduce (for bugs)
 - Expected behavior vs. actual behavior
