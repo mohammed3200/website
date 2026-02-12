@@ -21,6 +21,7 @@ model User {
   isActive                Boolean                @default(true)
   roleId                  String?
   notificationPreferences Json?
+  lastTwoFactorSentAt     DateTime?
   invitedBy               String?
   accounts                Account[]
   adminNotifications      AdminNotification[]

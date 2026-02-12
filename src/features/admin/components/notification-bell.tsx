@@ -13,6 +13,8 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useRouter } from 'next/navigation';
 
+import { useLocale } from 'next-intl';
+
 interface Notification {
   id: string;
   title: string;
@@ -27,6 +29,7 @@ export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const router = useRouter();
+  const locale = useLocale();
 
   const fetchNotifications = async () => {
     try {
@@ -134,7 +137,7 @@ export function NotificationBell() {
         {notifications.length > 0 && (
           <div className="px-4 py-2 border-t border-gray-100">
             <button
-              onClick={() => router.push('/admin/notifications')}
+              onClick={() => router.push(`/${locale || 'en'}/admin/notifications`)}
               className="w-full text-center text-xs text-gray-500 hover:text-gray-900 py-1"
             >
               View all notifications
