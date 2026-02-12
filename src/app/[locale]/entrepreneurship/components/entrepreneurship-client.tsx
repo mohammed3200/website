@@ -25,7 +25,9 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
 
     // Helper to get content by section
     const getSection = (section: string) => {
-        return content.filter((item) => item.section === section);
+        return content
+            .filter((item) => item.section === section)
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     };
 
     // Fallback icon map

@@ -4,15 +4,30 @@ import { redirect } from 'next/navigation';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 export default async function ContentManagementPage({
-    params: { locale },
+    params,
 }: {
-    params: { locale: string };
+    params: Promise<{ locale: string }>;
 }) {
+    const { locale } = await params;
     const session = await auth();
 
     if (!session?.user) {
         redirect(`/${locale}/auth/login`);
-    } const isArabic = locale === 'ar';
+    }
+
+    const permissions = session.user.permissions as
+        | Array<{ resource: string; action: string }>
+        | undefined;
+
+    const hasContentAccess = permissions?.some(
+        (p) => p.resource === 'content' && p.action === 'manage'
+    );
+
+    if (!hasContentAccess) {
+        redirect(`/${locale}/admin`); // Or another appropriate access-denied route
+    }
+
+    const isArabic = locale === 'ar';
 
     // Fetch all page content
     const [entrepreneurshipContent, incubatorsContent] = await Promise.all([

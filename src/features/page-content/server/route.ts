@@ -128,6 +128,12 @@ app.patch(
             const { id } = c.req.valid('param');
             const data = c.req.valid('json');
 
+            // Check existence
+            const existing = await db.pageContent.findUnique({ where: { id } });
+            if (!existing) {
+                return c.json({ error: 'Page content not found' }, 404);
+            }
+
             // Transform for Prisma
             const content = await db.pageContent.update({
                 where: { id },
@@ -149,6 +155,12 @@ app.patch(
 app.delete('/:id', zValidator('param', z.object({ id: z.string() })), async (c) => {
     try {
         const { id } = c.req.valid('param');
+
+        // Check existence
+        const existing = await db.pageContent.findUnique({ where: { id } });
+        if (!existing) {
+            return c.json({ error: 'Page content not found' }, 404);
+        }
 
         await db.pageContent.delete({
             where: { id },

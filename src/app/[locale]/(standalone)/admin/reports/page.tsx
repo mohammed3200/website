@@ -50,12 +50,18 @@ export default function ReportsPage() {
 
     useEffect(() => {
         fetchReports();
+    }, []);
+
+    useEffect(() => {
         // Refresh list every 10 seconds if there are pending reports
+        const hasPending = reports.some(r => r.status === 'PENDING' || r.status === 'GENERATING');
+
+        if (!hasPending) return;
+
         const interval = setInterval(() => {
-            if (reports.some(r => r.status === 'PENDING' || r.status === 'GENERATING')) {
-                fetchReports();
-            }
+            fetchReports();
         }, 10000);
+
         return () => clearInterval(interval);
     }, [reports]);
 

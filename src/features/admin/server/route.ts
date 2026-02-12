@@ -329,34 +329,16 @@ const app = new Hono<{ Variables: Variables }>()
           },
         });
 
-        // Simulate async generation
-        (async () => {
-          try {
-            await db.report.update({
-              where: { id: report.id },
-              data: { status: 'GENERATING' },
-            });
-
-            // Simulate work delay
-            await new Promise((resolve) => setTimeout(resolve, 3000));
-
-            // Mark as completed - in a real app, this would involve S3 upload
-            await db.report.update({
-              where: { id: report.id },
-              data: {
-                status: 'COMPLETED',
-                generatedAt: new Date(),
-                fileUrl: `/api/admin/reports/download/${report.id}`, // Placeholder
-              },
-            });
-          } catch (error) {
-            console.error('Async report generation failed:', error);
-            await db.report.update({
-              where: { id: report.id },
-              data: { status: 'FAILED' },
-            });
-          }
-        })();
+        // Add to background job queue
+        const { reportQueue } = await import('@/lib/queue/report-queue');
+        await reportQueue.add('generate-report', {
+          reportId: report.id,
+          name,
+          type,
+          format,
+          parameters: parameters || {},
+          createdById: user.id,
+        });
 
         return c.json({ report });
       } catch (error) {
