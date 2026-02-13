@@ -1,19 +1,15 @@
-import { db } from '@/lib/db';
+import { getPageContent } from '@/features/page-content';
 import EntrepreneurshipClient from './components/entrepreneurship-client';
 
 export default async function EntrepreneurshipPage({
-  params: { locale },
+  params,
 }: {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  // Fetch page content from database
-  const content = await db.pageContent.findMany({
-    where: {
-      page: 'entrepreneurship',
-      isActive: true,
-    },
-    orderBy: [{ section: 'asc' }, { order: 'asc' }],
-  });
+  const { locale } = await params;
+
+  // Fetch page content using feature helper
+  const content = await getPageContent('entrepreneurship');
 
   return <EntrepreneurshipClient locale={locale} content={content} />;
 }

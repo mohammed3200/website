@@ -1,44 +1,47 @@
-import { db } from "@/lib/db";
+import { db } from '@/lib/db';
 // import { User, Role, Permission } from "@prisma/client";
 
 // Define resources and actions
 export const RESOURCES = {
-  USERS: "users",
-  NEWS: "news",
-  COLLABORATORS: "collaborators",
-  INNOVATORS: "innovators",
-  DASHBOARD: "dashboard",
-  SETTINGS: "settings",
-  INVITATIONS: "invitations",
+  USERS: 'users',
+  NEWS: 'news',
+  COLLABORATORS: 'collaborators',
+  INNOVATORS: 'innovators',
+  DASHBOARD: 'dashboard',
+  SETTINGS: 'settings',
+  INVITATIONS: 'invitations',
 } as const;
 
 export const ACTIONS = {
-  CREATE: "create",
-  READ: "read",
-  UPDATE: "update",
-  DELETE: "delete",
-  MANAGE: "manage", // Full control
-  INVITE: "invite",
-  APPROVE: "approve",
-  REJECT: "reject",
+  CREATE: 'create',
+  READ: 'read',
+  UPDATE: 'update',
+  DELETE: 'delete',
+  MANAGE: 'manage', // Full control
+  INVITE: 'invite',
+  APPROVE: 'approve',
+  REJECT: 'reject',
 } as const;
 
-export type Resource = typeof RESOURCES[keyof typeof RESOURCES];
-export type Action = typeof ACTIONS[keyof typeof ACTIONS];
+export type Resource = (typeof RESOURCES)[keyof typeof RESOURCES];
+export type Action = (typeof ACTIONS)[keyof typeof ACTIONS];
 
 // Default system roles
 export const SYSTEM_ROLES = {
-  SUPER_ADMIN: "super_admin",
-  ADMIN: "admin",
-  NEWS_EDITOR: "news_editor",
-  REQUEST_REVIEWER: "request_reviewer",
-  VIEWER: "viewer",
+  SUPER_ADMIN: 'super_admin',
+  ADMIN: 'admin',
+  NEWS_EDITOR: 'news_editor',
+  REQUEST_REVIEWER: 'request_reviewer',
+  VIEWER: 'viewer',
 } as const;
 
-export type SystemRole = typeof SYSTEM_ROLES[keyof typeof SYSTEM_ROLES];
+export type SystemRole = (typeof SYSTEM_ROLES)[keyof typeof SYSTEM_ROLES];
 
 // Permission definitions for system roles
-export const ROLE_PERMISSIONS: Record<SystemRole, Array<{ resource: Resource; action: Action }>> = {
+export const ROLE_PERMISSIONS: Record<
+  SystemRole,
+  Array<{ resource: Resource; action: Action }>
+> = {
   [SYSTEM_ROLES.SUPER_ADMIN]: [
     // Full access to everything
     { resource: RESOURCES.USERS, action: ACTIONS.MANAGE },
@@ -91,7 +94,7 @@ export const ROLE_PERMISSIONS: Record<SystemRole, Array<{ resource: Resource; ac
 export async function hasPermission(
   userId: string,
   resource: Resource,
-  action: Action
+  action: Action,
 ): Promise<boolean> {
   try {
     const user = await db.user.findUnique({
@@ -115,7 +118,7 @@ export async function hasPermission(
     const hasManagePermission = user.role.permissions.some(
       (rp: any) =>
         rp.permission.resource === resource &&
-        rp.permission.action === ACTIONS.MANAGE
+        rp.permission.action === ACTIONS.MANAGE,
     );
 
     if (hasManagePermission) return true;
@@ -123,11 +126,10 @@ export async function hasPermission(
     // Check for specific permission
     return user.role.permissions.some(
       (rp: any) =>
-        rp.permission.resource === resource &&
-        rp.permission.action === action
+        rp.permission.resource === resource && rp.permission.action === action,
     );
   } catch (error) {
-    console.error("Error checking permission:", error);
+    console.error('Error checking permission:', error);
     return false;
   }
 }
@@ -157,7 +159,7 @@ export async function getUserPermissions(userId: string) {
       action: rp.permission.action,
     }));
   } catch (error) {
-    console.error("Error getting user permissions:", error);
+    console.error('Error getting user permissions:', error);
     return [];
   }
 }
@@ -181,7 +183,7 @@ export async function initializeRoles() {
               action,
               description: `${action} permission for ${resource}`,
             },
-          })
+          }),
         );
       }
     }
@@ -194,7 +196,7 @@ export async function initializeRoles() {
         update: {},
         create: {
           name: roleKey,
-          description: `System role: ${roleKey.replace("_", " ").toUpperCase()}`,
+          description: `System role: ${roleKey.replace('_', ' ').toUpperCase()}`,
           isSystem: true,
         },
       });
@@ -228,9 +230,9 @@ export async function initializeRoles() {
       }
     }
 
-    console.log("System roles and permissions initialized successfully");
+    console.log('System roles and permissions initialized successfully');
   } catch (error) {
-    console.error("Error initializing roles:", error);
+    console.error('Error initializing roles:', error);
   }
 }
 
@@ -239,7 +241,7 @@ export async function createUserInvitation(
   inviterId: string,
   email: string,
   roleId: string,
-  expiresInHours: number = 48
+  expiresInHours: number = 48,
 ) {
   const inviter = await db.user.findUnique({
     where: { id: inviterId },
@@ -247,11 +249,15 @@ export async function createUserInvitation(
   });
 
   if (!inviter) {
-    throw new Error("Inviter not found");
+    throw new Error('Inviter not found');
   }
 
   // Check if inviter has permission to invite users
-  const canInvite = await hasPermission(inviterId, RESOURCES.INVITATIONS, ACTIONS.CREATE);
+  const canInvite = await hasPermission(
+    inviterId,
+    RESOURCES.INVITATIONS,
+    ACTIONS.CREATE,
+  );
   if (!canInvite) {
     throw new Error("You don't have permission to invite users");
   }
@@ -260,12 +266,12 @@ export async function createUserInvitation(
   const existingInvitation = await db.userInvitation.findFirst({
     where: {
       email,
-      status: "PENDING",
+      status: 'PENDING',
     },
   });
 
   if (existingInvitation) {
-    throw new Error("An invitation is already pending for this email");
+    throw new Error('An invitation is already pending for this email');
   }
 
   // Generate unique token
@@ -289,12 +295,9 @@ export async function createUserInvitation(
 
 // Helper function to generate invitation token
 function generateInvitationToken(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let token = '';
-  for (let i = 0; i < 32; i++) {
-    token += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return token;
+  // Use crypto for secure token generation
+  const crypto = require('crypto');
+  return crypto.randomBytes(32).toString('hex');
 }
 
 // Accept invitation
@@ -305,19 +308,19 @@ export async function acceptInvitation(token: string, userId: string) {
   });
 
   if (!invitation) {
-    throw new Error("Invalid invitation token");
+    throw new Error('Invalid invitation token');
   }
 
-  if (invitation.status !== "PENDING") {
-    throw new Error("This invitation has already been used");
+  if (invitation.status !== 'PENDING') {
+    throw new Error('This invitation has already been used');
   }
 
   if (new Date() > invitation.expiresAt) {
     await db.userInvitation.update({
       where: { id: invitation.id },
-      data: { status: "EXPIRED" },
+      data: { status: 'EXPIRED' },
     });
-    throw new Error("This invitation has expired");
+    throw new Error('This invitation has expired');
   }
 
   // Update user role and invitation status
@@ -332,7 +335,7 @@ export async function acceptInvitation(token: string, userId: string) {
     db.userInvitation.update({
       where: { id: invitation.id },
       data: {
-        status: "ACCEPTED",
+        status: 'ACCEPTED',
         acceptedBy: userId,
         acceptedAt: new Date(),
       },

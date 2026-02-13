@@ -5,11 +5,12 @@ import { NotificationBell } from '@/features/admin/components/notification-bell'
 
 export default async function AdminLayout({
   children,
-  params: { locale },
+  params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
   const session = await auth();
 
   if (!session?.user) {
@@ -24,7 +25,7 @@ export default async function AdminLayout({
   const hasDashboardAccess = permissions?.some(
     (p) =>
       p.resource === 'dashboard' &&
-      (p.action === 'read' || p.action === 'manage')
+      (p.action === 'read' || p.action === 'manage'),
   );
 
   if (!hasDashboardAccess) {
@@ -32,7 +33,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50" dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+    <div
+      className="min-h-screen bg-gray-50"
+      dir={locale === 'ar' ? 'rtl' : 'ltr'}
+    >
       {/* Sidebar */}
       <Sidebar locale={locale} />
 
