@@ -16,19 +16,25 @@ if (!dbHost || !dbUser || !dbPassword || !dbName) {
   console.error('❌ Missing required database environment variables:');
   console.error('   DATABASE_HOST:', dbHost ? '✅' : '❌ MISSING');
   console.error('   DATABASE_USER:', dbUser ? '✅' : '❌ MISSING');
-  console.error('   DATABASE_PASSWORD:', dbPassword ? '✅ (set)' : '❌ MISSING');
+  console.error(
+    '   DATABASE_PASSWORD:',
+    dbPassword ? '✅ (set)' : '❌ MISSING',
+  );
   console.error('   DATABASE_NAME:', dbName ? '✅' : '❌ MISSING');
   console.error('   DATABASE_PORT:', dbPort);
-  throw new Error('Missing required database environment variables. Please check your .env file.');
+  throw new Error(
+    'Missing required database environment variables. Please check your .env file.',
+  );
 }
 
 // Strategic Plans Data
-const STRATEGIC_PLANS_DATA = [{
-  id: "1",
-  arabic: {
-    caption: "كلية التقنية الصناعية - مصراتة",
-    title: "الخطة الإسترتيجية 2023 - 2027",
-    text: `1.	المقدمة
+const STRATEGIC_PLANS_DATA = [
+  {
+    id: '1',
+    arabic: {
+      caption: 'كلية التقنية الصناعية - مصراتة',
+      title: 'الخطة الإسترتيجية 2023 - 2027',
+      text: `1.	المقدمة
   كلية التقنية الصناعية مصراتة هي إحدى الكليات التقنية التابعة لوزارة الصناعة والمعادن. وقد تم إنشاء الكلية باسم المعهد العـالي للصناعــة بناء على قرار اللجنة الشعبية العامة للصناعة سابقاً رقم (35) لعام (1988)، وتغير الاسم إلى كلية التقنية الصناعية مصراتة بموجب قرار اللجنة الشعبية العامة للتعليم والبحث العلمي سابقاً رقم (148) لعام (2010)، وإلحاقا بقرار اللجنة الشعبية العامة سابقاً رقم (534) لعام (2009). وصدر قرار مجلس وزراء حكومة الوحدة الوطنية رقم (899) لعام (2022) بشأن إعادة تنظيم كلية التقنية الصناعية مصراتة، الذي نص على أن الكلية جهة اعتبارية ذات ذمة مالية مستقلة، وتتبع وزارة الصناعة والمعادن، وتسري عليها كافة اللوائح والقرارات المنظمة لعمل الجامعات الليبية، وأسند للكلية بالإضافة الى المهام المسندة اليها بالتشريعات النافذة العمل على اعداد الدراسات والأبحاث الخاصة بنقل التقنية الحديثة وتوطينها من خلال تشجيع تنفيذ المشاريع والمبادرات التي توفر مخرجات نوعية تناسب قطاع الصناعة والقطاعات ذات العلاقة بسوق العمل.
   تتميز الكلية بسمعة طيبة ومحترمة في الوسط العلمي المحلي والدولي، مبنية على ارتباطها بعلاقة وطيدة ومتجددة مع المؤسسات العلمية والصناعية على المستوى الوطني والعالمي، إذ تقدم كلية التقنية الصناعية لطلابها وروادها مجموعة من البرامج التقنية الأكاديمية والتدريبية، والدراسات العليا، والبحث العلمي النابعة من خبرة متواصلة في هذا المجال لأكثر من ثلاثين عاماً من البذل والعطاء، والمساهمة في بناء المجتمع بإعداد أفضل الخريجين المهرة ذوي الصيت الطيب في مختلف الأصعدة ومجالات الحياة الهندسية.
   تمتلك الكلية اليوم كادراً متجانساً يشتغل على هيئة أسرة واحدة بشكل حيويِ نشط، من أجل توفير أفضل البرامج الأكاديمية وتقديمها وأيضاً البرامج التدريبية المرنة؛ لغرض تأهيل الأفراد والمؤسسات وصقلها علمياً وتقنياً، بحيث تسهم في بناء القدرات، وتنمية المهارات البشرية للمجتمع الليبي.
@@ -280,11 +286,11 @@ const STRATEGIC_PLANS_DATA = [{
   6	م. أحمد مصطفى بن ساسي	مسجـل الكليـة
   7	د. عبدالعالي محمد قليصة	مراجعة لغوية
   `,
-  },
-  english: {
-    caption: "College of Industrial Technology - Misurata",
-    title: "Strategic Plan 2023 - 2027",
-    text: `1. Introduction
+    },
+    english: {
+      caption: 'College of Industrial Technology - Misurata',
+      title: 'Strategic Plan 2023 - 2027',
+      text: `1. Introduction
   The College of Industrial Technology Misurata is one of the technical colleges affiliated to the Ministry of Industry and Minerals. The college was established under the name of the Higher Institute of Industry based on the decision of the former General People's Committee for Industry No. (35) of (1988), and the name was changed to the College of Industrial Technology Misurata by virtue of the decision of the former General People's Committee for Education and Scientific Research No. (148) of (2010), and in addition to the decision of the former General People's Committee No. (534) of (2009). The decision of the Council of Ministers of the Government of National Unity No. (899) of (2022) was issued regarding the reorganization of the College of Industrial Technology Misurata, which stipulated that the college is a legal entity with an independent financial status, affiliated with the Ministry of Industry and Minerals, and all regulations and decisions regulating the work of Libyan universities apply to it. In addition to the tasks assigned to it by the applicable legislation, the college was assigned to work on preparing studies and research related to the transfer and localization of modern technology by encouraging the implementation of projects and initiatives that provide qualitative outputs that suit the industrial sector and sectors related to the labor market. The college has a good and respected reputation in the local and international scientific community, based on its strong and renewed relationship with scientific and industrial institutions at the national and international levels. The College of Industrial Technology offers its students and pioneers a range of academic and training technical programs, postgraduate studies, and scientific research stemming from continuous experience in this field for more than thirty years of giving and dedication, and contributing to building society by preparing the best skilled graduates with a good reputation in various levels and areas of engineering life. Today, the college has a homogeneous cadre that works as one family in a vital and active manner, in order to provide and present the best academic programs, as well as flexible training programs; for the purpose of qualifying individuals and institutions and refining them scientifically and technically, so that they contribute to building capacities and developing human skills for Libyan society. The college also seeks to develop its role in serving the local and international community, by developing long-term strategic plans, followed by preparing programs to develop administrative and academic work in the college, according to scientific foundations that guarantee great success in the near future and constitute a path to reform and thoughtful development to address administrative and academic problems; In order to raise the academic level of faculty members, technicians, college employees and students.
 
   2. Strategic Plan Team
@@ -529,24 +535,24 @@ const STRATEGIC_PLANS_DATA = [{
   6 Eng. Ahmed Mustafa bin Sassi College Registrar
   7 Dr. Abdul Ali Muhammad Qalisa Linguistic Review
   `,
+    },
   },
-},
-{
-  id: "2",
-  arabic: {
-    caption: "مركز الريادة وحاضنات الاعمال",
-    title: "الخطة الإسترتيجية 2023 - 2027",
-    text: "",
+  {
+    id: '2',
+    arabic: {
+      caption: 'مركز الريادة وحاضنات الاعمال',
+      title: 'الخطة الإسترتيجية 2023 - 2027',
+      text: '',
+    },
+    english: {
+      caption: 'Entrepreneurship and Business Incubators Center',
+      title: 'Strategic Plan 2023 - 2027',
+      text: '',
+    },
   },
-  english: {
-    caption: "Entrepreneurship and Business Incubators Center",
-    title: "Strategic Plan 2023 - 2027",
-    text: "",
-  },
-},
 ];
 
-async function main() {
+export async function main() {
   console.log('🌱 Seeding database...');
 
   // Use DATABASE_URL if available, otherwise construct it
@@ -559,13 +565,12 @@ async function main() {
   });
 
   if (!process.env.INIT_ADMIN_EMAIL || !process.env.INIT_ADMIN_PASSWORD) {
-    throw new Error('INIT_ADMIN_EMAIL and INIT_ADMIN_PASSWORD environment variables are required');
+    throw new Error(
+      'INIT_ADMIN_EMAIL and INIT_ADMIN_PASSWORD environment variables are required',
+    );
   }
 
-  const passwordHash = await bcrypt.hash(
-    process.env.INIT_ADMIN_PASSWORD,
-    10
-  );
+  const passwordHash = await bcrypt.hash(process.env.INIT_ADMIN_PASSWORD, 10);
 
   // Find the Super Admin role (ensure seed:rbac is run or handle gracefully)
   const superAdminRole = await prisma.role.findUnique({
@@ -573,7 +578,9 @@ async function main() {
   });
 
   if (!superAdminRole) {
-    console.warn("⚠️  Super Admin role not found. Please run 'npm run seed:rbac' first.");
+    console.warn(
+      "⚠️  Super Admin role not found. Please run 'npm run seed:rbac' first.",
+    );
     // Optionally create it here or just proceed without role (if roleId is optional)
     // But since we want to give permissions, we should warn.
   }
@@ -590,14 +597,16 @@ async function main() {
     create: {
       email: process.env.INIT_ADMIN_EMAIL,
       password: passwordHash,
-      name: "Admin User",
+      name: 'Admin User',
       emailVerified: new Date(),
       roleId: superAdminRole?.id,
       isActive: true,
     },
   });
 
-  console.log(`✅ Seeded initial admin user: ${adminUser.email} (ID: ${adminUser.id}, Role ID: ${adminUser.roleId})`);
+  console.log(
+    `✅ Seeded initial admin user: ${adminUser.email} (ID: ${adminUser.id}, Role ID: ${adminUser.roleId})`,
+  );
 
   // Seed strategic plans
   await seedStrategicPlans(prisma);
@@ -620,8 +629,10 @@ async function seedPageContent(prisma: PrismaClient) {
       order: 0,
       titleEn: 'Entrepreneurship Development',
       titleAr: 'تطوير ريادة الأعمال',
-      contentEn: 'We empower the next generation of business leaders with tools, mentorship, and community.',
-      contentAr: 'نحن نمكن الجيل القادم من قادة الأعمال بالأدوات والإرشاد والمجتمع.',
+      contentEn:
+        'We empower the next generation of business leaders with tools, mentorship, and community.',
+      contentAr:
+        'نحن نمكن الجيل القادم من قادة الأعمال بالأدوات والإرشاد والمجتمع.',
     },
     {
       page: 'entrepreneurship',
@@ -629,7 +640,8 @@ async function seedPageContent(prisma: PrismaClient) {
       order: 0,
       titleEn: 'Start-up Bootcamps',
       titleAr: 'مخيمات بدء التشغيل',
-      contentEn: 'Intensive training to turn your idea into a viable business model.',
+      contentEn:
+        'Intensive training to turn your idea into a viable business model.',
       contentAr: 'تدريب مكثف لتحويل فكرتك إلى نموذج عمل قابل للتطبيق.',
       icon: 'Rocket',
     },
@@ -650,7 +662,8 @@ async function seedPageContent(prisma: PrismaClient) {
       order: 0,
       titleEn: 'Business Incubation Program',
       titleAr: 'برنامج حاضنة الأعمال',
-      contentEn: 'Structured support for early-stage companies to accelerate growth.',
+      contentEn:
+        'Structured support for early-stage companies to accelerate growth.',
       contentAr: 'دعم منظم للشركات في مراحلها الأولى لتسريع النمو.',
     },
     {
@@ -721,17 +734,21 @@ async function seedStrategicPlans(prisma: PrismaClient) {
           slug: arabicSlug,
           content: plan.arabic.text || plan.arabic.caption,
           excerpt: plan.arabic.caption,
-          category: "Strategic Plan",
-          priority: "HIGH",
-          status: "PUBLISHED",
+          category: 'Strategic Plan',
+          priority: 'HIGH',
+          status: 'PUBLISHED',
           isActive: true,
           publishedAt: new Date(),
           imageId: null,
         },
       });
-      console.log(`✅ Created Arabic strategic plan: ${plan.arabic.title} (slug: ${arabicSlug})`);
+      console.log(
+        `✅ Created Arabic strategic plan: ${plan.arabic.title} (slug: ${arabicSlug})`,
+      );
     } else {
-      console.log(`⏭️  Arabic strategic plan already exists: ${plan.arabic.title} (slug: ${arabicSlug})`);
+      console.log(
+        `⏭️  Arabic strategic plan already exists: ${plan.arabic.title} (slug: ${arabicSlug})`,
+      );
     }
 
     // Create English version
@@ -753,29 +770,36 @@ async function seedStrategicPlans(prisma: PrismaClient) {
           slug: englishSlug,
           content: plan.english.text || plan.english.caption,
           excerpt: plan.english.caption,
-          category: "Strategic Plan",
-          priority: "HIGH",
-          status: "PUBLISHED",
+          category: 'Strategic Plan',
+          priority: 'HIGH',
+          status: 'PUBLISHED',
           isActive: true,
           publishedAt: new Date(),
           imageId: null,
         },
       });
-      console.log(`✅ Created English strategic plan: ${plan.english.title} (slug: ${englishSlug})`);
+      console.log(
+        `✅ Created English strategic plan: ${plan.english.title} (slug: ${englishSlug})`,
+      );
     } else {
-      console.log(`⏭️  English strategic plan already exists: ${plan.english.title} (slug: ${englishSlug})`);
+      console.log(
+        `⏭️  English strategic plan already exists: ${plan.english.title} (slug: ${englishSlug})`,
+      );
     }
   }
 
   console.log('✅ Strategic plans seeded');
 }
 
-main()
-  .then(() => {
-    console.log('\n✅ Seeding completed successfully!');
-    process.exit(0);
-  })
-  .catch((e) => {
-    console.error('\n❌ Seeding failed:', e);
-    process.exit(1);
-  });
+// Execute main function if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  main()
+    .then(() => {
+      console.log('\n✅ Seeding completed successfully!');
+      process.exit(0);
+    })
+    .catch((e) => {
+      console.error('\n❌ Seeding failed:', e);
+      process.exit(1);
+    });
+}

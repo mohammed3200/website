@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "types": [
-      "jest"
-    ],
+    // "types": [
+    //   "jest",
+    //   "@testing-library/jest-dom"
+    // ],
     "target": "ES2017",
     "lib": [
       "dom",
@@ -42,6 +43,8 @@
     "src/components/SlideTabs.js",
     "dist/types/**/*.ts",
     "src/lib/client.ts",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [

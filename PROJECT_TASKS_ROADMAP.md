@@ -34,7 +34,6 @@
 26. [Task 26: Redis Caching Implementation](#task-26-redis-caching-implementation)
 27. [Phase 2: Admin Dashboard, OTP Authentication & Content Page Improvements](#phase-2-admin-dashboard-otp-authentication--content-page-improvements-implemented)
 
-
 ---
 
 ## Overview
@@ -651,7 +650,7 @@ Implement a comprehensive notification system to alert system administrators whe
 
 ## Task 4: Design and Develop Dashboard for Managers and Supervisors
 
-### Status: 🟡 In Progress (UI Complete, Real Data Pending)
+### Status: ✅ Completed (Phase 1 Refactor)
 
 ### Description
 
@@ -2076,11 +2075,13 @@ Redesign the cards for Collaborators and Innovators to display data more effecti
 ### Subtasks
 
 #### 14.1 Card Redesign
+
 - [ ] Design new "Collaborator Card" with improved layout (logo, badges, key info).
 - [ ] Design new "Innovator Card" with improved layout (avatar, project status, key info).
 - [ ] Ensure cards are responsive and distinct.
 
 #### 14.2 Detail Pages
+
 - [ ] Create dynamic route `/collaborators/[id]` for detailed view.
 - [ ] Create dynamic route `/innovators/[id]` for detailed view.
 - [ ] Design detail page layout (hero section, tabs for info, media gallery).
@@ -2107,7 +2108,7 @@ Verify and finalize the build of the control panel for supervisors and managers.
 
 ## Task 19: Project Cleanup & Component Unification
 
-### Status: 🔴 Not Started
+### Status: ✅ Completed
 
 ### Description
 
@@ -2115,9 +2116,9 @@ Clean the project of duplicate files, unified components, and redundant function
 
 ### Subtasks
 
-- [ ] Remove duplicate files and redundant logic.
-- [ ] Unify component usage (buttons, cards, inputs).
-- [ ] Audit and remove unused assets (fonts, icons).
+- [x] Remove duplicate files and redundant logic (Consolidated `(dashboard)/admin` to `[locale]/(standalone)/admin`)
+- [x] Unify component usage (Sidebar, Page Layouts)
+- [x] Audit and remove unused assets
 
 ---
 
@@ -2205,8 +2206,8 @@ Suggest and implement comprehensive ideas and content for the dedicated Leadersh
 
 ### Description
 
- implement the Contact Us page with a working contact form, map integration, and contact information.
- to ensure users can reach the center easily.
+implement the Contact Us page with a working contact form, map integration, and contact information.
+to ensure users can reach the center easily.
 
 ### Subtasks
 
@@ -2220,23 +2221,36 @@ Suggest and implement comprehensive ideas and content for the dedicated Leadersh
 
 ## Task 25: Architectural Debt Elimination & System Hardening
 
-### Status: 🔴 NOT STARTED
+### Status: 🟡 In Progress (Testing Infrastructure & Type Safety Resolved)
 
 ### Priority: 🔥 CRITICAL / BLOCKER
 
 ### Description
 
-This section addresses severe architectural flaws that compromise the stability, scalability, and maintainability of the system. **These tasks are mandatory corrective actions**, not optional improvements. Ignoring them *guarantees* production failure under load.
+This section addresses severe architectural flaws that compromise the stability, scalability, and maintainability of the system. **These tasks are mandatory corrective actions**, not optional improvements. Ignoring them _guarantees_ production failure under load.
+
+### 0. Testing Infrastructure & Stability (NEW - COMPLETED)
+
+**Context:** The project had 100+ failing tests due to "global document missing" errors, async race conditions, and mock state pollution.
+
+**Required Actions:**
+
+- [x] **Early DOM Registration**: Move `happy-dom` registration to `setup-happy-dom.ts` and run via `setupFiles` in `jest.config.ts`.
+- [x] **Stable Mocking**: Standardize `bcryptjs` and Prisma mocking to prevent cross-test leakage.
+- [x] **Bilingual Test Verification**: Ensure all navigation and component tests pass in both Arabic and English.
+- [x] **Type Safety**: Resolve critical type errors in feature routes and migrations.
 
 ### 1. Redis & Queue Architecture
 
 **Context:** The project currently includes `bullmq` and `Redis` dependencies and an `ENABLE_EMAIL_QUEUE` flag, but there is NO worker process. Emails are sent synchronously. This creates dead code and a fragile user experience where API requests hang until email providers respond.
 
 **Decision Required:**
+
 - **Option A (Simplify):** Completely REMOVE `Redis`, `bullmq`, and all related queue code. Accept synchronous email sending (simpler, but slower user experience).
 - **Option B (Fix):** Implement a REAL asynchronous queue system.
 
 **Required Actions (If Option B is chosen):**
+
 - [ ] **Define Worker Process:** Create a dedicated worker entry point (e.g., `src/worker.ts`) that runs independently of the Next.js app.
 - [ ] **Startup Command:** Add a script to `package.json` to run the worker (e.g., `"worker": "tsx src/worker.ts"`).
 - [ ] **Docker Integration:** Define the worker as a separate service in `docker-compose.yml`.
@@ -2250,28 +2264,30 @@ This section addresses severe architectural flaws that compromise the stability,
 **Context:** The system currently stores images and media files as **BLOBs (Bytes)** directly inside the MariaDB database via Prisma.
 
 **Why this is a Disaster:**
+
 1.  **Database Bloat:** The database size will grow exponentially (GBs in days).
 2.  **Memory Crashes:** API queries fetching `Innovator` or `News` records will try to load entire image buffers into RAM, causing Node.js OOM (Out Of Memory) crashes.
 3.  **Backup Failures:** Database dumps will become too large to handle easily.
 4.  **No CDN:** Images cannot be served via a global CDN, resulting in slow load times for users.
 
 **Required Actions:**
+
 - [ ] **Implement Object Storage:** Integrate an S3-compatible provider (AWS S3, Cloudflare R2, MinIO, or DigitalOcean Spaces) or a local file system storage for MVP.
 - [ ] **Schema Refactor:**
-    - Change `Image` and `Media` models to store `url`, `path`, and `metadata` ONLY.
-    - Remove `data Bytes` fields.
+  - Change `Image` and `Media` models to store `url`, `path`, and `metadata` ONLY.
+  - Remove `data Bytes` fields.
 - [ ] **Migration Strategy:**
-    - Create a script to extract existing BLOBs from DB, upload them to storage, and update the DB records with the new URLs.
-    - Verify data integrity after migration.
+  - Create a script to extract existing BLOBs from DB, upload them to storage, and update the DB records with the new URLs.
+  - Verify data integrity after migration.
 - [ ] **API Updates:** Update upload endpoints to stream files to storage instead of buffering into the DB.
 
 ### 3. Impact & Risk Annotation
 
-| Feature | Consequence of Inaction | Severity |
-| :--- | :--- | :--- |
-| **Media Storage** | Database will lock up; Backups will fail; App requires massive RAM to serve simple pages. | **CATASTROPHIC** |
-| **Email Queue** | User registration hangs for 3-5s; If SMTP is slow, requests timeout; "Ghost" dependencies confuse developers. | **HIGH** |
-| **Docker** | Inconsistent environments; "It works on my machine" bugs; Deployment nightmares. | **HIGH** |
+| Feature           | Consequence of Inaction                                                                                       | Severity         |
+| :---------------- | :------------------------------------------------------------------------------------------------------------ | :--------------- |
+| **Media Storage** | Database will lock up; Backups will fail; App requires massive RAM to serve simple pages.                     | **CATASTROPHIC** |
+| **Email Queue**   | User registration hangs for 3-5s; If SMTP is slow, requests timeout; "Ghost" dependencies confuse developers. | **HIGH**         |
+| **Docker**        | Inconsistent environments; "It works on my machine" bugs; Deployment nightmares.                              | **HIGH**         |
 
 ### Technical Debt Verdict
 
@@ -2283,8 +2299,6 @@ The system is currently a "Proof of Concept" (PoC) disguised as a production app
 
 **Corrective Action:**
 **STOP** all feature development (Tasks 4-16) until Task 22 (Media Storage) is fully resolved. It is irresponsible to add more features on top of a crumbling foundation.
-
-
 
 ---
 
@@ -2336,6 +2350,7 @@ Implement Redis as a caching layer for the main database to improve performance 
 - [ ] Read performance improved for cached endpoints
 - [ ] Data consistency maintained via proper invalidation
 - [ ] Redis handles connection failures gracefully (fallback to DB)
+
 # Phase 2: Admin Dashboard, OTP Authentication & Content Page Improvements (Implemented)
 
 This plan builds on the existing project architecture: **NextAuth** (credentials/OAuth/2FA), **Hono** API routes, **Prisma** with MySQL, **RBAC** (Role → Permission), and a **Nodemailer email service** with 2FA, verification, and notification templates.
@@ -2344,14 +2359,14 @@ This plan builds on the existing project architecture: **NextAuth** (credentials
 
 ## Current State Assessment
 
-| Area | Status |
-|---|---|
-| Auth System | ✅ NextAuth + 2FA + RBAC (fully functional) |
-| Admin Dashboard UI | ✅ **Implemented** — Core layout, sidebar, stats, and content UI live |
-| Email Service | ✅ Nodemailer with 2FA, verification, welcome, password reset, admin notification templates |
-| Entrepreneurship Page | ⚠️ Static Hero-only page driven by `next-intl` translations |
-| Incubators Page | ⚠️ Static Hero-only page driven by `next-intl` translations |
-| Report Generation | ❌ Not implemented |
+| Area                  | Status                                                                                      |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| Auth System           | ✅ NextAuth + 2FA + RBAC (fully functional)                                                 |
+| Admin Dashboard UI    | ✅ **Implemented** — Core layout, sidebar, stats, and content UI live                       |
+| Email Service         | ✅ Nodemailer with 2FA, verification, welcome, password reset, admin notification templates |
+| Entrepreneurship Page | ⚠️ Static Hero-only page driven by `next-intl` translations                                 |
+| Incubators Page       | ⚠️ Static Hero-only page driven by `next-intl` translations                                 |
+| Report Generation     | ❌ Not implemented                                                                          |
 
 ---
 
@@ -2366,33 +2381,37 @@ The dashboard will be a protected area at `/[locale]/(standalone)/admin/` with a
 
 #### [NEW] Admin Dashboard Layout & Pages
 
-| Page | Route | Purpose |
-|---|---|---|
-| Overview | `/admin` | Stats cards, recent activity, quick actions |
-| Submissions | `/admin/submissions` | Review Innovator & Collaborator registrations |
-| Content | `/admin/content` | Manage Entrepreneurship & Incubators page content |
-| Strategic Plans | `/admin/strategic-plans` | Manage strategic plan entries |
-| News | `/admin/news` | Manage news articles |
-| Reports | `/admin/reports` | Generate & download reports |
-| Settings | `/admin/settings` | System settings, notification preferences |
+| Page            | Route                    | Purpose                                           |
+| --------------- | ------------------------ | ------------------------------------------------- |
+| Overview        | `/admin`                 | Stats cards, recent activity, quick actions       |
+| Submissions     | `/admin/submissions`     | Review Innovator & Collaborator registrations     |
+| Content         | `/admin/content`         | Manage Entrepreneurship & Incubators page content |
+| Strategic Plans | `/admin/strategic-plans` | Manage strategic plan entries                     |
+| News            | `/admin/news`            | Manage news articles                              |
+| Reports         | `/admin/reports`         | Generate & download reports                       |
+| Settings        | `/admin/settings`        | System settings, notification preferences         |
 
 #### Key Files
 
-##### [NEW] [layout.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/layout.tsx)
+##### [NEW] [layout.tsx](<file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/layout.tsx>)
+
 - Auth-gated layout with sidebar, topbar with notification bell, and breadcrumbs
 - Uses existing RBAC permissions (`dashboard:read` / `dashboard:manage`)
 
-##### [NEW] [page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/page.tsx)
+##### [NEW] [page.tsx](<file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/page.tsx>)
+
 - Overview dashboard with stats cards (total submissions, pending reviews, active plans, recent users)
 - Quick-action buttons for common admin tasks
 - Recent activity feed from `AuditLog`
 
-##### [NEW] [submissions/page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/submissions/page.tsx)
+##### [NEW] [submissions/page.tsx](<file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/submissions/page.tsx>)
+
 - Data table listing Innovators & Collaborators with status filtering
 - Approve/Reject actions that trigger email notifications via existing `emailService.sendStatusUpdate()`
 - Detail drawer/modal for reviewing full submission data
 
 ##### [NEW] [Sidebar.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/features/admin/components/sidebar.tsx)
+
 - Collapsible sidebar with navigation links, icons, and active state
 - Responsive: drawer on mobile, fixed on desktop
 
@@ -2406,15 +2425,18 @@ The dashboard will be a protected area at `/[locale]/(standalone)/admin/` with a
 #### Enhancements
 
 ##### [MODIFY] [login-form.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/features/auth/components/login-form.tsx)
+
 - Polish the 2FA code input UI (6-digit code input with auto-focus)
 - Add "Resend OTP" button with cooldown timer
 - Add countdown timer showing OTP expiry
 
 ##### [MODIFY] [login.ts](file:///c:/Users/iG/Documents/Next.JS/website/src/features/auth/actions/login.ts)
+
 - Add rate-limiting check before generating new OTP (e.g., max 5 per 15 min)
 - Make OTP expiry configurable via `SystemSetting` model
 
 ##### [MODIFY] [service.ts](file:///c:/Users/iG/Documents/Next.JS/website/src/lib/email/service.ts)
+
 - Refine the 2FA email template for a more professional look with branding
 
 ---
@@ -2422,7 +2444,9 @@ The dashboard will be a protected area at `/[locale]/(standalone)/admin/` with a
 ### Component 3: Report Generation
 
 #### [MODIFY] [schema.prisma](file:///c:/Users/iG/Documents/Next.JS/website/prisma/schema.prisma)
+
 Add a `Report` model:
+
 ```prisma
 model Report {
   id          String       @id @default(cuid())
@@ -2464,11 +2488,13 @@ enum ReportStatus {
 ```
 
 #### [NEW] [report/server/route.ts](file:///c:/Users/iG/Documents/Next.JS/website/src/features/report/server/route.ts)
+
 - `GET /api/reports` â€” List reports with pagination
 - `POST /api/reports/generate` â€” Trigger report generation (submission counts, user activity, etc.)
 - `GET /api/reports/:id/download` â€” Download generated report file
 
-#### [NEW] [reports/page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/reports/page.tsx)
+#### [NEW] [reports/page.tsx](<file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/reports/page.tsx>)
+
 - Report type selector (Submissions Summary, User Activity, Strategic Plans, Full Platform)
 - Date range picker
 - Generate button + download links for completed reports
@@ -2482,7 +2508,9 @@ enum ReportStatus {
 > The current page uses only a static Hero component with hardcoded `next-intl` translations. We will make content **database-driven** and **admin-manageable** while preserving the existing i18n keys as fallbacks.
 
 #### [MODIFY] [schema.prisma](file:///c:/Users/iG/Documents/Next.JS/website/prisma/schema.prisma)
+
 Add a flexible `PageContent` model for both pages:
+
 ```prisma
 model PageContent {
   id          String   @id @default(cuid())
@@ -2506,6 +2534,7 @@ model PageContent {
 ```
 
 #### [NEW] [page-content/server/route.ts](file:///c:/Users/iG/Documents/Next.JS/website/src/features/page-content/server/route.ts)
+
 - `GET /api/pageContent/public/:page` â€” Fetch active content for a page
 - `GET /api/pageContent/:page` â€” Admin: fetch all content (including inactive)
 - `POST /api/pageContent` â€” Create new content block
@@ -2513,7 +2542,9 @@ model PageContent {
 - `DELETE /api/pageContent/:id` â€” Delete content block
 
 #### [MODIFY] [entrepreneurship/page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/entrepreneurship/page.tsx)
+
 Redesigned page structure:
+
 1. **Hero**: Dynamic title, subtitle, background
 2. **Programs Grid**: Cards fetched from DB (`section: "programs"`)
 3. **Core Values**: Animated badges (`section: "values"`)
@@ -2522,6 +2553,7 @@ Redesigned page structure:
 6. **CTA Section**: Dynamic call-to-action
 
 #### [MODIFY] [entrepreneurship/components/Hero.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/entrepreneurship/components/Hero.tsx)
+
 - Accept data props from parent instead of using hardcoded arrays
 - Display bilingual content based on locale
 - Fall back to `next-intl` translations if no DB content exists
@@ -2533,7 +2565,9 @@ Redesigned page structure:
 Same architecture and approach as Component 4, but for the Incubators page.
 
 #### [MODIFY] [incubators/page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/incubators/page.tsx)
+
 Redesigned page structure:
+
 1. **Hero**: Dynamic title and subtitle
 2. **Incubation Phases**: Timeline/cards (`section: "phases"`)
 3. **Resources Grid**: Animated resource cards (`section: "resources"`)
@@ -2541,13 +2575,15 @@ Redesigned page structure:
 5. **CTA Section**: Dynamic call-to-action
 
 #### [MODIFY] [incubators/components/Hero.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/incubators/components/Hero.tsx)
+
 - Same pattern as entrepreneurship: accept data props, render bilingual content
 
 ---
 
 ### Component 6: Admin Content Management UI
 
-#### [NEW] [admin/content/page.tsx](file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/content/page.tsx)
+#### [NEW] [admin/content/page.tsx](<file:///c:/Users/iG/Documents/Next.JS/website/src/app/[locale]/(standalone)/admin/content/page.tsx>)
+
 - Tab-based UI: **Entrepreneurship** | **Incubators**
 - Each tab shows editable content blocks sorted by section and order
 - Inline editing with rich text for content fields
@@ -2559,12 +2595,14 @@ Redesigned page structure:
 ## Verification Plan
 
 ### Automated Tests
+
 ```bash
 npx prisma generate          # Regenerate client with new models
 npm run build                 # Full production build check
 ```
 
 ### Manual Verification
+
 - Navigate to `/admin` and verify dashboard loads with correct stats
 - Test submission review flow (approve/reject with email)
 - Test OTP login flow (send, resend, expiry)
