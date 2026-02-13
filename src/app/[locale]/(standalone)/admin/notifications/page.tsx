@@ -20,14 +20,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import {
-  Bell,
-  CheckCheck,
-  Trash2,
-  Filter,
-  X,
-  RefreshCw,
-} from 'lucide-react';
+import { Bell, CheckCheck, Trash2, Filter, X, RefreshCw } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,7 +39,8 @@ function formatTimeAgo(date: Date): string {
   if (diffInSeconds < 60) return 'just now';
   if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
   if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+  if (diffInSeconds < 604800)
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
   return date.toLocaleDateString();
 }
 
@@ -90,9 +84,13 @@ export default function NotificationsPage() {
     isRead?: boolean;
     priority?: string;
   }>({});
-  const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
+  const [selectedNotifications, setSelectedNotifications] = useState<string[]>(
+    [],
+  );
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [notificationToDelete, setNotificationToDelete] = useState<string | null>(null);
+  const [notificationToDelete, setNotificationToDelete] = useState<
+    string | null
+  >(null);
 
   const { data, isLoading, error, refetch, isFetching } = useNotifications({
     page,
@@ -123,7 +121,7 @@ export default function NotificationsPage() {
 
   const handleSelectNotification = (id: string) => {
     setSelectedNotifications((prev) =>
-      prev.includes(id) ? prev.filter((n) => n !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((n) => n !== id) : [...prev, id],
     );
   };
 
@@ -173,7 +171,9 @@ export default function NotificationsPage() {
             onClick={handleRefresh}
             disabled={isFetching}
           >
-            <RefreshCw className={cn("h-4 w-4 mr-2", isFetching && "animate-spin")} />
+            <RefreshCw
+              className={cn('h-4 w-4 mr-2', isFetching && 'animate-spin')}
+            />
             Refresh
           </Button>
           {data?.pagination.total && data.pagination.total > 0 && (
@@ -222,7 +222,9 @@ export default function NotificationsPage() {
           </Select>
 
           <Select
-            value={filters.isRead !== undefined ? filters.isRead.toString() : 'all'}
+            value={
+              filters.isRead !== undefined ? filters.isRead.toString() : 'all'
+            }
             onValueChange={(value) =>
               setFilters((prev) => ({
                 ...prev,
@@ -338,13 +340,15 @@ export default function NotificationsPage() {
                   key={notification.id}
                   className={cn(
                     'p-4 hover:bg-gray-50 transition-colors',
-                    !notification.isRead && 'bg-blue-50'
+                    !notification.isRead && 'bg-blue-50',
                   )}
                 >
                   <div className="flex items-start gap-4">
                     <Checkbox
                       checked={selectedNotifications.includes(notification.id)}
-                      onCheckedChange={() => handleSelectNotification(notification.id)}
+                      onCheckedChange={() =>
+                        handleSelectNotification(notification.id)
+                      }
                       className="mt-1"
                     />
                     <div
@@ -355,7 +359,10 @@ export default function NotificationsPage() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <Badge
-                              className={cn('text-xs', getPriorityColor(notification.priority))}
+                              className={cn(
+                                'text-xs',
+                                getPriorityColor(notification.priority),
+                              )}
                             >
                               {notification.priority}
                             </Badge>
@@ -363,7 +370,10 @@ export default function NotificationsPage() {
                               {getTypeLabel(notification.type)}
                             </Badge>
                             {!notification.isRead && (
-                              <Badge variant="default" className="text-xs bg-blue-600">
+                              <Badge
+                                variant="default"
+                                className="text-xs bg-blue-600"
+                              >
                                 New
                               </Badge>
                             )}
@@ -371,7 +381,7 @@ export default function NotificationsPage() {
                           <h3
                             className={cn(
                               'text-sm font-medium mb-1',
-                              !notification.isRead && 'font-semibold'
+                              !notification.isRead && 'font-semibold',
                             )}
                           >
                             {notification.title}
@@ -422,7 +432,7 @@ export default function NotificationsPage() {
                     size="sm"
                     onClick={() =>
                       setPage((p) =>
-                        Math.min(data.pagination.totalPages, p + 1)
+                        Math.min(data.pagination.totalPages, p + 1),
                       )
                     }
                     disabled={page === data.pagination.totalPages}

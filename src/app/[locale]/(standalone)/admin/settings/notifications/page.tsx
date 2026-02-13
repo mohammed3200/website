@@ -15,8 +15,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bell, Mail, Shield, AlertTriangle, Users, Database } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Bell,
+  Mail,
+  Shield,
+  AlertTriangle,
+  Users,
+  Database,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function NotificationPreferencesPage() {
@@ -70,7 +83,9 @@ export default function NotificationPreferencesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Notification Preferences</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Notification Preferences
+        </h1>
         <p className="text-gray-600 mt-1">
           Configure how and when you receive notifications
         </p>
@@ -89,7 +104,10 @@ export default function NotificationPreferencesPage() {
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="new-submissions" className="flex items-center gap-2">
+              <Label
+                htmlFor="new-submissions"
+                className="flex items-center gap-2"
+              >
                 <Users className="h-4 w-4" />
                 New Submissions
               </Label>
@@ -106,7 +124,10 @@ export default function NotificationPreferencesPage() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="status-changes" className="flex items-center gap-2">
+              <Label
+                htmlFor="status-changes"
+                className="flex items-center gap-2"
+              >
                 <Bell className="h-4 w-4" />
                 Status Changes
               </Label>
@@ -123,7 +144,10 @@ export default function NotificationPreferencesPage() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="system-errors" className="flex items-center gap-2">
+              <Label
+                htmlFor="system-errors"
+                className="flex items-center gap-2"
+              >
                 <AlertTriangle className="h-4 w-4" />
                 System Errors
               </Label>
@@ -140,12 +164,16 @@ export default function NotificationPreferencesPage() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="security-alerts" className="flex items-center gap-2">
+              <Label
+                htmlFor="security-alerts"
+                className="flex items-center gap-2"
+              >
                 <Shield className="h-4 w-4" />
                 Security Alerts
               </Label>
               <p className="text-sm text-gray-500">
-                Get notified about security-related events and failed login attempts
+                Get notified about security-related events and failed login
+                attempts
               </p>
             </div>
             <Switch
@@ -157,7 +185,10 @@ export default function NotificationPreferencesPage() {
 
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="user-activity" className="flex items-center gap-2">
+              <Label
+                htmlFor="user-activity"
+                className="flex items-center gap-2"
+              >
                 <Users className="h-4 w-4" />
                 User Activity
               </Label>
@@ -245,14 +276,10 @@ export default function NotificationPreferencesPage() {
         >
           Reset
         </Button>
-        <Button
-          onClick={handleSave}
-          disabled={updatePreferences.isPending}
-        >
+        <Button onClick={handleSave} disabled={updatePreferences.isPending}>
           {updatePreferences.isPending ? 'Saving...' : 'Save Preferences'}
         </Button>
       </div>
     </div>
   );
 }
-

@@ -5,10 +5,18 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { main } from '../../prisma/seed';
 
 // Mock dependencies
-jest.mock('@prisma/client');
-jest.mock('bcryptjs');
+// Mock dependencies
+const mockPrismaClient = jest.fn();
+jest.mock('@prisma/client', () => ({
+  PrismaClient: jest.fn(() => mockPrismaClient),
+}));
+jest.mock('bcryptjs', () => ({
+  hash: jest.fn(),
+  compare: jest.fn(),
+}));
 jest.mock('@prisma/adapter-mariadb', () => ({
   PrismaMariaDb: jest.fn().mockImplementation(() => ({})),
 }));
@@ -49,7 +57,9 @@ describe('Database Seed Functions', () => {
   describe('Admin User Creation', () => {
     it('should create admin user with hashed password', async () => {
       const hashedPassword = 'hashed_password_123';
-      (bcrypt.hash as any) = jest.fn().mockResolvedValue(hashedPassword);
+      (bcrypt.hash as any) = (jest.fn() as any).mockResolvedValue(
+        hashedPassword,
+      );
 
       const mockRole = {
         id: 'role-123',
@@ -67,14 +77,14 @@ describe('Database Seed Functions', () => {
       mockPrisma.role.findUnique.mockResolvedValue(mockRole);
       mockPrisma.user.upsert.mockResolvedValue(mockUser);
 
-      // Dynamically import to use mocked dependencies
-      const { default: seedModule } = await import('../../prisma/seed');
+      // Execute seed main function
+      await main();
 
       expect(bcrypt.hash).toHaveBeenCalledWith('password123', 10);
     });
 
     it('should handle missing super admin role gracefully', async () => {
-      (bcrypt.hash as any) = jest.fn().mockResolvedValue('hashed');
+      (bcrypt.hash as any) = (jest.fn() as any).mockResolvedValue('hashed');
       mockPrisma.role.findUnique.mockResolvedValue(null);
 
       const mockUser = {
@@ -280,38 +290,40 @@ describe('Database Seed Functions', () => {
 
   describe('Error Handling', () => {
     it('should handle database errors during user creation', async () => {
-      (bcrypt.hash as any) = jest.fn().mockResolvedValue('hashed');
+      (bcrypt.hash as any) = (jest.fn() as any).mockResolvedValue('hashed');
       mockPrisma.role.findUnique.mockResolvedValue({ id: 'role-1' });
       mockPrisma.user.upsert.mockRejectedValue(new Error('Database error'));
 
-      await expect(mockPrisma.user.upsert({})).rejects.toThrow('Database error');
+      await expect(mockPrisma.user.upsert({})).rejects.toThrow(
+        'Database error',
+      );
     });
 
     it('should handle errors during strategic plan creation', async () => {
       mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
       mockPrisma.strategicPlan.create.mockRejectedValue(
-        new Error('Failed to create plan')
+        new Error('Failed to create plan'),
       );
 
-      await expect(
-        mockPrisma.strategicPlan.create({})
-      ).rejects.toThrow('Failed to create plan');
+      await expect(mockPrisma.strategicPlan.create({})).rejects.toThrow(
+        'Failed to create plan',
+      );
     });
 
     it('should handle errors during page content creation', async () => {
       mockPrisma.pageContent.upsert.mockRejectedValue(
-        new Error('Failed to upsert content')
+        new Error('Failed to upsert content'),
       );
 
-      await expect(
-        mockPrisma.pageContent.upsert({})
-      ).rejects.toThrow('Failed to upsert content');
+      await expect(mockPrisma.pageContent.upsert({})).rejects.toThrow(
+        'Failed to upsert content',
+      );
     });
   });
 
   describe('Data Integrity', () => {
     it('should create user with emailVerified timestamp', async () => {
-      (bcrypt.hash as any) = jest.fn().mockResolvedValue('hashed');
+      (bcrypt.hash as any) = (jest.fn() as any).mockResolvedValue('hashed');
       mockPrisma.role.findUnique.mockResolvedValue({ id: 'role-1' });
 
       const userData = {

@@ -32,11 +32,11 @@ jest.mock('@/lib/db', () => ({
 
 // Mock the email service
 jest.mock('@/lib/email/service', () => ({
-  default: jest.fn().mockImplementation(() => ({
+  EmailService: jest.fn().mockImplementation(() => ({
     sendEmail: (jest.fn() as any).mockResolvedValue({
       success: true,
       messageId: 'test-message-id',
-    } as any),
+    }),
   })),
 }));
 

@@ -1,6 +1,6 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/jest-globals';
 import IncubatorsClient from '@/app/[locale]/incubators/components/incubators-client';
 
 // Mock framer-motion
@@ -163,35 +163,39 @@ describe('IncubatorsClient Component', () => {
   });
 
   describe('Fallback to Translation Keys', () => {
-    it('should use translation fallback when no database content', () => {
+    it('should use translation fallback when no database content', async () => {
       render(<IncubatorsClient locale="en" content={mockEmptyContent} />);
 
-      expect(screen.getByText('Business Incubation Program')).toBeInTheDocument();
-      expect(screen.getByText('Structured support for startups')).toBeInTheDocument();
+      expect(
+        await screen.findByText('Business Incubation Program'),
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText('Structured support for startups'),
+      ).toBeInTheDocument();
     });
 
-    it('should render fallback phases', () => {
+    it('should render fallback phases', async () => {
       render(<IncubatorsClient locale="en" content={mockEmptyContent} />);
 
-      expect(screen.getByText('Ideation Phase')).toBeInTheDocument();
-      expect(screen.getByText('Development Phase')).toBeInTheDocument();
-      expect(screen.getByText('Scaling Phase')).toBeInTheDocument();
+      expect(await screen.findByText('Ideation Phase')).toBeInTheDocument();
+      expect(await screen.findByText('Development Phase')).toBeInTheDocument();
+      expect(await screen.findByText('Scaling Phase')).toBeInTheDocument();
     });
 
-    it('should render fallback resources', () => {
+    it('should render fallback resources', async () => {
       render(<IncubatorsClient locale="en" content={mockEmptyContent} />);
 
-      expect(screen.getByText('Expert Mentorship')).toBeInTheDocument();
-      expect(screen.getByText('Co-working Space')).toBeInTheDocument();
-      expect(screen.getByText('Funding Access')).toBeInTheDocument();
-      expect(screen.getByText('Networking Events')).toBeInTheDocument();
+      expect(await screen.findByText('Expert Mentorship')).toBeInTheDocument();
+      expect(await screen.findByText('Co-working Space')).toBeInTheDocument();
+      expect(await screen.findByText('Funding Access')).toBeInTheDocument();
+      expect(await screen.findByText('Networking Events')).toBeInTheDocument();
     });
   });
 
   describe('Locale-specific Rendering', () => {
     it('should apply RTL direction for Arabic locale', () => {
       const { container } = render(
-        <IncubatorsClient locale="ar" content={mockEmptyContent} />
+        <IncubatorsClient locale="ar" content={mockEmptyContent} />,
       );
 
       const section = container.querySelector('section');
@@ -200,7 +204,7 @@ describe('IncubatorsClient Component', () => {
 
     it('should apply LTR direction for English locale', () => {
       const { container } = render(
-        <IncubatorsClient locale="en" content={mockEmptyContent} />
+        <IncubatorsClient locale="en" content={mockEmptyContent} />,
       );
 
       const section = container.querySelector('section');
@@ -388,7 +392,7 @@ describe('IncubatorsClient Component', () => {
       ];
 
       const { container } = render(
-        <IncubatorsClient locale="en" content={mockContent} />
+        <IncubatorsClient locale="en" content={mockContent} />,
       );
 
       expect(container.querySelector('section')).toBeInTheDocument();
@@ -415,7 +419,7 @@ describe('IncubatorsClient Component', () => {
       ];
 
       const { container } = render(
-        <IncubatorsClient locale="en" content={mockContent} />
+        <IncubatorsClient locale="en" content={mockContent} />,
       );
 
       expect(container.querySelector('section')).toBeInTheDocument();
@@ -425,7 +429,7 @@ describe('IncubatorsClient Component', () => {
   describe('Edge Cases', () => {
     it('should handle empty content array gracefully', () => {
       const { container } = render(
-        <IncubatorsClient locale="en" content={[]} />
+        <IncubatorsClient locale="en" content={[]} />,
       );
 
       expect(container.querySelector('section')).toBeInTheDocument();
@@ -502,7 +506,7 @@ describe('IncubatorsClient Component', () => {
   describe('Accessibility', () => {
     it('should render semantic HTML structure', () => {
       const { container } = render(
-        <IncubatorsClient locale="en" content={mockEmptyContent} />
+        <IncubatorsClient locale="en" content={mockEmptyContent} />,
       );
 
       expect(container.querySelector('section')).toBeInTheDocument();

@@ -61,7 +61,7 @@ export default function StrategicPlansPage() {
             setDeleteDialogOpen(false);
             setSelectedPlan(null);
           },
-        }
+        },
       );
     }
   };
@@ -93,7 +93,9 @@ export default function StrategicPlansPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Strategic Plans</h1>
-          <p className="text-gray-600 mt-1">Manage strategic plans for the center</p>
+          <p className="text-gray-600 mt-1">
+            Manage strategic plans for the center
+          </p>
         </div>
         <Button onClick={() => setCreateDialogOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
@@ -118,15 +120,22 @@ export default function StrategicPlansPage() {
           <TableBody>
             {plans.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell
+                  colSpan={8}
+                  className="text-center py-8 text-gray-500"
+                >
                   No strategic plans found. Create one to get started.
                 </TableCell>
               </TableRow>
             ) : (
               plans.map((plan: any) => (
                 <TableRow key={plan.id}>
-                  <TableCell className="max-w-xs truncate font-medium">{plan.title}</TableCell>
-                  <TableCell className="font-mono text-xs text-gray-500">{plan.slug}</TableCell>
+                  <TableCell className="max-w-xs truncate font-medium">
+                    {plan.title}
+                  </TableCell>
+                  <TableCell className="font-mono text-xs text-gray-500">
+                    {plan.slug}
+                  </TableCell>
                   <TableCell>
                     {plan.category ? (
                       <Badge variant="outline">{plan.category}</Badge>
@@ -135,19 +144,30 @@ export default function StrategicPlansPage() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={
-                      plan.status === 'PUBLISHED' ? 'default' :
-                      plan.status === 'DRAFT' ? 'secondary' :
-                      plan.status === 'APPROVED' ? 'default' : 'outline'
-                    }>
+                    <Badge
+                      variant={
+                        plan.status === 'PUBLISHED'
+                          ? 'default'
+                          : plan.status === 'DRAFT'
+                            ? 'secondary'
+                            : plan.status === 'APPROVED'
+                              ? 'default'
+                              : 'outline'
+                      }
+                    >
                       {plan.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={
-                      plan.priority === 'HIGH' || plan.priority === 'CRITICAL' ? 'destructive' :
-                      plan.priority === 'MEDIUM' ? 'default' : 'secondary'
-                    }>
+                    <Badge
+                      variant={
+                        plan.priority === 'HIGH' || plan.priority === 'CRITICAL'
+                          ? 'destructive'
+                          : plan.priority === 'MEDIUM'
+                            ? 'default'
+                            : 'secondary'
+                      }
+                    >
                       {plan.priority}
                     </Badge>
                   </TableCell>
@@ -213,7 +233,8 @@ export default function StrategicPlansPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Strategic Plan</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this strategic plan? This action cannot be undone.
+              Are you sure you want to delete this strategic plan? This action
+              cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

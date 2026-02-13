@@ -1,6 +1,6 @@
 import { describe, it, expect, jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/jest-globals';
 import EntrepreneurshipClient from '@/app/[locale]/entrepreneurship/components/entrepreneurship-client';
 
 // Mock framer-motion

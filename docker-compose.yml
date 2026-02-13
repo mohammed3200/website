@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   app:
-    container_name: website-app
+    container_name: ebic-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -22,7 +22,7 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: website-db
+    container_name: ebic-db
     restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=root
@@ -37,7 +37,7 @@ services:
 
   minio:
     image: minio/minio:latest
-    container_name: website-minio
+    container_name: ebic-minio
     restart: always
     ports:
       - "9000:9000"      # API port
@@ -58,7 +58,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: website-redis
+    container_name: ebic-redis
     restart: always
     ports:
       - "6379:6379"
