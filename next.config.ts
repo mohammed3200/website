@@ -20,9 +20,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+
   serverExternalPackages: ['mariadb'],
   // Reduce file system operations to minimize EPERM errors on Windows
   webpack: (config, { isServer }) => {

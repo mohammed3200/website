@@ -14,7 +14,7 @@ Thank you for your interest in contributing to the Misurata Center for Entrepren
 2. **Create a branch**
    - Name it descriptively, e.g., `feature/add-search` or `bugfix/fix-typo`:
      ```bash
-     git checkout -b feature/your-feature-name
+     git switch -b feature/your-feature-name
      ```
 3. **Install dependencies & test**
    ```bash
