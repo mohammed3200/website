@@ -77,10 +77,18 @@ describe('Database Seed Functions', () => {
       mockPrisma.role.findUnique.mockResolvedValue(mockRole);
       mockPrisma.user.upsert.mockResolvedValue(mockUser);
 
+      // Mock downstream calls from seedStrategicPlans and seedPageContent
+      mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
+      mockPrisma.strategicPlan.create.mockResolvedValue({ id: 'plan-1' });
+      mockPrisma.pageContent.upsert.mockResolvedValue({ id: 'content-1' });
+
       // Execute seed main function
       await main();
 
       expect(bcrypt.hash).toHaveBeenCalledWith('password123', 10);
+      expect(mockPrisma.user.upsert).toHaveBeenCalled();
+      expect(mockPrisma.strategicPlan.create).toHaveBeenCalled();
+      expect(mockPrisma.pageContent.upsert).toHaveBeenCalled();
     });
 
     it('should handle missing super admin role gracefully', async () => {

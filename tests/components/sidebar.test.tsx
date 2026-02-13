@@ -181,9 +181,9 @@ describe('Sidebar Component', () => {
 
       render(<Sidebar locale="en" />);
 
-      // Get links inside the main navigation list
-      const navList = screen.getByRole('list');
-      const items = within(navList).getAllByRole('link');
+      // Get links inside the second navigation list (the inner one)
+      const navLists = screen.getAllByRole('list');
+      const items = within(navLists[1]).getAllByRole('link');
       const labels = items.map((item) => item.textContent);
 
       // Verify the expected items are present in the correct relative order
