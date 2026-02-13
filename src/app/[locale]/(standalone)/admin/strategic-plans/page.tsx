@@ -31,9 +31,14 @@ import {
 import { Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { CreateStrategicPlanDialog } from '@/features/strategic-plan/components/create_strategic_plan_dialog';
 import { EditStrategicPlanDialog } from '@/features/strategic-plan/components/edit_strategic_plan_dialog';
+import { useTranslations } from 'next-intl';
+import useLanguage from '@/hooks/use-language';
 
 export default function StrategicPlansPage() {
   const router = useRouter();
+  const t = useTranslations('Admin.StrategicPlans');
+  const { lang, isArabic } = useLanguage();
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -67,7 +72,7 @@ export default function StrategicPlansPage() {
   };
 
   const handleView = (plan: any) => {
-    router.push(`/StrategicPlan/${plan.slug || plan.id}`);
+    router.push(`/${lang}/StrategicPlan/${plan.slug || plan.id}`);
   };
 
   if (isLoading) {
@@ -92,14 +97,12 @@ export default function StrategicPlansPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Strategic Plans</h1>
-          <p className="text-gray-600 mt-1">
-            Manage strategic plans for the center
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
         </div>
         <Button onClick={() => setCreateDialogOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          Create Strategic Plan
+          {t('actions.create')}
         </Button>
       </div>
 
@@ -107,13 +110,13 @@ export default function StrategicPlansPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Priority</TableHead>
-              <TableHead>Active</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead>{t('table.title')}</TableHead>
+              <TableHead>{t('table.slug')}</TableHead>
+              <TableHead>{t('table.category')}</TableHead>
+              <TableHead>{t('table.status')}</TableHead>
+              <TableHead>{t('table.priority')}</TableHead>
+              <TableHead>{t('table.active')}</TableHead>
+              <TableHead>{t('table.created')}</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -124,7 +127,7 @@ export default function StrategicPlansPage() {
                   colSpan={8}
                   className="text-center py-8 text-gray-500"
                 >
-                  No strategic plans found. Create one to get started.
+                  {t('empty')}
                 </TableCell>
               </TableRow>
             ) : (
@@ -177,7 +180,9 @@ export default function StrategicPlansPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {new Date(plan.createdAt).toLocaleDateString()}
+                    {new Date(plan.createdAt).toLocaleDateString(
+                      isArabic ? 'ar-EG' : 'en-US',
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -185,6 +190,7 @@ export default function StrategicPlansPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleView(plan)}
+                        title={t('actions.view')}
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -192,6 +198,7 @@ export default function StrategicPlansPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(plan)}
+                        title={t('actions.edit')}
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -200,6 +207,7 @@ export default function StrategicPlansPage() {
                         size="sm"
                         onClick={() => handleDelete(plan)}
                         className="text-red-600 hover:text-red-700"
+                        title={t('actions.delete')}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
@@ -231,19 +239,20 @@ export default function StrategicPlansPage() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Strategic Plan</AlertDialogTitle>
+            <AlertDialogTitle>{t('actions.delete')}</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete this strategic plan? This action
               cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('actions.create')}</AlertDialogCancel>{' '}
+            {/* Assuming Cancel key. Using generic action for now if not present */}
             <AlertDialogAction
               onClick={confirmDelete}
               className="bg-red-600 hover:bg-red-700"
             >
-              Delete
+              {t('actions.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

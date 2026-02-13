@@ -31,8 +31,10 @@ import {
   Database,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 export default function NotificationPreferencesPage() {
+  const t = useTranslations('Admin.Notifications.preferences');
   const { data, isLoading } = useNotificationPreferences();
   const updatePreferences = useUpdateNotificationPreferences();
 
@@ -66,9 +68,9 @@ export default function NotificationPreferencesPage() {
   const handleSave = async () => {
     try {
       await updatePreferences.mutateAsync(localPreferences);
-      toast.success('Notification preferences updated successfully');
+      toast.success(t('messages.success'));
     } catch (error) {
-      toast.error('Failed to update preferences');
+      toast.error(t('messages.error'));
     }
   };
 
@@ -83,23 +85,17 @@ export default function NotificationPreferencesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          Notification Preferences
-        </h1>
-        <p className="text-gray-600 mt-1">
-          Configure how and when you receive notifications
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('emailTitle')}</h1>
+        <p className="text-gray-600 mt-1">{t('emailDesc')}</p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Mail className="h-5 w-5" />
-            Email Notifications
+            {t('emailTitle')}
           </CardTitle>
-          <CardDescription>
-            Choose which types of notifications you want to receive via email
-          </CardDescription>
+          <CardDescription>{t('emailDesc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
@@ -109,11 +105,9 @@ export default function NotificationPreferencesPage() {
                 className="flex items-center gap-2"
               >
                 <Users className="h-4 w-4" />
-                New Submissions
+                {t('newSubmissions')}
               </Label>
-              <p className="text-sm text-gray-500">
-                Get notified when new collaborators or innovators register
-              </p>
+              <p className="text-sm text-gray-500">{t('newSubmissionsDesc')}</p>
             </div>
             <Switch
               id="new-submissions"
@@ -129,11 +123,9 @@ export default function NotificationPreferencesPage() {
                 className="flex items-center gap-2"
               >
                 <Bell className="h-4 w-4" />
-                Status Changes
+                {t('statusChanges')}
               </Label>
-              <p className="text-sm text-gray-500">
-                Get notified when submissions are approved or rejected
-              </p>
+              <p className="text-sm text-gray-500">{t('statusChangesDesc')}</p>
             </div>
             <Switch
               id="status-changes"
@@ -149,11 +141,9 @@ export default function NotificationPreferencesPage() {
                 className="flex items-center gap-2"
               >
                 <AlertTriangle className="h-4 w-4" />
-                System Errors
+                {t('systemErrors')}
               </Label>
-              <p className="text-sm text-gray-500">
-                Get notified about system errors and failures
-              </p>
+              <p className="text-sm text-gray-500">{t('systemErrorsDesc')}</p>
             </div>
             <Switch
               id="system-errors"
@@ -169,12 +159,9 @@ export default function NotificationPreferencesPage() {
                 className="flex items-center gap-2"
               >
                 <Shield className="h-4 w-4" />
-                Security Alerts
+                {t('securityAlerts')}
               </Label>
-              <p className="text-sm text-gray-500">
-                Get notified about security-related events and failed login
-                attempts
-              </p>
+              <p className="text-sm text-gray-500">{t('securityAlertsDesc')}</p>
             </div>
             <Switch
               id="security-alerts"
@@ -190,11 +177,9 @@ export default function NotificationPreferencesPage() {
                 className="flex items-center gap-2"
               >
                 <Users className="h-4 w-4" />
-                User Activity
+                {t('userActivity')}
               </Label>
-              <p className="text-sm text-gray-500">
-                Get notified about user account creation and role changes
-              </p>
+              <p className="text-sm text-gray-500">{t('userActivityDesc')}</p>
             </div>
             <Switch
               id="user-activity"
@@ -207,10 +192,10 @@ export default function NotificationPreferencesPage() {
             <div className="space-y-0.5">
               <Label htmlFor="backups" className="flex items-center gap-2">
                 <Database className="h-4 w-4" />
-                Database Backups
+                {t('databaseBackups')}
               </Label>
               <p className="text-sm text-gray-500">
-                Get notified when database backups complete
+                {t('databaseBackupsDesc')}
               </p>
             </div>
             <Switch
@@ -224,14 +209,12 @@ export default function NotificationPreferencesPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Notification Delivery</CardTitle>
-          <CardDescription>
-            Choose how frequently you want to receive notifications
-          </CardDescription>
+          <CardTitle>{t('deliveryTitle')}</CardTitle>
+          <CardDescription>{t('deliveryDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Label htmlFor="digest-mode">Delivery Mode</Label>
+            <Label htmlFor="digest-mode">{t('deliveryMode')}</Label>
             <Select
               value={localPreferences.digestMode}
               onValueChange={handleDigestModeChange}
@@ -241,20 +224,13 @@ export default function NotificationPreferencesPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="immediate">
-                  Immediate - Receive notifications as they happen
+                  {t('modes.immediate')}
                 </SelectItem>
-                <SelectItem value="daily">
-                  Daily Digest - Receive a summary once per day
-                </SelectItem>
-                <SelectItem value="weekly">
-                  Weekly Digest - Receive a summary once per week
-                </SelectItem>
+                <SelectItem value="daily">{t('modes.daily')}</SelectItem>
+                <SelectItem value="weekly">{t('modes.weekly')}</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-sm text-gray-500 mt-2">
-              Note: Daily and weekly digests are coming soon. Currently, all
-              notifications are sent immediately.
-            </p>
+            <p className="text-sm text-gray-500 mt-2">{t('digestNote')}</p>
           </div>
         </CardContent>
       </Card>
@@ -274,10 +250,12 @@ export default function NotificationPreferencesPage() {
             });
           }}
         >
-          Reset
+          {t('actions.reset')}
         </Button>
         <Button onClick={handleSave} disabled={updatePreferences.isPending}>
-          {updatePreferences.isPending ? 'Saving...' : 'Save Preferences'}
+          {updatePreferences.isPending
+            ? t('actions.saving')
+            : t('actions.save')}
         </Button>
       </div>
     </div>

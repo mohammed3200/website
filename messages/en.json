@@ -349,5 +349,178 @@
     "imageTooLarge": "Image is too large. Maximum size is {size}MB",
     "imageTooSmall": "Image dimensions too small. Minimum {width}x{height}px",
     "invalidImageType": "Invalid file type. Please upload PNG, JPG, or WEBP"
+  },
+  "Admin": {
+    "Settings": {
+      "title": "Settings",
+      "notifications": {
+        "title": "Notification Preferences",
+        "description": "Customize email and system alerts"
+      },
+      "profile": {
+        "title": "Profile Settings",
+        "description": "Manage your account and password"
+      }
+    },
+    "Content": {
+      "title": "Content Management",
+      "description": "Manage content for entrepreneurship and incubators pages",
+      "tabs": {
+        "entrepreneurship": "Entrepreneurship",
+        "incubators": "Incubators"
+      },
+      "sections": {
+        "entrepreneurship": "Entrepreneurship Content",
+        "incubators": "Incubators Content"
+      },
+      "actions": {
+        "add": "Add Content",
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "empty": "No content found",
+      "labels": {
+        "order": "Order",
+        "inactive": "Inactive",
+        "icon": "Icon",
+        "comingSoon": "Coming Soon"
+      }
+    },
+    "Dashboard": {
+      "title": "Dashboard Overview",
+      "welcome": "Welcome back, {name}",
+      "stats": {
+        "innovators": "Total Innovators",
+        "collaborators": "Total Collaborators",
+        "pending": "Pending Reviews",
+        "strategicPlans": "Strategic Plans",
+        "needsAttention": "Needs attention",
+        "active": "Active"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "reviewSubmissions": "Review Submissions",
+        "pendingCount": "{count} pending",
+        "manageContent": "Manage Content",
+        "editPages": "Edit pages",
+        "generateReport": "Generate Report",
+        "customReports": "Custom reports"
+      },
+      "recentActivity": {
+        "title": "Recent Activity",
+        "empty": "Recent activity will be displayed here soon."
+      }
+    },
+    "Notifications": {
+      "title": "Notifications",
+      "subtitle": "Manage and review system notifications",
+      "filters": {
+        "label": "Filters:",
+        "type": "Type",
+        "status": "Status",
+        "priority": "Priority",
+        "clear": "Clear filters"
+      },
+      "actions": {
+        "refresh": "Refresh",
+        "markAllRead": "Mark all as read",
+        "markSelectedRead": "Mark as read",
+        "cancel": "Cancel",
+        "delete": "Delete"
+      },
+      "empty": "No notifications found",
+      "selected": "{count} notification(s) selected",
+      "preferences": {
+        "emailTitle": "Email Notifications",
+        "emailDesc": "Choose which types of notifications you want to receive via email",
+        "newSubmissions": "New Submissions",
+        "newSubmissionsDesc": "Get notified when new collaborators or innovators register",
+        "statusChanges": "Status Changes",
+        "statusChangesDesc": "Get notified when submissions are approved or rejected",
+        "systemErrors": "System Errors",
+        "systemErrorsDesc": "Get notified about system errors and failures",
+        "securityAlerts": "Security Alert",
+        "securityAlertsDesc": "Get notified about security-related events and failed login attempts",
+        "userActivity": "User Activity",
+        "userActivityDesc": "Get notified about user account creation and role changes",
+        "databaseBackups": "Database Backups",
+        "databaseBackupsDesc": "Get notified when database backups complete",
+        "deliveryTitle": "Notification Delivery",
+        "deliveryDesc": "Choose how frequently you want to receive notifications",
+        "deliveryMode": "Delivery Mode",
+        "modes": {
+          "immediate": "Immediate - Receive notifications as they happen",
+          "daily": "Daily Digest - Receive a summary once per day",
+          "weekly": "Weekly Digest - Receive a summary once per week"
+        },
+        "digestNote": "Note: Daily and weekly digests are coming soon. Currently, all notifications are sent immediately.",
+        "actions": {
+          "reset": "Reset",
+          "save": "Save Preferences",
+          "saving": "Saving..."
+        },
+        "messages": {
+          "success": "Notification preferences updated successfully",
+          "error": "Failed to update preferences"
+        }
+      }
+    },
+    "Reports": {
+      "title": "Reports & Analytics",
+      "subtitle": "Generate and manage system reports for innovations and collaborators.",
+      "actions": {
+        "generateSummary": "Generate Summary",
+        "download": "Download",
+        "delete": "Delete"
+      },
+      "table": {
+        "name": "Report Name",
+        "type": "Type",
+        "status": "Status",
+        "createdAt": "Created At"
+      },
+      "status": {
+        "completed": "Completed",
+        "generating": "Generating...",
+        "pending": "Pending",
+        "failed": "Failed"
+      },
+      "empty": "No reports found"
+    },
+    "Submissions": {
+      "title": "Review Submissions",
+      "subtitle": "Review and approve or reject innovator and collaborator submissions",
+      "innovators": "Innovators",
+      "collaborators": "Collaborators",
+      "empty": "No pending submissions",
+      "actions": {
+        "view": "View",
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "labels": {
+        "submittedOn": "Submitted on"
+      }
+    },
+    "StrategicPlans": {
+      "title": "Strategic Plans",
+      "subtitle": "Manage strategic plans for the center",
+      "actions": {
+        "create": "Create Strategic Plan",
+        "edit": "Edit",
+        "delete": "Delete",
+        "view": "View"
+      },
+      "table": {
+        "title": "Title",
+        "slug": "Slug",
+        "category": "Category",
+        "status": "Status",
+        "priority": "Priority",
+        "active": "Active",
+        "created": "Created"
+      },
+      "empty": "No strategic plans found. Create one to get started."
+    }
   }
 }
