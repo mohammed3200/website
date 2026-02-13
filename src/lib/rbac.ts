@@ -1,4 +1,5 @@
 import { db } from '@/lib/db';
+import crypto from 'crypto';
 // import { User, Role, Permission } from "@prisma/client";
 
 // Define resources and actions
@@ -295,8 +296,6 @@ export async function createUserInvitation(
 
 // Helper function to generate invitation token
 function generateInvitationToken(): string {
-  // Use crypto for secure token generation
-  const crypto = require('crypto');
   return crypto.randomBytes(32).toString('hex');
 }
 

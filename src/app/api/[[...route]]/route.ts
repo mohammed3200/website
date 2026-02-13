@@ -18,12 +18,20 @@ app.use(
   cors({
     origin: (origin) => {
       const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+
+      // If no allowed origins configured, reject all
+      if (allowedOrigins.length === 0) return null;
+
       // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return allowedOrigins[0];
+      if (!origin) return allowedOrigins[0] || null;
+
+      // Allow if origin is in the allowlist
       if (allowedOrigins.includes(origin)) {
         return origin;
       }
-      return allowedOrigins[0]; // Fallback to first allowed origin or null if restricted
+
+      // Reject non-matching origins
+      return null;
     },
     credentials: true,
   }),
