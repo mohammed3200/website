@@ -18,7 +18,7 @@ export const verifyAuth = async (
 ) => {
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return c.json({ error: 'Unauthorized' }, 401);
   }
 

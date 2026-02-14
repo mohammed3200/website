@@ -46,4 +46,4 @@ const SubmissionsPage = () => {
   );
 };
 
-export default SubmissionsContent;
+export default SubmissionsPage;
