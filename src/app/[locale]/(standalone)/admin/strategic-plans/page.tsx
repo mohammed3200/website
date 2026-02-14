@@ -78,7 +78,7 @@ export default function StrategicPlansPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-gray-500">Loading strategic plans...</p>
+        <p className="text-gray-500">{t('status.loading')}</p>
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default function StrategicPlansPage() {
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-red-500">Failed to load strategic plans</p>
+        <p className="text-red-500">{t('status.error')}</p>
       </div>
     );
   }
@@ -117,7 +117,7 @@ export default function StrategicPlansPage() {
               <TableHead>{t('table.priority')}</TableHead>
               <TableHead>{t('table.active')}</TableHead>
               <TableHead>{t('table.created')}</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right">{t('table.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

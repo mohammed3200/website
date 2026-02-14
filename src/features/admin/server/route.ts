@@ -283,6 +283,79 @@ const app = new Hono<{ Variables: Variables }>()
     },
   )
 
+  // --- Submissions Section ---
+
+  // GET /api/admin/submissions - Get pending innovators and collaborators
+  .get('/submissions', async (c) => {
+    try {
+      const [innovators, collaborators] = await Promise.all([
+        db.innovator.findMany({
+          where: { status: 'PENDING' },
+          include: {
+            image: true,
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 50,
+        }),
+        db.collaborator.findMany({
+          where: { status: 'PENDING' },
+          include: {
+            image: true,
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 50,
+        }),
+      ]);
+
+      return c.json({
+        innovators,
+        collaborators,
+      });
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+      return c.json({ error: 'Failed to fetch submissions' }, 500);
+    }
+  })
+
+  // GET /api/admin/stats - Get dashboard statistics
+  .get('/stats', async (c) => {
+    try {
+      const [
+        totalInnovators,
+        totalCollaborators,
+        pendingInnovators,
+        pendingCollaborators,
+        totalStrategicPlans,
+        totalNews,
+        approvedInnovators,
+        approvedCollaborators,
+      ] = await Promise.all([
+        db.innovator.count(),
+        db.collaborator.count(),
+        db.innovator.count({ where: { status: 'PENDING' } }),
+        db.collaborator.count({ where: { status: 'PENDING' } }),
+        db.strategicPlan.count({ where: { isActive: true } }),
+        db.news.count({ where: { isActive: true } }),
+        db.innovator.count({ where: { status: 'APPROVED' } }),
+        db.collaborator.count({ where: { status: 'APPROVED' } }),
+      ]);
+
+      return c.json({
+        totalInnovators,
+        totalCollaborators,
+        pendingInnovators,
+        pendingCollaborators,
+        totalStrategicPlans,
+        totalNews,
+        approvedInnovators,
+        approvedCollaborators,
+      });
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      return c.json({ error: 'Failed to fetch statistics' }, 500);
+    }
+  })
+
   // --- Reports Section ---
 
   // GET /api/admin/reports - List generated reports
@@ -308,7 +381,12 @@ const app = new Hono<{ Variables: Variables }>()
       'json',
       z.object({
         name: z.string(),
-        type: z.enum(['SUBMISSIONS_SUMMARY', 'USER_ACTIVITY', 'STRATEGIC_PLANS', 'FULL_PLATFORM']),
+        type: z.enum([
+          'SUBMISSIONS_SUMMARY',
+          'USER_ACTIVITY',
+          'STRATEGIC_PLANS',
+          'FULL_PLATFORM',
+        ]),
         format: z.enum(['PDF', 'CSV']),
         parameters: z.record(z.string(), z.any()).optional(),
       }),
@@ -355,7 +433,7 @@ const app = new Hono<{ Variables: Variables }>()
       'param',
       z.object({
         id: z.string(),
-      })
+      }),
     ),
     async (c) => {
       try {
@@ -363,7 +441,7 @@ const app = new Hono<{ Variables: Variables }>()
         const { id } = c.req.valid('param');
 
         const report = await db.report.findFirst({
-          where: { id, createdById: user.id }
+          where: { id, createdById: user.id },
         });
 
         if (!report) {
@@ -377,7 +455,7 @@ const app = new Hono<{ Variables: Variables }>()
         console.error('Error deleting report:', error);
         return c.json({ error: 'Failed to delete report' }, 500);
       }
-    }
+    },
   );
 
 export default app;

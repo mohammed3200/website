@@ -443,9 +443,25 @@
         "markAllRead": "تحديد الكل كمقروء",
         "markSelectedRead": "تحديد كمقروء",
         "cancel": "إلغاء",
-        "delete": "حذف"
+        "delete": "حذف",
+        "selectAll": "تحديد الكل"
+      },
+      "types": {
+        "NEW_COLLABORATOR": "شريك جديد",
+        "NEW_INNOVATOR": "مبتكر جديد",
+        "SUBMISSION_APPROVED": "تم الموافقة",
+        "SUBMISSION_REJECTED": "تم الرفض",
+        "SYSTEM_ERROR": "خطأ في النظام",
+        "SECURITY_ALERT": "تنبيه أمني"
+      },
+      "statusLabels": {
+        "read": "مقروء",
+        "unread": "غير مقروء",
+        "new": "جديد",
+        "all": "كل الحالات"
       },
       "empty": "لا توجد إشعارات",
+      "error": "فشل تحميل الإشعارات",
       "selected": "تم تحديد {count} إشعار(ات)",
       "preferences": {
         "emailTitle": "إشعارات البريد الإلكتروني",
@@ -522,6 +538,10 @@
       "comingSoon": "قريباً",
       "labels": {
         "submittedOn": "تم الإرسال في"
+      },
+      "status": {
+        "errorTitle": "فشل تحميل الطلبات",
+        "retry": "إعادة المحاولة"
       }
     },
     "StrategicPlans": {
@@ -544,7 +564,12 @@
         "status": "الحالة",
         "priority": "الأولوية",
         "active": "نشط",
-        "created": "تاريخ الإنشاء"
+        "created": "تاريخ الإنشاء",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "loading": "جاري تحميل الخطط الاستراتيجية...",
+        "error": "فشل تحميل الخطط الاستراتيجية"
       },
       "empty": "لا يوجد خطط استراتيجية. قم بإنشاء واحدة للبدء."
     }

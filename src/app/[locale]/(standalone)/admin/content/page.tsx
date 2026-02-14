@@ -9,6 +9,7 @@ import { useGetPageContent } from '@/features/page-content/api/use-get-page-cont
 import { PERMISSIONS } from '@/constants';
 import type { PageContent } from '@prisma/client'; // Valid assumption? or from types?
 import { useEffect, useMemo } from 'react';
+import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 
 // Fallback type if Prisma type isn't readily available or to be safe
 type ContentItem = {
@@ -24,13 +25,13 @@ type ContentItem = {
 };
 
 export default function ContentManagementPage() {
-  const { data: session, status } = useSession();
+  const { session, status } = useAdminAuth();
   const router = useRouter();
   const t = useTranslations('Admin.Content');
   const { isArabic, lang } = useLanguage();
 
   const hasContentAccess = useMemo(() => {
-    if (status !== 'authenticated' || !session?.user) return false;
+    if (!session?.user) return false;
 
     const permissions = session.user.permissions as
       | Array<{ resource: string; action: string }>
@@ -41,7 +42,7 @@ export default function ContentManagementPage() {
         p.resource === PERMISSIONS.CONTENT.RESOURCE &&
         p.action === PERMISSIONS.CONTENT.ACTION,
     );
-  }, [status, session]);
+  }, [session]);
 
   const { data: entrepreneurshipContent, isLoading: isLoadingEnt } =
     useGetPageContent('entrepreneurship', { enabled: hasContentAccess });
@@ -49,9 +50,7 @@ export default function ContentManagementPage() {
     useGetPageContent('incubators', { enabled: hasContentAccess });
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push(`/${lang}/auth/login`);
-    } else if (status === 'authenticated' && !hasContentAccess) {
+    if (status === 'authenticated' && !hasContentAccess) {
       router.push(`/${lang}/admin`);
     }
   }, [status, hasContentAccess, router, lang]);
