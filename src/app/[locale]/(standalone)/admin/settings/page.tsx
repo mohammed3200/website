@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import useLanguage from '@/hooks/use-language';
-import { SETTINGS_OPTIONS } from '@/features/admin/constants/settings';
-import { cn } from '@/lib/utils';
 
-export default function SettingsPage() {
+import { cn } from '@/lib/utils';
+import { SETTINGS_OPTIONS } from '@/features/admin/constants/settings';
+
+const SettingsPage = () => {
   const t = useTranslations('Admin.Settings');
   const { lang } = useLanguage();
 
@@ -64,4 +65,6 @@ export default function SettingsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default SettingsPage;

@@ -3,7 +3,7 @@ import { AlertCircle, RefreshCw } from 'lucide-react';
 import { useGetSubmissions } from '@/features/admin/api/use-submissions';
 import SubmissionsContent from './components/submissions-content';
 
-export default function SubmissionsPage() {
+const SubmissionsPage = () => {
   const t = useTranslations('Admin.Submissions');
   const { data, isLoading, isError, error, refetch } = useGetSubmissions();
 
@@ -44,4 +44,6 @@ export default function SubmissionsPage() {
       collaborators={data?.collaborators || []}
     />
   );
-}
+};
+
+export default SubmissionsContent;

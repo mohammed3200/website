@@ -3,6 +3,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import useLanguage from '@/hooks/use-language';
 
+import { RESOURCES, ACTIONS, checkPermission } from '@/lib/rbac-base';
+
 export const useAdminAuth = () => {
   const { data: session, status } = useSession();
   const { lang } = useLanguage();
@@ -12,14 +14,12 @@ export const useAdminAuth = () => {
     if (status === 'unauthenticated') {
       router.push(`/${lang}/auth/login`);
     } else if (status === 'authenticated') {
-      const permissions = session?.user?.permissions as
-        | Array<{ resource: string; action: string }>
-        | undefined;
+      const permissions = session?.user?.permissions as any;
 
-      const hasDashboardAccess = permissions?.some(
-        (p) =>
-          p.resource === 'dashboard' &&
-          (p.action === 'read' || p.action === 'manage'),
+      const hasDashboardAccess = checkPermission(
+        permissions,
+        RESOURCES.DASHBOARD,
+        ACTIONS.READ,
       );
 
       if (!hasDashboardAccess) {

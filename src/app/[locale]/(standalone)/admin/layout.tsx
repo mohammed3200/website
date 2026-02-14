@@ -1,15 +1,11 @@
 'use client';
 
-import Sidebar from '@/features/admin/components/sidebar';
-import { NotificationBell } from '@/features/admin/components/notification-bell';
-import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 import useLanguage from '@/hooks/use-language';
+import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
+import { NotificationBell } from '@/features/admin/components/notification-bell';
+import Sidebar from '@/features/admin/components/sidebar';
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const { session, status } = useAdminAuth();
   const { lang: locale } = useLanguage();
 
@@ -57,4 +53,6 @@ export default function AdminLayout({
       </div>
     </div>
   );
-}
+};
+
+export default AdminLayout;

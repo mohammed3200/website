@@ -6,6 +6,9 @@ import { db } from '@/lib/db';
 import { NotificationPriority } from '@prisma/client';
 import type { Session } from 'next-auth';
 
+import { RESOURCES, ACTIONS } from '@/lib/rbac';
+import { verifyAuth, requirePermission } from './middleware';
+
 // Define the variables explicitly
 type Variables = {
   user: Session['user'] & {
@@ -14,33 +17,9 @@ type Variables = {
 };
 
 const app = new Hono<{ Variables: Variables }>()
-  // Middleware to check authentication
-  .use('/*', async (c, next) => {
-    const session = await auth();
-
-    if (!session?.user) {
-      return c.json({ error: 'Unauthorized' }, 401);
-    }
-
-    // Check if user has dashboard access
-    const permissions = session.user.permissions as
-      | Array<{ resource: string; action: string }>
-      | undefined;
-    const hasDashboardAccess = permissions?.some(
-      (p) =>
-        p.resource === 'dashboard' &&
-        (p.action === 'read' || p.action === 'manage'),
-    );
-
-    if (!hasDashboardAccess) {
-      return c.json({ error: 'Forbidden' }, 403);
-    }
-
-    // Attach user to context
-    // We cast to ensure TypeScript knows we have the id
-    c.set('user', session.user as Variables['user']);
-    await next();
-  })
+  // Middleware to check authentication and dashboard access
+  .use('/*', verifyAuth)
+  .use('/*', requirePermission(RESOURCES.DASHBOARD, ACTIONS.READ))
 
   // GET /api/admin/notifications - Get notifications for current user
   .get('/notifications', async (c) => {

@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import useLanguage from '@/hooks/use-language';
 import {
   useGetAllStrategicPlans,
-  usePostStrategicPlan,
-  usePatchStrategicPlan,
   useDeleteStrategicPlan,
 } from '@/features/strategic-plan/api';
+import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -28,13 +30,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+
 import { CreateStrategicPlanDialog } from '@/features/strategic-plan/components/create_strategic_plan_dialog';
 import { EditStrategicPlanDialog } from '@/features/strategic-plan/components/edit_strategic_plan_dialog';
-import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
 
-export default function StrategicPlansPage() {
+const StrategicPlansPage = () => {
   const router = useRouter();
   const t = useTranslations('Admin.StrategicPlans');
   const { lang, isArabic } = useLanguage();
@@ -258,4 +258,6 @@ export default function StrategicPlansPage() {
       </AlertDialog>
     </div>
   );
-}
+};
+
+export default StrategicPlansPage;

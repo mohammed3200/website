@@ -1,5 +1,9 @@
 'use client';
 
+import { format } from 'date-fns';
+import { ar, enUS } from 'date-fns/locale';
+import { useTranslations } from 'next-intl';
+import useLanguage from '@/hooks/use-language';
 import {
   FileText,
   Download,
@@ -11,16 +15,12 @@ import {
   XCircle,
   AlertCircle,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { ar, enUS } from 'date-fns/locale';
-import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
 import {
   useGetReports,
   useGenerateReport,
   useDeleteReport,
 } from '@/features/admin/api/use-reports';
+import { cn } from '@/lib/utils';
 
 import {
   Table,
@@ -31,7 +31,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-export default function ReportsPage() {
+const ReportsPage = () => {
   const t = useTranslations('Admin.Reports');
   const { isArabic, lang } = useLanguage();
 
@@ -237,4 +237,6 @@ export default function ReportsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default ReportsPage;

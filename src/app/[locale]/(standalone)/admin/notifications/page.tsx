@@ -2,6 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import useLanguage from '@/hooks/use-language';
+import { Bell, CheckCheck, Trash2, Filter, X, RefreshCw } from 'lucide-react';
+
 import {
   useNotifications,
   useMarkNotificationRead,
@@ -9,6 +13,8 @@ import {
   useDeleteNotification,
   type Notification,
 } from '@/features/admin/api/use-notifications';
+import { cn } from '@/lib/utils';
+
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -19,8 +25,6 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { cn } from '@/lib/utils';
-import { Bell, CheckCheck, Trash2, Filter, X, RefreshCw } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,48 +35,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
 
-function formatTimeAgo(date: Date, locale: string): string {
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  const isAr = locale === 'ar';
-
-  if (diffInSeconds < 60) return isAr ? 'الآن' : 'just now';
-  if (diffInSeconds < 3600) {
-    const mins = Math.floor(diffInSeconds / 60);
-    return isAr ? `منذ ${mins} دقيقة` : `${mins}m ago`;
-  }
-  if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600);
-    return isAr ? `منذ ${hours} ساعة` : `${hours}h ago`;
-  }
-  if (diffInSeconds < 604800) {
-    const days = Math.floor(diffInSeconds / 86400);
-    return isAr ? `منذ ${days} يوم` : `${days}d ago`;
-  }
-  return date.toLocaleDateString(isAr ? 'ar-EG' : 'en-US');
-}
-
-function getPriorityColor(priority: string) {
-  switch (priority) {
-    case 'URGENT':
-      return 'bg-red-500 text-white';
-    case 'HIGH':
-      return 'bg-orange-500 text-white';
-    case 'NORMAL':
-      return 'bg-blue-500 text-white';
-    case 'LOW':
-      return 'bg-gray-500 text-white';
-    default:
-      return 'bg-gray-500 text-white';
-  }
-}
-
-function getTypeLabel(type: string, t: any): string {
-  return t(`types.${type}`);
-}
+import {
+  formatTimeAgo,
+  getPriorityColor,
+  getTypeLabel,
+} from '@/features/admin/utils';
 
 export default function NotificationsPage() {
   const router = useRouter();
