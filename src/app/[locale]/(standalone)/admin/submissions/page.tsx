@@ -1,7 +1,5 @@
 'use client';
 
-import useLanguage from '@/hooks/use-language';
-import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 import { useGetSubmissions } from '@/features/admin/api/use-submissions';
 import SubmissionsContent from './components/submissions-content';
 
