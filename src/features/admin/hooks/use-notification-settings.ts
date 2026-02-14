@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   useNotificationPreferences,
   useUpdateNotificationPreferences,
@@ -28,7 +28,7 @@ export const useNotificationSettings = () => {
   });
 
   // Sync state when data is loaded
-  useState(() => {
+  useEffect(() => {
     if (data?.preferences) {
       setLocalPreferences({
         emailNewSubmissions: data.preferences.emailNewSubmissions ?? true,
@@ -42,7 +42,7 @@ export const useNotificationSettings = () => {
           'immediate',
       });
     }
-  });
+  }, [data]);
 
   const handleToggle = (key: keyof typeof localPreferences) => {
     if (key === 'digestMode') return;

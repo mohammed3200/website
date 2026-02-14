@@ -1,3 +1,5 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 import { useSubmissionsLogic } from '@/features/admin/hooks/use-submissions-logic';
 import { Button } from '@/components/ui/button';
