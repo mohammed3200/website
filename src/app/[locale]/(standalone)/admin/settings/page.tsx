@@ -15,16 +15,8 @@ export default function SettingsPage() {
       <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {SETTINGS_OPTIONS.map((option) => (
-          <Link
-            key={option.titleKey}
-            href={option.disabled ? '#' : `/${lang}${option.href}`}
-            className={cn(
-              'block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-primary transition-colors',
-              option.disabled && 'opacity-50 cursor-not-allowed',
-            )}
-            aria-disabled={option.disabled}
-          >
+        {SETTINGS_OPTIONS.map((option) => {
+          const content = (
             <div className="flex items-center gap-4">
               <div className="p-3 bg-primary/10 rounded-full">
                 <option.icon className="w-6 h-6 text-primary" />
@@ -38,8 +30,37 @@ export default function SettingsPage() {
                 </p>
               </div>
             </div>
-          </Link>
-        ))}
+          );
+
+          const className = cn(
+            'block p-6 bg-white border border-gray-200 rounded-lg shadow-sm transition-colors',
+            option.disabled
+              ? 'opacity-50 cursor-not-allowed'
+              : 'hover:border-primary',
+          );
+
+          if (option.disabled) {
+            return (
+              <div
+                key={option.titleKey}
+                className={className}
+                aria-disabled="true"
+              >
+                {content}
+              </div>
+            );
+          }
+
+          return (
+            <Link
+              key={option.titleKey}
+              href={`/${lang}${option.href}`}
+              className={className}
+            >
+              {content}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

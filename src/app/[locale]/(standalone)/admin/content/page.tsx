@@ -8,7 +8,7 @@ import useLanguage from '@/hooks/use-language';
 import { useGetPageContent } from '@/features/page-content/api/use-get-page-content';
 import { PERMISSIONS } from '@/constants';
 import type { PageContent } from '@prisma/client'; // Valid assumption? or from types?
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 // Fallback type if Prisma type isn't readily available or to be safe
 type ContentItem = {
@@ -29,30 +29,32 @@ export default function ContentManagementPage() {
   const t = useTranslations('Admin.Content');
   const { isArabic, lang } = useLanguage();
 
+  const hasContentAccess = useMemo(() => {
+    if (status !== 'authenticated' || !session?.user) return false;
+
+    const permissions = session.user.permissions as
+      | Array<{ resource: string; action: string }>
+      | undefined;
+
+    return permissions?.some(
+      (p) =>
+        p.resource === PERMISSIONS.CONTENT.RESOURCE &&
+        p.action === PERMISSIONS.CONTENT.ACTION,
+    );
+  }, [status, session]);
+
   const { data: entrepreneurshipContent, isLoading: isLoadingEnt } =
-    useGetPageContent('entrepreneurship');
+    useGetPageContent('entrepreneurship', { enabled: hasContentAccess });
   const { data: incubatorsContent, isLoading: isLoadingInc } =
-    useGetPageContent('incubators');
+    useGetPageContent('incubators', { enabled: hasContentAccess });
 
   useEffect(() => {
     if (status === 'unauthenticated') {
       router.push(`/${lang}/auth/login`);
-    } else if (status === 'authenticated') {
-      const permissions = session.user.permissions as
-        | Array<{ resource: string; action: string }>
-        | undefined;
-
-      const hasContentAccess = permissions?.some(
-        (p) =>
-          p.resource === PERMISSIONS.CONTENT.RESOURCE &&
-          p.action === PERMISSIONS.CONTENT.ACTION,
-      );
-
-      if (!hasContentAccess) {
-        router.push(`/${lang}/admin`);
-      }
+    } else if (status === 'authenticated' && !hasContentAccess) {
+      router.push(`/${lang}/admin`);
     }
-  }, [status, session, router, lang]);
+  }, [status, hasContentAccess, router, lang]);
 
   if (status === 'loading' || isLoadingEnt || isLoadingInc) {
     return (

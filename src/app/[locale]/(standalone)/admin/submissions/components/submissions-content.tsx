@@ -129,7 +129,7 @@ export default function SubmissionsContent({
                       size="sm"
                       disabled
                       className="gap-2 bg-green-300 cursor-not-allowed hover:bg-green-300"
-                      title="Coming Soon"
+                      title={t('comingSoon')}
                     >
                       <CheckCircle className="h-4 w-4" />
                       {t('actions.approve')}
@@ -138,7 +138,7 @@ export default function SubmissionsContent({
                       size="sm"
                       disabled
                       className="gap-2 bg-red-300 cursor-not-allowed hover:bg-red-300"
-                      title="Coming Soon"
+                      title={t('comingSoon')}
                     >
                       <XCircle className="h-4 w-4" />
                       {t('actions.reject')}
@@ -221,7 +221,7 @@ export default function SubmissionsContent({
                       size="sm"
                       disabled
                       className="gap-2 bg-green-300 cursor-not-allowed hover:bg-green-300"
-                      title="Coming Soon"
+                      title={t('comingSoon')}
                     >
                       <CheckCircle className="h-4 w-4" />
                       {t('actions.approve')}
@@ -230,7 +230,7 @@ export default function SubmissionsContent({
                       size="sm"
                       disabled
                       className="gap-2 bg-red-300 cursor-not-allowed hover:bg-red-300"
-                      title="Coming Soon"
+                      title={t('comingSoon')}
                     >
                       <XCircle className="h-4 w-4" />
                       {t('actions.reject')}

@@ -241,12 +241,11 @@ export default function StrategicPlansPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>{t('actions.delete')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this strategic plan? This action
-              cannot be undone.
+              {t('dialogs.deleteConfirm')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('actions.create')}</AlertDialogCancel>{' '}
+            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>{' '}
             {/* Assuming Cancel key. Using generic action for now if not present */}
             <AlertDialogAction
               onClick={confirmDelete}
