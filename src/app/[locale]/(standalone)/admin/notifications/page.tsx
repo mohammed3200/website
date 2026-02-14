@@ -48,11 +48,6 @@ export default function NotificationsPage() {
   const { lang, isArabic } = useLanguage();
 
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState<{
-    type?: string;
-    isRead?: boolean;
-    priority?: string;
-  }>({});
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>(
     [],
   );
@@ -60,6 +55,11 @@ export default function NotificationsPage() {
   const [notificationToDelete, setNotificationToDelete] = useState<
     string | null
   >(null);
+  const [filters, setFilters] = useState<{
+    type?: string;
+    isRead?: boolean;
+    priority?: string;
+  }>({});
 
   const { data, isLoading, error, refetch, isFetching } = useNotifications({
     page,

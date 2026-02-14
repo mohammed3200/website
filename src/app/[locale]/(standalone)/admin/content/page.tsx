@@ -15,8 +15,8 @@ import { Plus, Edit, Trash2 } from 'lucide-react';
 import { checkPermission, RESOURCES, ACTIONS } from '@/lib/rbac-base';
 
 const ContentManagementPage = () => {
-  const { session, status } = useAdminAuth();
   const router = useRouter();
+  const { session, status } = useAdminAuth();
   const t = useTranslations('Admin.Content');
   const { isArabic, lang } = useLanguage();
 
