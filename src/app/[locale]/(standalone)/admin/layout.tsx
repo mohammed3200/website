@@ -1,36 +1,27 @@
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
+'use client';
+
 import Sidebar from '@/features/admin/components/sidebar';
 import { NotificationBell } from '@/features/admin/components/notification-bell';
+import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
+import useLanguage from '@/hooks/use-language';
 
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
-  params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
 }) {
-  const { locale } = await params;
-  const session = await auth();
+  const { session, status } = useAdminAuth();
+  const { lang: locale } = useLanguage();
 
-  if (!session?.user) {
-    redirect(`/${locale}/auth/login`);
+  if (status === 'loading') {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-orange-600" />
+      </div>
+    );
   }
 
-  // Check dashboard permissions
-  const permissions = session.user.permissions as
-    | Array<{ resource: string; action: string }>
-    | undefined;
-
-  const hasDashboardAccess = permissions?.some(
-    (p) =>
-      p.resource === 'dashboard' &&
-      (p.action === 'read' || p.action === 'manage'),
-  );
-
-  if (!hasDashboardAccess) {
-    redirect(`/${locale}`);
-  }
+  if (!session?.user) return null;
 
   return (
     <div

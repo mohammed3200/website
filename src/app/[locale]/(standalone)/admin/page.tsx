@@ -1,74 +1,62 @@
-import { auth } from '@/auth';
-import { db } from '@/lib/db';
+'use client';
+
+import { useTranslations } from 'next-intl';
+import useLanguage from '@/hooks/use-language';
+import { useGetDashboardStats } from '@/features/admin/api/use-dashboard-stats';
+import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 import {
   Users,
   ClipboardList,
   Target,
   Newspaper,
   TrendingUp,
-  CheckCircle,
   Clock,
-  XCircle,
 } from 'lucide-react';
+import Link from 'next/link';
 
-export default async function AdminDashboardPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const session = await auth();
+export default function AdminDashboardPage() {
+  const t = useTranslations('Admin.Dashboard');
+  const { lang, isArabic } = useLanguage();
+  const { session } = useAdminAuth();
+  const { data: statsData, isLoading } = useGetDashboardStats();
 
-  // Fetch dashboard statistics
-  const [
-    totalInnovators,
-    totalCollaborators,
-    pendingInnovators,
-    pendingCollaborators,
-    totalStrategicPlans,
-    totalNews,
-    approvedInnovators,
-    approvedCollaborators,
-  ] = await Promise.all([
-    db.innovator.count(),
-    db.collaborator.count(),
-    db.innovator.count({ where: { status: 'PENDING' } }),
-    db.collaborator.count({ where: { status: 'PENDING' } }),
-    db.strategicPlan.count({ where: { isActive: true } }),
-    db.news.count({ where: { isActive: true } }),
-    db.innovator.count({ where: { status: 'APPROVED' } }),
-    db.collaborator.count({ where: { status: 'APPROVED' } }),
-  ]);
-
-  const isArabic = locale === 'ar';
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-12">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-orange-600" />
+      </div>
+    );
+  }
 
   const stats = [
     {
-      name: isArabic ? 'المبتكرون' : 'Total Innovators',
-      value: totalInnovators,
+      name: t('stats.innovators'),
+      value: statsData?.totalInnovators || 0,
       icon: Users,
-      change: `+${approvedInnovators}`,
+      change: `+${statsData?.approvedInnovators || 0}`,
       changeType: 'positive' as const,
     },
     {
-      name: isArabic ? 'الشركاء' : 'Total Collaborators',
-      value: totalCollaborators,
+      name: t('stats.collaborators'),
+      value: statsData?.totalCollaborators || 0,
       icon: Users,
-      change: `+${approvedCollaborators}`,
+      change: `+${statsData?.approvedCollaborators || 0}`,
       changeType: 'positive' as const,
     },
     {
-      name: isArabic ? 'طلبات قيد المراجعة' : 'Pending Reviews',
-      value: pendingInnovators + pendingCollaborators,
+      name: t('stats.pending'),
+      value:
+        (statsData?.pendingInnovators || 0) +
+        (statsData?.pendingCollaborators || 0),
       icon: Clock,
-      change: isArabic ? 'يتطلب اهتمام' : 'Needs attention',
+      change: t('stats.needsAttention'),
       changeType: 'warning' as const,
     },
     {
-      name: isArabic ? 'الخطط الاستراتيجية' : 'Strategic Plans',
-      value: totalStrategicPlans,
+      name: t('stats.strategicPlans'),
+      value: statsData?.totalStrategicPlans || 0,
       icon: Target,
-      change: isArabic ? 'نشطة' : 'Active',
+      change: t('stats.active'),
       changeType: 'neutral' as const,
     },
   ];
@@ -77,13 +65,11 @@ export default async function AdminDashboardPage({
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          {isArabic ? 'لوحة التحكم' : 'Dashboard Overview'}
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
         <p className="mt-2 text-sm text-gray-600">
-          {isArabic
-            ? `مرحباً، ${session?.user?.name || 'المشرف'}`
-            : `Welcome back, ${session?.user?.name || 'Admin'}`}
+          {t('welcome', {
+            name: session?.user?.name || (isArabic ? 'المشرف' : 'Admin'),
+          })}
         </p>
       </div>
 
@@ -134,67 +120,66 @@ export default async function AdminDashboardPage({
       {/* Quick Actions */}
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          {isArabic ? 'إجراءات سريعة' : 'Quick Actions'}
+          {t('quickActions.title')}
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <a
-            href={`/${locale}/admin/submissions`}
+          <Link
+            href={`/${lang}/admin/submissions`}
             className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
           >
             <ClipboardList className="h-6 w-6 text-primary" />
             <div>
               <p className="font-semibold text-gray-900">
-                {isArabic ? 'مراجعة الطلبات' : 'Review Submissions'}
+                {t('quickActions.reviewSubmissions')}
               </p>
               <p className="text-sm text-gray-600">
-                {pendingInnovators + pendingCollaborators}{' '}
-                {isArabic ? 'في الانتظار' : 'pending'}
+                {t('quickActions.pendingCount', {
+                  count:
+                    (statsData?.pendingInnovators || 0) +
+                    (statsData?.pendingCollaborators || 0),
+                })}
               </p>
             </div>
-          </a>
+          </Link>
 
-          <a
-            href={`/${locale}/admin/content`}
+          <Link
+            href={`/${lang}/admin/content`}
             className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
           >
             <Newspaper className="h-6 w-6 text-primary" />
             <div>
               <p className="font-semibold text-gray-900">
-                {isArabic ? 'إدارة المحتوى' : 'Manage Content'}
+                {t('quickActions.manageContent')}
               </p>
               <p className="text-sm text-gray-600">
-                {isArabic ? 'تحرير الصفحات' : 'Edit pages'}
+                {t('quickActions.editPages')}
               </p>
             </div>
-          </a>
+          </Link>
 
-          <a
-            href={`/${locale}/admin/reports`}
+          <Link
+            href={`/${lang}/admin/reports`}
             className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
           >
             <TrendingUp className="h-6 w-6 text-primary" />
             <div>
               <p className="font-semibold text-gray-900">
-                {isArabic ? 'إنشاء تقرير' : 'Generate Report'}
+                {t('quickActions.generateReport')}
               </p>
               <p className="text-sm text-gray-600">
-                {isArabic ? 'تقارير مخصصة' : 'Custom reports'}
+                {t('quickActions.customReports')}
               </p>
             </div>
-          </a>
+          </Link>
         </div>
       </div>
 
       {/* Recent Activity Placeholder */}
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          {isArabic ? 'النشاط الأخير' : 'Recent Activity'}
+          {t('recentActivity.title')}
         </h2>
-        <p className="text-sm text-gray-500">
-          {isArabic
-            ? 'سيتم عرض النشاط الأخير هنا قريباً'
-            : 'Recent activity will be displayed here soon.'}
-        </p>
+        <p className="text-sm text-gray-500">{t('recentActivity.empty')}</p>
       </div>
     </div>
   );

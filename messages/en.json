@@ -426,9 +426,25 @@
         "markAllRead": "Mark all as read",
         "markSelectedRead": "Mark as read",
         "cancel": "Cancel",
-        "delete": "Delete"
+        "delete": "Delete",
+        "selectAll": "Select all"
+      },
+      "types": {
+        "NEW_COLLABORATOR": "New Collaborator",
+        "NEW_INNOVATOR": "New Innovator",
+        "SUBMISSION_APPROVED": "Approved",
+        "SUBMISSION_REJECTED": "Rejected",
+        "SYSTEM_ERROR": "System Error",
+        "SECURITY_ALERT": "Security Alert"
+      },
+      "statusLabels": {
+        "read": "Read",
+        "unread": "Unread",
+        "new": "New",
+        "all": "All Statuses"
       },
       "empty": "No notifications found",
+      "error": "Failed to load notifications",
       "selected": "{count} notification(s) selected",
       "preferences": {
         "emailTitle": "Email Notifications",
@@ -468,6 +484,12 @@
     "Reports": {
       "title": "Reports & Analytics",
       "subtitle": "Generate and manage system reports for innovations and collaborators.",
+      "types": {
+        "SUBMISSIONS_SUMMARY": "Submissions Summary",
+        "USER_ACTIVITY": "User Activity",
+        "STRATEGIC_PLANS": "Strategic Plans",
+        "FULL_PLATFORM": "Full Platform"
+      },
       "actions": {
         "generateSummary": "Generate Summary",
         "download": "Download",
@@ -527,7 +549,12 @@
         "status": "Status",
         "priority": "Priority",
         "active": "Active",
-        "created": "Created"
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "status": {
+        "loading": "Loading strategic plans...",
+        "error": "Failed to load strategic plans"
       },
       "empty": "No strategic plans found. Create one to get started."
     }

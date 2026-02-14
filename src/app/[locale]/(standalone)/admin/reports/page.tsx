@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
   FileText,
   Download,
@@ -17,78 +16,34 @@ import { format } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import { useTranslations } from 'next-intl';
 import useLanguage from '@/hooks/use-language';
-
-interface Report {
-  id: string;
-  name: string;
-  type: string;
-  format: string;
-  status: 'PENDING' | 'GENERATING' | 'COMPLETED' | 'FAILED';
-  generatedAt: string | null;
-  createdAt: string;
-  fileUrl: string | null;
-}
+import {
+  useGetReports,
+  useGenerateReport,
+  useDeleteReport,
+} from '@/features/admin/api/use-reports';
 
 export default function ReportsPage() {
-  const [reports, setReports] = useState<Report[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
-
   const t = useTranslations('Admin.Reports');
-  const { isArabic } = useLanguage();
+  const { isArabic, lang } = useLanguage();
 
-  const fetchReports = async () => {
-    try {
-      const response = await fetch('/api/admin/reports');
-      if (response.ok) {
-        const data = await response.json();
-        setReports(data.reports);
-      }
-    } catch (error) {
-      console.error('Failed to fetch reports:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchReports();
-  }, []);
-
-  useEffect(() => {
-    // Refresh list every 10 seconds if there are pending reports
-    const hasPending = reports.some(
-      (r) => r.status === 'PENDING' || r.status === 'GENERATING',
-    );
-
-    if (!hasPending) return;
-
-    const interval = setInterval(() => {
-      fetchReports();
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [reports]);
+  const {
+    data: reports = [],
+    isLoading,
+    refetch,
+    isFetching,
+  } = useGetReports();
+  const generateMutation = useGenerateReport();
+  const deleteMutation = useDeleteReport();
 
   const handleGenerateReport = async (type: string, name: string) => {
-    setIsGenerating(true);
     try {
-      const response = await fetch('/api/admin/reports', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          type,
-          format: 'CSV', // Default to CSV for now
-        }),
+      await generateMutation.mutateAsync({
+        name,
+        type,
+        format: 'CSV',
       });
-      if (response.ok) {
-        fetchReports();
-      }
     } catch (error) {
       console.error('Failed to generate report:', error);
-    } finally {
-      setIsGenerating(false);
     }
   };
 
@@ -96,14 +51,13 @@ export default function ReportsPage() {
     if (!confirm(t('dialogs.confirmDelete'))) return;
 
     try {
-      await fetch(`/api/admin/reports/${id}`, { method: 'DELETE' });
-      fetchReports();
+      await deleteMutation.mutateAsync(id);
     } catch (error) {
       console.error('Failed to delete report:', error);
     }
   };
 
-  const getStatusBadge = (status: Report['status']) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case 'COMPLETED':
         return (
@@ -133,6 +87,8 @@ export default function ReportsPage() {
             {t('status.failed')}
           </span>
         );
+      default:
+        return null;
     }
   };
 
@@ -152,14 +108,28 @@ export default function ReportsPage() {
             onClick={() =>
               handleGenerateReport(
                 'SUBMISSIONS_SUMMARY',
-                'Submissions Summary - ' + new Date().toLocaleDateString(),
+                `${t('types.SUBMISSIONS_SUMMARY')} - ${new Date().toLocaleDateString(isArabic ? 'ar-EG' : 'en-US')}`,
               )
             }
-            disabled={isGenerating}
+            disabled={generateMutation.isPending}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-orange-600 rounded-md hover:bg-orange-700 disabled:opacity-50 transition-colors"
           >
-            <Plus className="h-4 w-4" />
+            {generateMutation.isPending ? (
+              <RefreshCw className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
             {t('actions.generateSummary')}
+          </button>
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="inline-flex items-center justify-center p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+            title={t('status.loading')}
+          >
+            <RefreshCw
+              className={cn('h-4 w-4', isFetching && 'animate-spin')}
+            />
           </button>
         </div>
       </div>
@@ -170,19 +140,19 @@ export default function ReportsPage() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left rtl:text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('table.name')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left rtl:text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('table.type')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left rtl:text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('table.status')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left rtl:text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {t('table.createdAt')}
                 </th>
-                <th className="relative px-6 py-3 text-right">
+                <th className="relative px-6 py-3 text-right rtl:text-left">
                   <span className="sr-only">Actions</span>
                 </th>
               </tr>
@@ -208,7 +178,7 @@ export default function ReportsPage() {
                   </td>
                 </tr>
               ) : (
-                reports.map((report) => (
+                reports.map((report: any) => (
                   <tr
                     key={report.id}
                     className="hover:bg-gray-50 transition-colors"
@@ -223,7 +193,10 @@ export default function ReportsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-xs text-gray-500 px-2 py-1 bg-gray-100 rounded">
-                        {report.type.replace('_', ' ')} / {report.format}
+                        {t(`types.${report.type}`, {
+                          defaultMessage: report.type,
+                        })}{' '}
+                        / {report.format}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -234,7 +207,7 @@ export default function ReportsPage() {
                         locale: isArabic ? ar : enUS,
                       })}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2 rtl:space-x-reverse">
+                    <td className="px-6 py-4 whitespace-nowrap text-right rtl:text-left text-sm font-medium space-x-2 rtl:space-x-reverse">
                       {report.status === 'COMPLETED' &&
                         (report.fileUrl ? (
                           <a
@@ -247,7 +220,7 @@ export default function ReportsPage() {
                         ) : (
                           <span
                             className="inline-flex items-center justify-center p-2 text-gray-400 bg-gray-50 rounded-md cursor-not-allowed"
-                            title={t('status.failed')} // Or a different key if preferred, but user just said "indicate the file is unavailable"
+                            title={t('status.failed')}
                             aria-disabled="true"
                           >
                             <Download className="h-4 w-4" />
@@ -255,7 +228,8 @@ export default function ReportsPage() {
                         ))}
                       <button
                         onClick={() => handleDeleteReport(report.id)}
-                        className="inline-flex items-center justify-center p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                        disabled={deleteMutation.isPending}
+                        className="inline-flex items-center justify-center p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
                         title={t('actions.delete')}
                       >
                         <Trash2 className="h-4 w-4" />

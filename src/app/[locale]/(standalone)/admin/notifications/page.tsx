@@ -70,12 +70,8 @@ function getPriorityColor(priority: string) {
   }
 }
 
-function getTypeLabel(type: string, locale: string): string {
-  // Ideally this should also be in translations, but keeping simple map for now or using distinct keys
-  // For now returning type as is or simple map if consistent.
-  // Given user request, we should probably translate these too.
-  // Assuming keys exist or falling back.
-  return type;
+function getTypeLabel(type: string, t: any): string {
+  return t(`types.${type}`);
 }
 
 export default function NotificationsPage() {
@@ -216,13 +212,25 @@ export default function NotificationsPage() {
               <SelectValue placeholder={t('filters.type')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('filters.type')}</SelectItem>
-              <SelectItem value="NEW_COLLABORATOR">New Collaborator</SelectItem>
-              <SelectItem value="NEW_INNOVATOR">New Innovator</SelectItem>
-              <SelectItem value="SUBMISSION_APPROVED">Approved</SelectItem>
-              <SelectItem value="SUBMISSION_REJECTED">Rejected</SelectItem>
-              <SelectItem value="SYSTEM_ERROR">System Error</SelectItem>
-              <SelectItem value="SECURITY_ALERT">Security Alert</SelectItem>
+              <SelectItem value="all">{t('statusLabels.all')}</SelectItem>
+              <SelectItem value="NEW_COLLABORATOR">
+                {t('types.NEW_COLLABORATOR')}
+              </SelectItem>
+              <SelectItem value="NEW_INNOVATOR">
+                {t('types.NEW_INNOVATOR')}
+              </SelectItem>
+              <SelectItem value="SUBMISSION_APPROVED">
+                {t('types.SUBMISSION_APPROVED')}
+              </SelectItem>
+              <SelectItem value="SUBMISSION_REJECTED">
+                {t('types.SUBMISSION_REJECTED')}
+              </SelectItem>
+              <SelectItem value="SYSTEM_ERROR">
+                {t('types.SYSTEM_ERROR')}
+              </SelectItem>
+              <SelectItem value="SECURITY_ALERT">
+                {t('types.SECURITY_ALERT')}
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -241,9 +249,9 @@ export default function NotificationsPage() {
               <SelectValue placeholder={t('filters.status')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('filters.status')}</SelectItem>
-              <SelectItem value="false">Unread</SelectItem>
-              <SelectItem value="true">Read</SelectItem>
+              <SelectItem value="all">{t('statusLabels.all')}</SelectItem>
+              <SelectItem value="false">{t('statusLabels.unread')}</SelectItem>
+              <SelectItem value="true">{t('statusLabels.read')}</SelectItem>
             </SelectContent>
           </Select>
 
@@ -318,7 +326,7 @@ export default function NotificationsPage() {
         ) : error ? (
           <div className="flex flex-col items-center justify-center p-12">
             <Bell className="h-12 w-12 text-gray-300 mb-2" />
-            <p className="text-gray-600">Failed to load notifications</p>
+            <p className="text-gray-600">{t('error')}</p>
           </div>
         ) : data?.notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12">
@@ -335,7 +343,9 @@ export default function NotificationsPage() {
                 }
                 onCheckedChange={handleSelectAll}
               />
-              <span className="text-sm text-gray-600">Select all</span>
+              <span className="text-sm text-gray-600">
+                {t('actions.selectAll')}
+              </span>
             </div>
             <div className="divide-y">
               {data?.notifications.map((notification) => (
@@ -370,14 +380,14 @@ export default function NotificationsPage() {
                               {notification.priority}
                             </Badge>
                             <Badge variant="outline" className="text-xs">
-                              {getTypeLabel(notification.type, lang)}
+                              {getTypeLabel(notification.type, t)}
                             </Badge>
                             {!notification.isRead && (
                               <Badge
                                 variant="default"
                                 className="text-xs bg-blue-600"
                               >
-                                New
+                                {t('statusLabels.new')}
                               </Badge>
                             )}
                           </div>
