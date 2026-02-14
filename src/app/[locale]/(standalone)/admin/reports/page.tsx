@@ -22,6 +22,15 @@ import {
   useDeleteReport,
 } from '@/features/admin/api/use-reports';
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
 export default function ReportsPage() {
   const t = useTranslations('Admin.Reports');
   const { isArabic, lang } = useLanguage();
@@ -136,111 +145,95 @@ export default function ReportsPage() {
 
       {/* Reports Table */}
       <div className="bg-white shadow-sm border border-gray-200 rounded-xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left rtl:text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('table.name')}
-                </th>
-                <th className="px-6 py-3 text-left rtl:text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('table.type')}
-                </th>
-                <th className="px-6 py-3 text-left rtl:text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('table.status')}
-                </th>
-                <th className="px-6 py-3 text-left rtl:text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  {t('table.createdAt')}
-                </th>
-                <th className="relative px-6 py-3 text-right rtl:text-left">
-                  <span className="sr-only">Actions</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {isLoading ? (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-6 py-10 text-center text-gray-500"
-                  >
-                    {t('status.loading')}
-                  </td>
-                </tr>
-              ) : reports.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-6 py-10 text-center text-gray-500"
-                  >
-                    <AlertCircle className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                    {t('empty')}
-                  </td>
-                </tr>
-              ) : (
-                reports.map((report: any) => (
-                  <tr
-                    key={report.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
-                        <FileText className="h-5 w-5 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-900">
-                          {report.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-xs text-gray-500 px-2 py-1 bg-gray-100 rounded">
-                        {t(`types.${report.type}`, {
-                          defaultMessage: report.type,
-                        })}{' '}
-                        / {report.format}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="px-6">{t('table.name')}</TableHead>
+              <TableHead className="px-6">{t('table.type')}</TableHead>
+              <TableHead className="px-6">{t('table.status')}</TableHead>
+              <TableHead className="px-6">{t('table.createdAt')}</TableHead>
+              <TableHead className="px-6 text-right">
+                <span className="sr-only">Actions</span>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="px-6 py-10 text-center text-gray-500"
+                >
+                  {t('status.loading')}
+                </TableCell>
+              </TableRow>
+            ) : reports.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="px-6 py-10 text-center text-gray-500"
+                >
+                  <AlertCircle className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                  {t('empty')}
+                </TableCell>
+              </TableRow>
+            ) : (
+              reports.map((report: any) => (
+                <TableRow key={report.id}>
+                  <TableCell className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-5 w-5 text-gray-400" />
+                      <span className="text-sm font-medium text-gray-900">
+                        {report.name}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(report.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {format(new Date(report.createdAt), 'PPP p', {
-                        locale: isArabic ? ar : enUS,
-                      })}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right rtl:text-left text-sm font-medium space-x-2 rtl:space-x-reverse">
-                      {report.status === 'COMPLETED' &&
-                        (report.fileUrl ? (
-                          <a
-                            href={report.fileUrl}
-                            className="inline-flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                            title={t('actions.download')}
-                          >
-                            <Download className="h-4 w-4" />
-                          </a>
-                        ) : (
-                          <span
-                            className="inline-flex items-center justify-center p-2 text-gray-400 bg-gray-50 rounded-md cursor-not-allowed"
-                            title={t('status.failed')}
-                            aria-disabled="true"
-                          >
-                            <Download className="h-4 w-4" />
-                          </span>
-                        ))}
-                      <button
-                        onClick={() => handleDeleteReport(report.id)}
-                        disabled={deleteMutation.isPending}
-                        className="inline-flex items-center justify-center p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
-                        title={t('actions.delete')}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap">
+                    <span className="text-xs text-gray-500 px-2 py-1 bg-gray-100 rounded">
+                      {t(`types.${report.type}`)} / {report.format}
+                    </span>
+                  </TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap">
+                    {getStatusBadge(report.status)}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {format(new Date(report.createdAt), 'PPP p', {
+                      locale: isArabic ? ar : enUS,
+                    })}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2 rtl:space-x-reverse">
+                    {report.status === 'COMPLETED' &&
+                      (report.fileUrl ? (
+                        <a
+                          href={report.fileUrl}
+                          className="inline-flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                          title={t('actions.download')}
+                        >
+                          <Download className="h-4 w-4" />
+                        </a>
+                      ) : (
+                        <span
+                          className="inline-flex items-center justify-center p-2 text-gray-400 bg-gray-50 rounded-md cursor-not-allowed"
+                          title={t('status.failed')}
+                          aria-disabled="true"
+                        >
+                          <Download className="h-4 w-4" />
+                        </span>
+                      ))}
+                    <button
+                      onClick={() => handleDeleteReport(report.id)}
+                      disabled={deleteMutation.isPending}
+                      className="inline-flex items-center justify-center p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
+                      title={t('actions.delete')}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

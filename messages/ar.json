@@ -538,6 +538,10 @@
       "comingSoon": "قريباً",
       "labels": {
         "submittedOn": "تم الإرسال في"
+      },
+      "status": {
+        "errorTitle": "فشل تحميل الطلبات",
+        "retry": "إعادة المحاولة"
       }
     },
     "StrategicPlans": {
