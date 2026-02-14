@@ -168,10 +168,7 @@ const ContentManagementPage = () => {
             {t('actions.add')}
           </button>
         </div>
-        {renderContentList(
-          entrepreneurshipContent as PageContent[],
-          'entrepreneurship',
-        )}
+        {renderContentList(entrepreneurshipContent, 'entrepreneurship')}
       </div>
 
       {/* Incubators Section */}
@@ -190,7 +187,7 @@ const ContentManagementPage = () => {
             {t('actions.add')}
           </button>
         </div>
-        {renderContentList(incubatorsContent as PageContent[], 'incubators')}
+        {renderContentList(incubatorsContent, 'incubators')}
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import type { PageContent } from '@prisma/client';
 import type { PageContentResponse } from '../types/page-content-type';
 
 /**
@@ -9,7 +10,7 @@ import type { PageContentResponse } from '../types/page-content-type';
 export const useGetPageContent = (
   page: 'entrepreneurship' | 'incubators',
   options?: { enabled?: boolean },
-) => {
+): UseQueryResult<PageContent[], Error> => {
   return useQuery({
     queryKey: ['page-content', page],
     queryFn: async () => {
