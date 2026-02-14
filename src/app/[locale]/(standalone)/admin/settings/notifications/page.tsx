@@ -1,10 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useNotificationSettings } from '@/features/admin/hooks/use-notification-settings';
 import {
-  useNotificationPreferences,
-  useUpdateNotificationPreferences,
-} from '@/features/admin/api/use-notifications';
+  Bell,
+  Mail,
+  Shield,
+  AlertTriangle,
+  Users,
+  Database,
+} from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -22,18 +27,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import {
-  Bell,
-  Mail,
-  Shield,
-  AlertTriangle,
-  Users,
-  Database,
-} from 'lucide-react';
 
-import { useNotificationSettings } from '@/features/admin/hooks/use-notification-settings';
-
-export default function NotificationPreferencesPage() {
+const NotificationPreferencesPage = () => {
   const {
     localPreferences,
     isLoading,
@@ -216,4 +211,6 @@ export default function NotificationPreferencesPage() {
       </div>
     </div>
   );
-}
+};
+
+export default NotificationPreferencesPage;

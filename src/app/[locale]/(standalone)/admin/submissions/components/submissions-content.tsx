@@ -2,10 +2,12 @@
 
 import { useTranslations } from 'next-intl';
 import { useSubmissionsLogic } from '@/features/admin/hooks/use-submissions-logic';
+
+import { Innovator, Collaborator } from '@/features/admin/types';
+
 import { Button } from '@/components/ui/button';
 import { CardInnovators } from '@/features/innovators/components/card-innovators';
 import { CardCompanies } from '@/features/collaborators/components/card-companies';
-import { Innovator, Collaborator } from '@/features/admin/types';
 import { CheckCircle, XCircle, Clock } from 'lucide-react';
 
 interface SubmissionsContentProps {
@@ -13,10 +15,10 @@ interface SubmissionsContentProps {
   collaborators: Collaborator[];
 }
 
-export default function SubmissionsContent({
+const SubmissionsContent = ({
   innovators,
   collaborators,
-}: SubmissionsContentProps) {
+}: SubmissionsContentProps) => {
   const t = useTranslations('Admin.Submissions');
   const { handleView, handleApprove, handleReject, isArabic } =
     useSubmissionsLogic();
@@ -191,4 +193,6 @@ export default function SubmissionsContent({
       </section>
     </div>
   );
-}
+};
+
+export default SubmissionsContent;

@@ -1,31 +1,7 @@
+export * from './rbac-base';
 import { db } from '@/lib/db';
+import { RESOURCES, ACTIONS, Resource, Action } from './rbac-base';
 import crypto from 'crypto';
-// import { User, Role, Permission } from "@prisma/client";
-
-// Define resources and actions
-export const RESOURCES = {
-  USERS: 'users',
-  NEWS: 'news',
-  COLLABORATORS: 'collaborators',
-  INNOVATORS: 'innovators',
-  DASHBOARD: 'dashboard',
-  SETTINGS: 'settings',
-  INVITATIONS: 'invitations',
-} as const;
-
-export const ACTIONS = {
-  CREATE: 'create',
-  READ: 'read',
-  UPDATE: 'update',
-  DELETE: 'delete',
-  MANAGE: 'manage', // Full control
-  INVITE: 'invite',
-  APPROVE: 'approve',
-  REJECT: 'reject',
-} as const;
-
-export type Resource = (typeof RESOURCES)[keyof typeof RESOURCES];
-export type Action = (typeof ACTIONS)[keyof typeof ACTIONS];
 
 // Default system roles
 export const SYSTEM_ROLES = {

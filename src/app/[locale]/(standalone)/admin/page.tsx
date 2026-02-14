@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import useLanguage from '@/hooks/use-language';
 import { useGetDashboardStats } from '@/features/admin/api/use-dashboard-stats';
@@ -12,9 +14,8 @@ import {
   TrendingUp,
   Clock,
 } from 'lucide-react';
-import Link from 'next/link';
 
-export default function AdminDashboardPage() {
+const AdminDashboardPage = () => {
   const t = useTranslations('Admin.Dashboard');
   const { lang, isArabic } = useLanguage();
   const { session } = useAdminAuth();
@@ -28,38 +29,41 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const stats = [
-    {
-      name: t('stats.innovators'),
-      value: statsData?.totalInnovators || 0,
-      icon: Users,
-      change: `+${statsData?.approvedInnovators || 0}`,
-      changeType: 'positive' as const,
-    },
-    {
-      name: t('stats.collaborators'),
-      value: statsData?.totalCollaborators || 0,
-      icon: Users,
-      change: `+${statsData?.approvedCollaborators || 0}`,
-      changeType: 'positive' as const,
-    },
-    {
-      name: t('stats.pending'),
-      value:
-        (statsData?.pendingInnovators || 0) +
-        (statsData?.pendingCollaborators || 0),
-      icon: Clock,
-      change: t('stats.needsAttention'),
-      changeType: 'warning' as const,
-    },
-    {
-      name: t('stats.strategicPlans'),
-      value: statsData?.totalStrategicPlans || 0,
-      icon: Target,
-      change: t('stats.active'),
-      changeType: 'neutral' as const,
-    },
-  ];
+  const stats = useMemo(
+    () => [
+      {
+        name: t('stats.innovators'),
+        value: statsData?.totalInnovators || 0,
+        icon: Users,
+        change: `+${statsData?.approvedInnovators || 0}`,
+        changeType: 'positive' as const,
+      },
+      {
+        name: t('stats.collaborators'),
+        value: statsData?.totalCollaborators || 0,
+        icon: Users,
+        change: `+${statsData?.approvedCollaborators || 0}`,
+        changeType: 'positive' as const,
+      },
+      {
+        name: t('stats.pending'),
+        value:
+          (statsData?.pendingInnovators || 0) +
+          (statsData?.pendingCollaborators || 0),
+        icon: Clock,
+        change: t('stats.needsAttention'),
+        changeType: 'warning' as const,
+      },
+      {
+        name: t('stats.strategicPlans'),
+        value: statsData?.totalStrategicPlans || 0,
+        icon: Target,
+        change: t('stats.active'),
+        changeType: 'neutral' as const,
+      },
+    ],
+    [statsData, t],
+  );
 
   return (
     <div className="space-y-8">
@@ -183,4 +187,6 @@ export default function AdminDashboardPage() {
       </div>
     </div>
   );
-}
+};
+
+export default AdminDashboardPage;

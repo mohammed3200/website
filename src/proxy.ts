@@ -3,6 +3,8 @@ import { getToken } from 'next-auth/jwt';
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
 
+import { RESOURCES, ACTIONS, checkPermission } from './lib/rbac-base';
+
 const intlMiddleware = createIntlMiddleware(routing);
 
 export async function proxy(req: NextRequest) {
@@ -23,20 +25,15 @@ export async function proxy(req: NextRequest) {
   // Handle auth routes - these don't need locale
   if (pathname.startsWith('/auth')) {
     if (token) {
-      if (token.permissions) {
-        const permissions = token.permissions as Array<{
-          resource: string;
-          action: string;
-        }>;
-        const hasDashboardAccess = permissions.some(
-          (p) =>
-            p.resource === 'dashboard' &&
-            (p.action === 'read' || p.action === 'manage'),
-        );
+      const permissions = token.permissions as any;
+      const hasDashboardAccess = checkPermission(
+        permissions,
+        RESOURCES.DASHBOARD,
+        ACTIONS.READ,
+      );
 
-        if (hasDashboardAccess) {
-          return NextResponse.redirect(new URL('/admin/dashboard', req.url));
-        }
+      if (hasDashboardAccess) {
+        return NextResponse.redirect(new URL('/admin/dashboard', req.url));
       }
 
       const locale = getPreferredLocale(req);
@@ -53,22 +50,17 @@ export async function proxy(req: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    if (token.permissions) {
-      const permissions = token.permissions as Array<{
-        resource: string;
-        action: string;
-      }>;
-      const hasDashboardAccess = permissions.some(
-        (p) =>
-          p.resource === 'dashboard' &&
-          (p.action === 'read' || p.action === 'manage'),
-      );
+    const permissions = token.permissions as any;
+    const hasDashboardAccess = checkPermission(
+      permissions,
+      RESOURCES.DASHBOARD,
+      ACTIONS.READ,
+    );
 
-      if (!hasDashboardAccess) {
-        return NextResponse.redirect(
-          new URL('/auth/error?error=AccessDenied', req.url),
-        );
-      }
+    if (!hasDashboardAccess) {
+      return NextResponse.redirect(
+        new URL('/auth/error?error=AccessDenied', req.url),
+      );
     }
 
     return NextResponse.next();
