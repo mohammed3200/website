@@ -30,49 +30,20 @@ import {
   Users,
   Database,
 } from 'lucide-react';
-import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
+
+import { useNotificationSettings } from '@/features/admin/hooks/use-notification-settings';
 
 export default function NotificationPreferencesPage() {
-  const t = useTranslations('Admin.Notifications.preferences');
-  const { data, isLoading } = useNotificationPreferences();
-  const updatePreferences = useUpdateNotificationPreferences();
-
-  const preferences = data?.preferences || {};
-
-  const [localPreferences, setLocalPreferences] = useState({
-    emailNewSubmissions: preferences.emailNewSubmissions ?? true,
-    emailStatusChanges: preferences.emailStatusChanges ?? true,
-    emailSystemErrors: preferences.emailSystemErrors ?? true,
-    emailSecurityAlerts: preferences.emailSecurityAlerts ?? true,
-    emailUserActivity: preferences.emailUserActivity ?? true,
-    emailBackups: preferences.emailBackups ?? false,
-    digestMode: preferences.digestMode ?? 'immediate',
-  });
-
-  const handleToggle = (key: keyof typeof localPreferences) => {
-    if (key === 'digestMode') return; // Handle separately
-    setLocalPreferences((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
-
-  const handleDigestModeChange = (value: string) => {
-    setLocalPreferences((prev) => ({
-      ...prev,
-      digestMode: value as 'immediate' | 'daily' | 'weekly',
-    }));
-  };
-
-  const handleSave = async () => {
-    try {
-      await updatePreferences.mutateAsync(localPreferences);
-      toast.success(t('messages.success'));
-    } catch (error) {
-      toast.error(t('messages.error'));
-    }
-  };
+  const {
+    localPreferences,
+    isLoading,
+    isSaving,
+    handleToggle,
+    handleDigestModeChange,
+    handleSave,
+    handleReset,
+    t,
+  } = useNotificationSettings();
 
   if (isLoading) {
     return (
@@ -236,26 +207,11 @@ export default function NotificationPreferencesPage() {
       </Card>
 
       <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          onClick={() => {
-            setLocalPreferences({
-              emailNewSubmissions: preferences.emailNewSubmissions ?? true,
-              emailStatusChanges: preferences.emailStatusChanges ?? true,
-              emailSystemErrors: preferences.emailSystemErrors ?? true,
-              emailSecurityAlerts: preferences.emailSecurityAlerts ?? true,
-              emailUserActivity: preferences.emailUserActivity ?? true,
-              emailBackups: preferences.emailBackups ?? false,
-              digestMode: preferences.digestMode ?? 'immediate',
-            });
-          }}
-        >
+        <Button variant="outline" onClick={handleReset}>
           {t('actions.reset')}
         </Button>
-        <Button onClick={handleSave} disabled={updatePreferences.isPending}>
-          {updatePreferences.isPending
-            ? t('actions.saving')
-            : t('actions.save')}
+        <Button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? t('actions.saving') : t('actions.save')}
         </Button>
       </div>
     </div>
