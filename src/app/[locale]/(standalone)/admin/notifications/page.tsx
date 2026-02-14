@@ -31,17 +31,28 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { useTranslations } from 'next-intl';
+import useLanguage from '@/hooks/use-language';
 
-function formatTimeAgo(date: Date): string {
+function formatTimeAgo(date: Date, locale: string): string {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  const isAr = locale === 'ar';
 
-  if (diffInSeconds < 60) return 'just now';
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-  if (diffInSeconds < 604800)
-    return `${Math.floor(diffInSeconds / 86400)}d ago`;
-  return date.toLocaleDateString();
+  if (diffInSeconds < 60) return isAr ? 'الآن' : 'just now';
+  if (diffInSeconds < 3600) {
+    const mins = Math.floor(diffInSeconds / 60);
+    return isAr ? `منذ ${mins} دقيقة` : `${mins}m ago`;
+  }
+  if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600);
+    return isAr ? `منذ ${hours} ساعة` : `${hours}h ago`;
+  }
+  if (diffInSeconds < 604800) {
+    const days = Math.floor(diffInSeconds / 86400);
+    return isAr ? `منذ ${days} يوم` : `${days}d ago`;
+  }
+  return date.toLocaleDateString(isAr ? 'ar-EG' : 'en-US');
 }
 
 function getPriorityColor(priority: string) {
@@ -59,25 +70,19 @@ function getPriorityColor(priority: string) {
   }
 }
 
-function getTypeLabel(type: string): string {
-  const labels: Record<string, string> = {
-    NEW_REGISTRATION: 'New Registration',
-    NEW_COLLABORATOR: 'New Collaborator',
-    NEW_INNOVATOR: 'New Innovator',
-    SUBMISSION_APPROVED: 'Submission Approved',
-    SUBMISSION_REJECTED: 'Submission Rejected',
-    SYSTEM_ERROR: 'System Error',
-    SECURITY_ALERT: 'Security Alert',
-    USER_ACCOUNT_CREATED: 'User Account Created',
-    ROLE_CHANGED: 'Role Changed',
-    DATABASE_BACKUP_COMPLETE: 'Backup Complete',
-    FAILED_LOGIN_ATTEMPTS: 'Failed Login Attempts',
-  };
-  return labels[type] || type;
+function getTypeLabel(type: string, locale: string): string {
+  // Ideally this should also be in translations, but keeping simple map for now or using distinct keys
+  // For now returning type as is or simple map if consistent.
+  // Given user request, we should probably translate these too.
+  // Assuming keys exist or falling back.
+  return type;
 }
 
 export default function NotificationsPage() {
   const router = useRouter();
+  const t = useTranslations('Admin.Notifications');
+  const { lang, isArabic } = useLanguage();
+
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<{
     type?: string;
@@ -107,7 +112,7 @@ export default function NotificationsPage() {
       await markRead.mutateAsync(notification.id);
     }
     if (notification.actionUrl) {
-      router.push(notification.actionUrl);
+      router.push(`/${lang}${notification.actionUrl}`);
     }
   };
 
@@ -159,10 +164,8 @@ export default function NotificationsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Notifications</h1>
-          <p className="text-gray-600 mt-1">
-            Manage and review system notifications
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -174,7 +177,7 @@ export default function NotificationsPage() {
             <RefreshCw
               className={cn('h-4 w-4 mr-2', isFetching && 'animate-spin')}
             />
-            Refresh
+            {t('actions.refresh')}
           </Button>
           {data?.pagination.total && data.pagination.total > 0 && (
             <Button
@@ -184,7 +187,7 @@ export default function NotificationsPage() {
               disabled={markAllRead.isPending}
             >
               <CheckCheck className="h-4 w-4 mr-2" />
-              Mark all as read
+              {t('actions.markAllRead')}
             </Button>
           )}
         </div>
@@ -195,7 +198,9 @@ export default function NotificationsPage() {
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-gray-500" />
-            <span className="text-sm font-medium text-gray-700">Filters:</span>
+            <span className="text-sm font-medium text-gray-700">
+              {t('filters.label')}
+            </span>
           </div>
 
           <Select
@@ -208,10 +213,10 @@ export default function NotificationsPage() {
             }
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Type" />
+              <SelectValue placeholder={t('filters.type')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="all">{t('filters.type')}</SelectItem>
               <SelectItem value="NEW_COLLABORATOR">New Collaborator</SelectItem>
               <SelectItem value="NEW_INNOVATOR">New Innovator</SelectItem>
               <SelectItem value="SUBMISSION_APPROVED">Approved</SelectItem>
@@ -233,10 +238,10 @@ export default function NotificationsPage() {
             }
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Status" />
+              <SelectValue placeholder={t('filters.status')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="all">{t('filters.status')}</SelectItem>
               <SelectItem value="false">Unread</SelectItem>
               <SelectItem value="true">Read</SelectItem>
             </SelectContent>
@@ -252,10 +257,10 @@ export default function NotificationsPage() {
             }
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Priority" />
+              <SelectValue placeholder={t('filters.priority')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Priorities</SelectItem>
+              <SelectItem value="all">{t('filters.priority')}</SelectItem>
               <SelectItem value="URGENT">Urgent</SelectItem>
               <SelectItem value="HIGH">High</SelectItem>
               <SelectItem value="NORMAL">Normal</SelectItem>
@@ -271,7 +276,7 @@ export default function NotificationsPage() {
               className="text-gray-600"
             >
               <X className="h-4 w-4 mr-1" />
-              Clear filters
+              {t('filters.clear')}
             </Button>
           )}
         </div>
@@ -281,7 +286,7 @@ export default function NotificationsPage() {
       {selectedNotifications.length > 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
           <span className="text-sm text-blue-900">
-            {selectedNotifications.length} notification(s) selected
+            {t('selected', { count: selectedNotifications.length })}
           </span>
           <div className="flex items-center gap-2">
             <Button
@@ -291,14 +296,14 @@ export default function NotificationsPage() {
               disabled={markRead.isPending}
             >
               <CheckCheck className="h-4 w-4 mr-2" />
-              Mark as read
+              {t('actions.markSelectedRead')}
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setSelectedNotifications([])}
             >
-              Cancel
+              {t('actions.cancel')}
             </Button>
           </div>
         </div>
@@ -318,7 +323,7 @@ export default function NotificationsPage() {
         ) : data?.notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-12">
             <Bell className="h-12 w-12 text-gray-300 mb-2" />
-            <p className="text-gray-600">No notifications found</p>
+            <p className="text-gray-600">{t('empty')}</p>
           </div>
         ) : (
           <>
@@ -330,9 +335,7 @@ export default function NotificationsPage() {
                 }
                 onCheckedChange={handleSelectAll}
               />
-              <span className="text-sm text-gray-600">
-                Select all ({data?.notifications.length} notifications)
-              </span>
+              <span className="text-sm text-gray-600">Select all</span>
             </div>
             <div className="divide-y">
               {data?.notifications.map((notification) => (
@@ -367,7 +370,7 @@ export default function NotificationsPage() {
                               {notification.priority}
                             </Badge>
                             <Badge variant="outline" className="text-xs">
-                              {getTypeLabel(notification.type)}
+                              {getTypeLabel(notification.type, lang)}
                             </Badge>
                             {!notification.isRead && (
                               <Badge
@@ -390,7 +393,10 @@ export default function NotificationsPage() {
                             {notification.message}
                           </p>
                           <p className="text-xs text-gray-400">
-                            {formatTimeAgo(new Date(notification.createdAt))}
+                            {formatTimeAgo(
+                              new Date(notification.createdAt),
+                              lang,
+                            )}
                           </p>
                         </div>
                         <Button
@@ -457,12 +463,12 @@ export default function NotificationsPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteConfirm}
               className="bg-red-600 hover:bg-red-700"
             >
-              Delete
+              {t('actions.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

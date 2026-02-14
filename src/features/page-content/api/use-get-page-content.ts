@@ -4,8 +4,12 @@ import type { PageContentResponse } from '../types/page-content-type';
 /**
  * React Query hook to fetch page content
  * @param page - The page name (entrepreneurship or incubators)
+ * @param options - Query options including enabled flag
  */
-export const useGetPageContent = (page: 'entrepreneurship' | 'incubators') => {
+export const useGetPageContent = (
+  page: 'entrepreneurship' | 'incubators',
+  options?: { enabled?: boolean },
+) => {
   return useQuery({
     queryKey: ['page-content', page],
     queryFn: async () => {
@@ -19,5 +23,6 @@ export const useGetPageContent = (page: 'entrepreneurship' | 'incubators') => {
       return data.data;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
+    ...options,
   });
 };

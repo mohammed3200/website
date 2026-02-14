@@ -1,50 +1,79 @@
-import { auth } from '@/auth';
-import { getPageContent } from '@/features/page-content/server/route';
-import { redirect } from 'next/navigation';
+'use client';
+
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Plus, Edit, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import useLanguage from '@/hooks/use-language';
+import { useGetPageContent } from '@/features/page-content/api/use-get-page-content';
+import { PERMISSIONS } from '@/constants';
+import type { PageContent } from '@prisma/client'; // Valid assumption? or from types?
+import { useEffect, useMemo } from 'react';
 
-export default async function ContentManagementPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  const session = await auth();
+// Fallback type if Prisma type isn't readily available or to be safe
+type ContentItem = {
+  id: string;
+  section: string;
+  order: number;
+  isActive: boolean;
+  titleAr: string | null;
+  titleEn: string | null;
+  contentAr: string | null;
+  contentEn: string | null;
+  icon: string | null;
+};
 
-  if (!session?.user) {
-    redirect(`/${locale}/auth/login`);
+export default function ContentManagementPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const t = useTranslations('Admin.Content');
+  const { isArabic, lang } = useLanguage();
+
+  const hasContentAccess = useMemo(() => {
+    if (status !== 'authenticated' || !session?.user) return false;
+
+    const permissions = session.user.permissions as
+      | Array<{ resource: string; action: string }>
+      | undefined;
+
+    return permissions?.some(
+      (p) =>
+        p.resource === PERMISSIONS.CONTENT.RESOURCE &&
+        p.action === PERMISSIONS.CONTENT.ACTION,
+    );
+  }, [status, session]);
+
+  const { data: entrepreneurshipContent, isLoading: isLoadingEnt } =
+    useGetPageContent('entrepreneurship', { enabled: hasContentAccess });
+  const { data: incubatorsContent, isLoading: isLoadingInc } =
+    useGetPageContent('incubators', { enabled: hasContentAccess });
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push(`/${lang}/auth/login`);
+    } else if (status === 'authenticated' && !hasContentAccess) {
+      router.push(`/${lang}/admin`);
+    }
+  }, [status, hasContentAccess, router, lang]);
+
+  if (status === 'loading' || isLoadingEnt || isLoadingInc) {
+    return (
+      <div className="p-8 text-center">
+        {t('Common.loading', { defaultMessage: 'Loading...' })}
+      </div>
+    );
   }
 
-  const permissions = session.user.permissions as
-    | Array<{ resource: string; action: string }>
-    | undefined;
-
-  const hasContentAccess = permissions?.some(
-    (p) => p.resource === 'content' && p.action === 'manage',
-  );
-
-  if (!hasContentAccess) {
-    redirect(`/${locale}/admin`); // Or another appropriate access-denied route
-  }
-
-  const isArabic = locale === 'ar';
-
-  // Fetch all page content
-  const [entrepreneurshipContent, incubatorsContent] = await Promise.all([
-    getPageContent('entrepreneurship'),
-    getPageContent('incubators'),
-  ]);
+  if (!session) return null;
 
   const renderContentList = (
-    content: typeof entrepreneurshipContent,
+    content: ContentItem[] | undefined,
     pageName: string,
   ) => (
     <div className="space-y-4">
-      {content.length === 0 ? (
+      {!content || content.length === 0 ? (
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-8 text-center">
-          <p className="text-gray-500">
-            {isArabic ? 'لا يوجد محتوى' : 'No content found'}
-          </p>
+          <p className="text-gray-500">{t('empty')}</p>
         </div>
       ) : (
         content.map((item) => (
@@ -59,11 +88,11 @@ export default async function ContentManagementPage({
                     {item.section}
                   </span>
                   <span className="text-sm text-gray-500">
-                    {isArabic ? 'الترتيب' : 'Order'}: {item.order}
+                    {t('labels.order')}: {item.order}
                   </span>
                   {!item.isActive && (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                      {isArabic ? 'غير نشط' : 'Inactive'}
+                      {t('labels.inactive')}
                     </span>
                   )}
                 </div>
@@ -84,7 +113,7 @@ export default async function ContentManagementPage({
 
                 {item.icon && (
                   <p className="text-sm text-gray-500 mt-2">
-                    {isArabic ? 'الأيقونة' : 'Icon'}: {item.icon}
+                    {t('labels.icon')}: {item.icon}
                   </p>
                 )}
               </div>
@@ -93,7 +122,7 @@ export default async function ContentManagementPage({
                 <button
                   disabled
                   aria-disabled="true"
-                  title={isArabic ? 'قريباً' : 'Coming Soon'}
+                  title={t('labels.comingSoon')}
                   className="inline-flex items-center justify-center p-2 text-sm font-semibold text-gray-400 bg-gray-50 border border-gray-200 rounded-md cursor-not-allowed"
                 >
                   <Edit className="h-4 w-4" />
@@ -101,7 +130,7 @@ export default async function ContentManagementPage({
                 <button
                   disabled
                   aria-disabled="true"
-                  title={isArabic ? 'قريباً' : 'Coming Soon'}
+                  title={t('labels.comingSoon')}
                   className="inline-flex items-center justify-center p-2 text-sm font-semibold text-white bg-red-300 rounded-md cursor-not-allowed"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -118,14 +147,8 @@ export default async function ContentManagementPage({
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          {isArabic ? 'إدارة المحتوى' : 'Content Management'}
-        </h1>
-        <p className="mt-2 text-sm text-gray-600">
-          {isArabic
-            ? 'إدارة محتوى صفحات ريادة الأعمال وحاضنات الأعمال'
-            : 'Manage content for entrepreneurship and incubators pages'}
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+        <p className="mt-2 text-sm text-gray-600">{t('description')}</p>
       </div>
 
       {/* Tabs */}
@@ -135,13 +158,13 @@ export default async function ContentManagementPage({
             href="#entrepreneurship"
             className="border-primary text-primary whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
           >
-            {isArabic ? 'ريادة الأعمال' : 'Entrepreneurship'}
+            {t('tabs.entrepreneurship')}
           </a>
           <a
             href="#incubators"
             className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
           >
-            {isArabic ? 'حاضنات الأعمال' : 'Incubators'}
+            {t('tabs.incubators')}
           </a>
         </nav>
       </div>
@@ -150,38 +173,41 @@ export default async function ContentManagementPage({
       <div id="entrepreneurship" className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">
-            {isArabic ? 'محتوى ريادة الأعمال' : 'Entrepreneurship Content'}
+            {t('sections.entrepreneurship')}
           </h2>
           <button
             disabled
             aria-disabled="true"
-            title={isArabic ? 'قريباً' : 'Coming Soon'}
+            title={t('labels.comingSoon')}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary/50 rounded-md cursor-not-allowed"
           >
             <Plus className="h-4 w-4" />
-            {isArabic ? 'إضافة محتوى' : 'Add Content'}
+            {t('actions.add')}
           </button>
         </div>
-        {renderContentList(entrepreneurshipContent, 'entrepreneurship')}
+        {renderContentList(
+          entrepreneurshipContent as ContentItem[],
+          'entrepreneurship',
+        )}
       </div>
 
       {/* Incubators Section */}
       <div id="incubators" className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">
-            {isArabic ? 'محتوى حاضنات الأعمال' : 'Incubators Content'}
+            {t('sections.incubators')}
           </h2>
           <button
             disabled
             aria-disabled="true"
-            title={isArabic ? 'قريباً' : 'Coming Soon'}
+            title={t('labels.comingSoon')}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary/50 rounded-md cursor-not-allowed"
           >
             <Plus className="h-4 w-4" />
-            {isArabic ? 'إضافة محتوى' : 'Add Content'}
+            {t('actions.add')}
           </button>
         </div>
-        {renderContentList(incubatorsContent, 'incubators')}
+        {renderContentList(incubatorsContent as ContentItem[], 'incubators')}
       </div>
     </div>
   );
