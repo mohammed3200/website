@@ -1,38 +1,10 @@
-'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { CheckCircle, XCircle, Clock, Eye } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
+import { useSubmissionsLogic } from '@/features/admin/hooks/use-submissions-logic';
 import { Button } from '@/components/ui/button';
-
-// Define types locally if not available
-type Innovator = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  projectTitle: string;
-  projectDescription?: string | null;
-  location?: string | null;
-  educationLevel?: string | null;
-  stageDevelopment: string;
-  createdAt: Date;
-  // Add other fields as needed
-};
-
-type Collaborator = {
-  id: string;
-  companyName: string;
-  email: string;
-  primaryPhoneNumber: string;
-  location?: string | null;
-  industrialSector: string;
-  specialization: string;
-  createdAt: Date;
-  // Add other fields as needed
-};
+import { CardInnovators } from '@/features/innovators/components/card-innovators';
+import { CardCompanies } from '@/features/collaborators/components/card-companies';
+import { Innovator, Collaborator } from '@/features/admin/types';
+import { CheckCircle, XCircle, Clock } from 'lucide-react';
 
 interface SubmissionsContentProps {
   innovators: Innovator[];
@@ -44,211 +16,177 @@ export default function SubmissionsContent({
   collaborators,
 }: SubmissionsContentProps) {
   const t = useTranslations('Admin.Submissions');
-  const { lang, isArabic } = useLanguage();
-  const router = useRouter();
-
-  const handleView = (type: 'innovators' | 'collaborators', id: string) => {
-    router.push(`/${lang}/admin/submissions/${type}/${id}`);
-  };
+  const { handleView, handleApprove, handleReject, isArabic } =
+    useSubmissionsLogic();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+        <h1 className="text-3xl font-bold text-gray-900 font-outfit">
+          {t('title')}
+        </h1>
         <p className="mt-2 text-sm text-gray-600">{t('subtitle')}</p>
       </div>
 
       {/* Innovators Section */}
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          {t('innovators')}{' '}
-          <span className="text-sm text-gray-500">({innovators.length})</span>
-        </h2>
+      <section>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            {t('innovators')}
+            <span className="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              {innovators.length}
+            </span>
+          </h2>
+        </div>
 
         {innovators.length === 0 ? (
-          <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-8 text-center">
-            <p className="text-gray-500">{t('empty')}</p>
+          <div className="bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center">
+            <p className="text-gray-500 font-medium">{t('empty')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             {innovators.map((innovator) => (
-              <div
-                key={innovator.id}
-                className="bg-white shadow-sm rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {innovator.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {innovator.email}
-                    </p>
-                    <p className="text-sm text-gray-600">{innovator.phone}</p>
+              <div key={innovator.id} className="relative group">
+                <CardInnovators
+                  innovator={{
+                    ...innovator,
+                    email: innovator.email ?? undefined,
+                    phone: innovator.phone ?? undefined,
+                    projectDescription:
+                      innovator.projectDescription ?? undefined,
+                    objective: innovator.objective ?? undefined,
+                    imageId: innovator.imageId ?? undefined,
+                    location: innovator.location ?? undefined,
+                    city: innovator.city ?? undefined,
+                    country: innovator.country ?? undefined,
+                    specialization:
+                      innovator.fieldOfStudy || innovator.stageDevelopment,
+                    stageDevelopment: innovator.stageDevelopment as any,
+                    status: (['PENDING', 'APPROVED', 'REJECTED'].includes(
+                      innovator.status,
+                    )
+                      ? (innovator.status as any)
+                      : 'PENDING') as any,
+                  }}
+                  className="h-full"
+                />
 
-                    <div className="mt-4">
-                      <p className="font-semibold text-gray-900">
-                        {innovator.projectTitle}
-                      </p>
-                      {innovator.projectDescription && (
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                          {innovator.projectDescription}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {innovator.location && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {innovator.location}
-                        </span>
-                      )}
-                      {innovator.educationLevel && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                          {innovator.educationLevel}
-                        </span>
-                      )}
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        {innovator.stageDevelopment}
-                      </span>
-                    </div>
+                {/* Admin Actions Overlay/Footer */}
+                <div className="mt-4 flex items-center justify-between gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="flex items-center text-xs text-gray-500">
+                    <Clock className="w-3.5 h-3.5 me-1.5" />
+                    {t('labels.submittedOn')}{' '}
+                    {new Date(innovator.createdAt).toLocaleDateString(
+                      isArabic ? 'ar-EG' : 'en-US',
+                    )}
                   </div>
-
-                  <div className="flex flex-col gap-2 ml-4">
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleView('innovators', innovator.id)}
-                      className="gap-2"
+                      className="h-9 px-4 text-xs font-bold border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800"
+                      onClick={() => handleApprove('innovators', innovator.id)}
                     >
-                      <Eye className="h-4 w-4" />
-                      {t('actions.view')}
-                    </Button>
-                    <Button
-                      size="sm"
-                      disabled
-                      className="gap-2 bg-green-300 cursor-not-allowed hover:bg-green-300"
-                      title={t('comingSoon')}
-                    >
-                      <CheckCircle className="h-4 w-4" />
+                      <CheckCircle className="w-3.5 h-3.5 me-1.5" />
                       {t('actions.approve')}
                     </Button>
                     <Button
+                      variant="outline"
                       size="sm"
-                      disabled
-                      className="gap-2 bg-red-300 cursor-not-allowed hover:bg-red-300"
-                      title={t('comingSoon')}
+                      className="h-9 px-4 text-xs font-bold border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+                      onClick={() => handleReject('innovators', innovator.id)}
                     >
-                      <XCircle className="h-4 w-4" />
+                      <XCircle className="w-3.5 h-3.5 me-1.5" />
                       {t('actions.reject')}
                     </Button>
                   </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-gray-200 flex items-center text-sm text-gray-500">
-                  <Clock className="h-4 w-4 mr-2" />
-                  {t('labels.submittedOn')}{' '}
-                  {new Date(innovator.createdAt).toLocaleDateString(
-                    isArabic ? 'ar-EG' : 'en-US',
-                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </section>
 
       {/* Collaborators Section */}
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          {t('collaborators')}{' '}
-          <span className="text-sm text-gray-500">
-            ({collaborators.length})
-          </span>
-        </h2>
+      <section>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            {t('collaborators')}
+            <span className="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+              {collaborators.length}
+            </span>
+          </h2>
+        </div>
 
         {collaborators.length === 0 ? (
-          <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-8 text-center">
-            <p className="text-gray-500">{t('empty')}</p>
+          <div className="bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center">
+            <p className="text-gray-500 font-medium">{t('empty')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 gap-8">
             {collaborators.map((collaborator) => (
-              <div
-                key={collaborator.id}
-                className="bg-white shadow-sm rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {collaborator.companyName}
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {collaborator.email}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {collaborator.primaryPhoneNumber}
-                    </p>
+              <div key={collaborator.id} className="flex flex-col gap-4">
+                <CardCompanies
+                  collaborator={{
+                    ...collaborator,
+                    status: (['PENDING', 'APPROVED', 'REJECTED'].includes(
+                      collaborator.status,
+                    )
+                      ? (collaborator.status as any)
+                      : 'PENDING') as any,
+                    optionalPhoneNumber:
+                      collaborator.optionalPhoneNumber ?? undefined,
+                    location: collaborator.location ?? undefined,
+                    experienceProvided:
+                      collaborator.experienceProvided ?? undefined,
+                    machineryAndEquipment:
+                      collaborator.machineryAndEquipment ?? undefined,
+                    imageId: collaborator.imageId ?? undefined,
+                    site: collaborator.site ?? undefined,
+                  }}
+                  onClick={() => handleView('collaborators', collaborator.id)}
+                />
 
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      {collaborator.location && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {collaborator.location}
-                        </span>
-                      )}
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                        {collaborator.industrialSector}
-                      </span>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        {collaborator.specialization}
-                      </span>
-                    </div>
+                {/* Admin Actions Footer */}
+                <div className="flex items-center justify-between gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 max-w-[600px]">
+                  <div className="flex items-center text-xs text-gray-500 font-outfit">
+                    <Clock className="w-3.5 h-3.5 me-1.5" />
+                    {t('labels.submittedOn')}{' '}
+                    {new Date(collaborator.createdAt).toLocaleDateString(
+                      isArabic ? 'ar-EG' : 'en-US',
+                    )}
                   </div>
-
-                  <div className="flex flex-col gap-2 ml-4">
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
+                      className="h-9 px-4 text-xs font-bold border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800"
                       onClick={() =>
-                        handleView('collaborators', collaborator.id)
+                        handleApprove('collaborators', collaborator.id)
                       }
-                      className="gap-2"
                     >
-                      <Eye className="h-4 w-4" />
-                      {t('actions.view')}
-                    </Button>
-                    <Button
-                      size="sm"
-                      disabled
-                      className="gap-2 bg-green-300 cursor-not-allowed hover:bg-green-300"
-                      title={t('comingSoon')}
-                    >
-                      <CheckCircle className="h-4 w-4" />
+                      <CheckCircle className="w-3.5 h-3.5 me-1.5" />
                       {t('actions.approve')}
                     </Button>
                     <Button
+                      variant="outline"
                       size="sm"
-                      disabled
-                      className="gap-2 bg-red-300 cursor-not-allowed hover:bg-red-300"
-                      title={t('comingSoon')}
+                      className="h-9 px-4 text-xs font-bold border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+                      onClick={() =>
+                        handleReject('collaborators', collaborator.id)
+                      }
                     >
-                      <XCircle className="h-4 w-4" />
+                      <XCircle className="w-3.5 h-3.5 me-1.5" />
                       {t('actions.reject')}
                     </Button>
                   </div>
-                </div>
-                <div className="mt-4 pt-4 border-t border-gray-200 flex items-center text-sm text-gray-500">
-                  <Clock className="h-4 w-4 mr-2" />
-                  {t('labels.submittedOn')}{' '}
-                  {new Date(collaborator.createdAt).toLocaleDateString(
-                    isArabic ? 'ar-EG' : 'en-US',
-                  )}
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }
