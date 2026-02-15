@@ -14,7 +14,6 @@ rule_schema:
     action_on_violation: block | warn
 
 rules:
-
   # =====================================================
   # Dependency & Package Management
   # =====================================================
@@ -125,7 +124,7 @@ rules:
     scope: frontend
     description: >
       Feature API hooks must be placed under
-      src/features/<feature>/api and named use_<method>_<feature>.ts.
+      src/features/<feature>/api and named use-<method>-<feature>.ts.
     rationale: >
       Standardizes API consumption and discovery.
     enforcement:
@@ -267,7 +266,7 @@ rules:
     priority: critical
     scope: global
     description: >
-      All files and folders must use snake_case naming.
+      All files and folders must use kebab-case naming.
     rationale: >
       Maintains consistency and predictability.
     enforcement:
