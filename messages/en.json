@@ -561,6 +561,46 @@
         "error": "Failed to load strategic plans"
       },
       "empty": "No strategic plans found. Create one to get started."
+    },
+    "News": {
+      "title": "News Management",
+      "subtitle": "Create and manage news articles and announcements",
+      "actions": {
+        "create": "Create News",
+        "edit": "Edit",
+        "delete": "Delete",
+        "view": "View"
+      },
+      "form": {
+        "title": "Title (Arabic)",
+        "titleEn": "Title (English)",
+        "content": "Content (Arabic)",
+        "contentEn": "Content (English)",
+        "slug": "Slug",
+        "excerpt": "Excerpt (Arabic)",
+        "excerptEn": "Excerpt (English)",
+        "tags": "Tags (comma separated)",
+        "image": "Main Image",
+        "isActive": "Active",
+        "isFeatured": "Featured",
+        "publish": "Publish",
+        "publishedAt": "Publication Date"
+      },
+      "table": {
+        "title": "Title",
+        "author": "Author",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "dialogs": {
+        "deleteConfirm": "Are you sure you want to delete this news article?"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "featured": "Featured"
+      }
     }
   }
 }
