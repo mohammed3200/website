@@ -22,7 +22,11 @@
   },
   "News": {
     "NoNews": "No news or announcements",
-    "latestNews": "Latest News"
+    "latestNews": "Latest News",
+    "tags": "Tags",
+    "noTags": "No tags",
+    "photoGallery": "Photo Gallery",
+    "galleryPlaceholder": "Gallery implementation pending S3 integration."
   },
   "ui": {
     "readMore": "read more",

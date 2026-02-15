@@ -3,6 +3,7 @@
 import useLanguage from '@/hooks/use-language';
 import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 import { NotificationBell } from '@/features/admin/components/notification-bell';
+import { Skeleton } from '@/components/skeletons';
 import Sidebar from '@/features/admin/components/sidebar';
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
@@ -11,8 +12,9 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
 
   if (status === 'loading') {
     return (
-      <div className="flex items-center justify-center p-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-orange-600" />
+      <div className="min-h-screen bg-gray-50 p-8">
+        <Skeleton className="h-16 w-full mb-8" />
+        <Skeleton className="h-64 w-full" />
       </div>
     );
   }

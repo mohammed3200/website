@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 import { useTranslations } from 'next-intl';
+import { Skeleton } from '@/components/skeletons';
 
 import useLanguage from '@/hooks/use-language';
 // Use Prisma type instead of local fallback
@@ -41,8 +42,15 @@ const ContentManagementPage = () => {
 
   if (status === 'loading' || isLoadingEnt || isLoadingInc) {
     return (
-      <div className="p-8 text-center">
-        {t('Common.loading', { defaultMessage: 'Loading...' })}
+      <div className="space-y-6">
+        <Skeleton className="h-9 w-64" />
+        <Skeleton className="h-5 w-96" />
+        <Skeleton className="h-10 w-full" />
+        <div className="space-y-4">
+          <Skeleton className="h-32 w-full rounded-lg" />
+          <Skeleton className="h-32 w-full rounded-lg" />
+          <Skeleton className="h-32 w-full rounded-lg" />
+        </div>
       </div>
     );
   }

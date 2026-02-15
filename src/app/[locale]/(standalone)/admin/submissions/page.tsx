@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { useGetSubmissions } from '@/features/admin/api/use-submissions';
+import { TableSkeleton } from '@/components/skeletons';
 import SubmissionsContent from './components/submissions-content';
 
 const SubmissionsPage = () => {
@@ -9,8 +10,9 @@ const SubmissionsPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-orange-600" />
+      <div className="space-y-6">
+        <div className="h-8 w-48 bg-muted animate-pulse rounded" />
+        <TableSkeleton rows={8} columns={5} />
       </div>
     );
   }
