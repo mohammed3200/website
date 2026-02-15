@@ -19,8 +19,8 @@ import {
   statusUpdateSchema,
 } from '@/features/collaborators/schemas/step-schemas';
 import { NotificationPriority } from '@prisma/client';
-
-import { cache } from "@/lib/cache";
+import { checkPermission, RESOURCES, ACTIONS } from '@/lib/rbac';
+import { cache } from '@/lib/cache';
 
 const app = new Hono()
   // Public endpoint - only approved and visible collaborators
@@ -47,7 +47,10 @@ const app = new Hono()
 
           // Collect all image IDs
           const imageIds: string[] = collaborators
-            .map((collaborator: { imageId: string | null }) => collaborator.imageId)
+            .map(
+              (collaborator: { imageId: string | null }) =>
+                collaborator.imageId,
+            )
             .filter((id: string | null): id is string => !!id);
 
           // Fetch all related images in bulk
@@ -56,35 +59,37 @@ const app = new Hono()
           });
 
           // Create lookup map for quick access
-          const imageMap = new Map<string, typeof images[0]>(
-            images.map((img: any) => [img.id, img])
+          const imageMap = new Map<string, (typeof images)[0]>(
+            images.map((img: any) => [img.id, img]),
           );
 
           // Transform the data (UPDATED - S3 URLs)
-          return collaborators.map((collaborator: typeof collaborators[0]) => {
-            const image = collaborator.imageId
-              ? imageMap.get(collaborator.imageId)
-              : null;
+          return collaborators.map(
+            (collaborator: (typeof collaborators)[0]) => {
+              const image = collaborator.imageId
+                ? imageMap.get(collaborator.imageId)
+                : null;
 
-            return {
-              id: collaborator.id,
-              companyName: collaborator.companyName,
-              image: image
-                ? {
-                  url: image.url,           // Direct S3 URL
-                  mimeType: image.mimeType,
-                  size: image.size,
-                  alt: image.alt,
-                }
-                : null,
-              location: collaborator.location,
-              site: collaborator.site,
-              industrialSector: collaborator.industrialSector,
-              specialization: collaborator.specialization,
-            };
-          });
+              return {
+                id: collaborator.id,
+                companyName: collaborator.companyName,
+                image: image
+                  ? {
+                      url: image.url, // Direct S3 URL
+                      mimeType: image.mimeType,
+                      size: image.size,
+                      alt: image.alt,
+                    }
+                  : null,
+                location: collaborator.location,
+                site: collaborator.site,
+                industrialSector: collaborator.industrialSector,
+                specialization: collaborator.specialization,
+              };
+            },
+          );
         },
-        3600 // Cache for 1 hour
+        3600, // Cache for 1 hour
       );
 
       return c.json({ data: transformedCollaborators }, 200);
@@ -156,7 +161,7 @@ const app = new Hono()
           const { url, s3Key, bucket } = await s3Service.uploadFile(
             imageBuffer,
             imageKey,
-            image.type
+            image.type,
           );
 
           const imageRecord = await db.image.create({
@@ -173,24 +178,29 @@ const app = new Hono()
           imageId = imageRecord.id;
         }
 
+        // Generate ID upfront to link relations
+        const collaboratorId = uuidv4();
 
         // Create media records helper (UPDATED - S3 Storage)
         const createMediaRecords = async (
           files: File[],
           type: 'experience' | 'machinery',
+          collabId: string,
         ) => {
-
-
           return Promise.all(
             files.map(async (file) => {
               // Upload to S3
               const mediaBuffer = Buffer.from(await file.arrayBuffer());
-              const mediaKey = s3Service.generateKey('media', file.name, uuidv4());
+              const mediaKey = s3Service.generateKey(
+                'media',
+                file.name,
+                uuidv4(),
+              );
 
               const { url, s3Key, bucket } = await s3Service.uploadFile(
                 mediaBuffer,
                 mediaKey,
-                file.type
+                file.type,
               );
 
               // Create media record with S3 data
@@ -212,7 +222,7 @@ const app = new Hono()
                   data: {
                     id: uuidv4(),
                     media: mediaRecord.id,
-                    collaboratorId: collaborator.id,
+                    collaboratorId: collabId,
                   },
                 });
               } else {
@@ -220,7 +230,7 @@ const app = new Hono()
                   data: {
                     id: uuidv4(),
                     media: mediaRecord.id,
-                    collaboratorId: collaborator.id,
+                    collaboratorId: collabId,
                   },
                 });
               }
@@ -228,20 +238,10 @@ const app = new Hono()
           );
         };
 
-        // Process experience media AFTER creating collaborator
-        if (experienceProvidedMedia.length > 0) {
-          await createMediaRecords(experienceProvidedMedia, 'experience');
-        }
-
-        // Process machinery media AFTER creating collaborator
-        if (machineryAndEquipmentMedia.length > 0) {
-          await createMediaRecords(machineryAndEquipmentMedia, 'machinery');
-        }
-
         // FIRST: Create the collaborator
         const collaborator = await db.collaborator.create({
           data: {
-            id: uuidv4(),
+            id: collaboratorId,
             companyName,
             primaryPhoneNumber,
             optionalPhoneNumber: optionalPhoneNumber || null,
@@ -256,6 +256,24 @@ const app = new Hono()
           },
         });
 
+        // Process experience media (now safe as FK exists)
+        if (experienceProvidedMedia.length > 0) {
+          await createMediaRecords(
+            experienceProvidedMedia,
+            'experience',
+            collaboratorId,
+          );
+        }
+
+        // Process machinery media (now safe as FK exists)
+        if (machineryAndEquipmentMedia.length > 0) {
+          await createMediaRecords(
+            machineryAndEquipmentMedia,
+            'machinery',
+            collaboratorId,
+          );
+        }
+
         const url = new URL(c.req.url);
         const pathSegments = url.pathname.split('/');
         const lang =
@@ -269,7 +287,7 @@ const app = new Hono()
             id: collaborator.id,
             companyName: collaborator.companyName,
             email: collaborator.email,
-            sector: collaborator.industrialSector,
+            sector: collaborator.industrialSector || 'General',
           });
         } catch (notifyError) {
           console.error('Failed to notify admins:', notifyError);
@@ -288,7 +306,10 @@ const app = new Hono()
           );
 
           if (!emailResult.success) {
-            console.error('❌ Failed to send confirmation email:', emailResult.error);
+            console.error(
+              '❌ Failed to send confirmation email:',
+              emailResult.error,
+            );
           }
         } catch (emailError) {
           // Log email error but don't fail the submission
@@ -323,12 +344,11 @@ const app = new Hono()
           return c.json({ error: 'Unauthorized' }, 401);
         }
 
-        // Check if user has permission to manage collaborators
-        const userPermissions = session.user.permissions || [];
-        const hasPermission = userPermissions.some(
-          (p) =>
-            p.resource === 'collaborators' &&
-            (p.action === 'update' || p.action === 'manage'),
+        // Check permission using RBAC helper
+        const hasPermission = checkPermission(
+          session.user.permissions,
+          RESOURCES.COLLABORATORS,
+          ACTIONS.UPDATE,
         );
 
         if (!hasPermission) {
@@ -377,7 +397,10 @@ const app = new Hono()
               },
             });
           } catch (notifyError) {
-            console.error('Failed to notify admins about status update:', notifyError);
+            console.error(
+              'Failed to notify admins about status update:',
+              notifyError,
+            );
           }
         }
 
@@ -399,7 +422,10 @@ const app = new Hono()
           );
 
           if (!emailResult.success) {
-            console.error('❌ Failed to send status update email:', emailResult.error);
+            console.error(
+              '❌ Failed to send status update email:',
+              emailResult.error,
+            );
           }
         } catch (emailError) {
           console.error('Failed to send status update email:', emailError);
@@ -431,6 +457,123 @@ const app = new Hono()
         return c.json({ error: 'Failed to update collaborator status' }, 500);
       }
     },
-  );
+  )
+  .delete('/:collaboratorId', async (c) => {
+    try {
+      const { collaboratorId } = c.req.param();
+
+      // Check authentication and authorization
+      const session = await auth();
+
+      if (!session?.user) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
+
+      // Check permission using RBAC helper
+      const hasPermission = checkPermission(
+        session.user.permissions,
+        RESOURCES.COLLABORATORS,
+        ACTIONS.DELETE,
+      );
+
+      if (!hasPermission) {
+        return c.json({ error: 'Insufficient permissions' }, 403);
+      }
+
+      // Get the collaborator with all relations for cleanup
+      const collaborator = await db.collaborator.findUnique({
+        where: { id: collaboratorId },
+        include: {
+          image: true,
+          experienceProvidedMedia: {
+            include: {
+              mediaRecord: true,
+            },
+          },
+          machineryAndEquipmentMedia: {
+            include: {
+              mediaRecord: true,
+            },
+          },
+        },
+      });
+
+      if (!collaborator) {
+        return c.json({ error: 'Collaborator not found' }, 404);
+      }
+
+      // Collect all S3 keys to delete
+      const s3KeysToDelete: string[] = [];
+      if (collaborator.image?.s3Key) {
+        s3KeysToDelete.push(collaborator.image.s3Key);
+      }
+
+      collaborator.experienceProvidedMedia.forEach((m) => {
+        if (m.mediaRecord.s3Key) {
+          s3KeysToDelete.push(m.mediaRecord.s3Key);
+        }
+      });
+
+      collaborator.machineryAndEquipmentMedia.forEach((m) => {
+        if (m.mediaRecord.s3Key) {
+          s3KeysToDelete.push(m.mediaRecord.s3Key);
+        }
+      });
+
+      // 1. Delete files from S3
+      await Promise.all(s3KeysToDelete.map((key) => s3Service.deleteFile(key)));
+
+      // 2. Delete from DB in transaction
+      await db.$transaction(async (tx) => {
+        // Collect media record IDs to delete them later
+        const mediaRecordIds = [
+          ...collaborator.experienceProvidedMedia.map((m) => m.media),
+          ...collaborator.machineryAndEquipmentMedia.map((m) => m.media),
+        ];
+
+        // Delete relation records
+        await tx.experienceProvidedMedia.deleteMany({
+          where: { collaboratorId: collaborator.id },
+        });
+
+        await tx.machineryAndEquipmentMedia.deleteMany({
+          where: { collaboratorId: collaborator.id },
+        });
+
+        // Delete Media records
+        if (mediaRecordIds.length > 0) {
+          await tx.media.deleteMany({
+            where: { id: { in: mediaRecordIds } },
+          });
+        }
+
+        // Delete the Collaborator
+        await tx.collaborator.delete({
+          where: { id: collaborator.id },
+        });
+
+        // Delete the Image record if it exists
+        if (collaborator.imageId) {
+          await tx.image.delete({
+            where: { id: collaborator.imageId },
+          });
+        }
+      });
+
+      // Invalidate public cache
+      await cache.del('collaborators:public');
+
+      return c.json(
+        {
+          success: true,
+          message: 'Collaborator and associated media deleted successfully',
+        },
+        200,
+      );
+    } catch (error) {
+      console.error('Error deleting collaborator:', error);
+      return c.json({ error: 'Failed to delete collaborator' }, 500);
+    }
+  });
 
 export default app;

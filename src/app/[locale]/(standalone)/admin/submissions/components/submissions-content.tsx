@@ -134,21 +134,33 @@ const SubmissionsContent = ({
                 <CardCompanies
                   collaborator={{
                     ...collaborator,
-                    status: (['PENDING', 'APPROVED', 'REJECTED'].includes(
-                      collaborator.status,
-                    )
+                    status: ([
+                      'PENDING',
+                      'APPROVED',
+                      'REJECTED',
+                      'ARCHIVED',
+                      'UNDER_REVIEW',
+                    ].includes(collaborator.status)
                       ? (collaborator.status as any)
                       : 'PENDING') as any,
+                    isVisible: collaborator.isVisible ?? false,
                     optionalPhoneNumber:
-                      collaborator.optionalPhoneNumber ?? undefined,
-                    location: collaborator.location ?? undefined,
-                    experienceProvided:
-                      collaborator.experienceProvided ?? undefined,
+                      collaborator.optionalPhoneNumber ?? null,
+                    location: collaborator.location ?? null,
+                    experienceProvided: collaborator.experienceProvided ?? null,
                     machineryAndEquipment:
-                      collaborator.machineryAndEquipment ?? undefined,
-                    imageId: collaborator.imageId ?? undefined,
-                    site: collaborator.site ?? undefined,
+                      collaborator.machineryAndEquipment ?? null,
+                    imageId: collaborator.imageId ?? null,
+                    site: collaborator.site ?? null,
+                    createdAt: collaborator.createdAt,
+                    updatedAt: collaborator.updatedAt,
+                    industrialSector: collaborator.industrialSector ?? null,
+                    specialization: collaborator.specialization ?? null,
+                    image: null,
+                    experienceProvidedMedia: [],
+                    machineryAndEquipmentMedia: [],
                   }}
+                  showStatus
                   onClick={() => handleView('collaborators', collaborator.id)}
                 />
 

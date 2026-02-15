@@ -1,35 +1,38 @@
-import { z } from "zod";
-import { ListOfIndustrialSectors } from "../types/types";
-import { mediaTypes } from "@/constants";
+import { z } from 'zod';
+import { ListOfIndustrialSectors } from '../types/types';
+import { mediaTypes } from '@/constants';
 
 /**
  * Step 1: Company Information
  */
 export const step1Schema = (t: (key: string) => string) => {
   return z.object({
-    companyName: z.string().min(1, { message: t("RequiredField") }),
+    companyName: z.string().min(1, { message: t('RequiredField') }),
     image: z
       .union([
         z.instanceof(File),
-        z.string().transform((value) => (value === "" ? undefined : value)),
+        z.string().transform((value) => (value === '' ? undefined : value)),
       ])
       .optional(),
     primaryPhoneNumber: z
       .string()
-      .min(1, { message: t("RequiredField") })
+      .min(1, { message: t('RequiredField') })
       .refine(
-        (phone) => typeof phone === "string" && /^\+[\d\s-]{6,15}$/.test(phone),
-        { message: t("InvalidPhoneNumber") }
+        (phone) => typeof phone === 'string' && /^\+[\d\s-]{6,15}$/.test(phone),
+        { message: t('InvalidPhoneNumber') },
       ),
     optionalPhoneNumber: z
       .string()
       .optional()
       .refine((phone) => !phone || /^\+[\d\s-]{6,15}$/.test(phone), {
-        message: t("InvalidPhoneNumber"),
+        message: t('InvalidPhoneNumber'),
       }),
-    email: z.string().min(1, { message: t("RequiredField") }).email({ message: t("InvalidEmail") }),
+    email: z
+      .string()
+      .min(1, { message: t('RequiredField') })
+      .email({ message: t('InvalidEmail') }),
     location: z.string().optional(),
-    website: z
+    site: z
       .string()
       .optional()
       .refine(
@@ -37,8 +40,8 @@ export const step1Schema = (t: (key: string) => string) => {
           !url ||
           /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(url),
         {
-          message: t("InvalidURL"),
-        }
+          message: t('InvalidURL'),
+        },
       ),
   });
 };
@@ -49,9 +52,9 @@ export const step1Schema = (t: (key: string) => string) => {
 export const step2Schema = (t: (key: string) => string) => {
   return z.object({
     industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
-      message: t("RequiredField"),
+      message: t('RequiredField'),
     }),
-    specialization: z.string().min(1, t("RequiredField")),
+    specialization: z.string().min(1, { message: t('RequiredField') }),
   });
 };
 
@@ -69,8 +72,8 @@ export const step3Schema = (t: (key: string) => string) => {
           (files.length === 0 ||
             files.every((file) => mediaTypes.includes(file.type))),
         {
-          message: t("InvalidMediaType"),
-        }
+          message: t('InvalidMediaType'),
+        },
       )
       .refine(
         (files) =>
@@ -78,8 +81,8 @@ export const step3Schema = (t: (key: string) => string) => {
           (files.length === 0 ||
             files.every((file) => file.size <= 50 * 1024 * 1024)),
         {
-          message: t("InvalidFileSize"),
-        }
+          message: t('InvalidFileSize'),
+        },
       )
       .optional()
       .default([]),
@@ -93,8 +96,8 @@ export const step3Schema = (t: (key: string) => string) => {
           (files.length === 0 ||
             files.every((file) => mediaTypes.includes(file.type))),
         {
-          message: t("InvalidMediaType"),
-        }
+          message: t('InvalidMediaType'),
+        },
       )
       .refine(
         (files) =>
@@ -102,8 +105,8 @@ export const step3Schema = (t: (key: string) => string) => {
           (files.length === 0 ||
             files.every((file) => file.size <= 50 * 1024 * 1024)),
         {
-          message: t("InvalidFileSize"),
-        }
+          message: t('InvalidFileSize'),
+        },
       )
       .optional()
       .default([]),
@@ -115,12 +118,17 @@ export const step3Schema = (t: (key: string) => string) => {
  */
 export const step4Schema = (t: (key: string) => string) => {
   return z.object({
-    TermsOfUse: z.boolean().default(false).refine((value) => value === true, { message: t("TermsOfUse") }),
+    TermsOfUse: z
+      .boolean()
+      .default(false)
+      .refine((value) => value === true, { message: t('TermsOfUse') }),
   });
 };
 
 // Merged server-side validation schema
-export const completeCollaboratorRegistrationSchema = (t: (key: string) => string) => {
+export const completeCollaboratorRegistrationSchema = (
+  t: (key: string) => string,
+) => {
   return step1Schema(t)
     .merge(step2Schema(t))
     .merge(step3Schema(t))

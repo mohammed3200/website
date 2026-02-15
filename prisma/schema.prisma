@@ -333,24 +333,22 @@ model Innovator {
 }
 
 model Collaborator {
-  id                         String                       @id @default(cuid())
-  companyName                String
-  primaryPhoneNumber         String
-  optionalPhoneNumber        String?
-  email                      String
-  location                   String?
-  website                    String?
-  industrialSector           String
-  specialization             String
-  experienceProvided         String?                      @db.Text
-  machineryAndEquipment      String?                      @db.Text
-  status                     RecordStatus                 @default(PENDING)
-  isVisible                  Boolean                      @default(false)
-  imageId                    String?
-  establishedYear            Int?
-  employeeCount              String?
-  annualRevenue              String?
-  certifications             String?                      @db.Text
+  id                  String  @id @default(cuid())
+  companyName         String
+  primaryPhoneNumber  String
+  optionalPhoneNumber String?
+  email               String
+  location            String?
+
+  // TODO: Promote to non-nullable (String) after backfilling existing rows
+  industrialSector      String?
+  specialization        String?
+  experienceProvided    String?      @db.Text
+  machineryAndEquipment String?      @db.Text
+  status                RecordStatus @default(PENDING)
+  isVisible             Boolean      @default(false)
+  imageId               String?
+
   createdAt                  DateTime                     @default(now())
   updatedAt                  DateTime                     @updatedAt
   reviewedAt                 DateTime?
