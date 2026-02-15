@@ -6,6 +6,7 @@ import { completeRegistrationSchema } from "../schemas/step-schemas";
 import { RecordStatus, StageDevelopment } from "@prisma/client";
 import { s3Service } from "@/lib/storage/s3-service";
 import { notifyNewInnovator } from "@/lib/notifications/admin-notifications";
+import { mediaTypes } from "@/constants";
 
 import { cache } from "@/lib/cache";
 
@@ -178,25 +179,13 @@ const app = new Hono()
           stageDevelopment: StageDevelopment
         };
 
-        // Validate project files explicitly BEFORE creating any records
+        // Validate project files BEFORE creating the innovator
         if (projectFiles && Array.isArray(projectFiles) && projectFiles.length > 0) {
-          const allowedTypes = [
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/webp',
-            'application/vnd.ms-powerpoint',
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-          ];
-
           for (const file of projectFiles) {
             if (!(file instanceof File)) continue;
 
             // Validate file type
-            if (!allowedTypes.includes(file.type)) {
+            if (!mediaTypes.includes(file.type)) {
               return c.json({
                 code: "INVALID_FILE_TYPE",
                 message: `File type ${file.type} is not allowed`

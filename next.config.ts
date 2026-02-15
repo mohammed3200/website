@@ -28,12 +28,16 @@ const nextConfig: NextConfig = {
         hostname: '*.s3.*.amazonaws.com',
         pathname: '/**',
       },
-      ...(process.env.NODE_ENV === 'development' ? [{
-        protocol: 'http' as const,
-        hostname: 'localhost',
-        port: '9000',
-        pathname: '/**',
-      }] : []),
+      ...(process.env.NODE_ENV === 'development'
+        ? [
+          {
+            protocol: 'http' as const,
+            hostname: 'localhost',
+            port: '9000',
+            pathname: '/**',
+          },
+        ]
+        : []),
     ],
   },
 
