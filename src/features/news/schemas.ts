@@ -25,11 +25,12 @@ export const baseNewsSchema = z.object({
 });
 
 export const createNewsSchema = baseNewsSchema.extend({
-    // Add any specific fields for creation if needed
+    image: z.any().optional().nullable(),
 });
 
 export const updateNewsSchema = baseNewsSchema.partial().extend({
     id: z.string().cuid(),
+    image: z.any().optional().nullable(),
 });
 
 export const newsSchema = baseNewsSchema.extend({
@@ -48,3 +49,5 @@ export const newsSchema = baseNewsSchema.extend({
 });
 
 export type News = z.infer<typeof newsSchema>;
+export type CreateNewsInput = z.infer<typeof createNewsSchema>;
+export type UpdateNewsInput = z.infer<typeof updateNewsSchema>;

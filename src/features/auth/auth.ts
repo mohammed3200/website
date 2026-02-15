@@ -20,8 +20,7 @@ export const {
   signOut,
   unstable_update
 } = NextAuth({
-  // Cast to any to bypass type mismatch due to Prisma 7 removing $use
-  // @ts-ignore
+  // Cast to any to bypass type mismatch due to Prisma 7 adapter patterns
   adapter: PrismaAdapter(db as any),
   providers: [
     Google({
@@ -157,13 +156,13 @@ export const {
       }
 
       // Prevent sign in without email verification
-      if (!existingUser.emailVerified) return false; 
+      if (!existingUser.emailVerified) return false;
 
       if (existingUser.isTwoFactorEnabled) {
         const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
 
         if (!twoFactorConfirmation) return false;
-        
+
         await db.twoFactorConfirmation.delete({
           where: { id: twoFactorConfirmation.id },
         });
@@ -172,7 +171,7 @@ export const {
       return true;
     },
   },
-  session: { 
+  session: {
     strategy: "jwt",
     maxAge: 2 * 60 * 60, // 2 hours
   },

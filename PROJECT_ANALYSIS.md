@@ -25,14 +25,15 @@ The platform has reached **Production Ready** status (v2.0). It is a highly opti
 - 🚀 Task 13 (AI-Powered Form Redesign) - Completed
 - ✅ Task 3 (Admin Notifications) - 100% Complete
 - ✅ Task 12 (Registration Form Data Persistence) - Completed
+- ✅ Task 14 (News Data Verification) - 100% Complete
 - 🟡 Unit Test Coverage - Needs expansion for core logic
-- 🟡 Task 28 (Dashboard Consolidation & Testing) - In Progress
 
 ### Recent Achievements (v2.1)
 
 - 🔒 **Security Hardening**: Fixed critical crypto/CORS issues.
 - 🏗️ **Architecture**: Migrated Page Content to Feature-Based Architecture.
 - 🟢 **CI/CD**: Fixed build pipeline linting errors.
+- 📰 **News**: Implemented Admin News Management (CRUD + S3 Cleanup).
 
 ---
 
@@ -191,6 +192,7 @@ src/
 8. **Task 5**: Improve and Standardize Button Designs - ✅ Completed
 9. **Task 13**: AI-Powered Form Redesign - ✅ Completed
 10. **Task 1**: Email System Templates - ✅ Completed (Templates exist, pending final branding verify)
+11. **Task 14**: News Data Verification & Schema Alignment - ✅ Completed
 
 ### In Progress 🚀
 
@@ -204,8 +206,7 @@ src/
 2. **Task 7**: Email & WhatsApp Integration (Email done, WhatsApp pending)
 3. **Task 9**: WhatsApp Integration System
 4. **Task 10/11**: UI/Navigation Improvements
-5. **Task 14**: News Data Verification
-6. **Task 15/19**: Project Cleanup
+5. **Task 15/19**: Project Cleanup
 
 ---
 

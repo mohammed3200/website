@@ -20,6 +20,23 @@ services:
     networks:
       - app-network
 
+  worker:
+    container_name: ebic-worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    command: bun run worker
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=mysql://root:root@db:3306/citcoder_eitdc
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+
   db:
     image: mysql:8.0
     container_name: ebic-db

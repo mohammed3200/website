@@ -124,6 +124,28 @@ export class EmailService {
   }
 
   /**
+   * Queue an email for background sending
+   */
+  async sendEmailAsync(options: EmailOptions): Promise<{ success: boolean; jobId: string }> {
+    try {
+      const { emailQueue } = await import('@/lib/queue/email-queue');
+      const job = await emailQueue.add('send-email', options);
+      return {
+        success: true,
+        jobId: job.id || '',
+      };
+    } catch (error) {
+      console.error('Failed to queue email:', error);
+      // Fallback to synchronous sending if queue fails?
+      // For now, just return failure so caller knows.
+      return {
+        success: false,
+        jobId: '',
+      };
+    }
+  }
+
+  /**
    * Send submission confirmation email
    */
   async sendSubmissionConfirmation(
@@ -151,12 +173,18 @@ export class EmailService {
 
       const subject = getSubmissionConfirmationSubject(type, locale);
 
-      return this.sendEmail({
+      // Use async queue for submission confirmation
+      const queueResult = await this.sendEmailAsync({
         to: data.email,
         subject,
         html,
         locale,
       });
+
+      return {
+        success: queueResult.success,
+        messageId: queueResult.jobId,
+      };
     } catch (error) {
       console.error('Error rendering submission confirmation:', error);
       return {
@@ -204,12 +232,18 @@ export class EmailService {
 
       const subject = getStatusUpdateSubject(status, locale);
 
-      return this.sendEmail({
+      // Use async queue for status updates
+      const queueResult = await this.sendEmailAsync({
         to: data.email,
         subject,
         html,
         locale,
       });
+
+      return {
+        success: queueResult.success,
+        messageId: queueResult.jobId,
+      };
     } catch (error) {
       console.error('Error rendering status update:', error);
       return {

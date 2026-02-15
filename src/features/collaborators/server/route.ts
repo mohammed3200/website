@@ -20,64 +20,72 @@ import {
 } from '@/features/collaborators/schemas/step-schemas';
 import { NotificationPriority } from '@prisma/client';
 
+import { cache } from "@/lib/cache";
+
 const app = new Hono()
   // Public endpoint - only approved and visible collaborators
   .get('/public', async (c) => {
     try {
-      const collaborators = await db.collaborator.findMany({
-        where: {
-          status: RecordStatus.APPROVED,
-          isVisible: true,
+      const transformedCollaborators = await cache.getOrSet(
+        'collaborators:public',
+        async () => {
+          const collaborators = await db.collaborator.findMany({
+            where: {
+              status: RecordStatus.APPROVED,
+              isVisible: true,
+            },
+            select: {
+              id: true,
+              companyName: true,
+              imageId: true,
+              location: true,
+              site: true,
+              industrialSector: true,
+              specialization: true,
+            },
+          });
+
+          // Collect all image IDs
+          const imageIds: string[] = collaborators
+            .map((collaborator: { imageId: string | null }) => collaborator.imageId)
+            .filter((id: string | null): id is string => !!id);
+
+          // Fetch all related images in bulk
+          const images = await db.image.findMany({
+            where: { id: { in: imageIds } },
+          });
+
+          // Create lookup map for quick access
+          const imageMap = new Map<string, typeof images[0]>(
+            images.map((img: any) => [img.id, img])
+          );
+
+          // Transform the data (UPDATED - S3 URLs)
+          return collaborators.map((collaborator: typeof collaborators[0]) => {
+            const image = collaborator.imageId
+              ? imageMap.get(collaborator.imageId)
+              : null;
+
+            return {
+              id: collaborator.id,
+              companyName: collaborator.companyName,
+              image: image
+                ? {
+                  url: image.url,           // Direct S3 URL
+                  mimeType: image.mimeType,
+                  size: image.size,
+                  alt: image.alt,
+                }
+                : null,
+              location: collaborator.location,
+              site: collaborator.site,
+              industrialSector: collaborator.industrialSector,
+              specialization: collaborator.specialization,
+            };
+          });
         },
-        select: {
-          id: true,
-          companyName: true,
-          imageId: true,
-          location: true,
-          site: true,
-          industrialSector: true,
-          specialization: true,
-        },
-      });
-
-      // Collect all image IDs
-      const imageIds: string[] = collaborators
-        .map((collaborator: { imageId: string | null }) => collaborator.imageId)
-        .filter((id: string | null): id is string => !!id);
-
-      // Fetch all related images in bulk
-      const images = await db.image.findMany({
-        where: { id: { in: imageIds } },
-      });
-
-      // Create lookup map for quick access
-      const imageMap = new Map<string, typeof images[0]>(
-        images.map((img: any) => [img.id, img])
+        3600 // Cache for 1 hour
       );
-
-      // Transform the data (UPDATED - S3 URLs)
-      const transformedCollaborators = collaborators.map((collaborator: typeof collaborators[0]) => {
-        const image = collaborator.imageId
-          ? imageMap.get(collaborator.imageId)
-          : null;
-
-        return {
-          id: collaborator.id,
-          companyName: collaborator.companyName,
-          image: image
-            ? {
-              url: image.url,           // Direct S3 URL
-              mimeType: image.mimeType,
-              size: image.size,
-              alt: image.alt,
-            }
-            : null,
-          location: collaborator.location,
-          site: collaborator.site,
-          industrialSector: collaborator.industrialSector,
-          specialization: collaborator.specialization,
-        };
-      });
 
       return c.json({ data: transformedCollaborators }, 200);
     } catch (error) {
@@ -397,6 +405,9 @@ const app = new Hono()
           console.error('Failed to send status update email:', emailError);
           // Continue even if email fails
         }
+
+        // Invalidate public cache
+        await cache.del('collaborators:public');
 
         return c.json({
           success: true,
