@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -53,6 +53,62 @@ export interface CardCompaniesProps extends Partial<Collaborator> {
 export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
   const { isArabic } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsOpen(false);
+    };
+
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !modalRef.current) return;
+
+      const focusableElements = modalRef.current.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          lastElement.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          firstElement.focus();
+          e.preventDefault();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    document.addEventListener('keydown', handleTabKey);
+
+    // Focus first focusable element when opened
+    const focusableElements = modalRef.current?.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusableElements?.length) {
+      (focusableElements[0] as HTMLElement).focus();
+    }
+
+    // Disable body scroll
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleTabKey);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const data = {
     companyName: props.companyName || props.collaborator?.companyName || props.CompaniesName || "Unknown Company",
@@ -72,7 +128,10 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
   const modalContent = (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center px-4"
+          role="presentation"
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -82,11 +141,15 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
           />
 
           <motion.div
+            ref={modalRef}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             dir={isArabic ? "rtl" : "ltr"}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-company-name"
           >
             {/* Close Button */}
             <button
@@ -95,6 +158,7 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
                 "absolute top-4 p-2 hover:bg-gray-100 rounded-full transition-colors z-20",
                 isArabic ? "left-4" : "right-4"
               )}
+              aria-label="Close dialog"
             >
               <X className="w-5 h-5 text-gray-400" />
             </button>
@@ -114,7 +178,10 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
                   )}
                 </div>
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-din-bold text-gray-900 leading-tight">
+                  <h2
+                    id="modal-company-name"
+                    className="text-2xl md:text-3xl font-din-bold text-gray-900 leading-tight"
+                  >
                     {data.companyName}
                   </h2>
                   <div className="mt-2 text-primary font-din-medium">
@@ -285,7 +352,7 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
         </div>
       </div>
 
-      {typeof window !== 'undefined' && createPortal(modalContent, document.body)}
+      {isMounted && createPortal(modalContent, document.body)}
     </>
   );
 };
