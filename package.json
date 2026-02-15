@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
+    "worker": "tsx src/worker.ts",
     "postinstall": "prisma generate",
     "seed": "tsx prisma/seed.ts",
     "seed:rbac": "tsx prisma/seed-rbac.ts",
