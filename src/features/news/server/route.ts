@@ -87,6 +87,9 @@ const app = new Hono<{ Variables: Variables }>()
             const { image, ...rest } = data;
 
             let imageId: string | null = null;
+            let uploadedS3Key: string | null = null;
+            let uploadedBucket: string | null = null;
+
             if (image instanceof File) {
                 const imageBuffer = Buffer.from(await image.arrayBuffer());
                 const imageKey = s3Service.generateKey('image', image.name, uuidv4());
@@ -96,6 +99,9 @@ const app = new Hono<{ Variables: Variables }>()
                     imageKey,
                     image.type
                 );
+
+                uploadedS3Key = s3Key;
+                uploadedBucket = bucket;
 
                 const imageRecord = await db.image.create({
                     data: {
@@ -111,18 +117,39 @@ const app = new Hono<{ Variables: Variables }>()
                 imageId = imageRecord.id;
             }
 
-            const news = await db.news.create({
-                data: {
-                    ...rest,
-                    publishedAt: rest.publishedAt ? new Date(rest.publishedAt) : null,
-                    imageId: imageId || rest.imageId,
-                    createdById: user.id,
-                    updatedById: user.id,
-                    slug: rest.slug || uuidv4(),
-                },
-            });
+            try {
+                const news = await db.news.create({
+                    data: {
+                        ...rest,
+                        publishedAt: rest.publishedAt ? new Date(rest.publishedAt) : null,
+                        imageId: imageId || rest.imageId,
+                        createdById: user.id,
+                        updatedById: user.id,
+                        slug: rest.slug || uuidv4(),
+                    },
+                });
 
-            return c.json({ data: news });
+                return c.json({ data: news });
+            } catch (error) {
+                // Cleanup on failure: delete uploaded image from S3 and DB
+                if (uploadedS3Key) {
+                    try {
+                        await s3Service.deleteFile(uploadedS3Key);
+                    } catch (s3Error) {
+                        console.error('Failed to cleanup S3 file after news creation error:', s3Error);
+                    }
+                }
+
+                if (imageId) {
+                    try {
+                        await db.image.delete({ where: { id: imageId } });
+                    } catch (dbError) {
+                        console.error('Failed to cleanup image record after news creation error:', dbError);
+                    }
+                }
+
+                throw error; // Re-throw to be caught by the generic error handler
+            }
         }
     )
     .patch(

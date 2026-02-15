@@ -280,7 +280,22 @@ export const AdminNewsForm = ({ initialData, onSubmit, isLoading, onCancel }: Ne
                                             value={field.value instanceof Date && !isNaN(field.value.getTime())
                                                 ? new Date(field.value.getTime() - field.value.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
                                                 : ''}
-                                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                                            onChange={(e) => {
+                                                const value = e.target.value;
+                                                if (!value) return field.onChange(null);
+
+                                                // Parse YYYY-MM-DDTHH:mm into numeric components
+                                                const [datePart, timePart] = value.split('T');
+                                                const [year, month, day] = datePart.split('-').map(Number);
+                                                const [hour, minute] = timePart.split(':').map(Number);
+
+                                                // Create UTC timestamp and adjust for timezone offset
+                                                // This ensures the saved Date represents the same local instant as the UI
+                                                const utcTimestamp = Date.UTC(year, month - 1, day, hour, minute);
+                                                const date = new Date(utcTimestamp + new Date().getTimezoneOffset() * 60000);
+
+                                                field.onChange(date);
+                                            }}
                                         />
                                     </FormControl>
                                     <FormMessage />

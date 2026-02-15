@@ -20,7 +20,7 @@ interface NewsListProps {
     news: NewsWithRelations[];
     onEdit: (news: NewsWithRelations) => void;
     onDelete: (id: string) => void;
-    onView: (id: string) => void;
+    onView: (news: NewsWithRelations) => void;
     isDeleting: boolean;
     locale: string;
 }
@@ -109,7 +109,7 @@ export const NewsList = ({ news, onEdit, onDelete, onView, isDeleting, locale }:
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        onClick={() => onView(item.id)}
+                                        onClick={() => onView(item)}
                                         className="h-8 w-8 text-gray-400 hover:text-primary hover:bg-primary/5 transition-all"
                                         title={t('actions.view')}
                                     >

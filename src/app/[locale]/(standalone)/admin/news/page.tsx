@@ -157,7 +157,10 @@ export default function AdminNewsPage() {
                         news={filteredNews}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
-                        onView={(id) => window.open(`/news/${id}`, '_blank')}
+                        onView={(item) => {
+                            const slugOrId = item.slug || item.id;
+                            window.open(`/${lang}/News/${slugOrId}`, '_blank');
+                        }}
                         isDeleting={deleteMutation.isPending}
                         locale={lang}
                     />
