@@ -340,8 +340,9 @@ model Collaborator {
   email               String
   location            String?
 
-  industrialSector      String
-  specialization        String
+  // TODO: Promote to non-nullable (String) after backfilling existing rows
+  industrialSector      String?
+  specialization        String?
   experienceProvided    String?      @db.Text
   machineryAndEquipment String?      @db.Text
   status                RecordStatus @default(PENDING)

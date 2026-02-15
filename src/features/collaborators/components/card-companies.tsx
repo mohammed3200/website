@@ -13,8 +13,8 @@ import {
   X,
   Cog,
   ArrowRight,
-  Clock3,
   CheckCircle2,
+  Clock3,
   XCircle,
   ExternalLink,
   Calendar,
@@ -23,124 +23,17 @@ import { cn } from '@/lib/utils';
 import useLanguage from '@/hooks/use-language';
 import { format } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
+import { statusConfig, sectorColors } from '@/features/collaborators/constants';
+import { Prisma } from '@prisma/client';
 
 // 🧱 Strict Database Schema Interface
-export interface Collaborator {
-  id: string;
-  companyName: string;
-  primaryPhoneNumber: string;
-  optionalPhoneNumber?: string | null;
-  email: string;
-  location?: string | null;
-  site?: string | null; // Website URL from database
-  industrialSector: string;
-  specialization: string;
-  experienceProvided?: string | null;
-  machineryAndEquipment?: string | null;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  isVisible: boolean;
-  imageId?: string | null;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-  reviewedAt?: Date | string | null;
-  reviewedById?: string | null;
-  // Relations
-  image?: {
-    id: string;
-    url: string;
-    thumbnailUrl?: string;
-  } | null;
-  experienceProvidedMedia?: Array<{
-    id: string;
-    url: string;
-    type: string;
-  }>;
-  machineryAndEquipmentMedia?: Array<{
-    id: string;
-    url: string;
-    type: string;
-  }>;
-}
-
-// Status configurations for admin workflow
-const statusConfig = {
-  PENDING: {
-    icon: Clock3,
-    color: 'text-amber-600',
-    bg: 'bg-amber-50',
-    border: 'border-amber-200',
-    label: { ar: 'قيد المراجعة', en: 'Pending' },
-    pulse: 'bg-amber-400',
-  },
-  APPROVED: {
-    icon: CheckCircle2,
-    color: 'text-green-600',
-    bg: 'bg-green-50',
-    border: 'border-green-200',
-    label: { ar: 'معتمد', en: 'Approved' },
-    pulse: 'bg-green-400',
-  },
-  REJECTED: {
-    icon: XCircle,
-    color: 'text-red-600',
-    bg: 'bg-red-50',
-    border: 'border-red-200',
-    label: { ar: 'مرفوض', en: 'Rejected' },
-    pulse: 'bg-red-400',
-  },
-};
-
-// Sector color mapping for visual variety
-const sectorColors: Record<
-  string,
-  { bg: string; text: string; border: string }
-> = {
-  Technology: {
-    bg: 'bg-blue-50',
-    text: 'text-blue-700',
-    border: 'border-blue-200',
-  },
-  Manufacturing: {
-    bg: 'bg-orange-50',
-    text: 'text-orange-700',
-    border: 'border-orange-200',
-  },
-  Healthcare: {
-    bg: 'bg-emerald-50',
-    text: 'text-emerald-700',
-    border: 'border-emerald-200',
-  },
-  Finance: {
-    bg: 'bg-violet-50',
-    text: 'text-violet-700',
-    border: 'border-violet-200',
-  },
-  Education: {
-    bg: 'bg-indigo-50',
-    text: 'text-indigo-700',
-    border: 'border-indigo-200',
-  },
-  Construction: {
-    bg: 'bg-yellow-50',
-    text: 'text-yellow-700',
-    border: 'border-yellow-200',
-  },
-  Retail: {
-    bg: 'bg-pink-50',
-    text: 'text-pink-700',
-    border: 'border-pink-200',
-  },
-  Energy: {
-    bg: 'bg-cyan-50',
-    text: 'text-cyan-700',
-    border: 'border-cyan-200',
-  },
-  default: {
-    bg: 'bg-slate-50',
-    text: 'text-slate-700',
-    border: 'border-slate-200',
-  },
-};
+export type Collaborator = Prisma.CollaboratorGetPayload<{
+  include: {
+    image: true;
+    experienceProvidedMedia: true;
+    machineryAndEquipmentMedia: true;
+  };
+}>;
 
 export interface CardCompaniesProps {
   collaborator: Collaborator;
@@ -221,7 +114,7 @@ export const CardCompanies: React.FC<CardCompaniesProps> = ({
 
   // Get sector styling
   const sectorStyle =
-    sectorColors[collaborator.industrialSector] || sectorColors.default;
+    sectorColors[collaborator.industrialSector || ''] || sectorColors.default;
 
   // Status config
   const status = statusConfig[collaborator.status];
@@ -304,11 +197,11 @@ export const CardCompanies: React.FC<CardCompaniesProps> = ({
                     sectorStyle.text,
                   )}
                 >
-                  {collaborator.industrialSector}
+                  {collaborator.industrialSector || 'General'}
                 </span>
 
                 <p className="mt-2 text-sm text-gray-500 line-clamp-2 leading-relaxed">
-                  {collaborator.specialization}
+                  {collaborator.specialization || ''}
                 </p>
               </div>
             </div>
@@ -449,7 +342,7 @@ export const CardCompanies: React.FC<CardCompaniesProps> = ({
                 sectorStyle.border,
               )}
             >
-              {collaborator.industrialSector}
+              {collaborator.industrialSector || 'General'}
             </span>
           </div>
 
@@ -463,7 +356,7 @@ export const CardCompanies: React.FC<CardCompaniesProps> = ({
               )}
             />
             <p className="text-gray-600 font-din-medium italic text-base leading-relaxed line-clamp-4 ps-4 border-l-2 rtl:border-l-0 rtl:border-r-2 rtl:ps-0 rtl:pe-4 border-gray-200">
-              {collaborator.specialization}
+              {collaborator.specialization || ''}
             </p>
           </div>
 
@@ -666,7 +559,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
                         sectorStyle.border,
                       )}
                     >
-                      {collaborator.industrialSector}
+                      {collaborator.industrialSector || 'General'}
                     </span>
 
                     {collaborator.location && (
@@ -695,7 +588,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
                     )}
                   >
                     <p className="text-gray-700 font-din-medium text-lg leading-relaxed">
-                      {collaborator.specialization}
+                      {collaborator.specialization || ''}
                     </p>
                   </div>
                 </section>

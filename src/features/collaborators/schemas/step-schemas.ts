@@ -54,7 +54,7 @@ export const step2Schema = (t: (key: string) => string) => {
     industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
       message: t('RequiredField'),
     }),
-    specialization: z.string().min(1, t('RequiredField')),
+    specialization: z.string().min(1, { message: t('RequiredField') }),
   });
 };
 

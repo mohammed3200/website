@@ -24,14 +24,25 @@ export const Hero = () => {
       site: item.site || null,
       status: 'APPROVED' as const,
       isVisible: true,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      imageId: null,
+      optionalPhoneNumber: null,
+      experienceProvided: null,
+      machineryAndEquipment: null,
+      reviewedAt: null,
+      reviewedById: null,
       image: item.image
-        ? {
+        ? ({
             id: item.id,
             url: item.image.data || '',
-          }
+            thumbnailUrl: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          } as any)
         : null,
+      experienceProvidedMedia: [],
+      machineryAndEquipmentMedia: [],
     }));
   }, [realCollaborators]);
 

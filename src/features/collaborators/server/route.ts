@@ -20,7 +20,7 @@ import {
 } from '@/features/collaborators/schemas/step-schemas';
 import { NotificationPriority } from '@prisma/client';
 
-import { cache } from "@/lib/cache";
+import { cache } from '@/lib/cache';
 
 const app = new Hono()
   // Public endpoint - only approved and visible collaborators
@@ -47,7 +47,10 @@ const app = new Hono()
 
           // Collect all image IDs
           const imageIds: string[] = collaborators
-            .map((collaborator: { imageId: string | null }) => collaborator.imageId)
+            .map(
+              (collaborator: { imageId: string | null }) =>
+                collaborator.imageId,
+            )
             .filter((id: string | null): id is string => !!id);
 
           // Fetch all related images in bulk
@@ -56,35 +59,37 @@ const app = new Hono()
           });
 
           // Create lookup map for quick access
-          const imageMap = new Map<string, typeof images[0]>(
-            images.map((img: any) => [img.id, img])
+          const imageMap = new Map<string, (typeof images)[0]>(
+            images.map((img: any) => [img.id, img]),
           );
 
           // Transform the data (UPDATED - S3 URLs)
-          return collaborators.map((collaborator: typeof collaborators[0]) => {
-            const image = collaborator.imageId
-              ? imageMap.get(collaborator.imageId)
-              : null;
+          return collaborators.map(
+            (collaborator: (typeof collaborators)[0]) => {
+              const image = collaborator.imageId
+                ? imageMap.get(collaborator.imageId)
+                : null;
 
-            return {
-              id: collaborator.id,
-              companyName: collaborator.companyName,
-              image: image
-                ? {
-                  url: image.url,           // Direct S3 URL
-                  mimeType: image.mimeType,
-                  size: image.size,
-                  alt: image.alt,
-                }
-                : null,
-              location: collaborator.location,
-              site: collaborator.site,
-              industrialSector: collaborator.industrialSector,
-              specialization: collaborator.specialization,
-            };
-          });
+              return {
+                id: collaborator.id,
+                companyName: collaborator.companyName,
+                image: image
+                  ? {
+                      url: image.url, // Direct S3 URL
+                      mimeType: image.mimeType,
+                      size: image.size,
+                      alt: image.alt,
+                    }
+                  : null,
+                location: collaborator.location,
+                site: collaborator.site,
+                industrialSector: collaborator.industrialSector,
+                specialization: collaborator.specialization,
+              };
+            },
+          );
         },
-        3600 // Cache for 1 hour
+        3600, // Cache for 1 hour
       );
 
       return c.json({ data: transformedCollaborators }, 200);
@@ -156,7 +161,7 @@ const app = new Hono()
           const { url, s3Key, bucket } = await s3Service.uploadFile(
             imageBuffer,
             imageKey,
-            image.type
+            image.type,
           );
 
           const imageRecord = await db.image.create({
@@ -173,24 +178,25 @@ const app = new Hono()
           imageId = imageRecord.id;
         }
 
-
         // Create media records helper (UPDATED - S3 Storage)
         const createMediaRecords = async (
           files: File[],
           type: 'experience' | 'machinery',
         ) => {
-
-
           return Promise.all(
             files.map(async (file) => {
               // Upload to S3
               const mediaBuffer = Buffer.from(await file.arrayBuffer());
-              const mediaKey = s3Service.generateKey('media', file.name, uuidv4());
+              const mediaKey = s3Service.generateKey(
+                'media',
+                file.name,
+                uuidv4(),
+              );
 
               const { url, s3Key, bucket } = await s3Service.uploadFile(
                 mediaBuffer,
                 mediaKey,
-                file.type
+                file.type,
               );
 
               // Create media record with S3 data
@@ -269,7 +275,7 @@ const app = new Hono()
             id: collaborator.id,
             companyName: collaborator.companyName,
             email: collaborator.email,
-            sector: collaborator.industrialSector,
+            sector: collaborator.industrialSector || 'General',
           });
         } catch (notifyError) {
           console.error('Failed to notify admins:', notifyError);
@@ -288,7 +294,10 @@ const app = new Hono()
           );
 
           if (!emailResult.success) {
-            console.error('❌ Failed to send confirmation email:', emailResult.error);
+            console.error(
+              '❌ Failed to send confirmation email:',
+              emailResult.error,
+            );
           }
         } catch (emailError) {
           // Log email error but don't fail the submission
@@ -377,7 +386,10 @@ const app = new Hono()
               },
             });
           } catch (notifyError) {
-            console.error('Failed to notify admins about status update:', notifyError);
+            console.error(
+              'Failed to notify admins about status update:',
+              notifyError,
+            );
           }
         }
 
@@ -399,7 +411,10 @@ const app = new Hono()
           );
 
           if (!emailResult.success) {
-            console.error('❌ Failed to send status update email:', emailResult.error);
+            console.error(
+              '❌ Failed to send status update email:',
+              emailResult.error,
+            );
           }
         } catch (emailError) {
           console.error('Failed to send status update email:', emailError);
