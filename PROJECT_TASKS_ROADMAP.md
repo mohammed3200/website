@@ -2068,26 +2068,26 @@ Verify that the News detail page accurately reflects the database schema and use
 
 ## Task 17: Enhanced Card Design & Detail Pages
 
-### Status: 🔴 Not Started
+### Status: � Completed (Modified: Modal Detail View)
 
 ### Description
 
-Redesign the cards for Collaborators and Innovators to display data more effectively and visually appealingly. Implement a detail page view when a card is clicked to show comprehensive information.
+Redesign the cards for Collaborators and Innovators to display data more effectively and visually appealingly. Implement a premium modal detail view (Portal-based) to show comprehensive information without navigation, improving performance and user flow.
 
 ### Subtasks
 
 #### 14.1 Card Redesign
 
-- [ ] Design new "Collaborator Card" with improved layout (logo, badges, key info).
-- [ ] Design new "Innovator Card" with improved layout (avatar, project status, key info).
-- [ ] Ensure cards are responsive and distinct.
+- [x] Design new "Collaborator Card" with improved layout (logo, badges, key info).
+- [x] Design new "Innovator Card" with improved layout (avatar, project status, key info).
+- [x] Ensure cards are responsive and distinct.
 
-#### 14.2 Detail Pages
+#### 14.2 Detail View (Modal-based)
 
-- [ ] Create dynamic route `/collaborators/[id]` for detailed view.
-- [ ] Create dynamic route `/innovators/[id]` for detailed view.
-- [ ] Design detail page layout (hero section, tabs for info, media gallery).
-- [ ] Implement data fetching for individual records.
+- [x] Implement premium modal detail view for Innovators.
+- [x] Implement premium modal detail view for Collaborators.
+- [x] Ensure accessibility and performance via React Portals and Framer Motion.
+- [x] Include comprehensive data (machinery, specialization, objectives).
 
 ---
 
