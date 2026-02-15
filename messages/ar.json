@@ -24,7 +24,11 @@
   },
   "News": {
     "NoNews": "لا يوجد أخبار أو الإعلانات",
-    "latestNews": "آخر الأخبار"
+    "latestNews": "آخر الأخبار",
+    "tags": "الوسوم",
+    "noTags": "لا توجد وسوم",
+    "photoGallery": "معرض الصور",
+    "galleryPlaceholder": "تنفيذ المعرض معلق على تكامل S3."
   },
   "ui": {
     "readMore": "اقرأ المزيد",

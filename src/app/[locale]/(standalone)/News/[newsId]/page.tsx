@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Calendar, ImageIcon, Share2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import useLanguage from '@/hooks/use-language';
 import { useNewsId } from '@/features/news/hooks/use-news-id';
@@ -14,6 +15,7 @@ import { Back } from '@/components/buttons';
 const NewsIdPage = () => {
   const newsId = useNewsId();
   const { isArabic, isEnglish } = useLanguage();
+  const t = useTranslations('News');
   const { data: news, isLoading } = useGetNewsById(newsId);
 
   if (isLoading) {
@@ -42,6 +44,12 @@ const NewsIdPage = () => {
     isArabic ? 'ar-EG' : 'en-US',
   );
   const image = news.image?.url || '/images/placeholders/news-placeholder.jpg';
+
+  // Determine actual content direction based on what's being displayed
+  const titleDir =
+    isEnglish && news.titleEn ? 'ltr' : news.title ? 'rtl' : 'ltr';
+  const contentDir =
+    isEnglish && news.contentEn ? 'ltr' : news.content ? 'rtl' : 'ltr';
 
   // Parse tags
   let tags: string[] = [];
@@ -107,9 +115,7 @@ const NewsIdPage = () => {
               </div>
               <h1
                 className="text-2xl md:text-4xl lg:text-5xl font-bold font-almarai leading-tight max-w-4xl shadow-sm"
-                dir={
-                  isEnglish && news.titleEn ? 'ltr' : isArabic ? 'rtl' : 'ltr'
-                }
+                dir={titleDir}
               >
                 {title}
               </h1>
@@ -122,7 +128,7 @@ const NewsIdPage = () => {
               <div className="prose prose-lg prose-gray max-w-none">
                 <p
                   className="text-lg md:text-xl text-gray-600 leading-relaxed font-outfit whitespace-pre-line"
-                  dir={isEnglish ? 'ltr' : 'rtl'}
+                  dir={contentDir}
                 >
                   {description}
                 </p>
@@ -137,12 +143,12 @@ const NewsIdPage = () => {
                 <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
                   <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold text-lg font-almarai">
                     <ImageIcon className="w-5 h-5 text-primary" />
-                    <span>Photo Gallery</span>
+                    <span>{t('photoGallery')}</span>
                   </div>
 
                   <div className="p-4 bg-gray-50 rounded-xl text-center">
                     <p className="text-sm text-gray-500">
-                      Gallery implementation pending S3 integration.
+                      {t('galleryPlaceholder')}
                     </p>
                   </div>
                 </div>
@@ -151,7 +157,7 @@ const NewsIdPage = () => {
               {/* Related Tags or Info (Placeholder for sidebar balance) */}
               <div className="p-6 border border-gray-100 rounded-2xl">
                 <h3 className="font-bold text-gray-900 mb-3 font-almarai">
-                  Tags
+                  {t('tags')}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {tags.length > 0 ? (
@@ -164,7 +170,9 @@ const NewsIdPage = () => {
                       </span>
                     ))
                   ) : (
-                    <p className="text-sm text-gray-400 italic">No tags</p>
+                    <p className="text-sm text-gray-400 italic">
+                      {t('noTags')}
+                    </p>
                   )}
                 </div>
               </div>
