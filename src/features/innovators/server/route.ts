@@ -7,54 +7,62 @@ import { RecordStatus, StageDevelopment } from "@prisma/client";
 import { s3Service } from "@/lib/storage/s3-service";
 import { notifyNewInnovator } from "@/lib/notifications/admin-notifications";
 
+import { cache } from "@/lib/cache";
+
 const app = new Hono()
   // Public endpoint - only approved and visible innovators
   .get('/public', async (c) => {
     try {
-      const innovators = await db.innovator.findMany({
-        where: {
-          status: RecordStatus.APPROVED,
-          isVisible: true,
+      const transformedInnovators = await cache.getOrSet(
+        'innovators:public',
+        async () => {
+          const innovators = await db.innovator.findMany({
+            where: {
+              status: RecordStatus.APPROVED,
+              isVisible: true,
+            },
+            select: {
+              id: true,
+              name: true,
+              projectTitle: true,
+              projectDescription: true,
+              objective: true,
+              stageDevelopment: true,
+              imageId: true,
+              city: true,
+              country: true,
+            },
+            orderBy: { createdAt: 'desc' },
+          });
+
+          // Fetch images for innovators that have them
+          const imageIds = innovators
+            .map((i: { imageId: string | null }) => i.imageId)
+            .filter((id: string | null): id is string => id !== null);
+
+          const images = imageIds.length > 0
+            ? await db.image.findMany({
+              where: { id: { in: imageIds } },
+              select: { id: true, url: true },
+            })
+            : [];
+
+          const imageMap = new Map(images.map((img: { id: string; url: string | null }) => [img.id, img.url]));
+
+          return innovators.map((innovator: typeof innovators[0]) => ({
+            id: innovator.id,
+            name: innovator.name,
+            projectTitle: innovator.projectTitle,
+            projectDescription: innovator.projectDescription,
+            objective: innovator.objective,
+            stageDevelopment: innovator.stageDevelopment,
+            imageId: innovator.imageId ? imageMap.get(innovator.imageId) || null : null,
+            city: innovator.city,
+            country: innovator.country,
+          }));
         },
-        select: {
-          id: true,
-          name: true,
-          projectTitle: true,
-          projectDescription: true,
-          objective: true,
-          stageDevelopment: true,
-          imageId: true,
-          city: true,
-          country: true,
-        },
-        orderBy: { createdAt: 'desc' },
-      });
-
-      // Fetch images for innovators that have them
-      const imageIds = innovators
-        .map((i: { imageId: string | null }) => i.imageId)
-        .filter((id: string | null): id is string => id !== null);
-
-      const images = imageIds.length > 0
-        ? await db.image.findMany({
-          where: { id: { in: imageIds } },
-          select: { id: true, url: true },
-        })
-        : [];
-
-      const imageMap = new Map(images.map((img: { id: string; url: string | null }) => [img.id, img.url]));
-
-      const transformedInnovators = innovators.map((innovator: typeof innovators[0]) => ({
-        id: innovator.id,
-        name: innovator.name,
-        projectTitle: innovator.projectTitle,
-        projectDescription: innovator.projectDescription,
-        objective: innovator.objective,
-        stageDevelopment: innovator.stageDevelopment,
-        imageId: innovator.imageId ? imageMap.get(innovator.imageId) || null : null,
-        city: innovator.city,
-        country: innovator.country,
-      }));
+        3600 // Cache for 1 hour
+      );
 
       return c.json({ data: transformedInnovators }, 200);
     } catch (error) {
