@@ -241,6 +241,7 @@ export const CardCompanies: React.FC<CardCompaniesProps> = ({
               setImageError={setImageError}
               displayUrl={displayUrl}
               formatDate={formatDate}
+              modalRef={modalRef}
             />,
             document.body,
           )}
@@ -429,6 +430,7 @@ export const CardCompanies: React.FC<CardCompaniesProps> = ({
             setImageError={setImageError}
             displayUrl={displayUrl}
             formatDate={formatDate}
+            modalRef={modalRef}
           />,
           document.body,
         )}
@@ -450,6 +452,7 @@ interface DetailModalProps {
   setImageError: (v: boolean) => void;
   displayUrl?: string;
   formatDate: (date: Date | string) => string;
+  modalRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const DetailModal: React.FC<DetailModalProps> = ({
@@ -465,6 +468,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
   setImageError,
   displayUrl,
   formatDate,
+  modalRef,
 }) => {
   if (!isOpen) return null;
 
@@ -485,6 +489,7 @@ const DetailModal: React.FC<DetailModalProps> = ({
           />
 
           <motion.div
+            ref={modalRef}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}

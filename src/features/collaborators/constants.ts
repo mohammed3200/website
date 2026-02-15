@@ -87,7 +87,19 @@ export const sharedResources = {
 };
 
 // Status configurations for admin workflow
-export const statusConfig = {
+import { RecordStatus } from '@prisma/client';
+
+export const statusConfig: Record<
+  RecordStatus,
+  {
+    icon: any; // Using any for icon component to avoid complex type import issues
+    color: string;
+    bg: string;
+    border: string;
+    label: { ar: string; en: string };
+    pulse: string;
+  }
+> = {
   PENDING: {
     icon: Clock3,
     color: 'text-amber-600',

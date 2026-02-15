@@ -134,9 +134,13 @@ const SubmissionsContent = ({
                 <CardCompanies
                   collaborator={{
                     ...collaborator,
-                    status: (['PENDING', 'APPROVED', 'REJECTED'].includes(
-                      collaborator.status,
-                    )
+                    status: ([
+                      'PENDING',
+                      'APPROVED',
+                      'REJECTED',
+                      'ARCHIVED',
+                      'UNDER_REVIEW',
+                    ].includes(collaborator.status)
                       ? (collaborator.status as any)
                       : 'PENDING') as any,
                     isVisible: collaborator.isVisible ?? false,

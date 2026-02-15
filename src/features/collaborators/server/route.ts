@@ -178,10 +178,14 @@ const app = new Hono()
           imageId = imageRecord.id;
         }
 
+        // Generate ID upfront to link relations
+        const collaboratorId = uuidv4();
+
         // Create media records helper (UPDATED - S3 Storage)
         const createMediaRecords = async (
           files: File[],
           type: 'experience' | 'machinery',
+          collabId: string,
         ) => {
           return Promise.all(
             files.map(async (file) => {
@@ -218,7 +222,7 @@ const app = new Hono()
                   data: {
                     id: uuidv4(),
                     media: mediaRecord.id,
-                    collaboratorId: collaborator.id,
+                    collaboratorId: collabId,
                   },
                 });
               } else {
@@ -226,7 +230,7 @@ const app = new Hono()
                   data: {
                     id: uuidv4(),
                     media: mediaRecord.id,
-                    collaboratorId: collaborator.id,
+                    collaboratorId: collabId,
                   },
                 });
               }
@@ -234,20 +238,28 @@ const app = new Hono()
           );
         };
 
-        // Process experience media AFTER creating collaborator
+        // Process experience media
         if (experienceProvidedMedia.length > 0) {
-          await createMediaRecords(experienceProvidedMedia, 'experience');
+          await createMediaRecords(
+            experienceProvidedMedia,
+            'experience',
+            collaboratorId,
+          );
         }
 
-        // Process machinery media AFTER creating collaborator
+        // Process machinery media
         if (machineryAndEquipmentMedia.length > 0) {
-          await createMediaRecords(machineryAndEquipmentMedia, 'machinery');
+          await createMediaRecords(
+            machineryAndEquipmentMedia,
+            'machinery',
+            collaboratorId,
+          );
         }
 
         // FIRST: Create the collaborator
         const collaborator = await db.collaborator.create({
           data: {
-            id: uuidv4(),
+            id: collaboratorId,
             companyName,
             primaryPhoneNumber,
             optionalPhoneNumber: optionalPhoneNumber || null,
