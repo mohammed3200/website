@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import useLanguage from '@/hooks/use-language';
 import { useGetDashboardStats } from '@/features/admin/api/use-dashboard-stats';
 import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
+import { DashboardStatsGridSkeleton } from '@/components/skeletons';
 
 import {
   Users,
@@ -60,8 +61,12 @@ const AdminDashboardPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center p-12">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-orange-600" />
+      <div className="space-y-8">
+        <div>
+          <div className="h-9 w-64 bg-muted animate-pulse rounded mb-2" />
+          <div className="h-5 w-48 bg-muted animate-pulse rounded" />
+        </div>
+        <DashboardStatsGridSkeleton />
       </div>
     );
   }
