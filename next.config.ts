@@ -18,10 +18,31 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.s3.amazonaws.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.s3.*.amazonaws.com',
+        pathname: '/**',
+      },
+      ...(process.env.NODE_ENV === 'development'
+        ? [
+          {
+            protocol: 'http' as const,
+            hostname: 'localhost',
+            port: '9000',
+            pathname: '/**',
+          },
+        ]
+        : []),
     ],
   },
 
   serverExternalPackages: ['mariadb'],
+
   // Reduce file system operations to minimize EPERM errors on Windows
   webpack: (config, { isServer }) => {
     if (process.platform === 'win32') {

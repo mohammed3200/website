@@ -46,6 +46,11 @@ const navigation = [
         icon: FileBarChart,
     },
     {
+        name: { en: 'FAQs', ar: 'الأسئلة الشائعة' },
+        href: '#LOCALE#/admin/faqs',
+        icon: FileText,
+    },
+    {
         name: { en: 'Settings', ar: 'الإعدادات' },
         href: '#LOCALE#/admin/settings',
         icon: Settings,

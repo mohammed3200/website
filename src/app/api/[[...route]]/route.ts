@@ -9,6 +9,7 @@ import admin from '@/features/admin/server/route';
 import strategicPlan from '@/features/strategic-plan/server/route';
 import news from '@/features/news/server/route';
 import pageContent from '@/features/page-content/server/route';
+import faqs from '@/features/faqs/server/route';
 
 const app = new Hono().basePath('/api');
 
@@ -41,12 +42,13 @@ app.use('/*', logger());
 // RESTful routes (existing)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
 const routes = app
+  .route('/admin', admin)
   .route('/collaborator', collaborator)
   .route('/innovators', innovators)
-  .route('/admin', admin)
   .route('/strategicPlan', strategicPlan)
   .route('/news', news)
-  .route('/pageContent', pageContent);
+  .route('/pageContent', pageContent)
+  .route('/faqs', faqs);
 
 // Error handling
 app.onError((err, c) => {

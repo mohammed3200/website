@@ -1,26 +1,31 @@
-import { defineConfig } from 'eslint/config';
 import tseslintPlugin from '@typescript-eslint/eslint-plugin';
 import parser from '@typescript-eslint/parser';
 import unusedImports from 'eslint-plugin-unused-imports';
 import nextPlugin from '@next/eslint-plugin-next';
 
-const { configs: tsConfigs } = tseslintPlugin;
-
-export default defineConfig([
+export default [
+  // Global ignores
+  {
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      'dist/**',
+      'build/**',
+      'out/**',
+      'next-env.d.ts',
+      'public/**',
+      'scripts/**', // Ignore scripts if not in tsconfig
+      'tests/**',    // Ignore tests if not in tsconfig or handle separately
+    ],
+  },
   // Base configuration for JS/TS files
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     plugins: {
       '@next/next': nextPlugin,
+      '@typescript-eslint': tseslintPlugin,
+      'unused-imports': unusedImports,
     },
-    rules: {
-      ...nextPlugin.configs.recommended.rules,
-      ...nextPlugin.configs['core-web-vitals'].rules,
-    },
-  },
-  // Specific configuration for TypeScript files
-  {
-    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser,
       parserOptions: {
@@ -29,12 +34,10 @@ export default defineConfig([
         project: ['./tsconfig.json'],
       },
     },
-    plugins: {
-      '@typescript-eslint': tseslintPlugin,
-      'unused-imports': unusedImports,
-    },
     rules: {
-      ...tsConfigs.recommended.rules,
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
+      ...tseslintPlugin.configs.recommended.rules,
 
       // ✅ Unused imports (warn instead of error)
       'unused-imports/no-unused-imports': 'warn',
@@ -65,10 +68,12 @@ export default defineConfig([
       ],
 
       // ✅ Disallow `any` - WARN instead of ERROR for flexibility
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      
-      // ✅ Next.js specific tweaks if needed
-      '@next/next/no-html-link-for-pages': 'off', // Example tweak
+
+      // ✅ Next.js specific tweaks
+      '@next/next/no-html-link-for-pages': 'off',
+      '@next/next/no-assign-module-variable': 'error', // Keep it but ignore artifacts via glob
     },
   },
-]);
+];

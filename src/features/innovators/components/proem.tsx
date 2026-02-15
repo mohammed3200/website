@@ -13,12 +13,38 @@ import { ActiveButton, AnimatedList } from "@/components";
 import { InterfaceImage } from "@/constants";
 import { MockInnovatorsData } from "@/mock";
 import { CardInnovators } from "@/features/innovators/components/card-innovators";
-
+import { useGetPublicInnovators } from "@/features/innovators/api/use-get-public-innovators";
+import { config } from "@/lib/config";
 
 export const Introduction = () => {
   const router = useRouter();
   const { isArabic, lang } = useLanguage();
   const t = useTranslations("CreatorsAndInnovators");
+  const { data: realInnovators, isLoading } = useGetPublicInnovators();
+
+  // Hybrid data strategy:
+  // - In production: use real data only (show nothing if < threshold)
+  // - In development: use mock data as fallback if real data < threshold
+  const innovatorsData = React.useMemo(() => {
+    if (isLoading) return [];
+
+    const realData = realInnovators || [];
+
+    // 1. If we have enough real data, always prefer it
+    if (realData.length >= config.thresholds.innovators) {
+      return realData;
+    }
+
+    // 2. If valid production build with insufficient real data -> show empty
+    if (config.isProduction) {
+      return [];
+    }
+
+    // 3. Development fallback: use mock data if real data is insufficient
+    return MockInnovatorsData;
+  }, [realInnovators, isLoading]);
+
+  if (!isLoading && innovatorsData.length === 0) return null;
 
   return (
     <div
@@ -89,7 +115,7 @@ export const Introduction = () => {
             speed="normal"
             pauseOnHover={true}
             layout="vertical"
-            items={MockInnovatorsData}
+            items={innovatorsData}
             renderItem={(innovator) => (
               <CardInnovators key={innovator.id} innovator={innovator} />
             )}
@@ -103,7 +129,7 @@ export const Introduction = () => {
             speed="slow"
             pauseOnHover={true}
             layout="vertical"
-            items={MockInnovatorsData}
+            items={innovatorsData}
             renderItem={(innovator) => (
               <CardInnovators key={innovator.id} innovator={innovator} />
             )}

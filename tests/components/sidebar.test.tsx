@@ -42,6 +42,7 @@ describe('Sidebar Component', () => {
       expect(await screen.findByText('Strategic Plans')).toBeInTheDocument();
       expect(await screen.findByText('News')).toBeInTheDocument();
       expect(await screen.findByText('Reports')).toBeInTheDocument();
+      expect(await screen.findByText('FAQs')).toBeInTheDocument();
       expect(await screen.findByText('Settings')).toBeInTheDocument();
     });
 
@@ -88,6 +89,7 @@ describe('Sidebar Component', () => {
       expect(await screen.findByText('الخطط الاستراتيجية')).toBeInTheDocument();
       expect(await screen.findByText('الأخبار')).toBeInTheDocument();
       expect(await screen.findByText('التقارير')).toBeInTheDocument();
+      expect(await screen.findByText('الأسئلة الشائعة')).toBeInTheDocument();
       expect(await screen.findByText('الإعدادات')).toBeInTheDocument();
     });
 
@@ -173,7 +175,7 @@ describe('Sidebar Component', () => {
       const { container } = render(<Sidebar locale="en" />);
 
       const links = container.querySelectorAll('a[href*="/admin"]');
-      expect(links).toHaveLength(7);
+      expect(links).toHaveLength(8);
     });
 
     it('should maintain navigation order', () => {
@@ -194,6 +196,7 @@ describe('Sidebar Component', () => {
         'Strategic Plans',
         'News',
         'Reports',
+        'FAQs',
         'Settings',
       ];
 
@@ -208,7 +211,7 @@ describe('Sidebar Component', () => {
       const { container } = render(<Sidebar locale="en" />);
 
       const svgs = container.querySelectorAll('svg');
-      expect(svgs.length).toBeGreaterThanOrEqual(7); // At least one icon per nav item
+      expect(svgs.length).toBeGreaterThanOrEqual(8); // At least one icon per nav item
     });
 
     it('should apply correct icon classes when active', () => {
