@@ -6,6 +6,7 @@ import { AnimatedList, SeparatorGradients } from "@/components";
 import { MockCompaniesData } from "@/mock";
 import { CardCompanies } from "./card-companies";
 import { useGetCollaborators } from "@/features/collaborators/api/use-get-public-collaborators";
+import { config } from "@/lib/config";
 
 type DisplayItem = {
   id: string;
@@ -13,9 +14,6 @@ type DisplayItem = {
   experience: string;
   image: string;
 };
-
-const COLLABORATORS_THRESHOLD = 3;
-const isProduction = process.env.NODE_ENV === "production";
 
 export const Hero = () => {
   const { data: realCollaborators, isLoading } = useGetCollaborators();
@@ -28,7 +26,7 @@ export const Hero = () => {
 
     const realData = realCollaborators || [];
 
-    if (realData.length >= COLLABORATORS_THRESHOLD) {
+    if (realData.length >= config.thresholds.collaborators) {
       return realData.map((item) => ({
         id: item.id,
         companyName: item.companyName,
@@ -37,7 +35,7 @@ export const Hero = () => {
       }));
     }
 
-    if (isProduction) return [];
+    if (config.isProduction) return [];
 
     // Fallback to mock data in development
     return MockCompaniesData.map((item) => ({

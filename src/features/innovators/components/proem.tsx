@@ -14,9 +14,7 @@ import { InterfaceImage } from "@/constants";
 import { MockInnovatorsData } from "@/mock";
 import { CardInnovators } from "@/features/innovators/components/card-innovators";
 import { useGetPublicInnovators } from "@/features/innovators/api/use-get-public-innovators";
-
-const INNOVATORS_THRESHOLD = 3;
-const isProduction = process.env.NODE_ENV === "production";
+import { config } from "@/lib/config";
 
 export const Introduction = () => {
   const router = useRouter();
@@ -29,9 +27,20 @@ export const Introduction = () => {
   // - In development: use mock data as fallback if real data < threshold
   const innovatorsData = React.useMemo(() => {
     if (isLoading) return [];
+
     const realData = realInnovators || [];
-    if (realData.length >= INNOVATORS_THRESHOLD) return realData;
-    if (isProduction) return [];
+
+    // 1. If we have enough real data, always prefer it
+    if (realData.length >= config.thresholds.innovators) {
+      return realData;
+    }
+
+    // 2. If valid production build with insufficient real data -> show empty
+    if (config.isProduction) {
+      return [];
+    }
+
+    // 3. Development fallback: use mock data if real data is insufficient
     return MockInnovatorsData;
   }, [realInnovators, isLoading]);
 

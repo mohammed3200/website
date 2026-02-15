@@ -9,9 +9,7 @@ import { Faqs } from "@/features/faqs";
 import { MockFaqData } from "@/mock";
 import { HelpCircle } from "lucide-react";
 import { useGetPublicFaqs } from "@/features/faqs/api/use-get-public-faqs";
-
-const FAQ_THRESHOLD = 1;
-const isProduction = process.env.NODE_ENV === "production";
+import { config } from "@/lib/config";
 
 export const Faq = () => {
   const t = useTranslations("Faq");
@@ -24,8 +22,8 @@ export const Faq = () => {
   const faqData = React.useMemo(() => {
     if (isLoading) return [];
     const realData = realFaqs || [];
-    if (realData.length >= FAQ_THRESHOLD) return realData;
-    if (isProduction) return [];
+    if (realData.length >= config.thresholds.faq) return realData;
+    if (config.isProduction) return [];
     return MockFaqData;
   }, [realFaqs, isLoading]);
 
