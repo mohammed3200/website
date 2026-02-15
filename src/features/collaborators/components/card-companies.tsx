@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
-import { createPortal } from "react-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin,
   Phone,
@@ -10,56 +12,162 @@ import {
   Quote,
   X,
   Cog,
-  ArrowRight
+  ArrowRight,
+  Clock3,
+  CheckCircle2,
+  XCircle,
+  ExternalLink,
+  Calendar,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import useLanguage from '@/hooks/use-language';
+import { format } from 'date-fns';
+import { ar, enUS } from 'date-fns/locale';
 
-// 🧱 Data Contract (Prisma Schema Aligned)
+// 🧱 Strict Database Schema Interface
 export interface Collaborator {
-  id?: string;
+  id: string;
   companyName: string;
   primaryPhoneNumber: string;
   optionalPhoneNumber?: string | null;
   email: string;
   location?: string | null;
-  site?: string | null;
+  site?: string | null; // Website URL from database
   industrialSector: string;
   specialization: string;
   experienceProvided?: string | null;
   machineryAndEquipment?: string | null;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  isVisible: boolean;
   imageId?: string | null;
-  status?: 'PENDING' | 'APPROVED' | 'REJECTED';
-  isVisible?: boolean;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  reviewedAt?: Date | string | null;
+  reviewedById?: string | null;
+  // Relations
+  image?: {
+    id: string;
+    url: string;
+    thumbnailUrl?: string;
+  } | null;
+  experienceProvidedMedia?: Array<{
+    id: string;
+    url: string;
+    type: string;
+  }>;
+  machineryAndEquipmentMedia?: Array<{
+    id: string;
+    url: string;
+    type: string;
+  }>;
 }
 
-// Legacy & Flexible Props Support
-export interface CardCompaniesProps extends Partial<Collaborator> {
+// Status configurations for admin workflow
+const statusConfig = {
+  PENDING: {
+    icon: Clock3,
+    color: 'text-amber-600',
+    bg: 'bg-amber-50',
+    border: 'border-amber-200',
+    label: { ar: 'قيد المراجعة', en: 'Pending' },
+    pulse: 'bg-amber-400',
+  },
+  APPROVED: {
+    icon: CheckCircle2,
+    color: 'text-green-600',
+    bg: 'bg-green-50',
+    border: 'border-green-200',
+    label: { ar: 'معتمد', en: 'Approved' },
+    pulse: 'bg-green-400',
+  },
+  REJECTED: {
+    icon: XCircle,
+    color: 'text-red-600',
+    bg: 'bg-red-50',
+    border: 'border-red-200',
+    label: { ar: 'مرفوض', en: 'Rejected' },
+    pulse: 'bg-red-400',
+  },
+};
+
+// Sector color mapping for visual variety
+const sectorColors: Record<
+  string,
+  { bg: string; text: string; border: string }
+> = {
+  Technology: {
+    bg: 'bg-blue-50',
+    text: 'text-blue-700',
+    border: 'border-blue-200',
+  },
+  Manufacturing: {
+    bg: 'bg-orange-50',
+    text: 'text-orange-700',
+    border: 'border-orange-200',
+  },
+  Healthcare: {
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-700',
+    border: 'border-emerald-200',
+  },
+  Finance: {
+    bg: 'bg-violet-50',
+    text: 'text-violet-700',
+    border: 'border-violet-200',
+  },
+  Education: {
+    bg: 'bg-indigo-50',
+    text: 'text-indigo-700',
+    border: 'border-indigo-200',
+  },
+  Construction: {
+    bg: 'bg-yellow-50',
+    text: 'text-yellow-700',
+    border: 'border-yellow-200',
+  },
+  Retail: {
+    bg: 'bg-pink-50',
+    text: 'text-pink-700',
+    border: 'border-pink-200',
+  },
+  Energy: {
+    bg: 'bg-cyan-50',
+    text: 'text-cyan-700',
+    border: 'border-cyan-200',
+  },
+  default: {
+    bg: 'bg-slate-50',
+    text: 'text-slate-700',
+    border: 'border-slate-200',
+  },
+};
+
+export interface CardCompaniesProps {
+  collaborator: Collaborator;
   className?: string;
   onClick?: () => void;
-
-  // Legacy/Alternative Prop Names
-  CompaniesName?: string;
-  ExperienceProvided?: string;
-  companyImage?: string;
-  logoUrl?: string;
-
-  // Support passing the full object directly
-  collaborator?: Collaborator;
+  showStatus?: boolean; // For admin views
+  compact?: boolean; // Compact mode for grids
 }
 
-export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
-  const { isArabic } = useLanguage();
+export const CardCompanies: React.FC<CardCompaniesProps> = ({
+  collaborator,
+  className,
+  onClick,
+  showStatus = false,
+  compact = false,
+}) => {
+  const { isArabic, lang } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Handle escape key and focus trap
   useEffect(() => {
     if (!isOpen) return;
 
@@ -69,12 +177,13 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
 
     const handleTabKey = (e: KeyboardEvent) => {
       if (e.key !== 'Tab' || !modalRef.current) return;
-
       const focusableElements = modalRef.current.querySelectorAll(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
       );
       const firstElement = focusableElements[0] as HTMLElement;
-      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+      const lastElement = focusableElements[
+        focusableElements.length - 1
+      ] as HTMLElement;
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -91,17 +200,17 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
 
     document.addEventListener('keydown', handleEscape);
     document.addEventListener('keydown', handleTabKey);
-
-    // Focus first focusable element when opened
-    const focusableElements = modalRef.current?.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    if (focusableElements?.length) {
-      (focusableElements[0] as HTMLElement).focus();
-    }
-
-    // Disable body scroll
     document.body.style.overflow = 'hidden';
+
+    // Focus first element
+    setTimeout(() => {
+      const focusableElements = modalRef.current?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusableElements?.length) {
+        (focusableElements[0] as HTMLElement).focus();
+      }
+    }, 100);
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
@@ -110,169 +219,568 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
     };
   }, [isOpen]);
 
-  const data = {
-    companyName: props.companyName || props.collaborator?.companyName || props.CompaniesName || "Unknown Company",
-    industrialSector: props.industrialSector || props.collaborator?.industrialSector || "General Sector",
-    specialization: props.specialization || props.collaborator?.specialization || props.ExperienceProvided || "Specialization",
-    location: props.location || props.collaborator?.location,
-    email: props.email || props.collaborator?.email || "",
-    primaryPhoneNumber: props.primaryPhoneNumber || props.collaborator?.primaryPhoneNumber || "",
-    site: props.site || props.collaborator?.site,
-    imageId: props.imageId || props.collaborator?.imageId || props.logoUrl || props.companyImage,
-    experienceProvided: props.experienceProvided || props.collaborator?.experienceProvided,
-    machineryAndEquipment: props.machineryAndEquipment || props.collaborator?.machineryAndEquipment,
+  // Get sector styling
+  const sectorStyle =
+    sectorColors[collaborator.industrialSector] || sectorColors.default;
+
+  // Status config
+  const status = statusConfig[collaborator.status];
+  const StatusIcon = status.icon;
+
+  // Format dates
+  const formatDate = (date: Date | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return format(d, 'MMM yyyy', { locale: isArabic ? ar : enUS });
   };
 
-  const displayUrl = data.site?.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  // Get image URL with fallback
+  const imageUrl = collaborator.image?.url || collaborator.imageId;
+  const displayUrl = collaborator.site
+    ?.replace(/^https?:\/\//, '')
+    .replace(/\/$/, '');
 
-  const modalContent = (
+  // Compact Card View
+  if (compact) {
+    return (
+      <>
+        <motion.div
+          whileHover={{ y: -4 }}
+          whileTap={{ scale: 0.98 }}
+          className={cn(
+            'group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer',
+            className,
+          )}
+          onClick={() => {
+            setIsOpen(true);
+            onClick?.();
+          }}
+        >
+          <div className="p-5">
+            <div className="flex items-start gap-4">
+              {/* Logo */}
+              <div
+                className={cn(
+                  'w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden',
+                  sectorStyle.bg,
+                )}
+              >
+                {imageUrl && !imageError ? (
+                  <img
+                    src={imageUrl}
+                    alt={collaborator.companyName}
+                    className="w-full h-full object-contain p-2"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <Building2 className={cn('w-8 h-8', sectorStyle.text)} />
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-bold text-gray-900 leading-tight line-clamp-1">
+                    {collaborator.companyName}
+                  </h3>
+                  {showStatus && (
+                    <span
+                      className={cn(
+                        'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider',
+                        status.bg,
+                        status.color,
+                        status.border,
+                        'border',
+                      )}
+                    >
+                      <StatusIcon className="w-3 h-3" />
+                    </span>
+                  )}
+                </div>
+
+                <span
+                  className={cn(
+                    'inline-block mt-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider',
+                    sectorStyle.bg,
+                    sectorStyle.text,
+                  )}
+                >
+                  {collaborator.industrialSector}
+                </span>
+
+                <p className="mt-2 text-sm text-gray-500 line-clamp-2 leading-relaxed">
+                  {collaborator.specialization}
+                </p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-3.5 h-3.5" />
+                <span className="truncate max-w-[100px]">
+                  {collaborator.location ||
+                    (isArabic ? 'موقع غير محدد' : 'Location N/A')}
+                </span>
+              </div>
+              {collaborator.site && (
+                <div className="flex items-center gap-1 text-primary">
+                  <Globe className="w-3.5 h-3.5" />
+                  <span className="truncate max-w-[80px]">{displayUrl}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Modal Portal */}
+        {isMounted &&
+          createPortal(
+            <DetailModal
+              isOpen={isOpen}
+              onClose={() => setIsOpen(false)}
+              collaborator={collaborator}
+              isArabic={isArabic}
+              status={status}
+              StatusIcon={StatusIcon}
+              sectorStyle={sectorStyle}
+              imageUrl={imageUrl}
+              imageError={imageError}
+              setImageError={setImageError}
+              displayUrl={displayUrl}
+              formatDate={formatDate}
+            />,
+            document.body,
+          )}
+      </>
+    );
+  }
+
+  // Standard Card View (Original Design Enhanced)
+  return (
+    <>
+      <div
+        className={cn(
+          'group md:w-[600px] md:h-[320px] bg-white rounded-[20px] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 overflow-hidden flex flex-col md:flex-row relative cursor-pointer rtl:flex-row-reverse',
+          className,
+        )}
+        onClick={() => {
+          setIsOpen(true);
+          onClick?.();
+        }}
+      >
+        {/* Status Badge (if showStatus enabled) */}
+        {showStatus && (
+          <div
+            className={cn(
+              'absolute top-4 z-20 flex items-center gap-1.5 px-3 py-1.5 rounded-full border shadow-sm',
+              status.bg,
+              status.border,
+              isArabic ? 'left-4' : 'right-4',
+            )}
+          >
+            <span className={cn('relative flex h-2 w-2', status.color)}>
+              <span
+                className={cn(
+                  'animate-ping absolute inline-flex h-full w-full rounded-full opacity-75',
+                  status.pulse,
+                )}
+              ></span>
+              <span
+                className={cn(
+                  'relative inline-flex rounded-full h-2 w-2',
+                  status.pulse,
+                )}
+              ></span>
+            </span>
+            <StatusIcon className={cn('w-3.5 h-3.5', status.color)} />
+            <span
+              className={cn(
+                'text-xs font-bold uppercase tracking-wider',
+                status.color,
+              )}
+            >
+              {status.label[isArabic ? 'ar' : 'en']}
+            </span>
+          </div>
+        )}
+
+        {/* 1️⃣ LEFT SECTION: Identity */}
+        <div className="w-full md:w-[240px] shrink-0 bg-white flex flex-col items-center justify-center p-6 border-b md:border-b-0 border-gray-100 relative z-10 transition-colors group-hover:bg-gray-50/30">
+          <div
+            className={cn(
+              'w-[160px] h-[160px] rounded-full border-2 flex items-center justify-center mb-4 p-1 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden transform group-hover:scale-105 transition-transform duration-500',
+              sectorStyle.border,
+              sectorStyle.bg,
+            )}
+          >
+            {imageUrl && !imageError ? (
+              <img
+                src={imageUrl}
+                alt={`${collaborator.companyName} logo`}
+                className="w-full h-full object-contain p-4"
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <Building2 className={cn('w-16 h-16', sectorStyle.text)} />
+            )}
+          </div>
+          <div className={cn('w-12 h-1 rounded-full mb-4', sectorStyle.bg)} />
+          <h3 className="text-lg md:text-xl font-bold font-din-bold text-center text-gray-900 leading-tight px-2 w-full break-words">
+            {collaborator.companyName}
+          </h3>
+          <p className="mt-2 text-xs text-gray-400 font-din-regular">
+            {isArabic ? 'عضو منذ' : 'Member since'}{' '}
+            {formatDate(collaborator.createdAt)}
+          </p>
+        </div>
+
+        {/* Vertical Divider */}
+        <div className="hidden md:block w-px bg-gray-100 self-stretch my-8 relative z-10" />
+
+        {/* 2️⃣ RIGHT SECTION: Information */}
+        <div className="flex-1 min-w-0 p-8 flex flex-col relative z-10">
+          {/* Sector Badge */}
+          <div className="mb-4">
+            <span
+              className={cn(
+                'inline-flex items-center justify-center px-4 py-1.5 rounded-full text-xs font-din-bold tracking-widest uppercase shadow-sm border',
+                sectorStyle.bg,
+                sectorStyle.text,
+                sectorStyle.border,
+              )}
+            >
+              {collaborator.industrialSector}
+            </span>
+          </div>
+
+          {/* Specialization Quote */}
+          <div className="relative mb-6">
+            <Quote
+              className={cn(
+                'absolute -top-2 w-6 h-6 opacity-20',
+                isArabic ? '-right-2' : '-left-2',
+                sectorStyle.text,
+              )}
+            />
+            <p className="text-gray-600 font-din-medium italic text-base leading-relaxed line-clamp-4 ps-4 border-l-2 rtl:border-l-0 rtl:border-r-2 rtl:ps-0 rtl:pe-4 border-gray-200">
+              {collaborator.specialization}
+            </p>
+          </div>
+
+          {/* Contact Info */}
+          <div className="mt-auto space-y-3 pt-6 border-t border-gray-50">
+            <div className="flex items-center gap-3 text-sm text-gray-500 font-din-regular">
+              <div
+                className={cn(
+                  'w-8 h-8 rounded-lg flex items-center justify-center',
+                  sectorStyle.bg,
+                )}
+              >
+                <Phone className={cn('w-4 h-4', sectorStyle.text)} />
+              </div>
+              <span className="truncate">
+                {collaborator.primaryPhoneNumber}
+              </span>
+            </div>
+            <div className="flex items-center gap-3 text-sm text-gray-500 font-din-regular truncate">
+              <div
+                className={cn(
+                  'w-8 h-8 rounded-lg flex items-center justify-center',
+                  sectorStyle.bg,
+                )}
+              >
+                <Mail className={cn('w-4 h-4', sectorStyle.text)} />
+              </div>
+              <span className="truncate">{collaborator.email}</span>
+            </div>
+            {collaborator.site && (
+              <div className="flex items-center gap-3 text-sm text-gray-500 font-din-regular truncate">
+                <div
+                  className={cn(
+                    'w-8 h-8 rounded-lg flex items-center justify-center',
+                    sectorStyle.bg,
+                  )}
+                >
+                  <Globe className={cn('w-4 h-4', sectorStyle.text)} />
+                </div>
+                <span className="truncate text-primary">{displayUrl}</span>
+              </div>
+            )}
+          </div>
+
+          {/* View Profile Indicator */}
+          <div className="absolute bottom-4 end-4 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 flex items-center gap-2">
+            <span className="text-[10px] font-din-bold text-primary uppercase tracking-widest">
+              {isArabic ? 'عرض الملف' : 'View Profile'}
+            </span>
+            <ArrowRight
+              className={cn('w-3 h-3 text-primary', isArabic && 'rotate-180')}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Modal Portal */}
+      {isMounted &&
+        createPortal(
+          <DetailModal
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            collaborator={collaborator}
+            isArabic={isArabic}
+            status={status}
+            StatusIcon={StatusIcon}
+            sectorStyle={sectorStyle}
+            imageUrl={imageUrl}
+            imageError={imageError}
+            setImageError={setImageError}
+            displayUrl={displayUrl}
+            formatDate={formatDate}
+          />,
+          document.body,
+        )}
+    </>
+  );
+};
+
+// Separate Modal Component for cleaner code
+interface DetailModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  collaborator: Collaborator;
+  isArabic: boolean;
+  status: (typeof statusConfig)['PENDING'];
+  StatusIcon: React.ElementType;
+  sectorStyle: { bg: string; text: string; border: string };
+  imageUrl?: string | null;
+  imageError: boolean;
+  setImageError: (v: boolean) => void;
+  displayUrl?: string;
+  formatDate: (date: Date | string) => string;
+}
+
+const DetailModal: React.FC<DetailModalProps> = ({
+  isOpen,
+  onClose,
+  collaborator,
+  isArabic,
+  status,
+  StatusIcon,
+  sectorStyle,
+  imageUrl,
+  imageError,
+  setImageError,
+  displayUrl,
+  formatDate,
+}) => {
+  if (!isOpen) return null;
+
+  return (
     <AnimatePresence>
       {isOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center px-4"
-          role="presentation"
+          className="fixed inset-0 z-[100] flex items-center justify-center px-4 py-6"
+          role="dialog"
+          aria-modal="true"
         >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setIsOpen(false)}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            onClick={onClose}
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
           />
 
           <motion.div
-            ref={modalRef}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
-            dir={isArabic ? "rtl" : "ltr"}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="modal-company-name"
+            className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            dir={isArabic ? 'rtl' : 'ltr'}
           >
-            {/* Close Button */}
-            <button
-              onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
-              className={cn(
-                "absolute top-4 p-2 hover:bg-gray-100 rounded-full transition-colors z-20",
-                isArabic ? "left-4" : "right-4"
-              )}
-              aria-label="Close dialog"
-            >
-              <X className="w-5 h-5 text-gray-400" />
-            </button>
+            {/* Header */}
+            <div className="relative h-32 bg-gradient-to-br from-gray-50 to-gray-100 border-b border-gray-100">
+              <div
+                className={cn('absolute inset-0 opacity-10', sectorStyle.bg)}
+              />
+              <button
+                onClick={onClose}
+                className={cn(
+                  'absolute top-4 p-2 bg-white/80 hover:bg-white rounded-full transition-all shadow-sm z-20',
+                  isArabic ? 'left-4' : 'right-4',
+                )}
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
 
-            <div className="overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-200 [&::-webkit-scrollbar-thumb]:rounded-full">
-              {/* Modal Header */}
-              <div className="bg-gray-50/50 p-8 flex items-center gap-6 border-b border-gray-100">
-                <div className="w-24 h-24 rounded-2xl border-4 border-white shadow-sm shrink-0 bg-white flex items-center justify-center overflow-hidden p-2">
-                  {data.imageId ? (
-                    <img
-                      src={data.imageId}
-                      alt={data.companyName}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : (
-                    <Building2 className="w-10 h-10 text-gray-200" />
-                  )}
-                </div>
-                <div>
-                  <h2
-                    id="modal-company-name"
-                    className="text-2xl md:text-3xl font-din-bold text-gray-900 leading-tight"
+            {/* Content */}
+            <div className="overflow-y-auto flex-1">
+              {/* Profile Header */}
+              <div className="px-8 pb-8 -mt-12 relative">
+                <div className="flex flex-col md:flex-row gap-6 items-start">
+                  {/* Logo */}
+                  <div
+                    className={cn(
+                      'w-24 h-24 rounded-2xl border-4 border-white shadow-lg flex items-center justify-center overflow-hidden bg-white',
+                      sectorStyle.bg,
+                    )}
                   >
-                    {data.companyName}
-                  </h2>
-                  <div className="mt-2 text-primary font-din-medium">
-                    {data.industrialSector}
+                    {imageUrl && !imageError ? (
+                      <img
+                        src={imageUrl}
+                        alt={collaborator.companyName}
+                        className="w-full h-full object-contain p-4"
+                        onError={() => setImageError(true)}
+                      />
+                    ) : (
+                      <Building2
+                        className={cn('w-10 h-10', sectorStyle.text)}
+                      />
+                    )}
                   </div>
-                  {data.location && (
-                    <div className="flex items-center gap-1.5 text-gray-500 text-sm mt-1">
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span className="font-din-regular">{data.location}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              {/* Modal Body */}
-              <div className="p-8 space-y-8">
-                {/* Specialization */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-primary font-din-bold uppercase text-xs tracking-wider">
-                    <Quote className="w-4 h-4" />
-                    {isArabic ? "التخصص والخبرات" : "Specialization & Expertise"}
-                  </div>
-                  <div className="bg-blue-50/30 p-6 rounded-2xl border border-blue-100/50">
-                    <p className="text-gray-700 font-din-medium text-lg leading-relaxed italic">
-                      {data.specialization}
-                    </p>
-                    {data.experienceProvided && (
-                      <p className="mt-4 text-gray-600 font-din-regular leading-relaxed text-base pt-4 border-t border-blue-100/50">
-                        {data.experienceProvided}
-                      </p>
+                  <div className="flex-1 pt-2">
+                    <div className="flex flex-wrap items-center gap-3 mb-2">
+                      <h2 className="text-2xl md:text-3xl font-din-bold text-gray-900">
+                        {collaborator.companyName}
+                      </h2>
+                      <span
+                        className={cn(
+                          'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border',
+                          status.bg,
+                          status.color,
+                          status.border,
+                        )}
+                      >
+                        <StatusIcon className="w-3.5 h-3.5" />
+                        {status.label[isArabic ? 'ar' : 'en']}
+                      </span>
+                    </div>
+
+                    <span
+                      className={cn(
+                        'inline-block px-3 py-1 rounded-lg text-sm font-din-bold border',
+                        sectorStyle.bg,
+                        sectorStyle.text,
+                        sectorStyle.border,
+                      )}
+                    >
+                      {collaborator.industrialSector}
+                    </span>
+
+                    {collaborator.location && (
+                      <div className="flex items-center gap-2 text-gray-500 mt-3 text-sm">
+                        <MapPin className="w-4 h-4" />
+                        <span>{collaborator.location}</span>
+                      </div>
                     )}
                   </div>
                 </div>
+              </div>
 
-                {/* Machinery */}
-                {data.machineryAndEquipment && (
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-primary font-din-bold uppercase text-xs tracking-wider">
-                      <Cog className="w-4 h-4" />
-                      {isArabic ? "المعدات والآلات" : "Machinery & Equipment"}
-                    </div>
-                    <p className="text-gray-600 leading-relaxed font-din-regular whitespace-pre-line bg-gray-50 p-6 rounded-2xl">
-                      {data.machineryAndEquipment}
+              {/* Main Content */}
+              <div className="px-8 pb-8 space-y-8">
+                {/* Specialization */}
+                <section className="space-y-3">
+                  <h3 className="text-sm font-din-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                    <Quote className="w-4 h-4" />
+                    {isArabic ? 'التخصص' : 'Specialization'}
+                  </h3>
+                  <div
+                    className={cn(
+                      'p-6 rounded-2xl border',
+                      sectorStyle.bg,
+                      sectorStyle.border,
+                    )}
+                  >
+                    <p className="text-gray-700 font-din-medium text-lg leading-relaxed">
+                      {collaborator.specialization}
                     </p>
                   </div>
+                </section>
+
+                {/* Experience */}
+                {collaborator.experienceProvided && (
+                  <section className="space-y-3">
+                    <h3 className="text-sm font-din-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      {isArabic ? 'الخبرة المقدمة' : 'Experience Provided'}
+                    </h3>
+                    <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                      <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                        {collaborator.experienceProvided}
+                      </p>
+                    </div>
+                  </section>
                 )}
 
-                {/* Contact Information */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-gray-100">
-                  <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm">
-                      <Phone className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-gray-400 font-din-bold uppercase tracking-wider">
-                        {isArabic ? "الهاتف" : "Phone"}
+                {/* Machinery */}
+                {collaborator.machineryAndEquipment && (
+                  <section className="space-y-3">
+                    <h3 className="text-sm font-din-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                      <Cog className="w-4 h-4" />
+                      {isArabic ? 'المعدات والآلات' : 'Machinery & Equipment'}
+                    </h3>
+                    <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                      <p className="text-gray-600 leading-relaxed whitespace-pre-line">
+                        {collaborator.machineryAndEquipment}
                       </p>
-                      <p className="text-sm font-din-medium text-gray-900">{data.primaryPhoneNumber}</p>
                     </div>
-                  </div>
+                  </section>
+                )}
 
-                  <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm">
-                      <Mail className="w-4 h-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-[10px] text-gray-400 font-din-bold uppercase tracking-wider">
-                        {isArabic ? "البريد الإلكتروني" : "Email"}
-                      </p>
-                      <p className="text-sm font-din-medium text-gray-900 truncate">{data.email}</p>
-                    </div>
+                {/* Contact Grid */}
+                <section className="space-y-3">
+                  <h3 className="text-sm font-din-bold text-gray-400 uppercase tracking-wider">
+                    {isArabic ? 'معلومات التواصل' : 'Contact Information'}
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <ContactItem
+                      icon={Phone}
+                      label={isArabic ? 'الهاتف الرئيسي' : 'Primary Phone'}
+                      value={collaborator.primaryPhoneNumber}
+                      href={`tel:${collaborator.primaryPhoneNumber}`}
+                    />
+                    {collaborator.optionalPhoneNumber && (
+                      <ContactItem
+                        icon={Phone}
+                        label={isArabic ? 'الهاتف البديل' : 'Alternative Phone'}
+                        value={collaborator.optionalPhoneNumber}
+                        href={`tel:${collaborator.optionalPhoneNumber}`}
+                      />
+                    )}
+                    <ContactItem
+                      icon={Mail}
+                      label={isArabic ? 'البريد الإلكتروني' : 'Email'}
+                      value={collaborator.email}
+                      href={`mailto:${collaborator.email}`}
+                    />
+                    {collaborator.site && (
+                      <ContactItem
+                        icon={Globe}
+                        label={isArabic ? 'الموقع الإلكتروني' : 'Website'}
+                        value={displayUrl}
+                        href={collaborator.site}
+                        external
+                      />
+                    )}
                   </div>
+                </section>
 
-                  {data.site && (
-                    <a
-                      href={data.site}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors sm:col-span-2 group/link"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm group-hover/link:bg-primary group-hover/link:text-white transition-colors">
-                        <Globe className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-[10px] text-gray-400 font-din-bold uppercase tracking-wider">
-                          {isArabic ? "الموقع الإلكتروني" : "Website"}
-                        </p>
-                        <p className="text-sm font-din-medium text-gray-900 truncate">{displayUrl}</p>
-                      </div>
-                      <ArrowRight className={cn("ms-auto w-4 h-4 text-gray-300 transition-transform group-hover/link:translate-x-1", isArabic && "rotate-180 group-hover/link:-translate-x-1")} />
-                    </a>
+                {/* Metadata */}
+                <div className="pt-6 border-t border-gray-100 flex flex-wrap gap-4 text-xs text-gray-400">
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {isArabic ? 'تم الإنشاء:' : 'Created:'}{' '}
+                    {formatDate(collaborator.createdAt)}
+                  </span>
+                  {collaborator.reviewedAt && (
+                    <span className="flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      {isArabic ? 'تمت المراجعة:' : 'Reviewed:'}{' '}
+                      {formatDate(collaborator.reviewedAt)}
+                    </span>
                   )}
                 </div>
               </div>
@@ -282,79 +790,49 @@ export const CardCompanies: React.FC<CardCompaniesProps> = (props) => {
       )}
     </AnimatePresence>
   );
+};
 
-  return (
-    <>
-      <div
-        className={cn(
-          "group md:w-[600px] md:h-[320px] bg-white rounded-[20px] border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 overflow-hidden flex flex-col md:flex-row relative cursor-pointer rtl:flex-row-reverse",
-          props.className
-        )}
-        onClick={() => {
-          setIsOpen(true);
-          props.onClick?.();
-        }}
-      >
-        {/* 1️⃣ LEFT SECTION: Identity */}
-        <div className="w-full md:w-[240px] shrink-0 bg-white flex flex-col items-center justify-center p-6 border-b md:border-b-0 border-gray-100 relative z-10 transition-colors group-hover:bg-gray-50/30">
-          <div className="w-[160px] h-[160px] rounded-full border border-gray-100 flex items-center justify-center bg-gray-50/50 mb-4 p-1 shadow-[0_2px_8px_rgba(0,0,0,0.04)] overflow-hidden transform group-hover:scale-105 transition-transform duration-500">
-            {data.imageId ? (
-              <img
-                src={data.imageId}
-                alt={`${data.companyName} logo`}
-                className="w-full h-full object-contain"
-              />
-            ) : (
-              <Building2 className="w-16 h-16 text-gray-300 stroke-1" />
-            )}
-          </div>
-          <div className="w-12 h-px bg-gray-200 mb-4" />
-          <h3 className="text-lg md:text-xl font-bold font-din-bold text-center text-gray-900 leading-tight px-2 w-full break-words">
-            {data.companyName}
-          </h3>
-        </div>
-
-        {/* Vertical Divider */}
-        <div className="hidden md:block w-px bg-gray-100 self-stretch my-8 relative z-10" />
-
-        {/* 2️⃣ RIGHT SECTION: Information */}
-        <div className="flex-1 min-w-0 p-8 flex flex-col relative z-10">
-          <div className="mb-4">
-            <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-900 text-white text-xs font-din-bold tracking-widest uppercase shadow-sm">
-              {data.industrialSector}
-            </span>
-          </div>
-
-          <div className="relative mb-6">
-            <p className="text-gray-600 font-din-medium italic text-base leading-relaxed line-clamp-4 ps-4 border-l-2 border-primary/20 rtl:border-l-0 rtl:border-r-2 rtl:ps-0 rtl:pe-4">
-              {data.specialization}
-            </p>
-          </div>
-
-          <div className="mt-auto space-y-3 pt-6 border-t border-gray-50">
-            <div className="flex items-center gap-3 text-sm text-gray-500 font-din-regular">
-              <Phone className="w-4 h-4 text-primary" />
-              <span>{data.primaryPhoneNumber}</span>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-gray-500 font-din-regular truncate">
-              <Mail className="w-4 h-4 text-primary" />
-              <span className="truncate">{data.email}</span>
-            </div>
-          </div>
-
-          {/* View Profile Indicator */}
-          <div className="absolute bottom-4 end-4 opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 flex items-center gap-2">
-            <span className="text-[10px] font-din-bold text-primary uppercase tracking-widest">
-              {isArabic ? "عرض الملف" : "View Profile"}
-            </span>
-            <ArrowRight className={cn("w-3 h-3 text-primary", isArabic && "rotate-180")} />
-          </div>
-        </div>
+// Contact Item Component
+const ContactItem: React.FC<{
+  icon: React.ElementType;
+  label: string;
+  value?: string;
+  href?: string;
+  external?: boolean;
+}> = ({ icon: Icon, label, value, href, external }) => {
+  const content = (
+    <div className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors group">
+      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary shadow-sm group-hover:shadow-md transition-shadow">
+        <Icon className="w-4 h-4" />
       </div>
-
-      {isMounted && createPortal(modalContent, document.body)}
-    </>
+      <div className="min-w-0 flex-1">
+        <p className="text-[10px] text-gray-400 font-din-bold uppercase tracking-wider">
+          {label}
+        </p>
+        <p className="text-sm font-din-medium text-gray-900 truncate">
+          {value}
+        </p>
+      </div>
+      {external && (
+        <ExternalLink className="w-4 h-4 text-gray-300 group-hover:text-primary transition-colors" />
+      )}
+    </div>
   );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noopener noreferrer' : undefined}
+        className="block"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return content;
 };
 
 export default CardCompanies;

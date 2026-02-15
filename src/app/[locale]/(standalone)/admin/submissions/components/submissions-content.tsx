@@ -139,6 +139,7 @@ const SubmissionsContent = ({
                     )
                       ? (collaborator.status as any)
                       : 'PENDING') as any,
+                    isVisible: collaborator.isVisible ?? false,
                     optionalPhoneNumber:
                       collaborator.optionalPhoneNumber ?? undefined,
                     location: collaborator.location ?? undefined,
@@ -148,7 +149,10 @@ const SubmissionsContent = ({
                       collaborator.machineryAndEquipment ?? undefined,
                     imageId: collaborator.imageId ?? undefined,
                     site: collaborator.site ?? undefined,
+                    createdAt: collaborator.createdAt,
+                    updatedAt: collaborator.updatedAt,
                   }}
+                  showStatus
                   onClick={() => handleView('collaborators', collaborator.id)}
                 />
 
