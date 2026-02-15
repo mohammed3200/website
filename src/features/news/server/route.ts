@@ -136,6 +136,16 @@ const app = new Hono<{ Variables: Variables }>()
             const data = c.req.valid("form");
             const { image, ...rest } = data;
 
+            // Fetch existing news to get old image info
+            const existingNews = await db.news.findUnique({
+                where: { id },
+                include: { image: true }
+            });
+
+            if (!existingNews) {
+                return c.json({ error: "News not found" }, 404);
+            }
+
             let imageId: string | undefined = undefined;
             if (image instanceof File) {
                 const imageBuffer = Buffer.from(await image.arrayBuffer());
@@ -159,6 +169,17 @@ const app = new Hono<{ Variables: Variables }>()
                     },
                 });
                 imageId = imageRecord.id;
+
+                // Delete old image if it exists and a new one is uploaded
+                if (existingNews.image && existingNews.image.s3Key) {
+                    try {
+                        await s3Service.deleteFile(existingNews.image.s3Key);
+                        // We delete the old image record as it's no longer needed
+                        await db.image.delete({ where: { id: existingNews.image.id } });
+                    } catch (error) {
+                        console.error("Failed to cleanup old image:", error);
+                    }
+                }
             }
 
             const news = await db.news.update({
@@ -181,9 +202,32 @@ const app = new Hono<{ Variables: Variables }>()
         async (c) => {
             const id = c.req.param("id");
 
+            // Fetch news to get image info for cleanup
+            const news = await db.news.findUnique({
+                where: { id },
+                include: { image: true }
+            });
+
+            if (!news) {
+                return c.json({ error: "News not found" }, 404);
+            }
+
+            // Store image info before deleting news
+            const oldImage = news.image;
+
             await db.news.delete({
                 where: { id },
             });
+
+            // Cleanup image if it exists
+            if (oldImage && oldImage.s3Key) {
+                try {
+                    await s3Service.deleteFile(oldImage.s3Key);
+                    await db.image.delete({ where: { id: oldImage.id } });
+                } catch (error) {
+                    console.error("Failed to cleanup image after deletion:", error);
+                }
+            }
 
             return c.json({ success: true });
         }

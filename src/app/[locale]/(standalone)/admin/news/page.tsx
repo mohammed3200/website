@@ -82,7 +82,8 @@ export default function AdminNewsPage() {
             setIsFormOpen(false);
             setEditingNews(null);
         } catch (error) {
-            // Error handling is managed by the hooks (toast)
+            console.error("Failed to submit news form:", error);
+            // Error handling is also managed by the hooks (toast)
         }
     };
 

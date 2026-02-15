@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
-import { updateNewsSchema, type UpdateNewsInput, type CreateNewsInput } from '../schemas';
+import { updateNewsSchema, createNewsSchema, type UpdateNewsInput, type CreateNewsInput } from '../schemas';
 import { Loader2, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,10 +32,15 @@ interface NewsFormProps {
 export const AdminNewsForm = ({ initialData, onSubmit, isLoading, onCancel }: NewsFormProps) => {
     const t = useTranslations('Admin.News');
     const [imageFile, setImageFile] = useState<File | null>(null);
+    const isEditing = !!initialData;
 
-    const form = useForm<UpdateNewsInput>({
-        resolver: zodResolver(updateNewsSchema),
-        defaultValues: initialData || {
+    const form = useForm<any>({
+        resolver: zodResolver(isEditing ? updateNewsSchema : createNewsSchema),
+        defaultValues: initialData ? {
+            ...initialData,
+            tags: initialData.tags || '',
+            publishedAt: initialData.publishedAt ? new Date(initialData.publishedAt) : new Date(),
+        } : {
             title: '',
             titleEn: '',
             content: '',
@@ -46,13 +51,11 @@ export const AdminNewsForm = ({ initialData, onSubmit, isLoading, onCancel }: Ne
             tags: '',
             isActive: true,
             isFeatured: false,
-            publishedAt: new Date().toISOString(),
+            publishedAt: new Date(),
         },
     });
 
-    const handleSubmit = (values: UpdateNewsInput) => {
-        // Handle file upload separately if needed, or include in values if the API supports it
-        // For now, we'll pass both
+    const handleSubmit = (values: any) => {
         onSubmit({ ...values, imageFile });
     };
 
@@ -274,8 +277,10 @@ export const AdminNewsForm = ({ initialData, onSubmit, isLoading, onCancel }: Ne
                                     <FormControl>
                                         <Input
                                             type="datetime-local"
-                                            value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ''}
-                                            onChange={(e) => field.onChange(new Date(e.target.value).toISOString())}
+                                            value={field.value instanceof Date && !isNaN(field.value.getTime())
+                                                ? new Date(field.value.getTime() - field.value.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+                                                : ''}
+                                            onChange={(e) => field.onChange(new Date(e.target.value))}
                                         />
                                     </FormControl>
                                     <FormMessage />
