@@ -1,3 +1,6 @@
+"use client";
+
+import React from "react";
 import { useTranslations } from "next-intl";
 import useLanguage from "@/hooks/use-language";
 
@@ -5,10 +8,28 @@ import { Faqs } from "@/features/faqs";
 
 import { MockFaqData } from "@/mock";
 import { HelpCircle } from "lucide-react";
+import { useGetPublicFaqs } from "@/features/faqs/api/use-get-public-faqs";
+
+const FAQ_THRESHOLD = 1;
+const isProduction = process.env.NODE_ENV === "production";
 
 export const Faq = () => {
   const t = useTranslations("Faq");
   const { isArabic } = useLanguage();
+  const { data: realFaqs, isLoading } = useGetPublicFaqs();
+
+  // Hybrid data strategy:
+  // - In production: use real data only (show nothing if < threshold)
+  // - In development: use mock data as fallback if real data < threshold
+  const faqData = React.useMemo(() => {
+    if (isLoading) return [];
+    const realData = realFaqs || [];
+    if (realData.length >= FAQ_THRESHOLD) return realData;
+    if (isProduction) return [];
+    return MockFaqData;
+  }, [realFaqs, isLoading]);
+
+  if (!isLoading && faqData.length === 0) return null;
 
   return (
     <section dir={isArabic ? "rtl" : "ltr"} className="flex flex-col px-4">
@@ -27,9 +48,10 @@ export const Faq = () => {
       </div>
 
       <div className="relative flex-1">
-        <Faqs listOfFaq={MockFaqData} />
+        <Faqs listOfFaq={faqData} />
       </div>
 
     </section>
   );
 };
+

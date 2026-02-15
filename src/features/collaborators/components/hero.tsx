@@ -1,10 +1,55 @@
+"use client";
+
 import React from "react";
 import { Introduction } from "./introduction";
 import { AnimatedList, SeparatorGradients } from "@/components";
 import { MockCompaniesData } from "@/mock";
 import { CardCompanies } from "./card-companies";
+import { useGetCollaborators } from "@/features/collaborators/api/use-get-public-collaborators";
+
+type DisplayItem = {
+  id: string;
+  companyName: string;
+  experience: string;
+  image: string;
+};
+
+const COLLABORATORS_THRESHOLD = 3;
+const isProduction = process.env.NODE_ENV === "production";
 
 export const Hero = () => {
+  const { data: realCollaborators, isLoading } = useGetCollaborators();
+
+  // Hybrid data strategy:
+  // - In production: use real data only (show nothing if < threshold)
+  // - In development: use mock data as fallback if real data < threshold
+  const displayItems = React.useMemo((): DisplayItem[] => {
+    if (isLoading) return [];
+
+    const realData = realCollaborators || [];
+
+    if (realData.length >= COLLABORATORS_THRESHOLD) {
+      return realData.map((item) => ({
+        id: item.id,
+        companyName: item.companyName,
+        experience: item.specialization || "",
+        image: item.image?.data || "",
+      }));
+    }
+
+    if (isProduction) return [];
+
+    // Fallback to mock data in development
+    return MockCompaniesData.map((item) => ({
+      id: item.id,
+      companyName: item.company_name_en,
+      experience: item.experience_provided_en,
+      image: typeof item.company_image === "string" ? item.company_image : "",
+    }));
+  }, [realCollaborators, isLoading]);
+
+  if (!isLoading && displayItems.length === 0) return null;
+
   return (
     <section className="py-0">
       <div className="container mx-auto space-y-5 sm:space-y-10">
@@ -19,12 +64,12 @@ export const Hero = () => {
             speed="slow"
             pauseOnHover={true}
             layout="horizontal"
-            items={MockCompaniesData}
+            items={displayItems}
             renderItem={(item) => (
               <CardCompanies
-                CompaniesName={item.company_name_en}
-                ExperienceProvided={item.experience_provided_en}
-                companyImage={item.company_image}
+                CompaniesName={item.companyName}
+                ExperienceProvided={item.experience}
+                companyImage={item.image}
               />
             )}
           />
@@ -33,3 +78,5 @@ export const Hero = () => {
     </section>
   );
 };
+
+
