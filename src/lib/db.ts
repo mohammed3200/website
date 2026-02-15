@@ -1,19 +1,21 @@
 import "dotenv/config";
 import { PrismaClient } from '@prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
+
 declare global {
+  // eslint-disable-next-line no-var
   var prisma: PrismaClient | undefined;
 }
 
 const connectionString = `${process.env.DATABASE_URL}`;
 
-// Create MariaDB adapter factory
+// PrismaMariaDb is Prisma 7's driver adapter for MySQL/MariaDB (client engine)
 const adapter = new PrismaMariaDb(connectionString);
 
-// Create Prisma Client
+// Create Prisma Client with driver adapter (required by Prisma 7 client engine)
 export const db = globalThis.prisma || new PrismaClient({
   adapter,
-  log: ['query', 'error', 'warn'],
+  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
 });
 
 if (process.env.NODE_ENV !== 'production') globalThis.prisma = db;
