@@ -2050,17 +2050,19 @@ Detailed plan available in: `ai_form_redesign_plan.md`
 
 ## Task 14: News Data Verification & Schema Alignment
 
-### Status: 🔴 Not Started
+### Status: ✅ Completed
 
 ### Description
 
-Verify that the News detail page accurately reflects the database schema and uses real data instead of mocks.
+Verify that the News detail page accurately reflects the database schema and uses real data instead of mocks. Implement a comprehensive Admin News Management system.
 
 ### Subtasks
 
-- [ ] Verify `src/app/[locale]/(standalone)/News/[newsId]/page.tsx` against Prisma schema.
-- [ ] Ensure `useNewsId` hooks and data fetching logic are persistent and correct.
-- [ ] Verify integration with Dashboard Ads & News management.
+- [x] Verify `src/app/[locale]/(standalone)/News/[newsId]/page.tsx` against Prisma schema.
+- [x] Ensure `useNewsId` hooks and data fetching logic are persistent and correct.
+- [x] Implement comprehensive Admin News Management (CRUD, image uploads).
+- [x] Integrate with S3/MinIO for image storage and cleanup.
+- [x] Verify integration with Dashboard Ads & News management.
 
 ---
 

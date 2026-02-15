@@ -103,7 +103,7 @@ Professional 4-step workflows with smart validation and auto-save:
 
 #### **Content Management**
 
-- **News Management** - Create, edit, publish articles
+- **News Management** ✅ - Create, edit, publish articles with S3 image support
 - **FAQ Management** - Organize Q&A content
 - **Strategic Plans** - Publish goals and strategies
 
