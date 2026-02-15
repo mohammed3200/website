@@ -28,7 +28,7 @@ jobs:
         run: bunx prisma generate
 
       - name: Lint
-        run: bun run lint
+        run: bunx next lint
 
       - name: Type check
         run: bunx tsc --noEmit

@@ -7,6 +7,10 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is not defined in environment variables');
+}
+
 const connectionString = `${process.env.DATABASE_URL}`;
 
 // PrismaMariaDb is Prisma 7's driver adapter for MySQL/MariaDB (client engine)

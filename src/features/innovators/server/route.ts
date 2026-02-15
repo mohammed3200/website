@@ -178,9 +178,7 @@ const app = new Hono()
           stageDevelopment: StageDevelopment
         };
 
-        const innovator = await db.innovator.create({ data });
-
-        // Process project files if any
+        // Validate project files explicitly BEFORE creating any records
         if (projectFiles && Array.isArray(projectFiles) && projectFiles.length > 0) {
           const allowedTypes = [
             'application/pdf',
@@ -212,6 +210,15 @@ const app = new Hono()
                 message: `File ${file.name} exceeds 10MB limit`
               }, 400);
             }
+          }
+        }
+
+        const innovator = await db.innovator.create({ data });
+
+        // Process project files if any
+        if (projectFiles && Array.isArray(projectFiles) && projectFiles.length > 0) {
+          for (const file of projectFiles) {
+            if (!(file instanceof File)) continue;
 
             // Store in Media table (UPDATED - S3 Storage)
             const mediaBuffer = Buffer.from(await file.arrayBuffer());
