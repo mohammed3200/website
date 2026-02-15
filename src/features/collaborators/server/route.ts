@@ -19,7 +19,7 @@ import {
   statusUpdateSchema,
 } from '@/features/collaborators/schemas/step-schemas';
 import { NotificationPriority } from '@prisma/client';
-
+import { checkPermission, RESOURCES, ACTIONS } from '@/lib/rbac';
 import { cache } from '@/lib/cache';
 
 const app = new Hono()
@@ -238,24 +238,6 @@ const app = new Hono()
           );
         };
 
-        // Process experience media
-        if (experienceProvidedMedia.length > 0) {
-          await createMediaRecords(
-            experienceProvidedMedia,
-            'experience',
-            collaboratorId,
-          );
-        }
-
-        // Process machinery media
-        if (machineryAndEquipmentMedia.length > 0) {
-          await createMediaRecords(
-            machineryAndEquipmentMedia,
-            'machinery',
-            collaboratorId,
-          );
-        }
-
         // FIRST: Create the collaborator
         const collaborator = await db.collaborator.create({
           data: {
@@ -273,6 +255,24 @@ const app = new Hono()
             imageId,
           },
         });
+
+        // Process experience media (now safe as FK exists)
+        if (experienceProvidedMedia.length > 0) {
+          await createMediaRecords(
+            experienceProvidedMedia,
+            'experience',
+            collaboratorId,
+          );
+        }
+
+        // Process machinery media (now safe as FK exists)
+        if (machineryAndEquipmentMedia.length > 0) {
+          await createMediaRecords(
+            machineryAndEquipmentMedia,
+            'machinery',
+            collaboratorId,
+          );
+        }
 
         const url = new URL(c.req.url);
         const pathSegments = url.pathname.split('/');
@@ -344,12 +344,11 @@ const app = new Hono()
           return c.json({ error: 'Unauthorized' }, 401);
         }
 
-        // Check if user has permission to manage collaborators
-        const userPermissions = session.user.permissions || [];
-        const hasPermission = userPermissions.some(
-          (p) =>
-            p.resource === 'collaborators' &&
-            (p.action === 'update' || p.action === 'manage'),
+        // Check permission using RBAC helper
+        const hasPermission = checkPermission(
+          session.user.permissions,
+          RESOURCES.COLLABORATORS,
+          ACTIONS.UPDATE,
         );
 
         if (!hasPermission) {
@@ -458,6 +457,54 @@ const app = new Hono()
         return c.json({ error: 'Failed to update collaborator status' }, 500);
       }
     },
-  );
+  )
+  .delete('/:collaboratorId', async (c) => {
+    try {
+      const { collaboratorId } = c.req.param();
+
+      // Check authentication and authorization
+      const session = await auth();
+
+      if (!session?.user) {
+        return c.json({ error: 'Unauthorized' }, 401);
+      }
+
+      // Check permission using RBAC helper
+      const hasPermission = checkPermission(
+        session.user.permissions,
+        RESOURCES.COLLABORATORS,
+        ACTIONS.DELETE,
+      );
+
+      if (!hasPermission) {
+        return c.json({ error: 'Insufficient permissions' }, 403);
+      }
+
+      // Get the collaborator to ensure it exists
+      const collaborator = await db.collaborator.findUnique({
+        where: { id: collaboratorId },
+      });
+
+      if (!collaborator) {
+        return c.json({ error: 'Collaborator not found' }, 404);
+      }
+
+      // Delete the collaborator
+      await db.collaborator.delete({
+        where: { id: collaboratorId },
+      });
+
+      // Invalidate public cache
+      await cache.del('collaborators:public');
+
+      return c.json(
+        { success: true, message: 'Collaborator deleted successfully' },
+        200,
+      );
+    } catch (error) {
+      console.error('Error deleting collaborator:', error);
+      return c.json({ error: 'Failed to delete collaborator' }, 500);
+    }
+  });
 
 export default app;
