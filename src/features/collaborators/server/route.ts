@@ -480,25 +480,94 @@ const app = new Hono()
         return c.json({ error: 'Insufficient permissions' }, 403);
       }
 
-      // Get the collaborator to ensure it exists
+      // Get the collaborator with all relations for cleanup
       const collaborator = await db.collaborator.findUnique({
         where: { id: collaboratorId },
+        include: {
+          image: true,
+          experienceProvidedMedia: {
+            include: {
+              mediaRecord: true,
+            },
+          },
+          machineryAndEquipmentMedia: {
+            include: {
+              mediaRecord: true,
+            },
+          },
+        },
       });
 
       if (!collaborator) {
         return c.json({ error: 'Collaborator not found' }, 404);
       }
 
-      // Delete the collaborator
-      await db.collaborator.delete({
-        where: { id: collaboratorId },
+      // Collect all S3 keys to delete
+      const s3KeysToDelete: string[] = [];
+      if (collaborator.image?.s3Key) {
+        s3KeysToDelete.push(collaborator.image.s3Key);
+      }
+
+      collaborator.experienceProvidedMedia.forEach((m) => {
+        if (m.mediaRecord.s3Key) {
+          s3KeysToDelete.push(m.mediaRecord.s3Key);
+        }
+      });
+
+      collaborator.machineryAndEquipmentMedia.forEach((m) => {
+        if (m.mediaRecord.s3Key) {
+          s3KeysToDelete.push(m.mediaRecord.s3Key);
+        }
+      });
+
+      // 1. Delete files from S3
+      await Promise.all(s3KeysToDelete.map((key) => s3Service.deleteFile(key)));
+
+      // 2. Delete from DB in transaction
+      await db.$transaction(async (tx) => {
+        // Collect media record IDs to delete them later
+        const mediaRecordIds = [
+          ...collaborator.experienceProvidedMedia.map((m) => m.media),
+          ...collaborator.machineryAndEquipmentMedia.map((m) => m.media),
+        ];
+
+        // Delete relation records
+        await tx.experienceProvidedMedia.deleteMany({
+          where: { collaboratorId: collaborator.id },
+        });
+
+        await tx.machineryAndEquipmentMedia.deleteMany({
+          where: { collaboratorId: collaborator.id },
+        });
+
+        // Delete Media records
+        if (mediaRecordIds.length > 0) {
+          await tx.media.deleteMany({
+            where: { id: { in: mediaRecordIds } },
+          });
+        }
+
+        // Delete the Collaborator
+        await tx.collaborator.delete({
+          where: { id: collaborator.id },
+        });
+
+        // Delete the Image record if it exists
+        if (collaborator.imageId) {
+          await tx.image.delete({
+            where: { id: collaborator.imageId },
+          });
+        }
       });
 
       // Invalidate public cache
       await cache.del('collaborators:public');
 
       return c.json(
-        { success: true, message: 'Collaborator deleted successfully' },
+        {
+          success: true,
+          message: 'Collaborator and associated media deleted successfully',
+        },
         200,
       );
     } catch (error) {
