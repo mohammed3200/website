@@ -60,7 +60,7 @@ export async function sendNotification(
 
       // Actually, the best approach is to pass the *content* to emailService if we have it from DB
       // but emailService usually takes a component.
-      // Let's rely on a new method `sendRaw` or `sendFromTemplate` in emailService if we were editing it.
+      // Let's rely on a new method `sendRaw` or `sendFromTemplate` in emailService if it exists.
       // Since we didn't explicitly plan to refactor EmailService deeply, let's just attempt to send using the template body.
       // BUT React Email needs a component.
 
@@ -82,9 +82,6 @@ export async function sendNotification(
       // For now, let's just Log that we SHOULD send email,
       // and maybe implement a basic `emailService.sendHtml` later or now.
 
-      // Let's assume for this step we focus on WhatsApp primarily as per the feature branch name,
-      // but "Unified Messaging" implies both.
-
       // I will add a TODO here to fully integrate EmailService with DB templates.
       // For now, if it's Email, we check if we can send.
 
@@ -97,64 +94,86 @@ export async function sendNotification(
       results.push({ channel: 'EMAIL', status: 'PENDING_INTEGRATION' });
 
       // TODO: Implement actual Email message creation once EmailService supports DB templates
-      // For now, we don't create a Message record to avoid false 'QUEUED' state without a worker to pick it up.
-      /*
-      await db.message.create({
-        data: {
-          threadId,
-          channel: Channel.EMAIL,
-          direction: Direction.OUTBOUND,
-          fromAddress: process.env.EMAIL_FROM || 'system@ebic.ly',
-          toAddress: recipient.email,
-          subject: locale === 'ar' ? template.subjectAr : template.subjectEn,
-          body: locale === 'ar' ? template.bodyAr : template.bodyEn, // raw body
-          status: MessageStatus.QUEUED, // Update when actually sent
-          templateId: template.id,
-          sentBy: senderId,
-        },
-      });
-      */
     } catch (e) {
       console.error('[Messaging] Email failed', e);
+      results.push({
+        channel: 'EMAIL',
+        status: 'FAILED',
+        error: e instanceof Error ? e.message : String(e),
+      });
     }
+  } else if (
+    (template.channel === Channel.EMAIL || template.channel === Channel.BOTH) &&
+    !recipient.email
+  ) {
+    results.push({
+      channel: 'EMAIL',
+      status: 'SKIPPED',
+      error: 'Recipient missing email address',
+    });
   }
 
   // 3. Send via WhatsApp
   if (
-    (template.channel === Channel.WHATSAPP ||
-      template.channel === Channel.BOTH) &&
-    recipient.phone
+    template.channel === Channel.WHATSAPP ||
+    template.channel === Channel.BOTH
   ) {
-    try {
-      const result = await whatsAppService.sendTemplate(
-        slug,
-        recipient.phone,
-        variables,
-        locale,
-      );
-      results.push({ channel: 'WHATSAPP', ...result });
+    if (recipient.phone) {
+      try {
+        // Interpolate variables locally to avoid double-fetch and get rendered body for DB
+        let body = locale === 'ar' ? template.bodyAr : template.bodyEn;
+        for (const [key, value] of Object.entries(variables)) {
+          const token = `{{${key}}}`;
+          body = body.split(token).join(value);
+        }
 
-      // Create Message record
-      await db.message.create({
-        data: {
-          threadId,
-          channel: Channel.WHATSAPP,
-          direction: Direction.OUTBOUND,
-          fromAddress: 'system',
-          toAddress: recipient.phone,
-          // No subject for WhatsApp
-          body: locale === 'ar' ? template.bodyAr : template.bodyEn, // interpolated body not available here from service result easily unless returned
-          // Actually service.sendTemplate does interpolation. Use the same logic or fetch from result?
-          // service.ts logMessage creates a separate WhatsAppLog.
-          // unified Message table is for the "Inbox" feature.
-          status: result.success ? MessageStatus.SENT : MessageStatus.FAILED,
-          templateId: template.id,
-          sentBy: senderId,
-        },
+        const result = await whatsAppService.sendMessage(
+          recipient.phone,
+          body,
+          { templateSlug: slug },
+        );
+        results.push({ channel: 'WHATSAPP', ...result });
+
+        // Create Message record with INTERPOLATED body
+        await db.message.create({
+          data: {
+            threadId,
+            channel: Channel.WHATSAPP,
+            direction: Direction.OUTBOUND,
+            fromAddress: 'system',
+            toAddress: recipient.phone,
+            body: body, // Key fix: saving the rendered body
+            status: result.success ? MessageStatus.SENT : MessageStatus.FAILED,
+            templateId: template.id,
+            sentBy: senderId,
+          },
+        });
+      } catch (e) {
+        console.error('[Messaging] WhatsApp failed', e);
+        results.push({
+          channel: 'WHATSAPP',
+          status: 'FAILED',
+          error: e instanceof Error ? e.message : String(e),
+        });
+      }
+    } else {
+      // Track skipped channel
+      results.push({
+        channel: 'WHATSAPP',
+        status: 'SKIPPED',
+        error: 'Recipient missing phone number',
       });
-    } catch (e) {
-      console.error('[Messaging] WhatsApp failed', e);
     }
+  }
+
+  // 4. Return Results
+  if (results.length === 0) {
+    return {
+      success: false,
+      results,
+      error:
+        'No channels executed: recipient missing email/phone or channels unsupported',
+    };
   }
 
   return { success: true, results };

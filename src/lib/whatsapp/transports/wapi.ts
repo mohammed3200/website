@@ -24,14 +24,16 @@ export class WhatsAppTransport {
       console.warn(
         '⚠️ WhatsApp API not configured. Logging message to console only.',
       );
-      console.log(`[WhatsApp] To: ${to} | Body: ${body}`);
+      console.log(
+        `[WhatsApp] To: ${to.slice(0, 4)}... | Body: [REDACTED] (${body.length} chars)`,
+      );
       return { messageId: `mock-${Date.now()}` };
     }
 
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 
+    try {
       // Example implementation for a generic JSON API
       // Adjust based on the actual provider (e.g. UltraMsg, WAPIfy, Twilio)
       const response = await fetch(`${this.options.apiUrl}/messages/chat`, {
@@ -48,8 +50,6 @@ export class WhatsAppTransport {
         signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
@@ -62,6 +62,8 @@ export class WhatsAppTransport {
     } catch (error: any) {
       console.error('❌ WhatsApp Transport Error:', error);
       return { error: error.message };
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 }

@@ -33,8 +33,9 @@ export class WhatsAppService {
       return { success: false, error: 'Invalid phone number' };
     }
 
-    // 2. Send via Transport
-    const response = await this.transport.send(to, body);
+    // 2. Normalize and Send via Transport
+    const normalizedTo = this.normalizePhone(to);
+    const response = await this.transport.send(normalizedTo, body);
 
     // 3. Log Result
     const status = response.error ? MessageStatus.FAILED : MessageStatus.SENT;
@@ -96,8 +97,12 @@ export class WhatsAppService {
    * Accepts: +218..., 00218..., 091... (converts local to intl if needed)
    */
   validateNumber(phone: string): boolean {
-    const cleaned = phone.replace(/\D/g, '');
+    const cleaned = this.normalizePhone(phone);
     return cleaned.length >= 9 && cleaned.length <= 15;
+  }
+
+  normalizePhone(phone: string): string {
+    return phone.replace(/\D/g, '');
   }
 
   private async logMessage(
