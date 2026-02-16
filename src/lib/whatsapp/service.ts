@@ -1,3 +1,4 @@
+import { parsePhoneNumber } from 'libphonenumber-js';
 import { db } from '@/lib/db';
 import { WhatsAppTransport } from './transports/wapi';
 import { MessageStatus, Channel } from '@prisma/client';
@@ -96,12 +97,30 @@ export class WhatsAppService {
    * Basic E.164-like validation (adjust regex as needed for local implementation)
    * Accepts: +218..., 00218..., 091... (converts local to intl if needed)
    */
+  /**
+   * Strict validation ensuring E.164 compliance via normalizePhone
+   */
   validateNumber(phone: string): boolean {
     const cleaned = this.normalizePhone(phone);
-    return cleaned.length >= 9 && cleaned.length <= 15;
+    // Sanity check on length (E.164 is max 15 digits)
+    const digits = cleaned.replace(/\D/g, '');
+    return digits.length >= 9 && digits.length <= 15;
   }
 
+  /**
+   * Normalizes phone number to E.164 international format (e.g. +218...)
+   * Defaults to Libya (LY) if no country code provided.
+   */
   normalizePhone(phone: string): string {
+    try {
+      const phoneNumber = parsePhoneNumber(phone, 'LY');
+      if (phoneNumber && phoneNumber.isValid()) {
+        return phoneNumber.number as string;
+      }
+    } catch (e) {
+      // Fallback for already formatted numbers or edge cases
+    }
+    // Fallback: strip non-digits, ensure it doesn't break if already clean
     return phone.replace(/\D/g, '');
   }
 

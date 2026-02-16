@@ -135,19 +135,26 @@ export async function sendNotification(
         results.push({ channel: 'WHATSAPP', ...result });
 
         // Create Message record with INTERPOLATED body
-        await db.message.create({
-          data: {
-            threadId,
-            channel: Channel.WHATSAPP,
-            direction: Direction.OUTBOUND,
-            fromAddress: 'system',
-            toAddress: recipient.phone,
-            body: body, // Key fix: saving the rendered body
-            status: result.success ? MessageStatus.SENT : MessageStatus.FAILED,
-            templateId: template.id,
-            sentBy: senderId,
-          },
-        });
+        try {
+          await db.message.create({
+            data: {
+              threadId,
+              channel: Channel.WHATSAPP,
+              direction: Direction.OUTBOUND,
+              fromAddress: 'system',
+              toAddress: recipient.phone,
+              body: body, // Key fix: saving the rendered body
+              status: result.success
+                ? MessageStatus.SENT
+                : MessageStatus.FAILED,
+              templateId: template.id,
+              sentBy: senderId,
+            },
+          });
+        } catch (dbError) {
+          console.error('[Messaging] Failed to save message record:', dbError);
+          // We do NOT fail the request because the message was sent/attempted.
+        }
       } catch (e) {
         console.error('[Messaging] WhatsApp failed', e);
         results.push({
