@@ -36,6 +36,18 @@ export class WhatsAppService {
 
     // 2. Normalize and Send via Transport
     const normalizedTo = this.normalizePhone(to);
+    if (!normalizedTo) {
+      await this.logMessage(
+        to,
+        body || '',
+        MessageStatus.FAILED,
+        undefined,
+        undefined,
+        'Invalid phone number format',
+      );
+      return { success: false, error: 'Invalid phone number' };
+    }
+
     const response = await this.transport.send(normalizedTo, body);
 
     // 3. Log Result
@@ -94,34 +106,28 @@ export class WhatsAppService {
   }
 
   /**
-   * Basic E.164-like validation (adjust regex as needed for local implementation)
-   * Accepts: +218..., 00218..., 091... (converts local to intl if needed)
-   */
-  /**
    * Strict validation ensuring E.164 compliance via normalizePhone
    */
   validateNumber(phone: string): boolean {
     const cleaned = this.normalizePhone(phone);
-    // Sanity check on length (E.164 is max 15 digits)
-    const digits = cleaned.replace(/\D/g, '');
-    return digits.length >= 9 && digits.length <= 15;
+    return !!cleaned;
   }
 
   /**
    * Normalizes phone number to E.164 international format (e.g. +218...)
    * Defaults to Libya (LY) if no country code provided.
+   * Returns null if invalid.
    */
-  normalizePhone(phone: string): string {
+  normalizePhone(phone: string): string | null {
     try {
       const phoneNumber = parsePhoneNumber(phone, 'LY');
       if (phoneNumber && phoneNumber.isValid()) {
         return phoneNumber.number as string;
       }
     } catch (e) {
-      // Fallback for already formatted numbers or edge cases
+      // Invalid format
     }
-    // Fallback: strip non-digits, ensure it doesn't break if already clean
-    return phone.replace(/\D/g, '');
+    return null;
   }
 
   private async logMessage(
