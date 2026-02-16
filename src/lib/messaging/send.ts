@@ -2,6 +2,7 @@ import { db } from '@/lib/db';
 import { emailService } from '@/lib/email/service';
 import { whatsAppService } from '@/lib/whatsapp/service';
 import { Channel, Direction, MessageStatus } from '@prisma/client';
+import { randomUUID } from 'crypto';
 
 /**
  * Unified function to send notifications via Email, WhatsApp, or Both.
@@ -20,7 +21,7 @@ export async function sendNotification(
   senderId?: string,
 ) {
   // 1. Fetch Template
-  const template = await db.messageTemplate.findUnique({
+  const template = await db.messageTemplate.findFirst({
     where: { slug, isActive: true },
   });
 
@@ -40,7 +41,7 @@ export async function sendNotification(
   }
 
   const results: any[] = [];
-  const threadId = crypto.randomUUID(); // Simple grouping for this batch
+  const threadId = randomUUID(); // Simple grouping for this batch
 
   // 2. Send via Email
   if (
@@ -95,7 +96,9 @@ export async function sendNotification(
 
       results.push({ channel: 'EMAIL', status: 'PENDING_INTEGRATION' });
 
-      // Create Message record
+      // TODO: Implement actual Email message creation once EmailService supports DB templates
+      // For now, we don't create a Message record to avoid false 'QUEUED' state without a worker to pick it up.
+      /*
       await db.message.create({
         data: {
           threadId,
@@ -110,6 +113,7 @@ export async function sendNotification(
           sentBy: senderId,
         },
       });
+      */
     } catch (e) {
       console.error('[Messaging] Email failed', e);
     }

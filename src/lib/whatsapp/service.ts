@@ -64,7 +64,7 @@ export class WhatsAppService {
     locale: 'ar' | 'en' = 'ar',
   ) {
     // 1. Fetch Template
-    const template = await db.messageTemplate.findUnique({
+    const template = await db.messageTemplate.findFirst({
       where: { slug, isActive: true },
     });
 
@@ -81,9 +81,10 @@ export class WhatsAppService {
     // 2. Interpolate Variables
     let body = locale === 'ar' ? template.bodyAr : template.bodyEn;
 
-    // Replace {{variable}} placeholders
+    // Replace {{variable}} placeholders (SAFE)
     for (const [key, value] of Object.entries(variables)) {
-      body = body.replace(new RegExp(`{{${key}}}`, 'g'), value);
+      const token = `{{${key}}}`;
+      body = body.split(token).join(value);
     }
 
     // 3. Send

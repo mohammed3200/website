@@ -29,6 +29,9 @@ export class WhatsAppTransport {
     }
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+
       // Example implementation for a generic JSON API
       // Adjust based on the actual provider (e.g. UltraMsg, WAPIfy, Twilio)
       const response = await fetch(`${this.options.apiUrl}/messages/chat`, {
@@ -42,7 +45,10 @@ export class WhatsAppTransport {
           body: body,
           sender: this.options.senderNumber,
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

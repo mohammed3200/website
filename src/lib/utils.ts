@@ -129,7 +129,6 @@ export const getFileType = (fileName: string) => {
     'sketch',
     'afdesign',
     'afphoto',
-    'afphoto',
   ];
   const imageExtensions = [
     'jpg',
