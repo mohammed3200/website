@@ -7,6 +7,10 @@ export const RESOURCES = {
   SETTINGS: 'settings',
   INVITATIONS: 'invitations',
   CONTENT: 'content',
+  TEMPLATES: 'templates',
+  MESSAGES: 'messages',
+  REPORTS: 'reports',
+  STRATEGIC_PLANS: 'strategic_plans',
 } as const;
 
 export const ACTIONS = {

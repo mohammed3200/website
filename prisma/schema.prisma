@@ -33,6 +33,7 @@ model User {
   invitedUsers            User[]                 @relation("UserInvitedBy")
   role                    Role?                  @relation(fields: [roleId], references: [id])
   invitationsSent         UserInvitation[]       @relation("UserInviter")
+  sentMessages            Message[]
 
   @@index([email])
   @@index([roleId])
@@ -497,6 +498,68 @@ model PageContent {
   @@index([section])
 }
 
+model MessageTemplate {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  channel   Channel
+  nameAr    String
+  nameEn    String
+  subjectAr String? // Email-only
+  subjectEn String?
+  bodyAr    String    @db.Text
+  bodyEn    String    @db.Text
+  variables String    @db.Text // JSON: ["name", "status", ...]
+  isSystem  Boolean   @default(false)
+  isActive  Boolean   @default(true)
+  messages  Message[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([channel])
+  @@index([isActive])
+}
+
+model Message {
+  id          String           @id @default(cuid())
+  threadId    String?
+  channel     Channel
+  direction   Direction
+  fromName    String?
+  fromAddress String
+  toAddress   String
+  subject     String?
+  body        String           @db.Text
+  status      MessageStatus    @default(QUEUED)
+  templateId  String?
+  template    MessageTemplate? @relation(fields: [templateId], references: [id])
+  isAutoReply Boolean          @default(false)
+  sentBy      String?
+  sentByUser  User?            @relation(fields: [sentBy], references: [id])
+  createdAt   DateTime         @default(now())
+
+  @@index([threadId])
+  @@index([toAddress])
+  @@index([channel])
+  @@index([status])
+  @@index([sentBy])
+}
+
+model WhatsAppLog {
+  id           String        @id @default(cuid())
+  to           String
+  from         String
+  template     String
+  status       MessageStatus
+  messageId    String? // External provider message ID
+  errorMessage String?       @db.Text
+  sentAt       DateTime?
+  createdAt    DateTime      @default(now())
+
+  @@index([to])
+  @@index([status])
+  @@index([createdAt])
+}
+
 model Report {
   id           String       @id @default(cuid())
   name         String
@@ -587,5 +650,24 @@ enum ReportStatus {
   PENDING
   GENERATING
   COMPLETED
+  FAILED
+}
+
+enum Channel {
+  EMAIL
+  WHATSAPP
+  BOTH
+}
+
+enum Direction {
+  INBOUND
+  OUTBOUND
+}
+
+enum MessageStatus {
+  QUEUED
+  SENT
+  DELIVERED
+  READ
   FAILED
 }

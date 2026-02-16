@@ -28,6 +28,10 @@ export const ROLE_PERMISSIONS: Record<
     { resource: RESOURCES.DASHBOARD, action: ACTIONS.MANAGE },
     { resource: RESOURCES.SETTINGS, action: ACTIONS.MANAGE },
     { resource: RESOURCES.INVITATIONS, action: ACTIONS.MANAGE },
+    { resource: RESOURCES.TEMPLATES, action: ACTIONS.MANAGE },
+    { resource: RESOURCES.MESSAGES, action: ACTIONS.MANAGE },
+    { resource: RESOURCES.REPORTS, action: ACTIONS.MANAGE },
+    { resource: RESOURCES.STRATEGIC_PLANS, action: ACTIONS.MANAGE },
   ],
   [SYSTEM_ROLES.ADMIN]: [
     // Can manage most things except system settings
@@ -39,6 +43,10 @@ export const ROLE_PERMISSIONS: Record<
     { resource: RESOURCES.DASHBOARD, action: ACTIONS.READ },
     { resource: RESOURCES.INVITATIONS, action: ACTIONS.CREATE },
     { resource: RESOURCES.INVITATIONS, action: ACTIONS.READ },
+    { resource: RESOURCES.MESSAGES, action: ACTIONS.MANAGE },
+    { resource: RESOURCES.TEMPLATES, action: ACTIONS.READ },
+    { resource: RESOURCES.REPORTS, action: ACTIONS.READ },
+    { resource: RESOURCES.STRATEGIC_PLANS, action: ACTIONS.MANAGE },
   ],
   [SYSTEM_ROLES.NEWS_EDITOR]: [
     // Can only manage news
@@ -57,6 +65,7 @@ export const ROLE_PERMISSIONS: Record<
     { resource: RESOURCES.INNOVATORS, action: ACTIONS.APPROVE },
     { resource: RESOURCES.INNOVATORS, action: ACTIONS.REJECT },
     { resource: RESOURCES.DASHBOARD, action: ACTIONS.READ },
+    { resource: RESOURCES.MESSAGES, action: ACTIONS.READ },
   ],
   [SYSTEM_ROLES.VIEWER]: [
     // Read-only access

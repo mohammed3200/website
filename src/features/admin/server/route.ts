@@ -1,13 +1,28 @@
 import { Hono } from 'hono';
-import { zValidator } from '@hono/zod-validator';
-import { z } from 'zod';
-import { auth } from '@/auth';
 import { db } from '@/lib/db';
-import { NotificationPriority } from '@prisma/client';
 import type { Session } from 'next-auth';
+import { zValidator } from '@hono/zod-validator';
+import { NotificationPriority } from '@prisma/client';
 
-import { RESOURCES, ACTIONS } from '@/lib/rbac';
-import { verifyAuth, requirePermission } from './middleware';
+import { RESOURCES, ACTIONS, checkPermission } from '@/lib/rbac';
+import {
+  verifyAuth,
+  requirePermission,
+} from '@/features/admin/server/middleware';
+
+import {
+  notificationIdParamSchema,
+  updateNotificationPreferencesSchema,
+} from '@/features/admin/schemas/notifications-schema';
+import {
+  createReportSchema,
+  reportIdParamSchema,
+} from '@/features/admin/schemas/reports-schema';
+import {
+  createTemplateSchema,
+  templateIdParamSchema,
+  updateTemplateSchema,
+} from '@/features/admin/schemas/templates-schema';
 
 // Define the variables explicitly
 type Variables = {
@@ -104,12 +119,7 @@ const app = new Hono<{ Variables: Variables }>()
   // PATCH /api/admin/notifications/:id/read - Mark notification as read
   .patch(
     '/notifications/:id/read',
-    zValidator(
-      'param',
-      z.object({
-        id: z.string(),
-      }),
-    ),
+    zValidator('param', notificationIdParamSchema),
     async (c) => {
       try {
         const user = c.get('user');
@@ -215,18 +225,7 @@ const app = new Hono<{ Variables: Variables }>()
   // PUT /api/admin/notifications/preferences - Update notification preferences
   .put(
     '/notifications/preferences',
-    zValidator(
-      'json',
-      z.object({
-        emailNewSubmissions: z.boolean().optional(),
-        emailStatusChanges: z.boolean().optional(),
-        emailSystemErrors: z.boolean().optional(),
-        emailSecurityAlerts: z.boolean().optional(),
-        emailUserActivity: z.boolean().optional(),
-        emailBackups: z.boolean().optional(),
-        digestMode: z.enum(['immediate', 'daily', 'weekly']).optional(),
-      }),
-    ),
+    zValidator('json', updateNotificationPreferencesSchema),
     async (c) => {
       try {
         const user = c.get('user');
@@ -354,66 +353,44 @@ const app = new Hono<{ Variables: Variables }>()
   })
 
   // POST /api/admin/reports - Trigger a new report generation
-  .post(
-    '/reports',
-    zValidator(
-      'json',
-      z.object({
-        name: z.string(),
-        type: z.enum([
-          'SUBMISSIONS_SUMMARY',
-          'USER_ACTIVITY',
-          'STRATEGIC_PLANS',
-          'FULL_PLATFORM',
-        ]),
-        format: z.enum(['PDF', 'CSV']),
-        parameters: z.record(z.string(), z.any()).optional(),
-      }),
-    ),
-    async (c) => {
-      try {
-        const user = c.get('user');
-        const { name, type, format, parameters } = c.req.valid('json');
+  .post('/reports', zValidator('json', createReportSchema), async (c) => {
+    try {
+      const user = c.get('user');
+      const { name, type, format, parameters } = c.req.valid('json');
 
-        const report = await db.report.create({
-          data: {
-            name,
-            type,
-            format,
-            status: 'PENDING',
-            parameters: (parameters as any) || {},
-            createdById: user.id,
-          },
-        });
-
-        // Add to background job queue
-        const { reportQueue } = await import('@/lib/queue/report-queue');
-        await reportQueue.add('generate-report', {
-          reportId: report.id,
+      const report = await db.report.create({
+        data: {
           name,
           type,
           format,
-          parameters: parameters || {},
+          status: 'PENDING',
+          parameters: (parameters as any) || {},
           createdById: user.id,
-        });
+        },
+      });
 
-        return c.json({ report });
-      } catch (error) {
-        console.error('Error creating report:', error);
-        return c.json({ error: 'Failed to create report' }, 500);
-      }
-    },
-  )
+      // Add to background job queue
+      const { reportQueue } = await import('@/lib/queue/report-queue');
+      await reportQueue.add('generate-report', {
+        reportId: report.id,
+        name,
+        type,
+        format,
+        parameters: parameters || {},
+        createdById: user.id,
+      });
+
+      return c.json({ report });
+    } catch (error) {
+      console.error('Error creating report:', error);
+      return c.json({ error: 'Failed to create report' }, 500);
+    }
+  })
 
   // DELETE /api/admin/reports/:id - Delete a report
   .delete(
     '/reports/:id',
-    zValidator(
-      'param',
-      z.object({
-        id: z.string(),
-      }),
-    ),
+    zValidator('param', reportIdParamSchema),
     async (c) => {
       try {
         const user = c.get('user');
@@ -434,6 +411,172 @@ const app = new Hono<{ Variables: Variables }>()
         console.error('Error deleting report:', error);
         return c.json({ error: 'Failed to delete report' }, 500);
       }
+    },
+  )
+
+  // --- Message Templates ---
+
+  // GET /api/admin/templates - List message templates
+  .get('/templates', verifyAuth, async (c) => {
+    const user = c.get('user');
+    if (
+      !checkPermission(
+        user.permissions as any,
+        RESOURCES.TEMPLATES,
+        ACTIONS.READ,
+      )
+    ) {
+      return c.json({ error: 'Forbidden' }, 403);
+    }
+
+    const templates = await db.messageTemplate.findMany({
+      orderBy: { nameEn: 'asc' },
+    });
+
+    return c.json({ templates });
+  })
+
+  // GET /api/admin/templates/:id - Get a specific message template
+  .get(
+    '/templates/:id',
+    verifyAuth,
+    zValidator('param', templateIdParamSchema),
+    async (c) => {
+      const user = c.get('user');
+      if (
+        !checkPermission(
+          user.permissions as any,
+          RESOURCES.TEMPLATES,
+          ACTIONS.READ,
+        )
+      ) {
+        return c.json({ error: 'Forbidden' }, 403);
+      }
+      const { id } = c.req.valid('param');
+
+      const template = await db.messageTemplate.findUnique({
+        where: { id },
+      });
+
+      if (!template) {
+        return c.json({ error: 'Template not found' }, 404);
+      }
+
+      return c.json({ template });
+    },
+  )
+
+  // POST /api/admin/templates - Create a new message template
+  .post(
+    '/templates',
+    verifyAuth,
+    zValidator('json', createTemplateSchema),
+    async (c) => {
+      const user = c.get('user');
+      if (
+        !checkPermission(
+          user.permissions as any,
+          RESOURCES.TEMPLATES,
+          ACTIONS.MANAGE,
+        )
+      ) {
+        return c.json({ error: 'Forbidden' }, 403);
+      }
+      const data = c.req.valid('json');
+
+      const existing = await db.messageTemplate.findUnique({
+        where: { slug: data.slug },
+      });
+
+      if (existing) {
+        return c.json({ error: 'Template with this slug already exists' }, 400);
+      }
+
+      const template = await db.messageTemplate.create({
+        data: {
+          ...data,
+          isSystem: false,
+        },
+      });
+
+      return c.json({ template });
+    },
+  )
+
+  // PATCH /api/admin/templates/:id - Update a message template
+  .patch(
+    '/templates/:id',
+    verifyAuth,
+    zValidator('param', templateIdParamSchema),
+    zValidator('json', updateTemplateSchema),
+    async (c) => {
+      const user = c.get('user');
+      if (
+        !checkPermission(
+          user.permissions as any,
+          RESOURCES.TEMPLATES,
+          ACTIONS.MANAGE,
+        )
+      ) {
+        return c.json({ error: 'Forbidden' }, 403);
+      }
+      const { id } = c.req.valid('param');
+      const data = c.req.valid('json');
+
+      const existing = await db.messageTemplate.findUnique({ where: { id } });
+      if (!existing) {
+        return c.json({ error: 'Template not found' }, 404);
+      }
+
+      // If slug is changed, check uniqueness
+      if (data.slug && data.slug !== existing.slug) {
+        const conflict = await db.messageTemplate.findUnique({
+          where: { slug: data.slug },
+        });
+        if (conflict) {
+          return c.json({ error: 'Slug already in use' }, 400);
+        }
+      }
+
+      const template = await db.messageTemplate.update({
+        where: { id },
+        data,
+      });
+
+      return c.json({ template });
+    },
+  )
+
+  // DELETE /api/admin/templates/:id - Delete a message template
+  .delete(
+    '/templates/:id',
+    verifyAuth,
+    zValidator('param', templateIdParamSchema),
+    async (c) => {
+      const user = c.get('user');
+      if (
+        !checkPermission(
+          user.permissions as any,
+          RESOURCES.TEMPLATES,
+          ACTIONS.MANAGE,
+        )
+      ) {
+        return c.json({ error: 'Forbidden' }, 403);
+      }
+      const { id } = c.req.valid('param');
+
+      const template = await db.messageTemplate.findUnique({ where: { id } });
+      if (!template) {
+        return c.json({ error: 'Template not found' }, 404);
+      }
+
+      if (template.isSystem) {
+        return c.json({ error: 'Cannot delete system templates' }, 403);
+      }
+
+      await db.messageTemplate.delete({ where: { id } });
+
+      return c.json({ success: true });
     },
   );
 
