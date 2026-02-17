@@ -15,12 +15,19 @@ import {
   XCircle,
   AlertCircle,
 } from 'lucide-react';
-import {
-  useGetReports,
-  useGenerateReport,
-  useDeleteReport,
-} from '@/features/admin/api/use-reports';
+import { useGetReports } from '@/features/admin/api/reports/use-get-reports';
+import { usePostReport } from '@/features/admin/api/reports/use-post-report';
+import { useDeleteReport } from '@/features/admin/api/reports/use-delete-report';
 import { cn } from '@/lib/utils';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useConfirm } from '@/hooks/use-confirm';
 
 import {
   Table,
@@ -41,15 +48,28 @@ const ReportsPage = () => {
     refetch,
     isFetching,
   } = useGetReports();
-  const generateMutation = useGenerateReport();
+  const generateMutation = usePostReport();
   const deleteMutation = useDeleteReport();
 
-  const handleGenerateReport = async (type: string, name: string) => {
+  const [DeleteDialog, confirmDelete] = useConfirm(
+    t('dialogs.deleteTitle'),
+    t('dialogs.confirmDelete'),
+    'destructive',
+  );
+
+  const handleGenerateReport = async (
+    reportType: string,
+    reportName: string,
+  ) => {
     try {
-      await generateMutation.mutateAsync({
-        name,
-        type,
-        format: 'CSV',
+      generateMutation.mutate({
+        name: reportName,
+        type: reportType as
+          | 'SUBMISSIONS_SUMMARY'
+          | 'USER_ACTIVITY'
+          | 'STRATEGIC_PLANS'
+          | 'FULL_PLATFORM',
+        format: 'PDF',
       });
     } catch (error) {
       console.error('Failed to generate report:', error);
@@ -57,7 +77,8 @@ const ReportsPage = () => {
   };
 
   const handleDeleteReport = async (id: string) => {
-    if (!confirm(t('dialogs.confirmDelete'))) return;
+    const ok = await confirmDelete();
+    if (!ok) return;
 
     try {
       await deleteMutation.mutateAsync(id);

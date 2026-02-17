@@ -21,15 +21,12 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useConfirm } from '@/hooks/use-confirm';
 
 import { CreateStrategicPlanDialog } from '@/features/strategic-plan/components/create_strategic_plan_dialog';
 import { EditStrategicPlanDialog } from '@/features/strategic-plan/components/edit_strategic_plan_dialog';
@@ -41,29 +38,29 @@ const StrategicPlansPage = () => {
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
 
   const { data, isLoading, error } = useGetAllStrategicPlans();
   const deleteMutation = useDeleteStrategicPlan();
+
+  const [DeleteDialog, confirmDelete] = useConfirm(
+    t('dialogs.deleteTitle'),
+    t('dialogs.confirmDelete'),
+    'destructive',
+  );
 
   const handleEdit = (plan: any) => {
     setSelectedPlan(plan);
     setEditDialogOpen(true);
   };
 
-  const handleDelete = (plan: any) => {
-    setSelectedPlan(plan);
-    setDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    if (selectedPlan) {
+  const handleDelete = async (plan: any) => {
+    const ok = await confirmDelete();
+    if (ok) {
       deleteMutation.mutate(
-        { id: selectedPlan.id },
+        { id: plan.id },
         {
           onSuccess: () => {
-            setDeleteDialogOpen(false);
             setSelectedPlan(null);
           },
         },
@@ -236,26 +233,7 @@ const StrategicPlansPage = () => {
       )}
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('actions.delete')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('dialogs.deleteConfirm')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>{' '}
-            {/* Assuming Cancel key. Using generic action for now if not present */}
-            <AlertDialogAction
-              onClick={confirmDelete}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {t('actions.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteDialog />
     </div>
   );
 };

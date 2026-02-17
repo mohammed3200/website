@@ -1,9 +1,13 @@
 'use client';
 
-import React from 'react';
 import { useRouter } from 'next/navigation';
-import { client } from '@/lib/rpc';
-import { useQuery } from '@tanstack/react-query';
+import { Edit, Trash2, Plus } from 'lucide-react';
+import { useGetTemplates } from '@/features/admin/api/templates/use-get-templates';
+import { useDeleteTemplate } from '@/features/admin/api/templates/use-delete-template';
+import { useConfirm } from '@/hooks/use-confirm';
+
+import { formatDate } from '@/lib/utils';
+
 import {
   Table,
   TableBody,
@@ -14,138 +18,127 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Plus } from 'lucide-react';
-import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatDate } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export const TemplateList = () => {
-  const router = useRouter();
+import { useTranslations } from 'next-intl';
 
-  const { data, isLoading, refetch } = useQuery({
-    queryKey: ['admin-templates'],
-    queryFn: async () => {
-      const res = await client.api.admin.templates.$get();
-      return await res.json();
-    },
-  });
+export const TemplateList = () => {
+  const t = useTranslations('Admin.Templates');
+  const router = useRouter();
+  const { data: templates, isLoading } = useGetTemplates();
+  const deleteMutation = useDeleteTemplate();
+  const [DeleteDialog, confirmDelete] = useConfirm(
+    t('deleteTitle', { default: 'Delete Template' }),
+    t('deleteMessage', {
+      default:
+        'Are you sure you want to delete this template? This action cannot be undone.',
+    }),
+    'destructive',
+  );
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this template?')) return;
+    const ok = await confirmDelete();
+    if (!ok) return;
 
-    try {
-      const res = await client.api.admin.templates[':id'].$delete({
-        param: { id },
-      });
-
-      if (!res.ok) {
-        const error = (await res.json()) as any;
-        throw new Error(error.error || 'Failed to delete');
-      }
-
-      toast.success('Template deleted successfully');
-      refetch();
-    } catch (error: any) {
-      toast.error(error.message);
-    }
+    deleteMutation.mutate(id);
   };
 
   if (isLoading) {
     return <TemplateListSkeleton />;
   }
 
-  const templates = (data as any)?.templates || [];
+  const list = templates || [];
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Message Templates</CardTitle>
-        <Button onClick={() => router.push('/admin/templates/new')}>
-          <Plus className="mr-2 h-4 w-4" /> New Template
-        </Button>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name (En)</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Channel</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Last Updated</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {templates.length === 0 ? (
+    <>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Message Templates</CardTitle>
+          <Button onClick={() => router.push('/admin/templates/new')}>
+            <Plus className="mr-2 h-4 w-4" /> New Template
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={6} className="text-center h-24">
-                  No templates found.
-                </TableCell>
+                <TableHead>Name (En)</TableHead>
+                <TableHead>Slug</TableHead>
+                <TableHead>Channel</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Last Updated</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
-            ) : (
-              templates.map((template: any) => (
-                <TableRow key={template.id}>
-                  <TableCell className="font-medium">
-                    {template.nameEn}
+            </TableHeader>
+            <TableBody>
+              {list.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center h-24">
+                    No templates found.
                   </TableCell>
-                  <TableCell className="font-mono text-xs">
-                    {template.slug}
-                  </TableCell>
-                  <TableCell>
-                    <ChannelBadge channel={template.channel} />
-                  </TableCell>
-                  <TableCell>
-                    {template.isActive ? (
-                      <Badge
-                        variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200"
-                      >
-                        Active
-                      </Badge>
-                    ) : (
-                      <Badge
-                        variant="outline"
-                        className="bg-gray-50 text-gray-600"
-                      >
-                        Inactive
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-sm">
-                    {formatDate(template.updatedAt)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() =>
-                          router.push(`/admin/templates/${template.id}`)
-                        }
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      {!template.isSystem && (
+                </TableRow>
+              ) : (
+                list.map((template: any) => (
+                  <TableRow key={template.id}>
+                    <TableCell className="font-medium">
+                      {template.nameEn}
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {template.slug}
+                    </TableCell>
+                    <TableCell>
+                      <ChannelBadge channel={template.channel} />
+                    </TableCell>
+                    <TableCell>
+                      {template.isActive ? (
+                        <Badge
+                          variant="outline"
+                          className="bg-green-50 text-green-700 border-green-200"
+                        >
+                          Active
+                        </Badge>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className="bg-gray-50 text-gray-600"
+                        >
+                          Inactive
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>{formatDate(template.updatedAt)}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-x-2">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-red-500 hover:text-red-600 hover:bg-red-50"
-                          onClick={() => handleDelete(template.id)}
+                          onClick={() =>
+                            router.push(`/admin/templates/${template.id}`)
+                          }
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Edit className="h-4 w-4" />
                         </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
+                        {!template.isSystem && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleDelete(template.id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+      <DeleteDialog />
+    </>
   );
 };
 

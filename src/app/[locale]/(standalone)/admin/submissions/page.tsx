@@ -1,6 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { useGetSubmissions } from '@/features/admin/api/use-submissions';
+import { useGetSubmissions } from '@/features/admin/api/submissions/use-get-submissions';
 import { TableSkeleton } from '@/components/skeletons';
 import SubmissionsContent from './components/submissions-content';
 

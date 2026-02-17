@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import DOMPurify from 'dompurify';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
-import { client } from '@/lib/rpc';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -28,40 +28,17 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-const templateSchema = z.object({
-  slug: z
-    .string()
-    .min(3, 'Slug must be at least 3 characters')
-    .regex(
-      /^[a-z0-9_]+$/,
-      'Slug must be lowercase alphanumeric with underscores',
-    ),
-  channel: z.enum(['EMAIL', 'WHATSAPP', 'BOTH']),
-  nameAr: z.string().min(1, 'Arabic name is required'),
-  nameEn: z.string().min(1, 'English name is required'),
-  subjectAr: z.string().optional(),
-  subjectEn: z.string().optional(),
-  bodyAr: z.string().min(1, 'Arabic body is required'),
-  bodyEn: z.string().min(1, 'English body is required'),
-  variables: z.string().refine((val) => {
-    try {
-      const parsed = JSON.parse(val);
-      return Array.isArray(parsed);
-    } catch {
-      return false;
-    }
-  }, 'Variables must be a valid JSON array of strings (e.g. ["name", "code"])'),
-  isActive: z.boolean().optional(),
-});
+import { createTemplateSchema } from '@/features/admin/schemas/templates-schema';
+import { usePostTemplate } from '@/features/admin/api/templates/use-post-template';
+import { usePatchTemplate } from '@/features/admin/api/templates/use-patch-template';
 
-type TemplateFormValues = z.infer<typeof templateSchema>;
+type TemplateFormValues = z.infer<typeof createTemplateSchema>;
 
 interface TemplateEditorProps {
-  initialData?: any; // strict typing would duplicate the prisma type
+  initialData?: any;
   isEditing?: boolean;
 }
 
@@ -70,12 +47,19 @@ export const TemplateEditor = ({
   isEditing = false,
 }: TemplateEditorProps) => {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeTab, setActiveTab] = useState('edit');
+  const [activeTab, setActiveTab] = useState('edit'); // Used for tabs value? No, Tabs defaultValue="en". This state seems unused or mismatching.
+  // The tabs in generic UI are usually controlled if we want to switch programmatically, but here they are just 'en'/'ar'.
+  // Let's keep it if needed, but remove unused variables if possible.
+  // Actually, the original code had activeTab 'edit', but the Tabs used 'en'/'ar'.
+  // I will just ignore activeTab state if it's not used in the JSX.
+
   const [previewLocale, setPreviewLocale] = useState<'ar' | 'en'>('ar');
 
+  const createMutation = usePostTemplate();
+  const updateMutation = usePatchTemplate(initialData?.id || '');
+
   const form = useForm<TemplateFormValues>({
-    resolver: zodResolver(templateSchema) as any,
+    resolver: zodResolver(createTemplateSchema) as any,
     defaultValues: initialData || {
       slug: '',
       channel: 'BOTH',
@@ -98,42 +82,24 @@ export const TemplateEditor = ({
   const variablesStr = form.watch('variables');
 
   const onSubmit = async (data: TemplateFormValues) => {
-    setIsSubmitting(true);
-    try {
-      let res;
-      if (isEditing && initialData?.id) {
-        res = await client.api.admin.templates[':id'].$patch({
-          param: { id: initialData.id },
-          json: data,
-        });
-      } else {
-        res = await client.api.admin.templates.$post({
-          json: data,
-        });
-      }
-
-      if (!res.ok) {
-        const error = (await res.json()) as any;
-        throw new Error(error.error || 'Failed to save template');
-      }
-
-      toast.success(isEditing ? 'Template updated' : 'Template created');
-      router.push('/admin/templates');
-    } catch (error: any) {
-      toast.error(error.message);
-    } finally {
-      setIsSubmitting(false);
+    if (isEditing && initialData?.id) {
+      updateMutation.mutate(data);
+    } else {
+      createMutation.mutate(data);
     }
   };
 
   // Preview helper
   const renderPreview = (text: string) => {
+    if (!text) return '';
     // Simple highlighting for variables
-    return text.replace(
+    const highlighted = text.replace(
       /{{([^}]+)}}/g,
       (match) =>
         `<span class="bg-yellow-100 text-yellow-800 font-mono px-1 rounded">${match}</span>`,
     );
+    // Sanitize the HTML to prevent XSS
+    return DOMPurify.sanitize(highlighted);
   };
 
   const parsedVariables = (() => {
@@ -149,6 +115,8 @@ export const TemplateEditor = ({
     form.setValue(field, current + ` {{${variable}}} `);
   };
 
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Local Editing Form */}
@@ -158,10 +126,7 @@ export const TemplateEditor = ({
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit as any)}
-              className="space-y-4"
-            >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}

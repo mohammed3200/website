@@ -418,30 +418,7 @@ const app = new Hono<{ Variables: Variables }>()
 
   // GET /api/admin/templates - List message templates
   .get('/templates', verifyAuth, async (c) => {
-    const user = c.get('user');
-    if (
-      !checkPermission(
-        user.permissions as any,
-        RESOURCES.TEMPLATES,
-        ACTIONS.READ,
-      )
-    ) {
-      return c.json({ error: 'Forbidden' }, 403);
-    }
-
-    const templates = await db.messageTemplate.findMany({
-      orderBy: { nameEn: 'asc' },
-    });
-
-    return c.json({ templates });
-  })
-
-  // GET /api/admin/templates/:id - Get a specific message template
-  .get(
-    '/templates/:id',
-    verifyAuth,
-    zValidator('param', templateIdParamSchema),
-    async (c) => {
+    try {
       const user = c.get('user');
       if (
         !checkPermission(
@@ -452,17 +429,50 @@ const app = new Hono<{ Variables: Variables }>()
       ) {
         return c.json({ error: 'Forbidden' }, 403);
       }
-      const { id } = c.req.valid('param');
 
-      const template = await db.messageTemplate.findUnique({
-        where: { id },
+      const templates = await db.messageTemplate.findMany({
+        orderBy: { nameEn: 'asc' },
       });
 
-      if (!template) {
-        return c.json({ error: 'Template not found' }, 404);
-      }
+      return c.json({ templates });
+    } catch (error) {
+      console.error('Error fetching templates:', error);
+      return c.json({ error: 'Failed to fetch templates' }, 500);
+    }
+  })
 
-      return c.json({ template });
+  // GET /api/admin/templates/:id - Get a specific message template
+  .get(
+    '/templates/:id',
+    verifyAuth,
+    zValidator('param', templateIdParamSchema),
+    async (c) => {
+      try {
+        const user = c.get('user');
+        if (
+          !checkPermission(
+            user.permissions as any,
+            RESOURCES.TEMPLATES,
+            ACTIONS.READ,
+          )
+        ) {
+          return c.json({ error: 'Forbidden' }, 403);
+        }
+        const { id } = c.req.valid('param');
+
+        const template = await db.messageTemplate.findUnique({
+          where: { id },
+        });
+
+        if (!template) {
+          return c.json({ error: 'Template not found' }, 404);
+        }
+
+        return c.json({ template });
+      } catch (error) {
+        console.error('Error fetching template:', error);
+        return c.json({ error: 'Failed to fetch template' }, 500);
+      }
     },
   )
 
@@ -472,34 +482,42 @@ const app = new Hono<{ Variables: Variables }>()
     verifyAuth,
     zValidator('json', createTemplateSchema),
     async (c) => {
-      const user = c.get('user');
-      if (
-        !checkPermission(
-          user.permissions as any,
-          RESOURCES.TEMPLATES,
-          ACTIONS.MANAGE,
-        )
-      ) {
-        return c.json({ error: 'Forbidden' }, 403);
+      try {
+        const user = c.get('user');
+        if (
+          !checkPermission(
+            user.permissions as any,
+            RESOURCES.TEMPLATES,
+            ACTIONS.MANAGE,
+          )
+        ) {
+          return c.json({ error: 'Forbidden' }, 403);
+        }
+        const data = c.req.valid('json');
+
+        const existing = await db.messageTemplate.findUnique({
+          where: { slug: data.slug },
+        });
+
+        if (existing) {
+          return c.json(
+            { error: 'Template with this slug already exists' },
+            400,
+          );
+        }
+
+        const template = await db.messageTemplate.create({
+          data: {
+            ...data,
+            isSystem: false,
+          },
+        });
+
+        return c.json({ template });
+      } catch (error) {
+        console.error('Error creating template:', error);
+        return c.json({ error: 'Failed to create template' }, 500);
       }
-      const data = c.req.valid('json');
-
-      const existing = await db.messageTemplate.findUnique({
-        where: { slug: data.slug },
-      });
-
-      if (existing) {
-        return c.json({ error: 'Template with this slug already exists' }, 400);
-      }
-
-      const template = await db.messageTemplate.create({
-        data: {
-          ...data,
-          isSystem: false,
-        },
-      });
-
-      return c.json({ template });
     },
   )
 
@@ -510,40 +528,45 @@ const app = new Hono<{ Variables: Variables }>()
     zValidator('param', templateIdParamSchema),
     zValidator('json', updateTemplateSchema),
     async (c) => {
-      const user = c.get('user');
-      if (
-        !checkPermission(
-          user.permissions as any,
-          RESOURCES.TEMPLATES,
-          ACTIONS.MANAGE,
-        )
-      ) {
-        return c.json({ error: 'Forbidden' }, 403);
-      }
-      const { id } = c.req.valid('param');
-      const data = c.req.valid('json');
-
-      const existing = await db.messageTemplate.findUnique({ where: { id } });
-      if (!existing) {
-        return c.json({ error: 'Template not found' }, 404);
-      }
-
-      // If slug is changed, check uniqueness
-      if (data.slug && data.slug !== existing.slug) {
-        const conflict = await db.messageTemplate.findUnique({
-          where: { slug: data.slug },
-        });
-        if (conflict) {
-          return c.json({ error: 'Slug already in use' }, 400);
+      try {
+        const user = c.get('user');
+        if (
+          !checkPermission(
+            user.permissions as any,
+            RESOURCES.TEMPLATES,
+            ACTIONS.MANAGE,
+          )
+        ) {
+          return c.json({ error: 'Forbidden' }, 403);
         }
+        const { id } = c.req.valid('param');
+        const data = c.req.valid('json');
+
+        const existing = await db.messageTemplate.findUnique({ where: { id } });
+        if (!existing) {
+          return c.json({ error: 'Template not found' }, 404);
+        }
+
+        // If slug is changed, check uniqueness
+        if (data.slug && data.slug !== existing.slug) {
+          const conflict = await db.messageTemplate.findUnique({
+            where: { slug: data.slug },
+          });
+          if (conflict) {
+            return c.json({ error: 'Slug already in use' }, 400);
+          }
+        }
+
+        const template = await db.messageTemplate.update({
+          where: { id },
+          data,
+        });
+
+        return c.json({ template });
+      } catch (error) {
+        console.error('Error updating template:', error);
+        return c.json({ error: 'Failed to update template' }, 500);
       }
-
-      const template = await db.messageTemplate.update({
-        where: { id },
-        data,
-      });
-
-      return c.json({ template });
     },
   )
 
@@ -553,30 +576,35 @@ const app = new Hono<{ Variables: Variables }>()
     verifyAuth,
     zValidator('param', templateIdParamSchema),
     async (c) => {
-      const user = c.get('user');
-      if (
-        !checkPermission(
-          user.permissions as any,
-          RESOURCES.TEMPLATES,
-          ACTIONS.MANAGE,
-        )
-      ) {
-        return c.json({ error: 'Forbidden' }, 403);
+      try {
+        const user = c.get('user');
+        if (
+          !checkPermission(
+            user.permissions as any,
+            RESOURCES.TEMPLATES,
+            ACTIONS.MANAGE,
+          )
+        ) {
+          return c.json({ error: 'Forbidden' }, 403);
+        }
+        const { id } = c.req.valid('param');
+
+        const template = await db.messageTemplate.findUnique({ where: { id } });
+        if (!template) {
+          return c.json({ error: 'Template not found' }, 404);
+        }
+
+        if (template.isSystem) {
+          return c.json({ error: 'Cannot delete system templates' }, 403);
+        }
+
+        await db.messageTemplate.delete({ where: { id } });
+
+        return c.json({ success: true });
+      } catch (error) {
+        console.error('Error deleting template:', error);
+        return c.json({ error: 'Failed to delete template' }, 500);
       }
-      const { id } = c.req.valid('param');
-
-      const template = await db.messageTemplate.findUnique({ where: { id } });
-      if (!template) {
-        return c.json({ error: 'Template not found' }, 404);
-      }
-
-      if (template.isSystem) {
-        return c.json({ error: 'Cannot delete system templates' }, 403);
-      }
-
-      await db.messageTemplate.delete({ where: { id } });
-
-      return c.json({ success: true });
     },
   );
 
