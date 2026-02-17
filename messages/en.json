@@ -416,7 +416,30 @@
       },
       "recentActivity": {
         "title": "Recent Activity",
-        "empty": "Recent activity will be displayed here soon."
+        "empty": "Recent activity will be displayed here soon.",
+        "recentActivity": "Recent Activity",
+        "noActivity": "No recent activity"
+      },
+      "Charts": {
+        "submissionTrends": "Submission Trends",
+        "statusBreakdown": "Status Breakdown",
+        "innovators": "Innovators",
+        "collaborators": "Collaborators",
+        "pending": "Pending",
+        "approved": "Approved",
+        "rejected": "Rejected"
+      },
+      "Filters": {
+        "selectRange": "Select range",
+        "last7Days": "Last 7 days",
+        "last30Days": "Last 30 days",
+        "thisMonth": "This month",
+        "lastMonth": "Last month",
+        "thisYear": "This year"
+      },
+      "Activity": {
+        "recentActivity": "Recent Activity",
+        "noActivity": "No recent activity"
       }
     },
     "Notifications": {
@@ -539,6 +562,14 @@
       "status": {
         "errorTitle": "Failed to load submissions",
         "retry": "Retry"
+      },
+      "dialogs": {
+        "approveTitle": "Approve Submission",
+        "approveMessage": "Are you sure you want to approve this submission? The user will be notified via email.",
+        "rejectTitle": "Reject Submission",
+        "rejectMessage": "Are you sure you want to reject this submission? The user will be notified via email.",
+        "deleteTitle": "Delete Submission",
+        "deleteMessage": "Are you sure you want to permanently delete this submission and all associated files? This action cannot be undone."
       }
     },
     "StrategicPlans": {

@@ -1,0 +1,151 @@
+'use client';
+
+import { useLocale, useTranslations } from 'next-intl';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts';
+import { useGetStatsTrends } from '@/features/admin/api/stats/use-get-stats-trends';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+
+export const SubmissionTrendsChart = () => {
+  const t = useTranslations('Admin.Dashboard.Charts');
+  const locale = useLocale();
+  const isArabic = locale === 'ar';
+
+  const { data, isLoading } = useGetStatsTrends();
+
+  const chartData = data?.trends.map((item) => ({
+    ...item,
+    name: isArabic ? getMonthNameAr(item.month) : getMonthNameEn(item.month),
+  }));
+
+  if (isLoading) {
+    return <Skeleton className="h-[400px] w-full" />;
+  }
+
+  return (
+    <Card className="col-span-1 lg:col-span-2">
+      <CardHeader>
+        <CardTitle>{t('submissionTrends')}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[350px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={chartData}
+              margin={{
+                top: 10,
+                right: isArabic ? 40 : 10,
+                left: isArabic ? 10 : 40,
+                bottom: 0,
+              }}
+            >
+              <defs>
+                <linearGradient
+                  id="colorInnovators"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="5%" stopColor="#f97316" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#f97316" stopOpacity={0} />
+                </linearGradient>
+                <linearGradient
+                  id="colorCollaborators"
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="1"
+                >
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis
+                dataKey="name"
+                reversed={isArabic}
+                tick={{ fontSize: 12 }}
+                tickLine={false}
+                axisLine={false}
+              />
+              <YAxis
+                orientation={isArabic ? 'right' : 'left'}
+                tick={{ fontSize: 12 }}
+                tickLine={false}
+                axisLine={false}
+              />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <Tooltip
+                contentStyle={{
+                  borderRadius: '8px',
+                  border: 'none',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="innovators"
+                stroke="#f97316"
+                fillOpacity={1}
+                fill="url(#colorInnovators)"
+                name={t('innovators')}
+              />
+              <Area
+                type="monotone"
+                dataKey="collaborators"
+                stroke="#3b82f6"
+                fillOpacity={1}
+                fill="url(#colorCollaborators)"
+                name={t('collaborators')}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const getMonthNameAr = (month: string) => {
+  const months = [
+    'يناير',
+    'فبراير',
+    'مارس',
+    'أبريل',
+    'مايو',
+    'يونيو',
+    'يوليو',
+    'أغسطس',
+    'سبتمبر',
+    'أكتوبر',
+    'نوفمبر',
+    'ديسمبر',
+  ];
+  return months[parseInt(month, 10) - 1];
+};
+
+const getMonthNameEn = (month: string) => {
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  return months[parseInt(month, 10) - 1];
+};

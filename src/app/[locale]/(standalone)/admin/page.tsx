@@ -1,12 +1,11 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import useLanguage from '@/hooks/use-language';
 import { useGetDashboardStats } from '@/features/admin/api/stats/use-get-dashboard-stats';
 import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
-import { DashboardStatsGridSkeleton } from '@/components/skeletons';
 
 import {
   Users,
@@ -15,13 +14,23 @@ import {
   Newspaper,
   TrendingUp,
   Clock,
+  Download,
 } from 'lucide-react';
+
+import { SubmissionTrendsChart } from '@/features/admin/components/dashboard/submission-trends-chart';
+import { StatusBreakdownChart } from '@/features/admin/components/dashboard/status-breakdown-chart';
+import { RecentActivityFeed } from '@/features/admin/components/dashboard/recent-activity-feed';
+import { DashboardDateFilter } from '@/features/admin/components/dashboard/dashboard-date-filter';
+import { DashboardStatsGridSkeleton } from '@/components/skeletons';
+import { Button } from '@/components/ui/button';
 
 const AdminDashboardPage = () => {
   const t = useTranslations('Admin.Dashboard');
   const { lang, isArabic } = useLanguage();
   const { session } = useAdminAuth();
   const { data: statsData, isLoading } = useGetDashboardStats();
+
+  const [dateRange, setDateRange] = useState('LAST_30_DAYS');
 
   const stats = useMemo(
     () => [
@@ -62,9 +71,11 @@ const AdminDashboardPage = () => {
   if (isLoading) {
     return (
       <div className="space-y-8">
-        <div>
-          <div className="h-9 w-64 bg-muted animate-pulse rounded mb-2" />
-          <div className="h-5 w-48 bg-muted animate-pulse rounded" />
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="h-9 w-64 bg-muted animate-pulse rounded mb-2" />
+            <div className="h-5 w-48 bg-muted animate-pulse rounded" />
+          </div>
         </div>
         <DashboardStatsGridSkeleton />
       </div>
@@ -74,13 +85,26 @@ const AdminDashboardPage = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          {t('welcome', {
-            name: session?.user?.name || (isArabic ? 'المشرف' : 'Admin'),
-          })}
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+          <p className="mt-2 text-sm text-gray-600">
+            {t('welcome', {
+              name: session?.user?.name || (isArabic ? 'المشرف' : 'Admin'),
+            })}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <DashboardDateFilter value={dateRange} onChange={setDateRange} />
+          <Button
+            variant="outline"
+            size="sm"
+            className="hidden sm:flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            {t('quickActions.generateReport')}
+          </Button>
+        </div>
       </div>
 
       {/* Stats Grid */}
@@ -127,69 +151,73 @@ const AdminDashboardPage = () => {
         ))}
       </div>
 
-      {/* Quick Actions */}
-      <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          {t('quickActions.title')}
-        </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Link
-            href={`/${lang}/admin/submissions`}
-            className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
-          >
-            <ClipboardList className="h-6 w-6 text-primary" />
-            <div>
-              <p className="font-semibold text-gray-900">
-                {t('quickActions.reviewSubmissions')}
-              </p>
-              <p className="text-sm text-gray-600">
-                {t('quickActions.pendingCount', {
-                  count:
-                    (statsData?.pendingInnovators || 0) +
-                    (statsData?.pendingCollaborators || 0),
-                })}
-              </p>
-            </div>
-          </Link>
-
-          <Link
-            href={`/${lang}/admin/content`}
-            className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
-          >
-            <Newspaper className="h-6 w-6 text-primary" />
-            <div>
-              <p className="font-semibold text-gray-900">
-                {t('quickActions.manageContent')}
-              </p>
-              <p className="text-sm text-gray-600">
-                {t('quickActions.editPages')}
-              </p>
-            </div>
-          </Link>
-
-          <Link
-            href={`/${lang}/admin/reports`}
-            className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
-          >
-            <TrendingUp className="h-6 w-6 text-primary" />
-            <div>
-              <p className="font-semibold text-gray-900">
-                {t('quickActions.generateReport')}
-              </p>
-              <p className="text-sm text-gray-600">
-                {t('quickActions.customReports')}
-              </p>
-            </div>
-          </Link>
-        </div>
+      {/* Charts Row 1 */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <SubmissionTrendsChart />
+        <StatusBreakdownChart />
       </div>
 
-      {/* Recent Activity Placeholder */}
-      <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          {t('recentActivity.title')}
-        </h2>
-        <p className="text-sm text-gray-500">{t('recentActivity.empty')}</p>
+      {/* Row 2: Quick Actions & Activity */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        {/* Quick Actions */}
+        <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            {t('quickActions.title')}
+          </h2>
+          <div className="grid grid-cols-1 gap-4">
+            <Link
+              href={`/${lang}/admin/submissions`}
+              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
+            >
+              <ClipboardList className="h-6 w-6 text-primary" />
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {t('quickActions.reviewSubmissions')}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {t('quickActions.pendingCount', {
+                    count:
+                      (statsData?.pendingInnovators || 0) +
+                      (statsData?.pendingCollaborators || 0),
+                  })}
+                </p>
+              </div>
+            </Link>
+
+            <Link
+              href={`/${lang}/admin/content`}
+              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
+            >
+              <Newspaper className="h-6 w-6 text-primary" />
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {t('quickActions.manageContent')}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {t('quickActions.editPages')}
+                </p>
+              </div>
+            </Link>
+
+            <Link
+              href={`/${lang}/admin/reports`}
+              className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
+            >
+              <TrendingUp className="h-6 w-6 text-primary" />
+              <div>
+                <p className="font-semibold text-gray-900">
+                  {t('quickActions.generateReport')}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {t('quickActions.customReports')}
+                </p>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        {/* Activity Feed */}
+        <RecentActivityFeed />
       </div>
     </div>
   );
