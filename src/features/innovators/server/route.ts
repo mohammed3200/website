@@ -146,7 +146,28 @@ const app = new Hono()
         const uploadedS3Keys: string[] = [];
 
         try {
-          // 1. Process project files validation
+          // 1. Process files validation
+          if (image instanceof File) {
+            if (!mediaTypes.includes(image.type)) {
+              return c.json(
+                {
+                  code: 'INVALID_IMAGE_TYPE',
+                  message: `Image type ${image.type} is not allowed`,
+                },
+                400,
+              );
+            }
+            if (image.size > 10 * 1024 * 1024) {
+              return c.json(
+                {
+                  code: 'IMAGE_TOO_LARGE',
+                  message: `Image ${image.name} exceeds 10MB limit`,
+                },
+                400,
+              );
+            }
+          }
+
           if (projectFiles && Array.isArray(projectFiles)) {
             for (const file of projectFiles) {
               if (!(file instanceof File)) continue;

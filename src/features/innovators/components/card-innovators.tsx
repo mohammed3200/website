@@ -32,15 +32,17 @@ export const CardInnovators: React.FC<CardInnovatorsProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const triggerRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const hadOpenedRef = useRef(false);
 
-  const locationString = [innovator.city, innovator.country]
-    .filter(Boolean)
-    .join(', ');
+  const locationParts = [innovator.city, innovator.country].filter(Boolean);
+  const locationString =
+    locationParts.length > 0 ? locationParts.join(', ') : innovator.location;
   const imageSrc = innovator.imageUrl || innovator.imageId;
 
   // Focus Management
   useEffect(() => {
     if (isOpen) {
+      hadOpenedRef.current = true;
       // Small timeout to ensure modal is rendered and motion started
       const timer = setTimeout(() => {
         if (modalRef.current) {
@@ -55,7 +57,7 @@ export const CardInnovators: React.FC<CardInnovatorsProps> = ({
         }
       }, 50);
       return () => clearTimeout(timer);
-    } else {
+    } else if (hadOpenedRef.current) {
       // Restore focus to trigger when closing
       triggerRef.current?.focus();
     }
