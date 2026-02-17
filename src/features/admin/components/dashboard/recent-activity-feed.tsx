@@ -38,41 +38,49 @@ export const RecentActivityFeed = () => {
                 {t('noActivity')}
               </p>
             ) : (
-              activities.map((activity) => (
-                <div
-                  key={activity.id}
-                  className="flex gap-4 items-start border-b border-gray-100 pb-3 last:border-0"
-                >
+              activities.map((activity) => {
+                const normalizedType = activity.type.toUpperCase();
+                const date = new Date(activity.createdAt);
+                const isValidDate = !isNaN(date.getTime());
+
+                return (
                   <div
-                    className={cn(
-                      'p-2 rounded-full',
-                      activity.type.includes('ERROR')
-                        ? 'bg-red-100 text-red-600'
-                        : activity.type.includes('NEW')
-                          ? 'bg-blue-100 text-blue-600'
-                          : activity.type.includes('STATUS')
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-gray-100 text-gray-600',
-                    )}
+                    key={activity.id}
+                    className="flex gap-4 items-start border-b border-gray-100 pb-3 last:border-0"
                   >
-                    <ActivityIcon type={activity.type} />
+                    <div
+                      className={cn(
+                        'p-2 rounded-full',
+                        normalizedType.includes('ERROR')
+                          ? 'bg-red-100 text-red-600'
+                          : normalizedType.includes('NEW')
+                            ? 'bg-blue-100 text-blue-600'
+                            : normalizedType.includes('STATUS')
+                              ? 'bg-green-100 text-green-600'
+                              : 'bg-gray-100 text-gray-600',
+                      )}
+                    >
+                      <ActivityIcon type={activity.type} />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {activity.title}
+                      </p>
+                      <p className="text-xs text-gray-500 line-clamp-2">
+                        {activity.message}
+                      </p>
+                      <p className="text-[10px] text-gray-400">
+                        {isValidDate
+                          ? formatDistanceToNow(date, {
+                              addSuffix: true,
+                              locale: locale === 'ar' ? ar : enUS,
+                            })
+                          : '-'}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      {activity.title}
-                    </p>
-                    <p className="text-xs text-gray-500 line-clamp-2">
-                      {activity.message}
-                    </p>
-                    <p className="text-[10px] text-gray-400">
-                      {formatDistanceToNow(new Date(activity.createdAt), {
-                        addSuffix: true,
-                        locale: locale === 'ar' ? ar : enUS,
-                      })}
-                    </p>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </ScrollArea>

@@ -1,7 +1,7 @@
 // src/features/innovators/components/card-innovators.tsx
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -30,11 +30,68 @@ export const CardInnovators: React.FC<CardInnovatorsProps> = ({
 }) => {
   const { isArabic } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const locationString = [innovator.city, innovator.country]
     .filter(Boolean)
     .join(', ');
   const imageSrc = innovator.imageUrl || innovator.imageId;
+
+  // Focus Management
+  useEffect(() => {
+    if (isOpen) {
+      // Small timeout to ensure modal is rendered and motion started
+      const timer = setTimeout(() => {
+        if (modalRef.current) {
+          const focusable = modalRef.current.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+          );
+          if (focusable.length > 0) {
+            (focusable[0] as HTMLElement).focus();
+          } else {
+            modalRef.current.focus();
+          }
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      // Restore focus to trigger when closing
+      triggerRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setIsOpen(false);
+      return;
+    }
+
+    if (e.key === 'Tab' && modalRef.current) {
+      const focusable = Array.from(
+        modalRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        ),
+      ) as HTMLElement[];
+
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    }
+  };
 
   // Modal Component
   const modalContent = (
@@ -50,10 +107,13 @@ export const CardInnovators: React.FC<CardInnovatorsProps> = ({
           />
 
           <motion.div
+            ref={modalRef}
+            onKeyDown={handleKeyDown}
+            tabIndex={-1}
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-2xl bg-card rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+            className="relative w-full max-w-2xl bg-card rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] outline-none"
             dir={isArabic ? 'rtl' : 'ltr'}
             role="dialog"
             aria-modal="true"
@@ -200,6 +260,7 @@ export const CardInnovators: React.FC<CardInnovatorsProps> = ({
   return (
     <>
       <div
+        ref={triggerRef}
         onClick={() => setIsOpen(true)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {

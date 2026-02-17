@@ -77,6 +77,7 @@ const app = new Hono()
             imageUrl: innovator.imageId
               ? imageMap.get(innovator.imageId) || null
               : null,
+            imageId: innovator.imageId || null,
             city: innovator.city,
             country: innovator.country,
           }));
@@ -318,16 +319,18 @@ const app = new Hono()
             console.error('Failed to notify admins:', notifyError);
           }
 
-          return c.json({
-            message: 'The innovator has been successfully created',
-          });
+          return c.json(
+            {
+              message: 'The innovator has been successfully created',
+            },
+            201,
+          );
         } catch (error) {
           // CLEANUP: If anything fails, delete all uploaded S3 files
           await Promise.allSettled(
             uploadedS3Keys.map((key) => s3Service.deleteFile(key)),
           );
 
-          console.error('❌ Error Creating innovators:', error);
           throw error; // Rethrow to let Hono handle 500
         }
       } catch (error) {
@@ -389,11 +392,12 @@ const app = new Hono()
         },
       });
 
-      // Notify admins about status update
+      // Notify admins and send email about status update
       if (
         validatedData.status === 'APPROVED' ||
         validatedData.status === 'REJECTED'
       ) {
+        // 1. Notify Admins
         try {
           await notifyAdmins({
             type:
@@ -417,13 +421,8 @@ const app = new Hono()
             notifyError,
           );
         }
-      }
 
-      // Send status update email ONLY for approved/rejected
-      if (
-        validatedData.status === 'APPROVED' ||
-        validatedData.status === 'REJECTED'
-      ) {
+        // 2. Send status update email
         try {
           const emailResult = await emailService.sendStatusUpdate(
             'innovator',
@@ -552,9 +551,19 @@ const app = new Hono()
       });
 
       // 2. ONLY if DB transaction succeeds, Delete files from S3
-      await Promise.allSettled(
+      const deletionResults = await Promise.allSettled(
         s3KeysToDelete.map((key) => s3Service.deleteFile(key)),
       );
+
+      // Log any failures in S3 deletion
+      deletionResults.forEach((result, index) => {
+        if (result.status === 'rejected') {
+          console.error(
+            `❌ Failed to delete S3 object: ${s3KeysToDelete[index]}`,
+            result.reason,
+          );
+        }
+      });
 
       // Invalidate public cache
       await cache.del('innovators:public');
