@@ -13,7 +13,7 @@ import { Bell, Info, AlertTriangle, CheckCircle } from 'lucide-react';
 export const RecentActivityFeed = () => {
   const t = useTranslations('Admin.Dashboard.Activity');
   const locale = useLocale();
-  const { data, isLoading } = useGetActivity(10);
+  const { data, isLoading, isError } = useGetActivity(10);
 
   if (isLoading) {
     return <Skeleton className="h-[400px] w-full" />;
@@ -29,7 +29,11 @@ export const RecentActivityFeed = () => {
       <CardContent>
         <ScrollArea className="h-[350px] pr-4">
           <div className="space-y-4">
-            {activities.length === 0 ? (
+            {isError ? (
+              <p className="text-center text-sm text-red-500 py-8">
+                {t('error')}
+              </p>
+            ) : activities.length === 0 ? (
               <p className="text-center text-sm text-gray-500 py-8">
                 {t('noActivity')}
               </p>

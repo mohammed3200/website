@@ -14,14 +14,18 @@ import { useGetStatsTrends } from '@/features/admin/api/stats/use-get-stats-tren
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export const SubmissionTrendsChart = () => {
+interface SubmissionTrendsChartProps {
+  year?: number;
+}
+
+export const SubmissionTrendsChart = ({ year }: SubmissionTrendsChartProps) => {
   const t = useTranslations('Admin.Dashboard.Charts');
   const locale = useLocale();
   const isArabic = locale === 'ar';
 
-  const { data, isLoading } = useGetStatsTrends();
+  const { data, isLoading } = useGetStatsTrends(year);
 
-  const chartData = data?.trends.map((item) => ({
+  const chartData = (data?.trends ?? []).map((item) => ({
     ...item,
     name: isArabic ? getMonthNameAr(item.month) : getMonthNameEn(item.month),
   }));

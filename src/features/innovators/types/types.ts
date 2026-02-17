@@ -1,9 +1,9 @@
 export enum StageDevelopment {
-  STAGE = "STAGE",
-  PROTOTYPE = "PROTOTYPE",
-  DEVELOPMENT = "DEVELOPMENT",
-  TESTING = "TESTING",
-  RELEASED = "RELEASED"
+  STAGE = 'STAGE',
+  PROTOTYPE = 'PROTOTYPE',
+  DEVELOPMENT = 'DEVELOPMENT',
+  TESTING = 'TESTING',
+  RELEASED = 'RELEASED',
 }
 
 export interface Innovator {
@@ -15,11 +15,12 @@ export interface Innovator {
   projectDescription?: string;
   objective?: string;
   stageDevelopment: StageDevelopment;
-  status: "PENDING" | "APPROVED" | "REJECTED";
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
   isVisible?: boolean;
   imageId?: string;
   location?: string;
   city?: string;
   country?: string;
   specialization: string;
+  imageUrl?: string | null;
 }

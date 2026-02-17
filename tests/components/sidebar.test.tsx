@@ -175,7 +175,7 @@ describe('Sidebar Component', () => {
       const { container } = render(<Sidebar locale="en" />);
 
       const links = container.querySelectorAll('a[href*="/admin"]');
-      expect(links).toHaveLength(8);
+      expect(links).toHaveLength(10);
     });
 
     it('should maintain navigation order', () => {

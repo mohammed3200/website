@@ -17,7 +17,7 @@ type RequestType = InferRequestType<
 export const useUpdateCollaboratorStatus = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const t = useTranslations('Form');
+  const t = useTranslations('Collaborators');
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async ({ param, json }) => {

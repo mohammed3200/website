@@ -17,7 +17,7 @@ type RequestType = InferRequestType<
 export const useDeleteInnovator = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const t = useTranslations('InnovatorForm');
+  const t = useTranslations('Innovators');
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async ({ param }) => {

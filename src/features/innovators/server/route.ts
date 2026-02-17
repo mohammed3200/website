@@ -39,6 +39,8 @@ const app = new Hono()
               imageId: true,
               city: true,
               country: true,
+              status: true,
+              fieldOfStudy: true,
             },
             orderBy: { createdAt: 'desc' },
           });
@@ -70,7 +72,9 @@ const app = new Hono()
             projectDescription: innovator.projectDescription,
             objective: innovator.objective,
             stageDevelopment: innovator.stageDevelopment,
-            imageId: innovator.imageId
+            status: innovator.status,
+            specialization: innovator.fieldOfStudy || '',
+            imageUrl: innovator.imageId
               ? imageMap.get(innovator.imageId) || null
               : null,
             city: innovator.city,
@@ -137,6 +141,39 @@ const app = new Hono()
             },
             400,
           );
+
+        // Validate project files BEFORE creating the innovator
+        if (
+          projectFiles &&
+          Array.isArray(projectFiles) &&
+          projectFiles.length > 0
+        ) {
+          for (const file of projectFiles) {
+            if (!(file instanceof File)) continue;
+
+            // Validate file type
+            if (!mediaTypes.includes(file.type)) {
+              return c.json(
+                {
+                  code: 'INVALID_FILE_TYPE',
+                  message: `File type ${file.type} is not allowed`,
+                },
+                400,
+              );
+            }
+
+            // Check file size (10MB limit)
+            if (file.size > 10 * 1024 * 1024) {
+              return c.json(
+                {
+                  code: 'FILE_TOO_LARGE',
+                  message: `File ${file.name} exceeds 10MB limit`,
+                },
+                400,
+              );
+            }
+          }
+        }
 
         // Create image record if image exists (UPDATED - S3 Storage)
         let imageId: string | null = null;
@@ -208,39 +245,6 @@ const app = new Hono()
           objective?: string;
           stageDevelopment: StageDevelopment;
         };
-
-        // Validate project files BEFORE creating the innovator
-        if (
-          projectFiles &&
-          Array.isArray(projectFiles) &&
-          projectFiles.length > 0
-        ) {
-          for (const file of projectFiles) {
-            if (!(file instanceof File)) continue;
-
-            // Validate file type
-            if (!mediaTypes.includes(file.type)) {
-              return c.json(
-                {
-                  code: 'INVALID_FILE_TYPE',
-                  message: `File type ${file.type} is not allowed`,
-                },
-                400,
-              );
-            }
-
-            // Check file size (10MB limit)
-            if (file.size > 10 * 1024 * 1024) {
-              return c.json(
-                {
-                  code: 'FILE_TOO_LARGE',
-                  message: `File ${file.name} exceeds 10MB limit`,
-                },
-                400,
-              );
-            }
-          }
-        }
 
         const innovator = await db.innovator.create({ data });
 

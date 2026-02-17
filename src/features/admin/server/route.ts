@@ -426,9 +426,11 @@ const app = new Hono<{ Variables: Variables }>()
   // GET /api/admin/activity - Get recent admin activity
   .get('/activity', zValidator('query', activityQuerySchema), async (c) => {
     try {
+      const user = c.get('user');
       const { limit } = c.req.valid('query');
 
       const activities = await db.adminNotification.findMany({
+        where: { userId: user.id },
         orderBy: { createdAt: 'desc' },
         take: limit,
       });

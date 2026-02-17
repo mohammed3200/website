@@ -114,7 +114,7 @@ export default function Sidebar({ locale }: { locale: string }) {
                           )}
                           aria-hidden="true"
                         />
-                        {item.name[locale as 'en' | 'ar']}
+                        {item.name[locale as 'en' | 'ar'] ?? item.name.en}
                       </Link>
                     </li>
                   );

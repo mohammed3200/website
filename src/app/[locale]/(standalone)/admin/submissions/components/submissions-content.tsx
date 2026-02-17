@@ -220,6 +220,7 @@ const SubmissionsContent = ({
                       onClick={() =>
                         handleDelete('collaborators', collaborator.id)
                       }
+                      aria-label={t('actions.delete')}
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>

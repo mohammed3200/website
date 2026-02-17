@@ -153,7 +153,13 @@ const AdminDashboardPage = () => {
 
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <SubmissionTrendsChart />
+        <SubmissionTrendsChart
+          year={
+            dateRange === 'LAST_YEAR'
+              ? new Date().getFullYear() - 1
+              : new Date().getFullYear()
+          }
+        />
         <StatusBreakdownChart />
       </div>
 
