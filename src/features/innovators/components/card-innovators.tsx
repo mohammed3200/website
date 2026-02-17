@@ -66,8 +66,9 @@ export const CardInnovators: React.FC<CardInnovatorsProps> = ({
                 'absolute top-4 p-2 bg-card/50 hover:bg-muted rounded-full transition-colors z-20',
                 isArabic ? 'left-4' : 'right-4',
               )}
+              aria-label={isArabic ? 'إغلاق' : 'Close'}
             >
-              <X className="w-5 h-5 text-muted-foreground" />
+              <X className="w-5 h-5 text-muted-foreground" aria-hidden="true" />
             </button>
 
             <div
@@ -194,6 +195,20 @@ export const CardInnovators: React.FC<CardInnovatorsProps> = ({
     <>
       <div
         onClick={() => setIsOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsOpen(true);
+          }
+        }}
+        role="button"
+        tabIndex={0}
+        aria-haspopup="dialog"
+        aria-label={
+          isArabic
+            ? `عرض تفاصيل ${innovator.name}`
+            : `View details for ${innovator.name}`
+        }
         className={cn(
           'group bg-card rounded-2xl border border-border overflow-hidden hover:shadow-xl hover:shadow-primary/10 hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col h-full',
           className,

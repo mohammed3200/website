@@ -345,38 +345,44 @@ const app = new Hono<{ Variables: Variables }>()
         const { year } = c.req.valid('query');
 
         // Get counts for each month
-        const months = Array.from({ length: 12 }, (_, i) => i + 1);
-        const trends = await Promise.all(
-          months.map(async (month) => {
-            const startDate = new Date(year, month - 1, 1);
-            const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+        const innovators = await db.innovator.groupBy({
+          by: ['createdAt'],
+          where: {
+            createdAt: {
+              gte: new Date(year, 0, 1),
+              lte: new Date(year, 11, 31, 23, 59, 59),
+            },
+          },
+          _count: { id: true },
+        });
 
-            const [innovators, collaborators] = await Promise.all([
-              db.innovator.count({
-                where: {
-                  createdAt: {
-                    gte: startDate,
-                    lte: endDate,
-                  },
-                },
-              }),
-              db.collaborator.count({
-                where: {
-                  createdAt: {
-                    gte: startDate,
-                    lte: endDate,
-                  },
-                },
-              }),
-            ]);
+        const collaborators = await db.collaborator.groupBy({
+          by: ['createdAt'],
+          where: {
+            createdAt: {
+              gte: new Date(year, 0, 1),
+              lte: new Date(year, 11, 31, 23, 59, 59),
+            },
+          },
+          _count: { id: true },
+        });
 
-            return {
-              month: month.toString(),
-              innovators,
-              collaborators,
-            };
-          }),
-        );
+        // Map Prisma createdAt to month index (0-11)
+        const trends = Array.from({ length: 12 }, (_, i) => {
+          const monthInnovators = innovators
+            .filter((item) => item.createdAt.getMonth() === i)
+            .reduce((sum, item) => sum + item._count.id, 0);
+
+          const monthCollaborators = collaborators
+            .filter((item) => item.createdAt.getMonth() === i)
+            .reduce((sum, item) => sum + item._count.id, 0);
+
+          return {
+            month: (i + 1).toString(),
+            innovators: monthInnovators,
+            collaborators: monthCollaborators,
+          };
+        });
 
         return c.json({ trends });
       } catch (error) {

@@ -142,176 +142,175 @@ const app = new Hono()
             400,
           );
 
-        // Validate project files BEFORE creating the innovator
-        if (
-          projectFiles &&
-          Array.isArray(projectFiles) &&
-          projectFiles.length > 0
-        ) {
-          for (const file of projectFiles) {
-            if (!(file instanceof File)) continue;
+        const uploadedS3Keys: string[] = [];
 
-            // Validate file type
-            if (!mediaTypes.includes(file.type)) {
-              return c.json(
-                {
-                  code: 'INVALID_FILE_TYPE',
-                  message: `File type ${file.type} is not allowed`,
-                },
-                400,
-              );
-            }
-
-            // Check file size (10MB limit)
-            if (file.size > 10 * 1024 * 1024) {
-              return c.json(
-                {
-                  code: 'FILE_TOO_LARGE',
-                  message: `File ${file.name} exceeds 10MB limit`,
-                },
-                400,
-              );
+        try {
+          // 1. Process project files validation
+          if (projectFiles && Array.isArray(projectFiles)) {
+            for (const file of projectFiles) {
+              if (!(file instanceof File)) continue;
+              if (!mediaTypes.includes(file.type)) {
+                return c.json(
+                  {
+                    code: 'INVALID_FILE_TYPE',
+                    message: `File type ${file.type} is not allowed`,
+                  },
+                  400,
+                );
+              }
+              if (file.size > 10 * 1024 * 1024) {
+                return c.json(
+                  {
+                    code: 'FILE_TOO_LARGE',
+                    message: `File ${file.name} exceeds 10MB limit`,
+                  },
+                  400,
+                );
+              }
             }
           }
-        }
 
-        // Create image record if image exists (UPDATED - S3 Storage)
-        let imageId: string | null = null;
-        if (image instanceof File) {
-          const imageBuffer = Buffer.from(await image.arrayBuffer());
-          const imageKey = s3Service.generateKey('image', image.name, uuidv4());
+          const mapStageDevelopment = (stage: string): StageDevelopment => {
+            switch (stage) {
+              case 'STAGE':
+                return StageDevelopment.STAGE;
+              case 'PROTOTYPE':
+                return StageDevelopment.PROTOTYPE;
+              case 'DEVELOPMENT':
+                return StageDevelopment.DEVELOPMENT;
+              case 'TESTING':
+                return StageDevelopment.TESTING;
+              case 'RELEASED':
+                return StageDevelopment.RELEASED;
+              default:
+                return StageDevelopment.STAGE;
+            }
+          };
 
-          const { url, s3Key, bucket } = await s3Service.uploadFile(
-            imageBuffer,
-            imageKey,
-            image.type,
+          const data = {
+            id: uuidv4(),
+            name,
+            email,
+            phone: phoneNumber,
+            country,
+            city,
+            specialization,
+            projectTitle,
+            projectDescription,
+            objective,
+            stageDevelopment: mapStageDevelopment(stageDevelopment as string),
+          };
+
+          // 2. Perform all file uploads and DB writes in a transaction or with cleanup
+          const result = await db.$transaction(async (tx) => {
+            let imageId: string | null = null;
+
+            // Upload main image if exists
+            if (image instanceof File) {
+              const imageBuffer = Buffer.from(await image.arrayBuffer());
+              const imageKey = s3Service.generateKey(
+                'image',
+                image.name,
+                uuidv4(),
+              );
+              const upload = await s3Service.uploadFile(
+                imageBuffer,
+                imageKey,
+                image.type,
+              );
+              uploadedS3Keys.push(upload.s3Key);
+
+              const imageRecord = await tx.image.create({
+                data: {
+                  url: upload.url,
+                  s3Key: upload.s3Key,
+                  s3Bucket: upload.bucket,
+                  mimeType: image.type,
+                  size: image.size,
+                  originalName: image.name,
+                  filename: imageKey,
+                },
+              });
+              imageId = imageRecord.id;
+            }
+
+            // Create Innovator
+            const innovator = await tx.innovator.create({
+              data: {
+                ...data,
+                imageId,
+              },
+            });
+
+            // Process project files
+            if (projectFiles && Array.isArray(projectFiles)) {
+              for (const file of projectFiles) {
+                if (!(file instanceof File)) continue;
+
+                const mediaBuffer = Buffer.from(await file.arrayBuffer());
+                const mediaKey = s3Service.generateKey(
+                  'media',
+                  file.name,
+                  uuidv4(),
+                );
+                const upload = await s3Service.uploadFile(
+                  mediaBuffer,
+                  mediaKey,
+                  file.type,
+                );
+                uploadedS3Keys.push(upload.s3Key);
+
+                const media = await tx.media.create({
+                  data: {
+                    url: upload.url,
+                    s3Key: upload.s3Key,
+                    s3Bucket: upload.bucket,
+                    mimeType: file.type,
+                    size: file.size,
+                    originalName: file.name,
+                    filename: mediaKey,
+                  },
+                });
+
+                await tx.innovatorProjectFile.create({
+                  data: {
+                    id: uuidv4(),
+                    innovatorId: innovator.id,
+                    fileName: file.name,
+                    fileType: file.type,
+                    fileSize: file.size,
+                    mediaId: media.id,
+                  },
+                });
+              }
+            }
+            return innovator;
+          });
+
+          // Notify admins about new innovator
+          try {
+            await notifyNewInnovator({
+              id: result.id,
+              name: result.name,
+              projectTitle: result.projectTitle,
+              email: result.email,
+            });
+          } catch (notifyError) {
+            console.error('Failed to notify admins:', notifyError);
+          }
+
+          return c.json({
+            message: 'The innovator has been successfully created',
+          });
+        } catch (error) {
+          // CLEANUP: If anything fails, delete all uploaded S3 files
+          await Promise.allSettled(
+            uploadedS3Keys.map((key) => s3Service.deleteFile(key)),
           );
 
-          const imageRecord = await db.image.create({
-            data: {
-              url,
-              s3Key,
-              s3Bucket: bucket,
-              mimeType: image.type,
-              size: image.size,
-              originalName: image.name,
-              filename: imageKey,
-            },
-          });
-          imageId = imageRecord.id;
+          console.error('❌ Error Creating innovators:', error);
+          throw error; // Rethrow to let Hono handle 500
         }
-
-        const mapStageDevelopment = (stage: string): StageDevelopment => {
-          switch (stage) {
-            case 'STAGE':
-              return StageDevelopment.STAGE;
-            case 'PROTOTYPE':
-              return StageDevelopment.PROTOTYPE;
-            case 'DEVELOPMENT':
-              return StageDevelopment.DEVELOPMENT;
-            case 'TESTING':
-              return StageDevelopment.TESTING;
-            case 'RELEASED':
-              return StageDevelopment.RELEASED;
-            default:
-              return StageDevelopment.STAGE;
-          }
-        };
-
-        const data = {
-          id: uuidv4(),
-          name,
-          email,
-          imageId,
-          phone: phoneNumber,
-          country,
-          city,
-          specialization,
-          projectTitle,
-          projectDescription,
-          objective,
-          stageDevelopment: mapStageDevelopment(stageDevelopment as string),
-        } as {
-          id: string;
-          name: string;
-          email: string;
-          imageId?: string;
-          phone: string;
-          country: string;
-          city: string;
-          specialization: string;
-          projectTitle: string;
-          projectDescription: string;
-          objective?: string;
-          stageDevelopment: StageDevelopment;
-        };
-
-        const innovator = await db.innovator.create({ data });
-
-        // Process project files if any
-        if (
-          projectFiles &&
-          Array.isArray(projectFiles) &&
-          projectFiles.length > 0
-        ) {
-          for (const file of projectFiles) {
-            if (!(file instanceof File)) continue;
-
-            // Store in Media table (UPDATED - S3 Storage)
-            const mediaBuffer = Buffer.from(await file.arrayBuffer());
-            const mediaKey = s3Service.generateKey(
-              'media',
-              file.name,
-              uuidv4(),
-            );
-
-            const { url, s3Key, bucket } = await s3Service.uploadFile(
-              mediaBuffer,
-              mediaKey,
-              file.type,
-            );
-
-            const media = await db.media.create({
-              data: {
-                url,
-                s3Key,
-                s3Bucket: bucket,
-                mimeType: file.type,
-                size: file.size,
-                originalName: file.name,
-                filename: mediaKey,
-              },
-            });
-
-            // Create InnovatorProjectFile record
-            await db.innovatorProjectFile.create({
-              data: {
-                id: uuidv4(),
-                innovatorId: innovator.id,
-                fileName: file.name,
-                fileType: file.type,
-                fileSize: file.size,
-                mediaId: media.id,
-              },
-            });
-          }
-        }
-
-        // Notify admins about new innovator
-        try {
-          await notifyNewInnovator({
-            id: innovator.id,
-            name: innovator.name,
-            projectTitle: innovator.projectTitle,
-            email: innovator.email,
-          });
-        } catch (notifyError) {
-          console.error('Failed to notify admins:', notifyError);
-        }
-
-        return c.json({
-          message: 'The innovator has been successfully created',
-        });
       } catch (error) {
         console.error('❌ Error Creating innovators:', error);
         console.error('Error details:', {
@@ -497,10 +496,7 @@ const app = new Hono()
         }
       });
 
-      // 1. Delete files from S3
-      await Promise.all(s3KeysToDelete.map((key) => s3Service.deleteFile(key)));
-
-      // 2. Delete from DB in transaction
+      // 1. Delete from DB in transaction FIRST
       await db.$transaction(async (tx) => {
         // Collect media record IDs
         const mediaRecordIds = innovator.projectFiles.map((f) => f.mediaId);
@@ -517,18 +513,23 @@ const app = new Hono()
           });
         }
 
-        // Delete the Innovator
-        await tx.innovator.delete({
-          where: { id: innovator.id },
-        });
-
         // Delete the Image record if it exists
         if (innovator.imageId) {
           await tx.image.delete({
             where: { id: innovator.imageId },
           });
         }
+
+        // Delete the Innovator LAST
+        await tx.innovator.delete({
+          where: { id: innovator.id },
+        });
       });
+
+      // 2. ONLY if DB transaction succeeds, Delete files from S3
+      await Promise.allSettled(
+        s3KeysToDelete.map((key) => s3Service.deleteFile(key)),
+      );
 
       // Invalidate public cache
       await cache.del('innovators:public');

@@ -100,6 +100,8 @@ const AdminDashboardPage = () => {
             variant="outline"
             size="sm"
             className="hidden sm:flex items-center gap-2"
+            disabled
+            title={t('common.comingSoon')}
           >
             <Download className="h-4 w-4" />
             {t('quickActions.generateReport')}
@@ -154,11 +156,15 @@ const AdminDashboardPage = () => {
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <SubmissionTrendsChart
-          year={
-            dateRange === 'LAST_YEAR'
-              ? new Date().getFullYear() - 1
-              : new Date().getFullYear()
-          }
+          year={(() => {
+            const currentYear = new Date().getFullYear();
+            if (dateRange === 'LAST_YEAR') return currentYear - 1;
+            // Handle edge case where LAST_MONTH in January means previous year
+            if (dateRange === 'LAST_MONTH' && new Date().getMonth() === 0) {
+              return currentYear - 1;
+            }
+            return currentYear;
+          })()}
         />
         <StatusBreakdownChart />
       </div>
