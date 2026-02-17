@@ -23,6 +23,8 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({
   isSuccess = false,
   successMessage,
   disabled,
+  onHoverStart,
+  onHoverEnd,
   ...props
 }) => {
   const { isArabic } = useLanguage();
@@ -32,8 +34,14 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({
     <motion.button
       type="submit"
       disabled={isLoading || disabled || isSuccess}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
+      onHoverStart={(event, info) => {
+        setIsHovered(true);
+        onHoverStart?.(event, info);
+      }}
+      onHoverEnd={(event, info) => {
+        setIsHovered(false);
+        onHoverEnd?.(event, info);
+      }}
       whileHover={
         isLoading || disabled || isSuccess ? {} : { scale: 1.02, y: -2 }
       }

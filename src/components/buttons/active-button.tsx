@@ -161,7 +161,7 @@ export const ActiveButton = ({
       {/* Ripple Effect on Click */}
       <motion.span
         className="absolute inset-0 rounded-full bg-white/30 pointer-events-none"
-        initial={{ scale: 0, opacity: 0 }}
+        initial={{ scale: 0, opacity: 0.4 }}
         whileTap={{ scale: 2, opacity: 0 }}
         transition={{ duration: 0.5 }}
       />

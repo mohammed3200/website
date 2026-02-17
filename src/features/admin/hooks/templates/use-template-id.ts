@@ -4,5 +4,11 @@ import { useParams } from 'next/navigation';
 
 export const useTemplateId = () => {
   const params = useParams();
-  return params.id as string;
+  const id = params?.id;
+
+  if (Array.isArray(id)) {
+    return id[0];
+  }
+
+  return id as string;
 };

@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import useLanguage from '@/hooks/use-language';
 
-import { Plus, Search, Newspaper, ArrowLeft, Loader2 } from 'lucide-react';
+import { Plus, Search, Newspaper, ArrowLeft } from 'lucide-react';
 
 import type { NewsWithRelations } from '@/features/news/types';
 
@@ -98,6 +98,7 @@ export default function AdminNewsPage() {
 
   return (
     <div className="flex-1 space-y-8 p-8 pt-6 font-din-regular">
+      <DeleteDialog />
       <div className="flex items-center justify-between space-y-2">
         <div>
           <div className="flex items-center gap-2 mb-2">

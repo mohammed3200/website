@@ -48,11 +48,13 @@ export const Back = ({
         onClick={() => router.back()}
       >
         {/* Hover Background Animation */}
-        <motion.div
-          className="absolute inset-0 bg-orange-50 -z-10"
-          initial={{ x: isArabic ? '100%' : '-100%' }}
-          whileHover={{ x: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        <div
+          className={cn(
+            'absolute inset-0 bg-orange-50 -z-10 transition-transform duration-300 ease-spring',
+            isArabic
+              ? 'translate-x-full group-hover:translate-x-0'
+              : '-translate-x-full group-hover:translate-x-0',
+          )}
         />
 
         <motion.div

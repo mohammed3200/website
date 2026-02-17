@@ -9,7 +9,15 @@ export const useGetDashboardStats = () => {
     queryFn: async () => {
       const res = await client.api.admin.stats.$get();
       if (!res.ok) throw new Error('Failed to fetch dashboard statistics');
-      return await res.json();
+      return (await res.json()) as {
+        totalInnovators: number;
+        approvedInnovators: number;
+        totalCollaborators: number;
+        approvedCollaborators: number;
+        pendingInnovators?: number;
+        pendingCollaborators?: number;
+        totalStrategicPlans?: number;
+      };
     },
   });
 };

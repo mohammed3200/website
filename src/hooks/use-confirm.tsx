@@ -29,12 +29,15 @@ export const useConfirm = (
   };
 
   const handleClose = () => {
+    if (promise) {
+      promise.resolve(false);
+    }
     setPromise(null);
   };
 
   const handleConfirm = () => {
     promise?.resolve(true);
-    handleClose();
+    setPromise(null); // Clear state directly after resolving
   };
 
   const handleCancel = () => {

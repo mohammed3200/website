@@ -15,13 +15,22 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { ActiveButton } from '@/components/buttons';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 export const HomeHero = () => {
   const router = useRouter();
   const t = useTranslations('Home');
   const { isArabic, lang } = useLanguage();
   const containerRef = useRef<HTMLElement>(null);
+  const [badgeDate, setBadgeDate] = useState<string>('');
+
+  useEffect(() => {
+    const date = new Date().toLocaleDateString(isArabic ? 'ar-LY' : 'en-US', {
+      year: 'numeric',
+      month: 'long',
+    });
+    setBadgeDate(date);
+  }, [isArabic]);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -136,17 +145,7 @@ export const HomeHero = () => {
                   <Sparkles className="w-4 h-4 text-primary" />
                 </motion.span>
                 <span className="font-mono text-xs font-bold text-gray-600 tracking-wider uppercase">
-                  {t('badge', {
-                    date: isArabic
-                      ? new Date().toLocaleDateString('ar-LY', {
-                          year: 'numeric',
-                          month: 'long',
-                        })
-                      : new Date().toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                        }),
-                  })}
+                  {badgeDate && t('badge', { date: badgeDate })}
                 </span>
               </motion.span>
             </motion.div>
@@ -260,7 +259,8 @@ export const HomeHero = () => {
                 } top-12 bottom-12 w-1 bg-gray-100 rounded-full overflow-hidden`}
               >
                 <motion.div
-                  className="w-full bg-gradient-to-b from-orange-400 to-orange-600 rounded-full"
+                  className="absolute w-full bg-gradient-to-b from-orange-400 to-orange-600 rounded-full"
+                  style={{ left: 0, right: 0 }}
                   animate={{
                     height: ['0%', '100%', '0%'],
                     top: ['0%', '0%', '100%'],
@@ -290,10 +290,10 @@ export const HomeHero = () => {
                   </motion.div>
                   <div className={`pt-2 ${isArabic ? 'text-right' : ''}`}>
                     <h3 className="text-lg font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
-                      Strategic Planning
+                      {t('steps.planning.title')}
                     </h3>
                     <p className="text-sm text-gray-500 font-outfit">
-                      Blueprint validation & resource allocation.
+                      {t('steps.planning.desc')}
                     </p>
                   </div>
                 </motion.div>
@@ -326,18 +326,18 @@ export const HomeHero = () => {
                       }`}
                     >
                       <h3 className="text-lg font-bold text-foreground">
-                        Smart Manufacturing
+                        {t('steps.manufacturing.title')}
                       </h3>
                       <motion.span
                         animate={{ opacity: [1, 0.5, 1] }}
                         transition={{ duration: 2, repeat: Infinity }}
                         className="px-2 py-0.5 bg-primary text-white text-[10px] font-bold rounded-full"
                       >
-                        ACTIVE
+                        {t('steps.manufacturing.badge')}
                       </motion.span>
                     </div>
                     <p className="text-sm text-gray-500 font-outfit">
-                      Automated production lines & QC.
+                      {t('steps.manufacturing.desc')}
                     </p>
                   </div>
                 </motion.div>
@@ -367,10 +367,10 @@ export const HomeHero = () => {
                   </motion.div>
                   <div className={`pt-2 ${isArabic ? 'text-right' : ''}`}>
                     <h3 className="text-lg font-bold text-foreground mb-1">
-                      Rapid Delivery
+                      {t('steps.delivery.title')}
                     </h3>
                     <p className="text-sm text-gray-500 font-outfit">
-                      Logistics optimization & fulfillment.
+                      {t('steps.delivery.desc')}
                     </p>
                   </div>
                 </motion.div>
@@ -392,9 +392,11 @@ export const HomeHero = () => {
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 font-medium">
-                      System Status
+                      {t('stats.systemStatus')}
                     </p>
-                    <p className="text-sm font-bold text-gray-900">Optimized</p>
+                    <p className="text-sm font-bold text-gray-900">
+                      {t('stats.optimized')}
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -408,7 +410,7 @@ export const HomeHero = () => {
               >
                 <Timer className="w-4 h-4 text-primary" />
                 <span className="text-xs font-bold text-gray-700">
-                  24/7 Support
+                  {t('stats.support')}
                 </span>
               </motion.div>
             </motion.div>

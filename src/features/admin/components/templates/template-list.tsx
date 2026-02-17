@@ -21,13 +21,19 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { useTranslations } from 'next-intl';
+
 export const TemplateList = () => {
+  const t = useTranslations('Admin.Templates');
   const router = useRouter();
   const { data: templates, isLoading } = useGetTemplates();
   const deleteMutation = useDeleteTemplate();
   const [DeleteDialog, confirmDelete] = useConfirm(
-    'Delete Template',
-    'Are you sure you want to delete this template? This action cannot be undone.',
+    t('deleteTitle', { default: 'Delete Template' }),
+    t('deleteMessage', {
+      default:
+        'Are you sure you want to delete this template? This action cannot be undone.',
+    }),
     'destructive',
   );
 

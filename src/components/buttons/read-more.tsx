@@ -31,16 +31,19 @@ export const ReadMore = ({
     button:
       'inline-flex items-center gap-2 px-4 py-2 bg-orange-50 text-primary rounded-full font-din-bold text-sm hover:bg-orange-100 transition-colors',
     underline:
-      "text-primary font-din-regular relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-primary hover:after:w-full after:transition-all",
+      "text-primary font-din-regular relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 rtl:after:left-auto rtl:after:right-0 after:w-0 after:h-0.5 after:bg-primary hover:after:w-full after:transition-all",
   };
 
   return (
-    <Link href={href} className={cn(variants[variant], className)}>
+    <Link
+      href={href}
+      className={cn(variants[variant], className)}
+      dir={isArabic ? 'rtl' : 'ltr'}
+    >
       <motion.span
         onHoverStart={() => setIsHovered(true)}
         onHoverEnd={() => setIsHovered(false)}
         className="flex items-center gap-2"
-        dir={isArabic ? 'rtl' : 'ltr'}
       >
         <span>{t('readMore')}</span>
 

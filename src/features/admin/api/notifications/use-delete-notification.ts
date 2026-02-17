@@ -8,7 +8,6 @@ export const useDeleteNotification = () => {
 
   return useMutation({
     mutationFn: async (id: string) => {
-      // Note: In some implementations this was a fetch() call, let's use client if possible
       const res = await client.api.admin.notifications[':id'].$delete({
         param: { id },
       });
