@@ -31,7 +31,7 @@ describe('Sidebar Component', () => {
   });
 
   describe('English Locale', () => {
-    it('should render all navigation items in English', async () => {
+    it('should render all 10 navigation items', async () => {
       (usePathname as any).mockReturnValue('/en/admin');
 
       render(<Sidebar locale="en" />);
@@ -41,6 +41,8 @@ describe('Sidebar Component', () => {
       expect(await screen.findByText('Content')).toBeInTheDocument();
       expect(await screen.findByText('Strategic Plans')).toBeInTheDocument();
       expect(await screen.findByText('News')).toBeInTheDocument();
+      expect(await screen.findByText('Templates')).toBeInTheDocument();
+      expect(await screen.findByText('Notifications')).toBeInTheDocument();
       expect(await screen.findByText('Reports')).toBeInTheDocument();
       expect(await screen.findByText('FAQs')).toBeInTheDocument();
       expect(await screen.findByText('Settings')).toBeInTheDocument();
@@ -88,6 +90,8 @@ describe('Sidebar Component', () => {
       expect(await screen.findByText('المحتوى')).toBeInTheDocument();
       expect(await screen.findByText('الخطط الاستراتيجية')).toBeInTheDocument();
       expect(await screen.findByText('الأخبار')).toBeInTheDocument();
+      expect(await screen.findByText('القوالب')).toBeInTheDocument();
+      expect(await screen.findByText('الإشعارات')).toBeInTheDocument();
       expect(await screen.findByText('التقارير')).toBeInTheDocument();
       expect(await screen.findByText('الأسئلة الشائعة')).toBeInTheDocument();
       expect(await screen.findByText('الإعدادات')).toBeInTheDocument();
@@ -175,7 +179,7 @@ describe('Sidebar Component', () => {
       const { container } = render(<Sidebar locale="en" />);
 
       const links = container.querySelectorAll('a[href*="/admin"]');
-      expect(links).toHaveLength(8);
+      expect(links).toHaveLength(10);
     });
 
     it('should maintain navigation order', () => {

@@ -433,7 +433,30 @@
       },
       "recentActivity": {
         "title": "النشاط الأخير",
-        "empty": "سيتم عرض النشاط الأخير هنا قريباً"
+        "empty": "سيتم عرض النشاط الأخير هنا قريباً",
+        "recentActivity": "النشاط الأخير",
+        "noActivity": "لا يوجد نشاط أخير"
+      },
+      "Charts": {
+        "submissionTrends": "اتجاهات الطلبات",
+        "statusBreakdown": "توزيع الحالات",
+        "innovators": "المبتكرون",
+        "collaborators": "الشركاء",
+        "pending": "قيد الانتظار",
+        "approved": "تمت الموافقة",
+        "rejected": "مرفوض"
+      },
+      "Filters": {
+        "selectRange": "اختر الفترة",
+        "last7Days": "آخر 7 أيام",
+        "last30Days": "آخر 30 يوماً",
+        "thisMonth": "هذا الشهر",
+        "lastMonth": "الشهر الماضي",
+        "thisYear": "هذه السنة"
+      },
+      "Activity": {
+        "recentActivity": "النشاط الأخير",
+        "noActivity": "لا يوجد نشاط أخير"
       }
     },
     "Notifications": {
@@ -550,6 +573,14 @@
       "status": {
         "errorTitle": "فشل تحميل الطلبات",
         "retry": "إعادة المحاولة"
+      },
+      "dialogs": {
+        "approveTitle": "الموافقة على الطلب",
+        "approveMessage": "هل أنت متأكد من الموافقة على هذا الطلب؟ سيتم إخطار المستخدم عبر البريد الإلكتروني.",
+        "rejectTitle": "رفض الطلب",
+        "rejectMessage": "هل أنت متأكد من رفض هذا الطلب؟ سيتم إخطار المستخدم عبر البريد الإلكتروني.",
+        "deleteTitle": "حذف الطلب",
+        "deleteMessage": "هل أنت متأكد من حذف هذا الطلب وجميع الملفات المرتبطة به بشكل نهائي؟ لا يمكن التراجع عن هذا الإجراء."
       }
     },
     "StrategicPlans": {

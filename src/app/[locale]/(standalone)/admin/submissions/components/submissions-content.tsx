@@ -8,7 +8,7 @@ import { Innovator, Collaborator } from '@/features/admin/types';
 import { Button } from '@/components/ui/button';
 import { CardInnovators } from '@/features/innovators/components/card-innovators';
 import { CardCompanies } from '@/features/collaborators/components/card-companies';
-import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
 
 interface SubmissionsContentProps {
   innovators: Innovator[];
@@ -20,11 +20,20 @@ const SubmissionsContent = ({
   collaborators,
 }: SubmissionsContentProps) => {
   const t = useTranslations('Admin.Submissions');
-  const { handleView, handleApprove, handleReject, isArabic } =
-    useSubmissionsLogic();
+  const {
+    handleView,
+    handleApprove,
+    handleReject,
+    handleDelete,
+    isArabic,
+    dialogs,
+  } = useSubmissionsLogic();
 
   return (
     <div className="space-y-12">
+      <dialogs.ApproveDialog />
+      <dialogs.RejectDialog />
+      <dialogs.DeleteDialog />
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 font-outfit">
@@ -103,6 +112,14 @@ const SubmissionsContent = ({
                     >
                       <XCircle className="w-3.5 h-3.5 me-1.5" />
                       {t('actions.reject')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-50"
+                      onClick={() => handleDelete('innovators', innovator.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
@@ -195,6 +212,17 @@ const SubmissionsContent = ({
                     >
                       <XCircle className="w-3.5 h-3.5 me-1.5" />
                       {t('actions.reject')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-50"
+                      onClick={() =>
+                        handleDelete('collaborators', collaborator.id)
+                      }
+                      aria-label={t('actions.delete')}
+                    >
+                      <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>

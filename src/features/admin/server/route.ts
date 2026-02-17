@@ -23,6 +23,8 @@ import {
   templateIdParamSchema,
   updateTemplateSchema,
 } from '@/features/admin/schemas/templates-schema';
+import { statsTrendsQuerySchema } from '@/features/admin/schemas/stats-schema';
+import { activityQuerySchema } from '@/features/admin/schemas/activity-schema';
 
 // Define the variables explicitly
 type Variables = {
@@ -331,6 +333,118 @@ const app = new Hono<{ Variables: Variables }>()
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
       return c.json({ error: 'Failed to fetch statistics' }, 500);
+    }
+  })
+
+  // GET /api/admin/stats/trends - Get monthly submission trends
+  .get(
+    '/stats/trends',
+    zValidator('query', statsTrendsQuerySchema),
+    async (c) => {
+      try {
+        const { year } = c.req.valid('query');
+
+        const startDate = new Date(year, 0, 1);
+        const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
+
+        // Perform raw SQL aggregation by month for better performance
+        const innovators: { month: number; count: bigint }[] =
+          await db.$queryRaw`
+          SELECT MONTH(createdAt) as month, COUNT(*) as count 
+          FROM Innovator 
+          WHERE createdAt BETWEEN ${startDate} AND ${endDate}
+          GROUP BY month
+        `;
+
+        const collaborators: { month: number; count: bigint }[] =
+          await db.$queryRaw`
+          SELECT MONTH(createdAt) as month, COUNT(*) as count 
+          FROM Collaborator 
+          WHERE createdAt BETWEEN ${startDate} AND ${endDate}
+          GROUP BY month
+        `;
+
+        // Map month/count pairs to the 12-month array
+        const trends = Array.from({ length: 12 }, (_, i) => {
+          const month = i + 1;
+
+          const innovatorMatch = innovators.find(
+            (r) => Number(r.month) === month,
+          );
+          const collaboratorMatch = collaborators.find(
+            (r) => Number(r.month) === month,
+          );
+
+          return {
+            month: month.toString(),
+            innovators: innovatorMatch ? Number(innovatorMatch.count) : 0,
+            collaborators: collaboratorMatch
+              ? Number(collaboratorMatch.count)
+              : 0,
+          };
+        });
+
+        return c.json({ trends });
+      } catch (error) {
+        console.error('Error fetching trends:', error);
+        return c.json({ error: 'Failed to fetch trends' }, 500);
+      }
+    },
+  )
+
+  // GET /api/admin/stats/breakdown - Get status breakdown
+  .get('/stats/breakdown', async (c) => {
+    try {
+      const [
+        innovatorPending,
+        innovatorApproved,
+        innovatorRejected,
+        collaboratorPending,
+        collaboratorApproved,
+        collaboratorRejected,
+      ] = await Promise.all([
+        db.innovator.count({ where: { status: 'PENDING' } }),
+        db.innovator.count({ where: { status: 'APPROVED' } }),
+        db.innovator.count({ where: { status: 'REJECTED' } }),
+        db.collaborator.count({ where: { status: 'PENDING' } }),
+        db.collaborator.count({ where: { status: 'APPROVED' } }),
+        db.collaborator.count({ where: { status: 'REJECTED' } }),
+      ]);
+
+      return c.json({
+        innovators: {
+          pending: innovatorPending,
+          approved: innovatorApproved,
+          rejected: innovatorRejected,
+        },
+        collaborators: {
+          pending: collaboratorPending,
+          approved: collaboratorApproved,
+          rejected: collaboratorRejected,
+        },
+      });
+    } catch (error) {
+      console.error('Error fetching breakdown:', error);
+      return c.json({ error: 'Failed to fetch breakdown' }, 500);
+    }
+  })
+
+  // GET /api/admin/activity - Get recent admin activity
+  .get('/activity', zValidator('query', activityQuerySchema), async (c) => {
+    try {
+      const user = c.get('user');
+      const { limit } = c.req.valid('query');
+
+      const activities = await db.adminNotification.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+      });
+
+      return c.json({ activities });
+    } catch (error) {
+      console.error('Error fetching activity:', error);
+      return c.json({ error: 'Failed to fetch activity' }, 500);
     }
   })
 
