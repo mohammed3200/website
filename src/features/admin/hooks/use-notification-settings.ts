@@ -1,19 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  useNotificationPreferences,
-  useUpdateNotificationPreferences,
-} from '@/features/admin/api/use-notifications';
+import { useGetNotificationPreferences } from '@/features/admin/api/notifications/use-get-notification-preferences';
+import { usePutNotificationPreferences } from '@/features/admin/api/notifications/use-put-notification-preferences';
 import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 
 export const useNotificationSettings = () => {
   const t = useTranslations('Admin.Notifications.preferences');
-  const { data, isLoading } = useNotificationPreferences();
-  const updatePreferences = useUpdateNotificationPreferences();
+  const { data, isLoading } = useGetNotificationPreferences();
+  const updatePreferences = usePutNotificationPreferences();
 
-  const preferences = data?.preferences || {};
+  const preferences = data || {};
 
   const [localPreferences, setLocalPreferences] = useState({
     emailNewSubmissions: preferences.emailNewSubmissions ?? true,
@@ -29,17 +27,16 @@ export const useNotificationSettings = () => {
 
   // Sync state when data is loaded
   useEffect(() => {
-    if (data?.preferences) {
+    if (data) {
       setLocalPreferences({
-        emailNewSubmissions: data.preferences.emailNewSubmissions ?? true,
-        emailStatusChanges: data.preferences.emailStatusChanges ?? true,
-        emailSystemErrors: data.preferences.emailSystemErrors ?? true,
-        emailSecurityAlerts: data.preferences.emailSecurityAlerts ?? true,
-        emailUserActivity: data.preferences.emailUserActivity ?? true,
-        emailBackups: data.preferences.emailBackups ?? false,
+        emailNewSubmissions: data.emailNewSubmissions ?? true,
+        emailStatusChanges: data.emailStatusChanges ?? true,
+        emailSystemErrors: data.emailSystemErrors ?? true,
+        emailSecurityAlerts: data.emailSecurityAlerts ?? true,
+        emailUserActivity: data.emailUserActivity ?? true,
+        emailBackups: data.emailBackups ?? false,
         digestMode:
-          (data.preferences.digestMode as 'immediate' | 'daily' | 'weekly') ??
-          'immediate',
+          (data.digestMode as 'immediate' | 'daily' | 'weekly') ?? 'immediate',
       });
     }
   }, [data]);

@@ -6,14 +6,13 @@ import { useTranslations } from 'next-intl';
 import useLanguage from '@/hooks/use-language';
 import { Bell, CheckCheck, Trash2, Filter, X, RefreshCw } from 'lucide-react';
 
-import {
-  useNotifications,
-  useMarkNotificationRead,
-  useMarkAllNotificationsRead,
-  useDeleteNotification,
-  type Notification,
-} from '@/features/admin/api/use-notifications';
+import { useGetNotifications } from '@/features/admin/api/notifications/use-get-notifications';
+import { usePatchNotificationRead } from '@/features/admin/api/notifications/use-patch-notification-read';
+import { usePatchNotificationsMarkAllRead } from '@/features/admin/api/notifications/use-patch-notifications-mark-all-read';
+import { useDeleteNotification } from '@/features/admin/api/notifications/use-delete-notification';
+import { type Notification } from '@/features/admin/api/notifications/use-get-notifications';
 import { cn } from '@/lib/utils';
+import { useConfirm } from '@/hooks/use-confirm';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,15 +25,14 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 import {
   formatTimeAgo,
@@ -51,24 +49,20 @@ export default function NotificationsPage() {
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>(
     [],
   );
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [notificationToDelete, setNotificationToDelete] = useState<
-    string | null
-  >(null);
   const [filters, setFilters] = useState<{
     type?: string;
     isRead?: boolean;
     priority?: string;
   }>({});
 
-  const { data, isLoading, error, refetch, isFetching } = useNotifications({
+  const { data, isLoading, error, refetch, isFetching } = useGetNotifications({
     page,
     limit: 20,
     ...filters,
   });
 
-  const markRead = useMarkNotificationRead();
-  const markAllRead = useMarkAllNotificationsRead();
+  const markRead = usePatchNotificationRead();
+  const markAllRead = usePatchNotificationsMarkAllRead();
   const deleteNotification = useDeleteNotification();
 
   const handleNotificationClick = async (notification: Notification) => {
@@ -101,16 +95,16 @@ export default function NotificationsPage() {
     setSelectedNotifications([]);
   };
 
-  const handleDeleteClick = (id: string) => {
-    setNotificationToDelete(id);
-    setDeleteDialogOpen(true);
-  };
+  const [DeleteDialog, confirmDelete] = useConfirm(
+    t('dialogs.deleteTitle'),
+    t('dialogs.deleteConfirm'),
+    'destructive',
+  );
 
-  const handleDeleteConfirm = async () => {
-    if (notificationToDelete) {
-      await deleteNotification.mutateAsync(notificationToDelete);
-      setNotificationToDelete(null);
-      setDeleteDialogOpen(false);
+  const handleDeleteClick = async (id: string) => {
+    const ok = await confirmDelete();
+    if (ok) {
+      await deleteNotification.mutateAsync(id);
     }
   };
 
@@ -431,26 +425,7 @@ export default function NotificationsPage() {
       </div>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Notification</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this notification? This action
-              cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {t('actions.delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteDialog />
     </div>
   );
 }

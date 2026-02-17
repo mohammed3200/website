@@ -30,7 +30,11 @@
   },
   "ui": {
     "readMore": "read more",
-    "back": "Back"
+    "back": "Back",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "deleteTitle": "Delete Confirmation",
+    "deleteMessage": "Are you sure you want to delete this item? This action cannot be undone."
   },
   "Faq": {
     "title": "Inquiry fosters understanding, it leads to valuable insights.",

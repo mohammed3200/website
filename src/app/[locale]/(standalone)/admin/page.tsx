@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import useLanguage from '@/hooks/use-language';
-import { useGetDashboardStats } from '@/features/admin/api/use-dashboard-stats';
+import { useGetDashboardStats } from '@/features/admin/api/stats/use-get-dashboard-stats';
 import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 import { DashboardStatsGridSkeleton } from '@/components/skeletons';
 
