@@ -158,7 +158,6 @@ const AdminDashboardPage = () => {
         <SubmissionTrendsChart
           year={(() => {
             const currentYear = new Date().getFullYear();
-            if (dateRange === 'LAST_YEAR') return currentYear - 1;
             // Handle edge case where LAST_MONTH in January means previous year
             if (dateRange === 'LAST_MONTH' && new Date().getMonth() === 0) {
               return currentYear - 1;

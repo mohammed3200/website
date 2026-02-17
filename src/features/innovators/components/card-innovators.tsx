@@ -55,6 +55,9 @@ export const CardInnovators: React.FC<CardInnovatorsProps> = ({
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             className="relative w-full max-w-2xl bg-card rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             dir={isArabic ? 'rtl' : 'ltr'}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`innovator-modal-title-${innovator.id}`}
           >
             {/* Close Button */}
             <button
@@ -100,7 +103,10 @@ export const CardInnovators: React.FC<CardInnovatorsProps> = ({
                   )}
                 </div>
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-din-bold text-foreground">
+                  <h2
+                    id={`innovator-modal-title-${innovator.id}`}
+                    className="text-2xl md:text-3xl font-din-bold text-foreground"
+                  >
                     {innovator.name}
                   </h2>
                   <p className="text-primary font-din-medium">

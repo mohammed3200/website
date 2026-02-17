@@ -155,5 +155,9 @@ const getMonthNameEn = (month: string) => {
     'Nov',
     'Dec',
   ];
-  return months[parseInt(month, 10) - 1];
+  const parsedMonth = parseInt(month, 10);
+  if (isNaN(parsedMonth) || parsedMonth < 1 || parsedMonth > 12) {
+    return '';
+  }
+  return months[parsedMonth - 1];
 };

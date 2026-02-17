@@ -194,47 +194,83 @@ const app = new Hono()
             phone: phoneNumber,
             country,
             city,
-            specialization,
+            fieldOfStudy: specialization, // Use fieldOfStudy to match Prisma schema
             projectTitle,
             projectDescription,
             objective,
             stageDevelopment: mapStageDevelopment(stageDevelopment as string),
           };
 
-          // 2. Perform all file uploads and DB writes in a transaction or with cleanup
-          const result = await db.$transaction(async (tx) => {
-            let imageId: string | null = null;
+          // 2. Perform file uploads FIRST (outside transaction)
+          let uploadedImageMetadata: any = null;
+          const uploadedProjectFilesMetadata: any[] = [];
 
-            // Upload main image if exists
-            if (image instanceof File) {
-              const imageBuffer = Buffer.from(await image.arrayBuffer());
-              const imageKey = s3Service.generateKey(
-                'image',
-                image.name,
+          if (image instanceof File) {
+            const imageBuffer = Buffer.from(await image.arrayBuffer());
+            const imageKey = s3Service.generateKey(
+              'image',
+              image.name,
+              uuidv4(),
+            );
+            const upload = await s3Service.uploadFile(
+              imageBuffer,
+              imageKey,
+              image.type,
+            );
+            uploadedS3Keys.push(upload.s3Key);
+            uploadedImageMetadata = {
+              ...upload,
+              type: image.type,
+              size: image.size,
+              originalName: image.name,
+              key: imageKey,
+            };
+          }
+
+          if (projectFiles && Array.isArray(projectFiles)) {
+            for (const file of projectFiles) {
+              if (!(file instanceof File)) continue;
+              const mediaBuffer = Buffer.from(await file.arrayBuffer());
+              const mediaKey = s3Service.generateKey(
+                'media',
+                file.name,
                 uuidv4(),
               );
               const upload = await s3Service.uploadFile(
-                imageBuffer,
-                imageKey,
-                image.type,
+                mediaBuffer,
+                mediaKey,
+                file.type,
               );
               uploadedS3Keys.push(upload.s3Key);
+              uploadedProjectFilesMetadata.push({
+                ...upload,
+                type: file.type,
+                size: file.size,
+                originalName: file.name,
+                key: mediaKey,
+              });
+            }
+          }
 
+          // 3. Perform DB writes in a short transaction
+          const result = await db.$transaction(async (tx) => {
+            let imageId: string | null = null;
+
+            if (uploadedImageMetadata) {
               const imageRecord = await tx.image.create({
                 data: {
-                  url: upload.url,
-                  s3Key: upload.s3Key,
-                  s3Bucket: upload.bucket,
-                  mimeType: image.type,
-                  size: image.size,
-                  originalName: image.name,
-                  filename: imageKey,
+                  url: uploadedImageMetadata.url,
+                  s3Key: uploadedImageMetadata.s3Key,
+                  s3Bucket: uploadedImageMetadata.s3Bucket,
+                  mimeType: uploadedImageMetadata.type,
+                  size: uploadedImageMetadata.size,
+                  originalName: uploadedImageMetadata.originalName,
+                  filename: uploadedImageMetadata.key,
                 },
               });
               imageId = imageRecord.id;
             }
 
-            // Create Innovator
             const innovator = await tx.innovator.create({
               data: {
                 ...data,
@@ -242,48 +278,31 @@ const app = new Hono()
               },
             });
 
-            // Process project files
-            if (projectFiles && Array.isArray(projectFiles)) {
-              for (const file of projectFiles) {
-                if (!(file instanceof File)) continue;
+            for (const meta of uploadedProjectFilesMetadata) {
+              const media = await tx.media.create({
+                data: {
+                  url: meta.url,
+                  s3Key: meta.s3Key,
+                  s3Bucket: meta.s3Bucket,
+                  mimeType: meta.type,
+                  size: meta.size,
+                  originalName: meta.originalName,
+                  filename: meta.key,
+                },
+              });
 
-                const mediaBuffer = Buffer.from(await file.arrayBuffer());
-                const mediaKey = s3Service.generateKey(
-                  'media',
-                  file.name,
-                  uuidv4(),
-                );
-                const upload = await s3Service.uploadFile(
-                  mediaBuffer,
-                  mediaKey,
-                  file.type,
-                );
-                uploadedS3Keys.push(upload.s3Key);
-
-                const media = await tx.media.create({
-                  data: {
-                    url: upload.url,
-                    s3Key: upload.s3Key,
-                    s3Bucket: upload.bucket,
-                    mimeType: file.type,
-                    size: file.size,
-                    originalName: file.name,
-                    filename: mediaKey,
-                  },
-                });
-
-                await tx.innovatorProjectFile.create({
-                  data: {
-                    id: uuidv4(),
-                    innovatorId: innovator.id,
-                    fileName: file.name,
-                    fileType: file.type,
-                    fileSize: file.size,
-                    mediaId: media.id,
-                  },
-                });
-              }
+              await tx.innovatorProjectFile.create({
+                data: {
+                  id: uuidv4(),
+                  innovatorId: innovator.id,
+                  fileName: meta.originalName,
+                  fileType: meta.type,
+                  fileSize: meta.size,
+                  mediaId: media.id,
+                },
+              });
             }
+
             return innovator;
           });
 
@@ -400,31 +419,36 @@ const app = new Hono()
         }
       }
 
-      // Send status update email
-      try {
-        const emailResult = await emailService.sendStatusUpdate(
-          'innovator',
-          {
-            id: innovator.id,
-            name: innovator.name,
-            email: innovator.email,
-          },
-          validatedData.status === 'APPROVED' ? 'approved' : 'rejected',
-          {
-            reason: validatedData.reason,
-            nextSteps: validatedData.nextSteps,
-            locale: validatedData.locale,
-          },
-        );
-
-        if (!emailResult.success) {
-          console.error(
-            '❌ Failed to send status update email:',
-            emailResult.error,
+      // Send status update email ONLY for approved/rejected
+      if (
+        validatedData.status === 'APPROVED' ||
+        validatedData.status === 'REJECTED'
+      ) {
+        try {
+          const emailResult = await emailService.sendStatusUpdate(
+            'innovator',
+            {
+              id: innovator.id,
+              name: innovator.name,
+              email: innovator.email,
+            },
+            validatedData.status === 'APPROVED' ? 'approved' : 'rejected',
+            {
+              reason: validatedData.reason,
+              nextSteps: validatedData.nextSteps,
+              locale: validatedData.locale,
+            },
           );
+
+          if (!emailResult.success) {
+            console.error(
+              '❌ Failed to send status update email:',
+              emailResult.error,
+            );
+          }
+        } catch (emailError) {
+          console.error('Failed to send status update email:', emailError);
         }
-      } catch (emailError) {
-        console.error('Failed to send status update email:', emailError);
       }
 
       // Invalidate public cache
@@ -513,17 +537,18 @@ const app = new Hono()
           });
         }
 
+        // Delete the Innovator FIRST (or nullify imageId if needed, but since we delete the image too, deleting innovator first is safer if restriction is on innovator)
+        // Actually, if Innovator has a FK to Image (imageId), we should delete Innovator first if it's set to RESTRICT.
+        await tx.innovator.delete({
+          where: { id: innovator.id },
+        });
+
         // Delete the Image record if it exists
         if (innovator.imageId) {
           await tx.image.delete({
             where: { id: innovator.imageId },
           });
         }
-
-        // Delete the Innovator LAST
-        await tx.innovator.delete({
-          where: { id: innovator.id },
-        });
       });
 
       // 2. ONLY if DB transaction succeeds, Delete files from S3

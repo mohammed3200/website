@@ -344,43 +344,43 @@ const app = new Hono<{ Variables: Variables }>()
       try {
         const { year } = c.req.valid('query');
 
-        // Get counts for each month
-        const innovators = await db.innovator.groupBy({
-          by: ['createdAt'],
-          where: {
-            createdAt: {
-              gte: new Date(year, 0, 1),
-              lte: new Date(year, 11, 31, 23, 59, 59),
-            },
-          },
-          _count: { id: true },
-        });
+        const startDate = new Date(year, 0, 1);
+        const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
 
-        const collaborators = await db.collaborator.groupBy({
-          by: ['createdAt'],
-          where: {
-            createdAt: {
-              gte: new Date(year, 0, 1),
-              lte: new Date(year, 11, 31, 23, 59, 59),
-            },
-          },
-          _count: { id: true },
-        });
+        // Perform raw SQL aggregation by month for better performance
+        const innovators: { month: number; count: bigint }[] =
+          await db.$queryRaw`
+          SELECT MONTH(createdAt) as month, COUNT(*) as count 
+          FROM Innovator 
+          WHERE createdAt BETWEEN ${startDate} AND ${endDate}
+          GROUP BY month
+        `;
 
-        // Map Prisma createdAt to month index (0-11)
+        const collaborators: { month: number; count: bigint }[] =
+          await db.$queryRaw`
+          SELECT MONTH(createdAt) as month, COUNT(*) as count 
+          FROM Collaborator 
+          WHERE createdAt BETWEEN ${startDate} AND ${endDate}
+          GROUP BY month
+        `;
+
+        // Map month/count pairs to the 12-month array
         const trends = Array.from({ length: 12 }, (_, i) => {
-          const monthInnovators = innovators
-            .filter((item) => item.createdAt.getMonth() === i)
-            .reduce((sum, item) => sum + item._count.id, 0);
+          const month = i + 1;
 
-          const monthCollaborators = collaborators
-            .filter((item) => item.createdAt.getMonth() === i)
-            .reduce((sum, item) => sum + item._count.id, 0);
+          const innovatorMatch = innovators.find(
+            (r) => Number(r.month) === month,
+          );
+          const collaboratorMatch = collaborators.find(
+            (r) => Number(r.month) === month,
+          );
 
           return {
-            month: (i + 1).toString(),
-            innovators: monthInnovators,
-            collaborators: monthCollaborators,
+            month: month.toString(),
+            innovators: innovatorMatch ? Number(innovatorMatch.count) : 0,
+            collaborators: collaboratorMatch
+              ? Number(collaboratorMatch.count)
+              : 0,
           };
         });
 

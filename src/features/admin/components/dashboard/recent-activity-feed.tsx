@@ -84,11 +84,11 @@ export const RecentActivityFeed = () => {
 const ActivityIcon = ({ type }: { type: string }) => {
   const normalizedType = type.toUpperCase();
 
-  if (normalizedType === 'ERROR')
+  if (normalizedType.includes('ERROR'))
     return <AlertTriangle className="h-4 w-4 text-red-500" />;
-  if (normalizedType === 'NEW')
+  if (normalizedType.includes('NEW'))
     return <Bell className="h-4 w-4 text-primary" />;
-  if (normalizedType === 'STATUS')
+  if (normalizedType.includes('STATUS'))
     return <CheckCircle className="h-4 w-4 text-green-500" />;
 
   return <Info className="h-4 w-4 text-gray-500" />;
