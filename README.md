@@ -16,7 +16,7 @@
 
 ## 🎯 Highlights
 
-### ✨ Production Ready (v2.0)
+### ✨ Production Ready (v2.1)
 
 - **100% deployment-ready** for Virtuozzo Application Platform
 - Comprehensive deployment documentation
@@ -26,7 +26,7 @@
 ### 🚀 Key Achievements
 
 - **97% storage cost savings** - S3 migration complete (AWS/Cloudflare R2)
-- **15-20% hosting cost reduction** - Redis removed, optimized architecture
+- **High Performance** - Redis caching + BullMQ queues for email/WhatsApp
 - **Enterprise-grade security** - RBAC with automated integrity verification
 - **Professional UX** - Multi-page forms with validation and persistence
 - **Bilingual platform** - Full Arabic (RTL) / English (LTR) support
@@ -209,12 +209,12 @@ Professional 4-step workflows with smart validation and auto-save:
 
 ### **Tech Stack Evolution (v2.0)**
 
-| Component         | Before         | After v2.0  | Impact                                 |
-| ----------------- | -------------- | ----------- | -------------------------------------- |
-| **Storage**       | Database BLOBs | S3 (AWS/R2) | **-97% cost**                          |
-| **Database**      | MariaDB 10.11  | MySQL 8.0   | Production compatible                  |
-| **Email Queue**   | Redis + BullMQ | Direct SMTP | **-20% cost**, simplified architecture |
-| **Total Savings** | -              | -           | **-40% infrastructure cost**           |
+| Component         | Before         | After v2.0     | Impact                          |
+| ----------------- | -------------- | -------------- | ------------------------------- |
+| **Storage**       | Database BLOBs | S3 (AWS/R2)    | **-97% cost**                   |
+| **Database**      | MariaDB 10.11  | MySQL 8.0      | Production compatible           |
+| **Email Queue**   | Direct SMTP    | Redis + BullMQ | Restored for queues and caching |
+| **Total Savings** | -              | -              | **-40% infrastructure cost**    |
 
 ---
 
@@ -340,6 +340,14 @@ AWS_SECRET_ACCESS_KEY="minioadmin"
 S3_ENDPOINT="http://localhost:9000"
 S3_BUCKET_NAME="ebic-media"
 S3_PUBLIC_ACCESS="true"
+
+# Redis (required)
+REDIS_URL="redis://localhost:6379"
+
+# WhatsApp (required for messaging)
+WHATSAPP_API_URL="http://wapi:3000"
+WHATSAPP_API_TOKEN="secret"
+WHATSAPP_SENDER_NUMBER="1234567890"
 ```
 
 ---
