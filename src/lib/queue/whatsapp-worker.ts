@@ -3,10 +3,28 @@ import { whatsAppService } from '@/lib/whatsapp/service';
 import { db } from '@/lib/db';
 import { MessageStatus } from '@prisma/client';
 
-const connection = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-};
+// Parse REDIS_URL into host/port for BullMQ (requires ConnectionOptions, not a URL string)
+function getRedisConnection() {
+  const redisUrl = process.env.REDIS_URL;
+  if (redisUrl) {
+    try {
+      const url = new URL(redisUrl);
+      return {
+        host: url.hostname,
+        port: parseInt(url.port || '6379'),
+        ...(url.password ? { password: url.password } : {}),
+      };
+    } catch {
+      // Fallback if URL parsing fails
+    }
+  }
+  return {
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379'),
+  };
+}
+
+const connection = getRedisConnection();
 
 export const whatsappWorker = new Worker(
   'whatsapp-queue',

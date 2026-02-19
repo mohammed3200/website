@@ -2,7 +2,7 @@
 
 **Project:** EBIC Website - Misurata Entrepreneurship Center  
 **Target Platform:** Virtuozzo Application Platform  
-**Date:** 2026-02-05  
+**Date:** 2026-02-18
 **Status:** ✅ READY FOR DEPLOYMENT
 
 ---
@@ -10,20 +10,23 @@
 ## Pre-Deployment Verification
 
 ### Infrastructure ✅ COMPLETE
-- [x] Redis removed (15-20% cost savings)
+
+- [x] Redis configured for caching and queues (ioredis + BullMQ)
 - [x] MySQL 8 compatibility configured
 - [x] S3 migration complete (no BLOBs in DB)
 - [x] Docker optimized (multi-stage, standalone)
 - [x] Environment variables cleaned up
 
-### Configuration ✅ COMPLETE  
+### Configuration ✅ COMPLETE
+
 - [x] `.env.production.template` created
 - [x] Production secrets generated
-- [x] SMTP password documented (`xzrctzuobujqdmsk`)
+- [x] SMTP password documented (`<REDACTED_SMTP_PASSWORD>`)
 - [x] S3 provider options documented
 - [x] RBAC verification script created
 
 ### Security ✅ COMPLETE
+
 - [x] New NEXTAUTH_SECRET generated
 - [x] New ADMIN_API_KEY generated
 - [x] Google App Password configured
@@ -36,6 +39,7 @@
 ### Step 1: Virtuozzo Environment Setup
 
 #### 1.1 Create Environment
+
 ```
 Login to Virtuozzo Dashboard
 → Click "New Environment"
@@ -43,13 +47,15 @@ Login to Virtuozzo Dashboard
 ```
 
 #### 1.2 Add MySQL 8 Database
+
 ```
 Add Node → SQL → MySQL 8.0
 Cloudlets: Reserved 2-4, Dynamic 4-8
 Note the credentials provided
 ```
 
-####  1.3 Add Application Container
+#### 1.3 Add Application Container
+
 ```
 Docker Image: [your-username]/ebic-website:latest
 Port: 3000 (HTTP)
@@ -57,6 +63,7 @@ Cloudlets: Reserved 4-8, Dynamic 8-16
 ```
 
 #### 1.4 Add MinIO (Optional - or use AWS S3/Cloudflare R2)
+
 ```
 If self-hosting S3:
   Docker Image: minio/minio:latest
@@ -85,12 +92,13 @@ docker push [username]/ebic-website:v1.0.0
 In Virtuozzo Dashboard → Container Node → Config → Variables:
 
 **Critical Variables:**
+
 ```bash
 DATABASE_URL=mysql://[user]:[pass]@[host]:3306/citcoder_eitdc
 NEXTAUTH_URL=https://ebic.cit.edu.ly
 NEXTAUTH_SECRET=[generated-secret]
 ADMIN_API_KEY=[generated-api-key]
-SMTP_PASS=xzrctzuobujqdmsk
+SMTP_PASS=<REDACTED_SMTP_PASSWORD>
 
 # S3 Configuration (choose one):
 # AWS S3:
@@ -102,6 +110,17 @@ S3_BUCKET_NAME=ebic-media-production
 # OR Cloudflare R2 (Free 10GB):
 AWS_REGION=auto
 S3_ENDPOINT=https://[account-id].r2.cloudflarestorage.com
+
+# Redis
+REDIS_URL=redis://localhost:6379
+
+# WhatsApp
+WHATSAPP_API_URL="..."
+WHATSAPP_API_TOKEN="..."
+WHATSAPP_SENDER_NUMBER="..."
+
+# Admin
+ADMIN_API_KEY=[generated-api-key]
 ```
 
 Copy all variables from `.env.production.template`
@@ -109,6 +128,7 @@ Copy all variables from `.env.production.template`
 ### Step 4: Database Initialization
 
 #### Option A: SSH into Container (Recommended)
+
 ```bash
 # In Virtuozzo: Click "Web SSH" on container
 
@@ -126,6 +146,7 @@ bunx tsx scripts/verify-rbac.ts
 ```
 
 #### Option B: Via Prisma Studio (Alternative)
+
 ```bash
 # Locally, connect to production DB:
 DATABASE_URL="mysql://..." bunx prisma studio
@@ -142,6 +163,7 @@ Virtuozzo → Settings → Custom Domains
 ```
 
 **DNS Configuration (at cit.edu.ly):**
+
 ```
 Type: A
 Name: ebic
@@ -152,6 +174,7 @@ TTL: 3600
 ### Step 6: Post-Deployment Verification
 
 #### 6.1 Application Health
+
 ```bash
 # Access application
 https://ebic.cit.edu.ly
@@ -163,6 +186,7 @@ https://ebic.cit.edu.ly
 ```
 
 #### 6.2 Database Connectivity
+
 ```bash
 # Login to admin
 https://ebic.cit.edu.ly/admin/login
@@ -178,6 +202,7 @@ Password: [INIT_ADMIN_PASSWORD]
 ```
 
 #### 6.3 S3 Storage Test
+
 ```bash
 # 1. Register as innovator
 https://ebic.cit.edu.ly/en/innovators/register
@@ -191,6 +216,7 @@ https://ebic.cit.edu.ly/en/innovators/register
 ```
 
 #### 6.4 Email Functionality
+
 ```bash
 # 1. Submit innovator form
 # 2. Check email for confirmation
@@ -204,6 +230,7 @@ https://ebic.cit.edu.ly/en/innovators/register
 ```
 
 #### 6.5 RBAC Verification (Production)
+
 ```bash
 # SSH into production container
 bunx tsx scripts/verify-rbac.ts
@@ -228,6 +255,7 @@ bunx tsx scripts/verify-rbac.ts
 ### Day 1: Close Monitoring
 
 **Check Every Hour:**
+
 - [ ] Application uptime
 - [ ] Error logs (Virtuozzo Dashboard → Logs)
 - [ ] Resource usage (RAM, CPU)
@@ -237,6 +265,7 @@ bunx tsx scripts/verify-rbac.ts
 ### Week 1: Daily Checks
 
 **Daily Tasks:**
+
 - [ ] Review error logs
 - [ ] Monitor S3 usage (stay within free tier)
 - [ ] Check database size
@@ -246,6 +275,7 @@ bunx tsx scripts/verify-rbac.ts
 ### Month 1: Weekly Reviews
 
 **Weekly Tasks:**
+
 - [ ] Performance optimization
 - [ ] Security audit
 - [ ] Cost analysis
@@ -258,6 +288,7 @@ bunx tsx scripts/verify-rbac.ts
 If critical issues occur:
 
 ### Emergency Rollback
+
 ```bash
 # In Virtuozzo Dashboard:
 1.Stop application container
@@ -268,6 +299,7 @@ If critical issues occur:
 ```
 
 ### Database Rollback
+
 ```bash
 # Virtuozzo auto-creates daily backups
 MariaDB Node → Backup → Restore
@@ -282,15 +314,19 @@ Select backup from before deployment
 
 **NEXTAUTH_SECRET:** [Generated via Node.js crypto]  
 **ADMIN_API_KEY:** [Generated via Node.js crypto]  
-**SMTP_PASS:** `xzrctzuobujqdmsk` (Google App Password)
+**SMTP_PASS:** `<REDACTED_SMTP_PASSWORD>` (Google App Password)
 
-**Security:** Never commit production secrets to git!
+**Security:** Never commit production secrets to git! If secrets are exposed (like the previous SMTP password), rotate them immediately.
+
+> [!IMPORTANT]
+> A previous Google App Password has been exposed in documentation. It must be revoked at [Google Account Security](https://myaccount.google.com/apppasswords) and a new one generated for production. Any committed secrets should be treated as compromised.
 
 ---
 
 ## Resource Allocation
 
 ### Starting Configuration
+
 ```yaml
 Application Container:
   Reserved: 4 cloudlets (2GB RAM)
@@ -302,6 +338,7 @@ MySQL 8 Database:
 ```
 
 ### After 1 Month: Review & Optimize
+
 - Check actual usage statistics
 - Adjust reserved/dynamic based on needs
 - Expected usage: 60-70% of allocated max
@@ -311,6 +348,7 @@ MySQL 8 Database:
 ## S3 Provider Recommendations
 
 ### Option A: AWS S3 (Recommended for Year 1)
+
 ```
 Free Tier (12 months):
 - 5GB storage: FREE
@@ -323,6 +361,7 @@ After 12 months:
 ```
 
 ### Option B: Cloudflare R2 (Recommended for Year 2+)
+
 ```
 Free Tier (Forever):
 - 10GB storage: FREE
@@ -335,6 +374,7 @@ Paid (if exceeded):
 ```
 
 ### Option C: Self-Hosted MinIO (Not Recommended)
+
 ```
 Pros: Full control, no external costs
 Cons: Virtuozzo hosting costs, maintenance, backups
@@ -349,8 +389,9 @@ Cost: ~1-2GB RAM = ~$10-15/month
 ## Success Criteria
 
 ### Must Pass Before Go-Live ✅
+
 - [x] S3 migration complete (no BLOBs)
-- [x] Redis removed (cost optimized)
+- [x] Redis configured (cache + queues)
 - [x] MySQL 8 compatible
 - [x] Production secrets generated
 - [x] RBAC verification system ready
@@ -358,6 +399,7 @@ Cost: ~1-2GB RAM = ~$10-15/month
 - [x] Environment template created
 
 ### Must Pass After Deployment
+
 - [ ] Application accessible via HTTPS
 - [ ] Admin can login
 - [ ] Forms can be submitted
@@ -371,11 +413,13 @@ Cost: ~1-2GB RAM = ~$10-15/month
 ## Contact & Support
 
 ### Virtuozzo Platform
+
 - Dashboard: [Platform URL]
 - Support: Ticket system
 - Documentation: https://www.virtuozzo.com/application-platform-docs/
 
 ### Application Issues
+
 1. Check container logs (Virtuozzo Dashboard)
 2. SSH into container for debugging
 3. Review `docs/` folder for guides

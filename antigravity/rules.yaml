@@ -302,3 +302,68 @@ rules:
     enforcement:
       type: soft
       action_on_violation: warn
+
+  # =====================================================
+  # Environment & Configuration
+  # =====================================================
+
+  - rule_id: ENV-01
+    category: architecture
+    priority: critical
+    scope: global
+    description: >
+      Every environment variable used in the codebase must be documented
+      in .env.production.template with a description and example value.
+    rationale: >
+      Prevents deployment failures from missing configuration.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  - rule_id: ENV-02
+    category: architecture
+    priority: high
+    scope: global
+    description: >
+      Redis and external service clients must use lazy initialization
+      to prevent connection errors during Next.js static generation.
+    rationale: >
+      Eager connections during SSG cause unhandled errors in build output.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  # =====================================================
+  # Testing & CI
+  # =====================================================
+
+  - rule_id: TEST-01
+    category: architecture
+    priority: high
+    scope: global
+    description: >
+      All tests must pass and the test runner must exit with code 0.
+      If bun test exits with a non-zero code despite all tests passing,
+      the root cause must be investigated and fixed.
+    rationale: >
+      Non-zero exit codes break CI/CD pipelines.
+    enforcement:
+      type: hard
+      action_on_violation: block
+
+  # =====================================================
+  # Git Workflow
+  # =====================================================
+
+  - rule_id: GIT-01
+    category: architecture
+    priority: high
+    scope: global
+    description: >
+      Each logical change set must be committed to a dedicated branch
+      and pushed to GitHub for Coderabbit review before merging.
+    rationale: >
+      Ensures code quality through automated review.
+    enforcement:
+      type: soft
+      action_on_violation: warn

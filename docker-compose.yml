@@ -11,10 +11,37 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=mysql://root:root@db:3306/citcoder_eitdc
-      - NEXTAUTH_URL=http://localhost:3000
+      - DATABASE_URL=${DATABASE_URL}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
-      # Add other necessary env vars here, but DO NOT commit secrets
+      - REDIS_URL=${REDIS_URL}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - EMAIL_TOKEN_SECRET=${EMAIL_TOKEN_SECRET}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+      - S3_ENDPOINT=${S3_ENDPOINT}
+      - S3_PUBLIC_ACCESS=${S3_PUBLIC_ACCESS}
+      - CDN_URL=${CDN_URL}
+      - WHATSAPP_API_URL=${WHATSAPP_API_URL}
+      - WHATSAPP_API_TOKEN=${WHATSAPP_API_TOKEN}
+      - WHATSAPP_SENDER_NUMBER=${WHATSAPP_SENDER_NUMBER}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
+      - NEXT_PUBLIC_CONTACT_EMAIL=${NEXT_PUBLIC_CONTACT_EMAIL}
+      - NEXT_PUBLIC_CONTACT_PHONE=${NEXT_PUBLIC_CONTACT_PHONE}
+      - NEXT_PUBLIC_CONTACT_LOCATION=${NEXT_PUBLIC_CONTACT_LOCATION}
+      - NEXT_PUBLIC_WORKING_HOURS=${NEXT_PUBLIC_WORKING_HOURS}
+      - NEXT_PUBLIC_MAP_EMBED_URL=${NEXT_PUBLIC_MAP_EMBED_URL}
+      - NEXT_PUBLIC_INNOVATORS_THRESHOLD=${NEXT_PUBLIC_INNOVATORS_THRESHOLD}
+      - NEXT_PUBLIC_COLLABORATORS_THRESHOLD=${NEXT_PUBLIC_COLLABORATORS_THRESHOLD}
+      - NEXT_PUBLIC_FAQ_THRESHOLD=${NEXT_PUBLIC_FAQ_THRESHOLD}
     depends_on:
       - db
     networks:
@@ -29,8 +56,13 @@ services:
     command: bun run worker
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=mysql://root:root@db:3306/citcoder_eitdc
-      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - WHATSAPP_API_URL=${WHATSAPP_API_URL}
+      - WHATSAPP_API_TOKEN=${WHATSAPP_API_TOKEN}
+      - WHATSAPP_SENDER_NUMBER=${WHATSAPP_SENDER_NUMBER}
     depends_on:
       - db
       - redis
@@ -42,10 +74,10 @@ services:
     container_name: ebic-db
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_DATABASE=citcoder_eitdc
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-citcoder_eitdc}
     ports:
-      - "3307:3306" # Mapped to 3307 on host to avoid conflict with local mysql
+      - "3307:3306"
     volumes:
       - db-data:/var/lib/mysql
     networks:
@@ -57,11 +89,11 @@ services:
     container_name: ebic-minio
     restart: always
     ports:
-      - "9000:9000"      # API port
-      - "9001:9001"      # Console UI
+      - "9000:9000"
+      - "9001:9001"
     environment:
-      - MINIO_ROOT_USER=minioadmin
-      - MINIO_ROOT_PASSWORD=minioadmin
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:-minioadmin}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:-minioadmin}
     volumes:
       - minio-data:/data
     command: server /data --console-address ":9001"
