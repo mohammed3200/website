@@ -28,15 +28,27 @@ const nextConfig: NextConfig = {
         hostname: '*.s3.*.amazonaws.com',
         pathname: '/**',
       },
-      ...(process.env.NODE_ENV === 'development'
+      // Production S3/MinIO custom domains (add others as needed)
+      {
+        protocol: 'https',
+        hostname: 'ebic.cit.edu.ly',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.r2.cloudflarestorage.com', // For Cloudflare R2
+        pathname: '/**',
+      },
+      ...(process.env.NODE_ENV === 'development' ||
+      process.env.S3_ENDPOINT?.includes('localhost')
         ? [
-          {
-            protocol: 'http' as const,
-            hostname: 'localhost',
-            port: '9000',
-            pathname: '/**',
-          },
-        ]
+            {
+              protocol: 'http' as const,
+              hostname: 'localhost',
+              port: '9000',
+              pathname: '/**',
+            },
+          ]
         : []),
     ],
   },

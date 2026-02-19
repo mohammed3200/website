@@ -120,7 +120,7 @@
         "@typescript-eslint/parser": "^8.51.0",
         "@typescript-eslint/utils": "^8.51.0",
         "babel-jest": "^30.2.0",
-        "baseline-browser-mapping": "^2.9.11",
+        "baseline-browser-mapping": "^2.9.19",
         "eslint": "^9.20.0",
         "eslint-config-next": "^16.1.6",
         "eslint-plugin-jest-dom": "^5.5.0",
@@ -1466,7 +1466,7 @@
 
     "base64id": ["base64id@2.0.0", "", {}, "sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog=="],
 
-    "baseline-browser-mapping": ["baseline-browser-mapping@2.9.11", "", { "bin": { "baseline-browser-mapping": "dist/cli.js" } }, "sha512-Sg0xJUNDU1sJNGdfGWhVHX0kkZ+HWcvmVymJbj6NSgZZmW/8S9Y2HQ5euytnIgakgxN6papOAWiwDo1ctFDcoQ=="],
+    "baseline-browser-mapping": ["baseline-browser-mapping@2.9.19", "", { "bin": { "baseline-browser-mapping": "dist/cli.js" } }, "sha512-ipDqC8FrAl/76p2SSWKSI+H9tFwm7vYqXQrItCuiVPt26Km0jS+NzSsBWAaBusvSbQcfJG+JitdMm+wZAgTYqg=="],
 
     "bcrypt": ["bcrypt@6.0.0", "", { "dependencies": { "node-addon-api": "^8.3.0", "node-gyp-build": "^4.8.4" } }, "sha512-cU8v/EGSrnH+HnxV2z0J7/blxH8gq7Xh2JFT6Aroax7UohdmiJJlxApMxtKfuI7z68NvvVcmR78k2LbT6efhRg=="],
 
