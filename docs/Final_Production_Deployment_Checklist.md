@@ -319,7 +319,7 @@ Select backup from before deployment
 **Security:** Never commit production secrets to git! If secrets are exposed (like the previous SMTP password), rotate them immediately.
 
 > [!IMPORTANT]
-> The previous Google App Password (`xzrctzuobujqdmsk`) has been exposed in documentation. It must be revoked at [Google Account Security](https://myaccount.google.com/apppasswords) and a new one generated for production.
+> A previous Google App Password has been exposed in documentation. It must be revoked at [Google Account Security](https://myaccount.google.com/apppasswords) and a new one generated for production. Any committed secrets should be treated as compromised.
 
 ---
 

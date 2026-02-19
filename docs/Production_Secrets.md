@@ -1,14 +1,17 @@
-# Production Secrets Generation - 2026-02-05
+# Production Secrets Generation - 2026-02-19 (ROTATED)
+
+> [!CAUTION]
+> Previous secrets (NEXTAUTH_SECRET, ADMIN_API_KEY, SMTP_PASS) were committed to the repository history. They are COMPROMISED. The values below are redacted placeholders. You MUST generate fresh ones and store them only in your deployment platform's environment variables.
 
 ## Authentication Secret (NEXTAUTH_SECRET)
 
-**Generated:** `MPfW1ORMlIAv8+wqZ66j2kdYoNmL1UYRGH4qeNOkjVDpP8M+oMEDHGWSTrDJ6Pxa`
+**Generated:** `<REDACTED_AND_ROTATED>`
 **Command:** `node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"`
 **Usage:** JWT token signing, session encryption
 
 ## Admin API Key (ADMIN_API_KEY)
 
-**Generated:** `d9acd7bd20396a919dce0b34e9eae973c4ef4d3bc760f2795a8200570f2440fd`
+**Generated:** `<REDACTED_AND_ROTATED>`
 **Command:** `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`
 **Usage:** Administrative API authentication
 
