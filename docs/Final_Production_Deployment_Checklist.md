@@ -21,7 +21,7 @@
 
 - [x] `.env.production.template` created
 - [x] Production secrets generated
-- [x] SMTP password documented (`xzrctzuobujqdmsk`)
+- [x] SMTP password documented (`<REDACTED_SMTP_PASSWORD>`)
 - [x] S3 provider options documented
 - [x] RBAC verification script created
 
@@ -98,7 +98,7 @@ DATABASE_URL=mysql://[user]:[pass]@[host]:3306/citcoder_eitdc
 NEXTAUTH_URL=https://ebic.cit.edu.ly
 NEXTAUTH_SECRET=[generated-secret]
 ADMIN_API_KEY=[generated-api-key]
-SMTP_PASS=xzrctzuobujqdmsk
+SMTP_PASS=<REDACTED_SMTP_PASSWORD>
 
 # S3 Configuration (choose one):
 # AWS S3:
@@ -314,9 +314,12 @@ Select backup from before deployment
 
 **NEXTAUTH_SECRET:** [Generated via Node.js crypto]  
 **ADMIN_API_KEY:** [Generated via Node.js crypto]  
-**SMTP_PASS:** `xzrctzuobujqdmsk` (Google App Password)
+**SMTP_PASS:** `<REDACTED_SMTP_PASSWORD>` (Google App Password)
 
-**Security:** Never commit production secrets to git!
+**Security:** Never commit production secrets to git! If secrets are exposed (like the previous SMTP password), rotate them immediately.
+
+> [!IMPORTANT]
+> The previous Google App Password (`xzrctzuobujqdmsk`) has been exposed in documentation. It must be revoked at [Google Account Security](https://myaccount.google.com/apppasswords) and a new one generated for production.
 
 ---
 

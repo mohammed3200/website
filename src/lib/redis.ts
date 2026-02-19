@@ -11,11 +11,25 @@ function getRedis(): Redis {
     return _redis;
   }
 
-  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-  _redis = new Redis(redisUrl, {
-    maxRetriesPerRequest: null,
-    lazyConnect: true,
-  });
+  const redisUrl = process.env.REDIS_URL;
+
+  if (!redisUrl) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        '❌ REDIS_URL is not defined. Redis is required for production caching and queues.',
+      );
+    }
+    // Fallback for development/test only
+    _redis = new Redis('redis://localhost:6379', {
+      maxRetriesPerRequest: null,
+      lazyConnect: true,
+    });
+  } else {
+    _redis = new Redis(redisUrl, {
+      maxRetriesPerRequest: null,
+      lazyConnect: true,
+    });
+  }
 
   if (process.env.NODE_ENV !== 'production') {
     globalForRedis.redis = _redis;
