@@ -10,14 +10,11 @@ FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json pnpm-lock.yaml* bun.lock* package-lock.json* ./
+# Copy package files
+COPY package.json bun.lock ./
 
-RUN \
-  if [ -f bun.lock ]; then npm install -g bun && bun install --frozen-lockfile; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+# Install dependencies using Bun
+RUN npm install -g bun && bun install --frozen-lockfile --ignore-scripts
 
 # ------------------------------------------
 # Stage 2: Runner
@@ -46,4 +43,4 @@ RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
 
 USER worker
 
-CMD ["npx", "tsx", "src/worker.ts"]
+CMD ["bun", "run", "src/worker.ts"]
