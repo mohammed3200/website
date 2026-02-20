@@ -1,0 +1,49 @@
+# ==========================================
+# Production Dockerfile for Background Worker
+# Runs email, report, and WhatsApp queue workers
+# ==========================================
+
+# ------------------------------------------
+# Stage 1: Dependencies
+# ------------------------------------------
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml* bun.lock* package-lock.json* ./
+
+RUN \
+  if [ -f bun.lock ]; then npm install -g bun && bun install --frozen-lockfile; \
+  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile; \
+  elif [ -f package-lock.json ]; then npm ci; \
+  else echo "Lockfile not found." && exit 1; \
+  fi
+
+# ------------------------------------------
+# Stage 2: Runner
+# Unlike the app Dockerfile, the worker needs
+# the full node_modules and source to run tsx
+# ------------------------------------------
+FROM node:20-alpine AS runner
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Don't run as root
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 worker
+
+# Copy dependencies and source
+COPY --from=deps /app/node_modules ./node_modules
+COPY package.json ./
+COPY tsconfig.json ./
+COPY prisma ./prisma
+COPY src ./src
+
+# Generate Prisma client
+RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
+
+USER worker
+
+CMD ["npx", "tsx", "src/worker.ts"]
