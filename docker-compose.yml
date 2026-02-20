@@ -51,9 +51,8 @@ services:
     container_name: ebic-worker
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.worker
     restart: always
-    command: bun run worker
     environment:
       - NODE_ENV=production
       - DATABASE_URL=${DATABASE_URL}

@@ -1,300 +1,164 @@
 # Virtuozzo Deployment Analysis & Implementation Plan
 
-## Overview
-Your Next.js project is compatible with Virtuozzo Application Platform custom container deployment, but there are critical architectural issues that must be addressed before production deployment.
+> **Last Updated:** 2026-02-20
+> **Status:** ✅ READY FOR DEPLOYMENT
 
 ## Current Project Status
-### ✅ Good: Docker-Ready Configuration
-Your project already has:
-- **Dockerfile:** Multi-stage build optimized for production with Next.js standalone mode
-- **docker-compose.yml:** Local development setup with MariaDB and Redis
-- **next.config.ts:** Configured with `output: 'standalone'` for Docker optimization
-- **Environment variables:** Properly structured in `.env`
 
-### ⚠️ Critical Issues Found
-Based on your existing `Deployment And Verdict.md`, there are serious architectural problems:
+### ✅ Production-Ready
 
-> [!CAUTION]
-> **Database Architecture Problem:** The project stores media files as BLOBs in the database, which will cause PaaS database nodes to run out of RAM and storage quickly. Do not deploy to production until Task 22 (S3 migration) is complete.
-
-> [!WARNING]
-> **Security Issue:** The `NEXTAUTH_SECRET` in `.env` is committed to the repository. This must be rotated immediately before deployment.
-
-> [!WARNING]
-> **Over-Engineering:** Redis/BullMQ are implemented but without proper worker processes, adding unnecessary complexity and cost.
+- **S3 Storage:** Complete — all media uploaded to S3 via `s3-service.ts`. Image/Media models store only metadata (`url`, `s3Key`, `s3Bucket`). No BLOBs in database.
+- **Dockerfile (App):** Multi-stage build, standalone output, non-root user, port 3000.
+- **Dockerfile.worker:** Separate image with full `node_modules` and `tsx` for background workers (email, report, WhatsApp).
+- **docker-compose.yml:** All environment variables via `${VAR}` substitution. No hardcoded credentials.
+- **Workers:** 3 BullMQ workers (report, email, WhatsApp) orchestrated by `src/worker.ts` with graceful shutdown.
+- **Auth:** NextAuth + RBAC system with 4 roles, 84 permissions, plus `ADMIN_API_KEY` middleware for system-to-system auth.
+- **Health Check:** `/api/health` endpoint for monitoring.
+- **i18n:** English + Arabic via `next-intl`.
 
 ---
 
-## Technical Verdict & Readiness Assessment
+## Deployment Architecture on Virtuozzo
 
-### Is this project fit for PaaS deployment?
-**NO. Not in its current state.**
-While the code can be containerized, the **database architecture makes it hazardous to deploy**. Storing media files as BLOBs in the database will cause the PaaS database node to run out of RAM and Storage very quickly. PaaS storage is expensive; you will pay a premium for storing bytes in MariaDB instead of S3.
-
-### Is Docker the right choice?
-**YES.** Docker is the correct infrastructure choice. It isolates the specific Node.js requirements and native dependencies (Process, Image processing). Without Docker, you will likely face environment incompatibility issues.
-
-### Brutal Conclusion
-> [!IMPORTANT]
-> **You have a robust frontend wrapper around a "ticking time bomb" (the Database).**
-> **Do not market, launch, or scale this application until Task 22 (S3 Migration) is fully complete.**
-
----
-
-## Proposed Changes
-
-### 1. Pre-Deployment Security Fixes
-**[MODIFY]** `.env`
-
-**Required Changes:**
-- Generate new `NEXTAUTH_SECRET`
-- Update `NEXTAUTH_URL` to production domain
-- Update `NEXT_PUBLIC_APP_URL` to production domain
-- Configure production database connection string
-- Verify SMTP credentials for production
-
-**Action:** Create a new `.env.production` file with production values (not committed to git).
-
-### 2. Docker Registry Preparation
-**[MODIFY]** `Dockerfile`
-
-**Current Status:** Your Dockerfile is already optimized with:
-- Multi-stage build
-- Standalone Next.js output
-- Non-root user (security best practice)
-- Proper port exposure (3000)
-- Prisma generation during build
-
-**Recommendation:** No changes needed to Dockerfile itself, but verify the image tag naming convention matches your Docker registry.
-
-### 3. Environment Variable Configuration for Virtuozzo
-Create a production environment variables file that includes:
-
-```bash
-# Database Connection (from Virtuozzo MariaDB node)
-DATABASE_URL=mysql://[user]:[password]@[host]:3306/[database]
-
-# Application URLs
-NEXTAUTH_URL=https://your-domain.com
-NEXT_PUBLIC_APP_URL=https://your-domain.com
-
-# Authentication
-NEXTAUTH_SECRET=[generate-new-secret-here]
-
-# Redis Connection (from Virtuozzo Redis node)
-REDIS_HOST=[virtuozzo-redis-host]
-REDIS_PORT=6379
-
-# Email Configuration
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=ebic@cit.edu.ly
-SMTP_PASS=[app-password]
-EMAIL_FROM=ebic@cit.edu.ly
-
-# Admin Configuration
-INIT_ADMIN_USERNAME=eitdc_admin
-INIT_ADMIN_EMAIL=ebic@cit.edu.ly
-INIT_ADMIN_PASSWORD=[secure-password]
-ADMIN_API_KEY=[generate-new-key]
-
-# Security & Monitoring
-ALLOWED_ORIGINS=https://your-domain.com,https://ebic.cit.edu.ly
-RATE_LIMIT_WINDOW=900000
-RATE_LIMIT_MAX_REQUESTS=100
-LOG_LEVEL=info
-
-# Feature Flags
-ENABLE_EMAIL_QUEUE=true
-ENABLE_TWO_FACTOR_AUTH=true
-ENABLE_DISPOSABLE_EMAIL_CHECK=true
 ```
+┌─────────────────────────────────────────────────┐
+│                 Virtuozzo Environment            │
+│                                                  │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐       │
+│  │  App     │  │  Worker  │  │  MySQL 8 │       │
+│  │  (Docker)│  │  (Docker)│  │  (PaaS)  │       │
+│  │  :3000   │  │          │  │  :3306   │       │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘       │
+│       │              │             │              │
+│       └──────────────┴─────────────┘              │
+│                Internal Network                   │
+│                                                  │
+│  ┌──────────┐  ┌──────────────────┐              │
+│  │  Redis   │  │  S3 Storage      │              │
+│  │  (PaaS)  │  │  (AWS/R2/MinIO)  │              │
+│  │  :6379   │  │                  │              │
+│  └──────────┘  └──────────────────┘              │
+│                                                  │
+│  ┌──────────────────────────────┐                │
+│  │   Load Balancer (SSL/TLS)    │                │
+│  │   Let's Encrypt Certificate  │                │
+│  │   :443 → :3000               │                │
+│  └──────────────────────────────┘                │
+└─────────────────────────────────────────────────┘
+```
+
+---
 
 ## Deployment Steps
 
-### Step 1: Build and Push Docker Image
+### Step 1: Build & Push Docker Images
+
 ```bash
-# 1. Login to Docker Hub (or your private registry)
-docker login
+# App container
+docker build -t [username]/ebic-website:latest .
+docker push [username]/ebic-website:latest
 
-# 2. Build the image with production tag
-docker build -t [your-username]/website-app:latest .
-
-# 3. Push to registry
-docker push [your-username]/website-app:latest
+# Worker container
+docker build -f Dockerfile.worker -t [username]/ebic-worker:latest .
+docker push [username]/ebic-worker:latest
 ```
 
 ### Step 2: Create Virtuozzo Environment
-1. **Login** to Virtuozzo Dashboard
-2. Click **"New Environment"**
-3. Switch to **"Custom"** tab
-4. Select **"Docker Engine"** or **"Docker Swarm"**
-5. **Add Database Node:**
-   - Add MariaDB 10.11+ node
-   - Note the connection credentials provided by platform
-   - **Important:** Use PaaS-provided database, not containerized database
-6. **Add Redis Node** (if using email queue):
-   - Add Redis 7+ node
-   - Note the connection details
-7. **Configure Custom Container:**
-   - Image: `[your-username]/website-app:latest`
-   - Port: `3000` (internal)
-   - Expose via Load Balancer: `80/443` → `3000`
+
+1. Login → **New Environment** → **Docker Engine**
+2. **Add MySQL 8** (PaaS-managed, NOT containerized)
+   - Cloudlets: Reserved 2–4, Dynamic 4–8
+3. **Add Redis 7+** (PaaS-managed)
+4. **Add App Container:** `[username]/ebic-website:latest`, port 3000
+   - Cloudlets: Reserved 4–8, Dynamic 8–16
+5. **Add Worker Container:** `[username]/ebic-worker:latest`
+   - Cloudlets: Reserved 2, Dynamic 4
 
 ### Step 3: Configure Environment Variables
-In Virtuozzo Dashboard:
-1. Go to your application node
-2. Navigate to **Settings** → **Variables**
-3. Add all production environment variables listed above
-4. Ensure sensitive values are not exposed in logs
 
-### Step 4: Database Migration
-**Option A (Recommended): Manual migration via SSH**
+Via Virtuozzo Dashboard → Container → Settings → Variables.
+
+Copy all values from [.env.production.template](../.env.production.template). Critical variables:
+
 ```bash
-# 1. SSH into the container via Virtuozzo Web SSH
-# 2. Run Prisma migrations
-npx prisma migrate deploy
+DATABASE_URL=mysql://[user]:[pass]@[mysql-host]:3306/[dbname]
+NEXTAUTH_URL=https://ebic.cit.edu.ly
+NEXTAUTH_SECRET=[generated-secret]
+REDIS_URL=redis://[redis-host]:6379
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=ebic@cit.edu.ly
+SMTP_PASS=[google-app-password]
+AWS_REGION=auto
+S3_ENDPOINT=https://[account].r2.cloudflarestorage.com
+S3_BUCKET_NAME=ebic-media-production
+AWS_ACCESS_KEY_ID=[key]
+AWS_SECRET_ACCESS_KEY=[secret]
 ```
 
-**Option B: Automated (risky with multiple containers)**
-- Modify Dockerfile to run migrations on startup
-- Only suitable for single-container deployments
+### Step 4: Database Initialization
 
-### Step 5: Domain Configuration
-1. Add Custom Domain in Virtuozzo
-2. Configure SSL Certificate (Let's Encrypt or custom)
-3. Update DNS Records:
-   - **A record** pointing to Virtuozzo IP
-   - **CNAME** for www subdomain
+Via Virtuozzo Web SSH into the app container:
+
+```bash
+npx prisma migrate deploy
+npx tsx prisma/seed-rbac.ts
+npx tsx scripts/verify-rbac.ts
+# Expected: ✅ RBAC INTEGRITY CHECK PASSED
+```
+
+### Step 5: Domain & SSL
+
+1. Virtuozzo → Settings → Custom Domains → `ebic.cit.edu.ly`
+2. Enable Let's Encrypt SSL via Load Balancer add-on
+3. DNS: A record `ebic` → Virtuozzo Environment IP
 
 ### Step 6: Verification
-After deployment:
-1. Test application access via HTTPS
-2. Verify database connection
-3. Test authentication flow
-4. Verify email sending functionality
-5. Check Redis connection (if applicable)
-6. Monitor application logs for errors
 
-## Verification Plan
+- [ ] Homepage loads at `https://ebic.cit.edu.ly`
+- [ ] Admin login works
+- [ ] Innovator form submission + image upload to S3
+- [ ] Email notifications sent
+- [ ] Arabic/English language switching
+- [ ] RBAC integrity check passes
+- [ ] Worker logs show "Background worker started..."
 
-### Automated Tests
-**Build Verification**
+---
+
+## Resource Allocation
+
+| Node             | Reserved           | Dynamic Max       |
+| ---------------- | ------------------ | ----------------- |
+| App Container    | 4 cloudlets (2GB)  | 8 cloudlets (4GB) |
+| Worker Container | 2 cloudlets (1GB)  | 4 cloudlets (2GB) |
+| MySQL 8          | 2 cloudlets (1GB)  | 4 cloudlets (2GB) |
+| Redis            | 1 cloudlet (512MB) | 2 cloudlets (1GB) |
+
+## S3 Provider Options
+
+| Provider          | Free Tier                   | After Free Tier       | Recommendation  |
+| ----------------- | --------------------------- | --------------------- | --------------- |
+| AWS S3            | 5GB / 12 months             | ~$0.023/GB/mo         | Year 1          |
+| Cloudflare R2     | 10GB / forever, zero egress | ~$0.015/GB/mo         | Year 2+         |
+| Self-hosted MinIO | N/A                         | ~$10–15/mo (RAM cost) | Not recommended |
+
+---
+
+## Rollback Plan
+
 ```bash
-# Verify Docker image builds successfully
-docker build -t test-build .
+# Emergency: In Virtuozzo Dashboard
+1. Stop application container
+2. Redeploy previous image tag: [username]/ebic-website:v0.9.0
+3. Restart container
+
+# Database: Virtuozzo auto-creates daily backups
+MariaDB Node → Backup → Restore → Select pre-deployment backup
 ```
 
-**Container Health Check**
-```bash
-# Run container locally to verify it starts
-docker run -p 3000:3000 --env-file .env.production [your-username]/website-app:latest
-# Access http://localhost:3000 and verify homepage loads
-```
+## Security Notes
 
-### Manual Verification
-**Post-Deployment Checks** (to be performed by user after deployment):
-- [ ] Access application via production URL
-- [ ] Test user registration and login
-- [ ] Verify admin dashboard access
-- [ ] Submit a test form (innovator/collaborator)
-- [ ] Verify email notifications are sent
-- [ ] Check database connectivity via admin dashboard
-- [ ] Test Arabic/English language switching
-- [ ] Verify static assets load correctly
-
-**Performance Monitoring:**
-- [ ] Monitor memory usage in Virtuozzo dashboard
-- [ ] Check database storage consumption
-- [ ] Monitor application response times
-
-## Virtuozzo-Specific Requirements
-
-### Port Configuration
-- **Internal Port:** 3000 (Next.js default)
-- **External Port:** 80 (HTTP) and 443 (HTTPS) via Load Balancer
-- **Database Port:** 3306 (internal to PaaS network)
-- **Redis Port:** 6379 (internal to PaaS network)
-
-### Environment Variables Management
-- Virtuozzo allows setting environment variables via Dashboard UI
-- Variables are encrypted and not exposed in logs
-- Can be updated without rebuilding the container
-
-### Resource Allocation
-Based on your application:
-- **Minimum RAM:** 2GB (recommended 4GB for production)
-- **CPU:** 2 cores minimum
-- **Storage:** 20GB minimum (but see warning about BLOB storage)
-
-### Networking
-- Application containers communicate with database via internal network
-- No need to expose database publicly
-- Use Virtuozzo's internal DNS for service discovery
-
-## Important Recommendations
-> [!IMPORTANT]
-> **Before Production Deployment:**
-> 1. Migrate media storage from database BLOBs to S3 (or compatible object storage)
-> 2. Rotate all secrets (`NEXTAUTH_SECRET`, `ADMIN_API_KEY`)
-> 3. Remove `.env` from version control (add to `.gitignore`)
-> 4. Set up database backups in Virtuozzo
-> 5. Configure monitoring and alerting
-
-> [!NOTE]
-> **Cost Optimization:**
-> - PaaS storage is expensive for BLOB data
-> - Consider removing Redis/BullMQ if not actively used
-> - Start with minimal resources and scale up based on monitoring
-
-## Architecture Recommendations for Production
-
-### Immediate (Before Deployment)
-- ✅ Docker containerization (already complete)
-- ⚠️ Rotate all secrets
-- ⚠️ Create production environment variables file
-- ⚠️ Test Docker image locally with production-like environment
-
-### Short-term (Within 1 month)
-- 🔴 **CRITICAL:** Migrate media storage to S3/Minio/compatible object storage
-- Review and optimize Redis usage or remove if unnecessary
-- Implement proper database backup strategy
-- Set up monitoring (Sentry, LogRocket, or similar)
-
-### Long-term (Future enhancements)
-- Implement CDN for static assets
-- Set up staging environment
-- Implement CI/CD pipeline for automated deployments
-- Consider horizontal scaling if traffic increases
-
-## Troubleshooting Guide
-
-### Common Issues
-**Issue: Container fails to start**
-- Check logs in Virtuozzo dashboard
-- Verify all required environment variables are set
-- Ensure database connection string is correct
-
-**Issue: Database connection timeout**
-- Verify database node is running
-- Check internal network connectivity
-- Ensure `DATABASE_URL` uses internal hostname
-
-**Issue: Static assets not loading**
-- Verify public folder is copied in Dockerfile (✅ already configured)
-- Check CDN/Load Balancer configuration
-- Verify file permissions
-
-**Issue: Email sending fails**
-- Test SMTP credentials locally first
-- Verify firewall allows outbound SMTP connections
-- Check SMTP logs in application
-
-## Next Steps
-1. Review this plan and confirm deployment timeline
-2. Generate new secrets for production
-3. Set up Docker Hub account (or private registry)
-4. Coordinate with Virtuozzo hosting provider for account setup
-5. Plan database migration strategy (especially for media files)
-6. Schedule deployment window (recommend off-peak hours)
+- `.env` is in `.gitignore` — never committed
+- Production secrets generated via `crypto.randomBytes()` — see `docs/Production_Secrets.md`
+- Previous secrets in git history should be purged with `bfg` or `git filter-repo`
+- ADMIN_API_KEY provides system-to-system auth via `X-Admin-API-Key` header
