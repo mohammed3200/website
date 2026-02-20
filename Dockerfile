@@ -13,18 +13,10 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json* pnpm-lock.yaml* bun.lock* ./
+COPY package.json bun.lock ./
 
-# Install dependencies based on lockfile
-# Note: We need sharp validation here potentially
-# Skip postinstall scripts here since prisma schema isn't copied yet
-# Prefer npm for Docker builds (more stable), fallback to pnpm/bun
-RUN \
-  if [ -f package-lock.json ]; then npm ci --ignore-scripts; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i --frozen-lockfile --ignore-scripts; \
-  elif [ -f bun.lock ]; then npm install -g bun && bun install --ignore-scripts; \
-  else echo "Lockfile not found." && exit 1; \
-  fi
+# Install dependencies using Bun
+RUN npm install -g bun && bun install --frozen-lockfile --ignore-scripts
 
 # ------------------------------------------
 # Stage 2: Builder
@@ -32,6 +24,7 @@ RUN \
 # ------------------------------------------
 FROM node:20-alpine AS builder
 WORKDIR /app
+RUN npm install -g bun
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -41,18 +34,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # Run Prisma Generate (CRITICAL for Type Safety and Runtime access)
 # Generate Prisma Client with dummy DATABASE_URL
 # This must run before build
-RUN \
-  if [ -f package-lock.json ]; then DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate; \
-  else DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate; \
-  fi
+RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
 
-# Build Next.js app
-RUN \
-  if [ -f package-lock.json ]; then npm run build; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm run build; \
-  else npm run build; \
-  fi
+# Build Next.js app using Bun
+RUN DATABASE_URL=mysql://localhost:3306/dummy bun run build
 
 # ------------------------------------------
 # Stage 3: Runner
