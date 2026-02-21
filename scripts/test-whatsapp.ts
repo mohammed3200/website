@@ -11,7 +11,7 @@
  *   WHATSAPP_API_TOKEN=your_token
  *   WHATSAPP_SENDER_NUMBER=+218921234567
  *   DATABASE_URL=mysql://...  (for template + log tests)
- *   REDIS_URL=redis://...     (for queue test)
+ *   REDIS_URL=redis://...      (required for Test 6: BullMQ queue flow)
  *
  * HOW TO RUN (from project root):
  *   bun scripts/test-whatsapp.ts [phone_number]
@@ -23,6 +23,7 @@
  */
 
 import 'dotenv/config';
+import { Queue, Worker } from 'bullmq';
 import { WhatsAppTransport } from '../src/lib/whatsapp/transports/wapi';
 import { whatsAppService } from '../src/lib/whatsapp/service';
 import { db } from '../src/lib/db';
@@ -77,7 +78,7 @@ async function main() {
     log.warn('Set these env vars to test real message delivery.');
   } else {
     log.success(`WHATSAPP_API_URL = ${apiUrl}`);
-    log.success(`WHATSAPP_API_TOKEN = ${apiToken.slice(0, 8)}...`);
+    log.success(`WHATSAPP_API_TOKEN = ${apiToken ? 'set' : 'not set'}`);
     log.success(`WHATSAPP_SENDER_NUMBER = ${senderNumber || '(not set)'}`);
   }
 
@@ -230,6 +231,113 @@ async function main() {
   }
 
   // ─────────────────────────────────────────────────────────────────
+  // TEST 6: BullMQ Queue Flow (end-to-end)
+  // ─────────────────────────────────────────────────────────────────
+  log.section('Test 6: BullMQ Queue Flow');
+
+  const redisUrl = process.env.REDIS_URL;
+  if (!redisUrl) {
+    log.warn('REDIS_URL not set — skipping queue test.');
+    log.info('Set REDIS_URL=redis://localhost:6379 to enable this test.');
+  } else {
+    // Pre-flight: verify Redis is reachable with a silent one-shot ping.
+    // Using retryStrategy: null so ioredis gives up immediately instead of
+    // retrying (which is what causes the flood of ECONNREFUSED stack traces
+    // when BullMQ's internal connections can't reach the server).
+    const redisReachable = await new Promise<boolean>((resolve) => {
+      // Dynamic import so we only pull ioredis when actually needed
+      import('ioredis')
+        .then(({ default: Redis }) => {
+          const probe = new Redis(redisUrl, {
+            maxRetriesPerRequest: 0,
+            enableOfflineQueue: false,
+            retryStrategy: () => null, // never retry
+            lazyConnect: false,
+          });
+          probe
+            .ping()
+            .then(() => {
+              probe.quit().catch(() => undefined);
+              resolve(true);
+            })
+            .catch(() => {
+              probe.disconnect();
+              resolve(false);
+            });
+          // Safety timeout — ioredis may not fire an error immediately
+          setTimeout(() => {
+            probe.disconnect();
+            resolve(false);
+          }, 3_000);
+        })
+        .catch(() => resolve(false));
+    });
+
+    if (!redisReachable) {
+      log.warn(`Redis not reachable at ${redisUrl} — skipping queue test.`);
+      log.info('Start Redis locally or point REDIS_URL to a running instance.');
+    } else {
+      // Redis confirmed reachable — now safely create Queue + Worker
+      const connection = {
+        url: redisUrl,
+        maxRetriesPerRequest: null, // required by BullMQ
+        enableOfflineQueue: false,
+      };
+      const queueName = 'whatsapp-test';
+      const queue = new Queue(queueName, { connection });
+
+      const completed = await new Promise<boolean>((resolve) => {
+        const TIMEOUT_MS = 15_000;
+        let resolved = false;
+
+        const worker = new Worker(
+          queueName,
+          async (job) => {
+            const transport = new WhatsAppTransport();
+            const result = await transport.send(job.data.to, job.data.body);
+            if (result.error) throw new Error(result.error);
+            return result;
+          },
+          { connection },
+        );
+
+        const finish = async (success: boolean) => {
+          if (resolved) return;
+          resolved = true;
+          await worker.close();
+          await queue.close();
+          resolve(success);
+        };
+
+        worker.on('completed', (job, result) => {
+          log.success(
+            `Queue job completed! ID: ${job.id} | MsgID: ${result?.messageId}`,
+          );
+          finish(true);
+        });
+        worker.on('failed', (_job, err) => {
+          log.error(`Queue job failed: ${err.message}`);
+          finish(false);
+        });
+
+        queue
+          .add('send-whatsapp', {
+            to: targetNumber,
+            body: `🔁 Queue flow test from EBIC system. ${new Date().toISOString()}`,
+          })
+          .then(() => log.info(`Job enqueued to queue "${queueName}"`));
+
+        setTimeout(() => {
+          log.error(`Queue test timed out after ${TIMEOUT_MS / 1000}s`);
+          finish(false);
+        }, TIMEOUT_MS);
+      });
+
+      if (!completed) log.warn('Queue test did not complete cleanly.');
+    }
+  }
+
+  // ─────────────────────────────────────────────────────────────────
   // Summary
   // ─────────────────────────────────────────────────────────────────
   log.section('Test Summary');
@@ -241,6 +349,9 @@ async function main() {
     log.info('  WHATSAPP_SENDER_NUMBER=+218921234567');
   } else {
     log.success('Tests completed with real API credentials.');
+  }
+  if (!redisUrl) {
+    log.warn('Queue test skipped — set REDIS_URL to enable.');
   }
 
   await db.$disconnect();
