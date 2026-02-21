@@ -327,7 +327,11 @@ async function main() {
             to: targetNumber,
             body: `🔁 Queue flow test from EBIC system. ${new Date().toISOString()}`,
           })
-          .then(() => log.info(`Job enqueued to queue "${queueName}"`));
+          .then(() => log.info(`Job enqueued to queue "${queueName}"`))
+          .catch((err) => {
+            log.error(`Failed to enqueue job: ${err.message}`);
+            finish(false);
+          });
 
         timeoutId = setTimeout(() => {
           if (resolved) return;
@@ -352,6 +356,9 @@ async function main() {
     log.info('  WHATSAPP_SENDER_NUMBER=+218921234567');
   } else {
     log.success('Tests completed with real API credentials.');
+  }
+  if (templateTest) {
+    log.success('Database template retrieval and sending verified.');
   }
   if (!redisUrl) {
     log.warn('Queue test skipped — set REDIS_URL to enable.');
