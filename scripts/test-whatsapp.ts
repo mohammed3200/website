@@ -289,6 +289,7 @@ async function main() {
       const completed = await new Promise<boolean>((resolve) => {
         const TIMEOUT_MS = 15_000;
         let resolved = false;
+        let timeoutId: any;
 
         const worker = new Worker(
           queueName,
@@ -304,6 +305,7 @@ async function main() {
         const finish = async (success: boolean) => {
           if (resolved) return;
           resolved = true;
+          if (timeoutId) clearTimeout(timeoutId);
           await worker.close();
           await queue.close();
           resolve(success);
@@ -327,7 +329,8 @@ async function main() {
           })
           .then(() => log.info(`Job enqueued to queue "${queueName}"`));
 
-        setTimeout(() => {
+        timeoutId = setTimeout(() => {
+          if (resolved) return;
           log.error(`Queue test timed out after ${TIMEOUT_MS / 1000}s`);
           finish(false);
         }, TIMEOUT_MS);
