@@ -1,17 +1,8 @@
 /**
- * Support for loading .env files in local development.
- * In production/Docker, environment variables are typically provided by the host.
+ * Prisma 6 Configuration
+ * This file is dependency-free so it can be loaded in production Docker containers.
  */
-if (process.env.NODE_ENV !== 'production') {
-  try {
-    await import('dotenv/config');
-  } catch (e) {
-    // Ignore if dotenv is not available
-  }
-}
-import { defineConfig, env } from 'prisma/config';
-
-export default defineConfig({
+export default {
   // Schema location
   schema: 'prisma/schema.prisma',
 
@@ -23,6 +14,6 @@ export default defineConfig({
 
   // Database connection
   datasource: {
-    url: env('DATABASE_URL'),
+    url: process.env.DATABASE_URL,
   },
-});
+};
