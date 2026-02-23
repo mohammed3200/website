@@ -22,7 +22,7 @@ RUN npm install -g bun && bun install --frozen-lockfile --ignore-scripts
 # the full node_modules and source to run tsx
 # ------------------------------------------
 FROM node:20-alpine AS runner
-RUN apk add --no-cache libc6-compat && npm install -g bun
+RUN apk add --no-cache libc6-compat openssl && npm install -g bun prisma
 WORKDIR /app
 
 ENV NODE_ENV=production

@@ -3,8 +3,10 @@ set -e
 
 # Run database migrations automatically on startup
 if [ "$RUN_MIGRATIONS" = "true" ]; then
+  echo "🔄 Ensuring Prisma engines are ready..."
+  prisma generate
   echo "🔄 Running Prisma migrations..."
-  npx prisma migrate deploy
+  prisma migrate deploy || npx prisma migrate deploy || bunx prisma migrate deploy
   echo "✅ Migrations complete!"
 fi
 

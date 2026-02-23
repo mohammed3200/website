@@ -49,8 +49,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install bun for running seeds/migrations
-RUN apk add --no-cache libc6-compat && npm install -g bun
+# Install bun and openssl (required for Prisma)
+RUN apk add --no-cache libc6-compat openssl && npm install -g bun prisma
 
 # Don't run as root
 RUN addgroup --system --gid 1001 nodejs
@@ -70,9 +70,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Include Prisma schema, migrations, and seed scripts for database setup
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+# Ensure we have the Prisma client and engines
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
 
 # Copy entrypoint script
 COPY --chown=nextjs:nodejs docker-entrypoint.sh ./
