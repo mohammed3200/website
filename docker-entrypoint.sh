@@ -13,9 +13,9 @@ fi
 # Run seeds if requested
 if [ "$RUN_SEEDS" = "true" ]; then
   echo "🌱 Running database seeds..."
-  bun prisma/seed-rbac.ts
-  bun prisma/seed-templates.ts
-  bun prisma/seed.ts
+  bun run prisma/seed-rbac.ts
+  bun run prisma/seed-templates.ts
+  bun run prisma/seed.ts
   echo "✅ Seeds complete!"
 fi
 

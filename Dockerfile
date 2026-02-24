@@ -71,9 +71,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Include Prisma config, schema, migrations, and seed scripts for database setup
 COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-# Ensure we have the Prisma client and engines
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+# Copy src so seed-rbac.ts can import from ../src/lib/rbac
+COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+# Copy all node_modules so seed scripts have access to mysql2, bcryptjs, @prisma/adapter-mysql2, etc.
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 # Copy entrypoint script
 COPY --chown=nextjs:nodejs docker-entrypoint.sh ./
