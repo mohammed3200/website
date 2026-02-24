@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { reportWorker } from '@/lib/queue/report-worker';
 import { emailWorker } from '@/lib/queue/email-worker';
 import { whatsappWorker } from '@/lib/queue/whatsapp-worker';
