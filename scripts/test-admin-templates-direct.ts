@@ -36,7 +36,10 @@ async function testAdminNotificationTemplates() {
       subject: '[EBIC Admin] New Collaborator Registration',
       html: html1,
     });
-    console.log(result1.success ? '   ✅ Sent' : '   ❌ Failed:', result1.error || result1.messageId);
+    console.log(
+      result1.success ? '   ✅ Sent' : '   ❌ Failed:',
+      result1.error || result1.messageId,
+    );
     console.log('');
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -61,7 +64,10 @@ async function testAdminNotificationTemplates() {
       subject: '[EBIC Admin] New Innovator Project Submission',
       html: html2,
     });
-    console.log(result2.success ? '   ✅ Sent' : '   ❌ Failed:', result2.error || result2.messageId);
+    console.log(
+      result2.success ? '   ✅ Sent' : '   ❌ Failed:',
+      result2.error || result2.messageId,
+    );
     console.log('');
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -88,7 +94,10 @@ async function testAdminNotificationTemplates() {
       subject: '[EBIC Admin - URGENT] ⚠️ System Error Detected',
       html: html3,
     });
-    console.log(result3.success ? '   ✅ Sent' : '   ❌ Failed:', result3.error || result3.messageId);
+    console.log(
+      result3.success ? '   ✅ Sent' : '   ❌ Failed:',
+      result3.error || result3.messageId,
+    );
     console.log('');
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -115,7 +124,10 @@ async function testAdminNotificationTemplates() {
       subject: '[EBIC Admin - URGENT] 🔒 Security Alert',
       html: html4,
     });
-    console.log(result4.success ? '   ✅ Sent' : '   ❌ Failed:', result4.error || result4.messageId);
+    console.log(
+      result4.success ? '   ✅ Sent' : '   ❌ Failed:',
+      result4.error || result4.messageId,
+    );
     console.log('');
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
@@ -126,7 +138,7 @@ async function testAdminNotificationTemplates() {
         adminName,
         title: '🚨 Multiple Failed Login Attempts / محاولات دخول فاشلة متعددة',
         message:
-          '5 failed login attempts detected for admin@example.com\n\n' +
+          '5 failed login attempts detected for ebic@cit.edu.ly\n\n' +
           'IP Address: 192.168.1.50\n' +
           'Time: Within the last 15 minutes\n\n' +
           'تم اكتشاف 5 محاولات دخول فاشلة. قد يكون هذا هجومًا.',
@@ -142,12 +154,17 @@ async function testAdminNotificationTemplates() {
       subject: '[EBIC Admin] 🚨 Multiple Failed Login Attempts',
       html: html5,
     });
-    console.log(result5.success ? '   ✅ Sent' : '   ❌ Failed:', result5.error || result5.messageId);
+    console.log(
+      result5.success ? '   ✅ Sent' : '   ❌ Failed:',
+      result5.error || result5.messageId,
+    );
     console.log('');
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Test 6: User Account Created (NORMAL Priority)
-    console.log('6️⃣ Testing User Account Created Notification (NORMAL Priority)...');
+    console.log(
+      '6️⃣ Testing User Account Created Notification (NORMAL Priority)...',
+    );
     const html6 = await render(
       AdminNotification({
         adminName,
@@ -170,16 +187,22 @@ async function testAdminNotificationTemplates() {
       subject: '[EBIC Admin] New User Account Created',
       html: html6,
     });
-    console.log(result6.success ? '   ✅ Sent' : '   ❌ Failed:', result6.error || result6.messageId);
+    console.log(
+      result6.success ? '   ✅ Sent' : '   ❌ Failed:',
+      result6.error || result6.messageId,
+    );
     console.log('');
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Test 7: Database Backup Complete (LOW Priority)
-    console.log('7️⃣ Testing Database Backup Complete Notification (LOW Priority)...');
+    console.log(
+      '7️⃣ Testing Database Backup Complete Notification (LOW Priority)...',
+    );
     const html7 = await render(
       AdminNotification({
         adminName,
-        title: 'Database Backup Completed Successfully / اكتملت نسخة احتياطية لقاعدة البيانات',
+        title:
+          'Database Backup Completed Successfully / اكتملت نسخة احتياطية لقاعدة البيانات',
         message:
           'Automated database backup completed successfully at 3:00 AM.\n\n' +
           'Backup Details:\n' +
@@ -200,11 +223,22 @@ async function testAdminNotificationTemplates() {
       subject: '[EBIC Admin] Database Backup Completed Successfully',
       html: html7,
     });
-    console.log(result7.success ? '   ✅ Sent' : '   ❌ Failed:', result7.error || result7.messageId);
+    console.log(
+      result7.success ? '   ✅ Sent' : '   ❌ Failed:',
+      result7.error || result7.messageId,
+    );
     console.log('');
 
     // Summary
-    const results = [result1, result2, result3, result4, result5, result6, result7];
+    const results = [
+      result1,
+      result2,
+      result3,
+      result4,
+      result5,
+      result6,
+      result7,
+    ];
     const successCount = results.filter((r) => r.success).length;
     const totalTests = results.length;
 
@@ -213,7 +247,9 @@ async function testAdminNotificationTemplates() {
     console.log(`❌ Failed: ${totalTests - successCount}/${totalTests}`);
 
     if (successCount === totalTests) {
-      console.log('\n🎉 All admin notification templates are working correctly!');
+      console.log(
+        '\n🎉 All admin notification templates are working correctly!',
+      );
       console.log(`\n✉️  Check ${testEmail} inbox for test emails.`);
       console.log('\nYou should see 7 emails with different priority levels:');
       console.log('   🔴 URGENT: System Error, Security Alert');

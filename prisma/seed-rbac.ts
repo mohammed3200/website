@@ -1,12 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import bcrypt from "bcryptjs";
-import { SYSTEM_ROLES, ROLE_PERMISSIONS, RESOURCES, ACTIONS } from "../src/lib/rbac";
-
-
+import bcrypt from 'bcryptjs';
+import {
+  SYSTEM_ROLES,
+  ROLE_PERMISSIONS,
+  RESOURCES,
+  ACTIONS,
+} from '../src/lib/rbac';
 
 async function main() {
-  console.log("🌱 Starting RBAC system initialization...");
+  console.log('🌱 Starting RBAC system initialization...');
 
   const adapter = new PrismaMariaDb(process.env.DATABASE_URL!);
   const prisma = new PrismaClient({
@@ -16,7 +19,7 @@ async function main() {
 
   try {
     // Step 1: Create all permissions
-    console.log("Creating permissions...");
+    console.log('Creating permissions...');
     const permissions = [];
 
     for (const resource of Object.values(RESOURCES)) {
@@ -42,17 +45,17 @@ async function main() {
     console.log(`  ✓ Created/Verified ${permissions.length} permissions`);
 
     // Step 2: Create system roles
-    console.log("\nCreating system roles...");
+    console.log('\nCreating system roles...');
 
     for (const [roleKey, rolePermissions] of Object.entries(ROLE_PERMISSIONS)) {
       const role = await prisma.role.upsert({
         where: { name: roleKey },
         update: {
-          description: `System role: ${roleKey.replace(/_/g, " ").toUpperCase()}`,
+          description: `System role: ${roleKey.replace(/_/g, ' ').toUpperCase()}`,
         },
         create: {
           name: roleKey,
-          description: `System role: ${roleKey.replace(/_/g, " ").toUpperCase()}`,
+          description: `System role: ${roleKey.replace(/_/g, ' ').toUpperCase()}`,
           isSystem: true,
         },
       });
@@ -89,10 +92,10 @@ async function main() {
     }
 
     // Step 4: Create super admin user if not exists
-    console.log("\nCreating super admin user...");
+    console.log('\nCreating super admin user...');
 
-    const adminEmail = process.env.INIT_ADMIN_EMAIL || "admin@example.com";
-    const adminPassword = process.env.INIT_ADMIN_PASSWORD || "Admin@123456";
+    const adminEmail = process.env.INIT_ADMIN_EMAIL || 'ebic@cit.edu.ly';
+    const adminPassword = process.env.INIT_ADMIN_PASSWORD || 'Admin@123456';
 
     // Get super admin role
     const superAdminRole = await prisma.role.findUnique({
@@ -109,7 +112,7 @@ async function main() {
         },
         create: {
           email: adminEmail,
-          name: "Super Admin",
+          name: 'Super Admin',
           password: hashedPassword,
           emailVerified: new Date(),
           roleId: superAdminRole.id,
@@ -121,7 +124,7 @@ async function main() {
     }
 
     // Step 5: Migrate existing users to new role system (if any)
-    console.log("\nMigrating existing users to new role system...");
+    console.log('\nMigrating existing users to new role system...');
 
     const usersWithoutRole = await prisma.user.findMany({
       where: { roleId: null },
@@ -142,13 +145,12 @@ async function main() {
         }
       }
     } else {
-      console.log("  ✓ No users to migrate");
+      console.log('  ✓ No users to migrate');
     }
 
-    console.log("\n✅ RBAC system initialization completed successfully!");
-
+    console.log('\n✅ RBAC system initialization completed successfully!');
   } catch (error) {
-    console.error("❌ Error during RBAC initialization:", error);
+    console.error('❌ Error during RBAC initialization:', error);
     throw error;
   } finally {
     await prisma.$disconnect();

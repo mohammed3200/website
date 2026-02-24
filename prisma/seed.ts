@@ -546,8 +546,14 @@ export async function main() {
     log: ['error'],
   });
 
-  const adminEmail = process.env.INIT_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'admin@example.com';
-  const adminPassword = process.env.INIT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'password123';
+  const adminEmail =
+    process.env.INIT_ADMIN_EMAIL ||
+    process.env.ADMIN_EMAIL ||
+    'ebic@cit.edu.ly';
+  const adminPassword =
+    process.env.INIT_ADMIN_PASSWORD ||
+    process.env.ADMIN_PASSWORD ||
+    'password123';
 
   const passwordHash = await bcrypt.hash(adminPassword, 10);
 

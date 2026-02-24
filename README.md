@@ -323,7 +323,7 @@ NEXTAUTH_SECRET="your-secret-here"  # Generate: bunx tsx -e "console.log(require
 NEXTAUTH_URL="http://localhost:3000"
 
 # Admin
-INIT_ADMIN_EMAIL="admin@example.com"
+INIT_ADMIN_EMAIL="ebic@cit.edu.ly"
 INIT_ADMIN_PASSWORD="SecurePassword123!"
 
 # Email (Gmail example)

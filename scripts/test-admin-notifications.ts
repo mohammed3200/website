@@ -59,7 +59,8 @@ async function testAdminNotifications() {
     // Test 4: Security Alert (URGENT)
     console.log('4️⃣ Testing Security Alert (URGENT Priority)...');
     const result4 = await notifySecurityAlert({
-      alert: 'Suspicious activity detected: Multiple admin login attempts from unknown IP',
+      alert:
+        'Suspicious activity detected: Multiple admin login attempts from unknown IP',
       userId: 'user-12345',
       ipAddress: '192.168.1.100',
     });
@@ -71,7 +72,7 @@ async function testAdminNotifications() {
     // Test 5: Failed Login Attempts (HIGH)
     console.log('5️⃣ Testing Failed Login Attempts Alert (HIGH Priority)...');
     const result5 = await notifyFailedLoginAttempts({
-      email: 'admin@example.com',
+      email: 'ebic@cit.edu.ly',
       attempts: 5,
       ipAddress: '192.168.1.50',
     });
@@ -100,7 +101,8 @@ async function testAdminNotifications() {
     console.log('7️⃣ Testing Database Backup Notification (LOW Priority)...');
     const result7 = await notifyAdmins({
       type: 'DATABASE_BACKUP_COMPLETE',
-      title: 'Database Backup Completed Successfully / اكتملت نسخة احتياطية لقاعدة البيانات',
+      title:
+        'Database Backup Completed Successfully / اكتملت نسخة احتياطية لقاعدة البيانات',
       message:
         'Automated database backup completed successfully at 3:00 AM.\n' +
         'Size: 2.4 GB | Duration: 12 minutes\n\n' +
@@ -112,7 +114,15 @@ async function testAdminNotifications() {
     console.log('');
 
     // Summary
-    const results = [result1, result2, result3, result4, result5, result6, result7];
+    const results = [
+      result1,
+      result2,
+      result3,
+      result4,
+      result5,
+      result6,
+      result7,
+    ];
     const totalSent = results.reduce((sum, r) => sum + r.sent, 0);
     const totalFailed = results.reduce((sum, r) => sum + r.failed, 0);
     const totalTests = results.length;
@@ -123,10 +133,14 @@ async function testAdminNotifications() {
     console.log(`🧪 Total Test Cases: ${totalTests}`);
 
     if (totalFailed === 0) {
-      console.log('\n🎉 All admin notification templates are working correctly!');
+      console.log(
+        '\n🎉 All admin notification templates are working correctly!',
+      );
       console.log(`\n✉️  Check ${testEmail} inbox for test emails.`);
     } else {
-      console.log('\n⚠️ Some notifications failed. Check the logs above for details.');
+      console.log(
+        '\n⚠️ Some notifications failed. Check the logs above for details.',
+      );
     }
   } catch (error) {
     console.error('\n❌ Test suite failed:', error);
