@@ -1,35 +1,35 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import { getNavItems } from "@/components/navigation/constants";
-import { ArrowUp, Mail, Phone, MapPin } from "lucide-react";
-import useLanguage from "@/hooks/use-language";
-import { useTranslations } from "next-intl";
-import { Map, MapMarker } from "@/components/ui/map";
-import { MainLogo, socials } from "@/constants";
-
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { getNavItems } from '@/components/navigation/constants';
+import { ArrowUp, Mail, Phone, MapPin } from 'lucide-react';
+import useLanguage from '@/hooks/use-language';
+import { useTranslations } from 'next-intl';
+import { Map, MapMarker } from '@/components/ui/map';
+import { MainLogo, socials } from '@/constants';
 
 export const Footer = () => {
   const { isArabic, lang } = useLanguage();
-  const t = useTranslations("Footer");
-  const tNav = useTranslations("Navigation");
+  const t = useTranslations('Footer');
+  const tNav = useTranslations('Navigation');
 
   // Use existing navigation items to ensure links are valid
   const navItems = getNavItems(tNav, lang);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <footer className="bg-white border-t border-gray-200" dir={isArabic ? "rtl" : "ltr"}>
+    <footer
+      className="bg-white border-t border-gray-200"
+      dir={isArabic ? 'rtl' : 'ltr'}
+    >
       <div className="container mx-auto px-4 md:px-6 lg:px-8">
-
         {/* Main Grid Content */}
         <div className="py-12 lg:py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
-
           {/* 1️⃣ Brand Section (Large) */}
           <div className="lg:col-span-4 space-y-6">
             <div className="flex items-center gap-3">
@@ -43,13 +43,13 @@ export const Footer = () => {
               </div>
               <div className="flex flex-col">
                 <span className="font-almarai font-bold text-xl text-foreground leading-none">
-                  {tNav("centerName")}
+                  {tNav('centerName')}
                 </span>
               </div>
             </div>
 
             <p className="text-gray-500 font-outfit text-base leading-relaxed max-w-sm">
-              {t("subtitle")}
+              {t('subtitle')}
             </p>
 
             {/* Social Icons */}
@@ -73,14 +73,14 @@ export const Footer = () => {
           {/* 2️⃣ Quick Links */}
           <div className="lg:col-span-2 space-y-6">
             <h3 className="font-almarai font-bold text-lg text-foreground relative inline-block">
-              {t("quickLinks")}
+              {t('quickLinks')}
               <span className="absolute -bottom-2 left-0 w-8 h-1 bg-primary rounded-full" />
             </h3>
             <ul className="space-y-3">
               {navItems.slice(0, 5).map((item) => (
                 <li key={item.id}>
                   <Link
-                    href={item.href || "#"}
+                    href={item.href || '#'}
                     className="text-gray-500 hover:text-primary transition-colors text-sm font-medium flex items-center gap-2 group"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-gray-200 group-hover:bg-primary transition-colors" />
@@ -94,7 +94,7 @@ export const Footer = () => {
                   className="text-gray-500 hover:text-primary transition-colors text-sm font-medium flex items-center gap-2 group"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-gray-200 group-hover:bg-primary transition-colors" />
-                  {t("faq")}
+                  {t('faq')}
                 </Link>
               </li>
             </ul>
@@ -103,7 +103,7 @@ export const Footer = () => {
           {/* 3️⃣ Contact Info */}
           <div className="lg:col-span-3 space-y-6">
             <h3 className="font-almarai font-bold text-lg text-foreground relative inline-block">
-              {t("contactUs")}
+              {t('contactUs')}
               <span className="absolute -bottom-2 left-0 w-8 h-1 bg-primary rounded-full" />
             </h3>
             <ul className="space-y-4">
@@ -112,10 +112,17 @@ export const Footer = () => {
                   <Phone className="w-4 h-4" />
                 </div>
                 <div>
-                  <a href={`tel:${(process.env.NEXT_PUBLIC_CONTACT_PHONE || "+218910000000").replace(/\s/g, '')}`} className="block font-bold text-foreground hover:text-primary transition-colors">
-                    {process.env.NEXT_PUBLIC_CONTACT_PHONE || "+218 91 000 0000"}
+                  <a
+                    href={`tel:${(process.env.NEXT_PUBLIC_CONTACT_PHONE || '+218910000000').replace(/\s/g, '')}`}
+                    className="block font-bold text-foreground hover:text-primary transition-colors"
+                  >
+                    {process.env.NEXT_PUBLIC_CONTACT_PHONE ||
+                      '+218 91 000 0000'}
                   </a>
-                  <span className="text-xs text-gray-400">{process.env.NEXT_PUBLIC_WORKING_HOURS || "Sun-Thu, 8am-3pm"}</span>
+                  <span className="text-xs text-gray-400">
+                    {process.env.NEXT_PUBLIC_WORKING_HOURS ||
+                      'Sun-Thu, 8am-3pm'}
+                  </span>
                 </div>
               </li>
               <li className="flex items-start gap-3">
@@ -123,8 +130,11 @@ export const Footer = () => {
                   <Mail className="w-4 h-4" />
                 </div>
                 <div>
-                  <a href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || "ebic@cit.edu.ly"}`} className="block font-bold text-foreground hover:text-primary transition-colors">
-                    {process.env.NEXT_PUBLIC_CONTACT_EMAIL || "ebic@cit.edu.ly"}
+                  <a
+                    href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'ebic@cit.edu.ly'}`}
+                    className="block font-bold text-foreground hover:text-primary transition-colors"
+                  >
+                    {process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'ebic@cit.edu.ly'}
                   </a>
                   <span className="text-xs text-gray-400">Online Support</span>
                 </div>
@@ -148,20 +158,32 @@ export const Footer = () => {
               </Map>
             </div>
           </div>
-
         </div>
 
         {/* Bottom Bar */}
         <div className="py-6 border-t border-gray-100 flex flex-col-reverse md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
             <p className="text-gray-400 text-sm font-outfit">
-              {t("copyright", { year: new Date().getFullYear() })}
+              {t('copyright', { year: new Date().getFullYear() })}
+            </p>
+            <p className="text-gray-400 text-xs font-outfit mt-1">
+              {t('developerCredit')}
             </p>
           </div>
 
           <div className="flex items-center gap-6">
-            <Link href="#" className="text-sm text-gray-500 hover:text-primary transition-colors">{t("termsOfUse")}</Link>
-            <Link href="#" className="text-sm text-gray-500 hover:text-primary transition-colors">{t("privacyPolicy")}</Link>
+            <Link
+              href="#"
+              className="text-sm text-gray-500 hover:text-primary transition-colors"
+            >
+              {t('termsOfUse')}
+            </Link>
+            <Link
+              href="#"
+              className="text-sm text-gray-500 hover:text-primary transition-colors"
+            >
+              {t('privacyPolicy')}
+            </Link>
 
             {/* Back to Top Button */}
             <button
@@ -173,7 +195,6 @@ export const Footer = () => {
             </button>
           </div>
         </div>
-
       </div>
     </footer>
   );
