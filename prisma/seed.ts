@@ -546,13 +546,10 @@ export async function main() {
     log: ['error'],
   });
 
-  if (!process.env.INIT_ADMIN_EMAIL || !process.env.INIT_ADMIN_PASSWORD) {
-    throw new Error(
-      'INIT_ADMIN_EMAIL and INIT_ADMIN_PASSWORD environment variables are required',
-    );
-  }
+  const adminEmail = process.env.INIT_ADMIN_EMAIL || process.env.ADMIN_EMAIL || 'admin@example.com';
+  const adminPassword = process.env.INIT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'password123';
 
-  const passwordHash = await bcrypt.hash(process.env.INIT_ADMIN_PASSWORD, 10);
+  const passwordHash = await bcrypt.hash(adminPassword, 10);
 
   // Find the Super Admin role (ensure seed:rbac is run or handle gracefully)
   const superAdminRole = await prisma.role.findUnique({
@@ -569,7 +566,7 @@ export async function main() {
 
   // Create admin user
   const adminUser = await prisma.user.upsert({
-    where: { email: process.env.INIT_ADMIN_EMAIL },
+    where: { email: adminEmail },
     update: {
       password: passwordHash,
       roleId: superAdminRole?.id, // Link to role
@@ -577,7 +574,7 @@ export async function main() {
       emailVerified: new Date(),
     },
     create: {
-      email: process.env.INIT_ADMIN_EMAIL,
+      email: adminEmail,
       password: passwordHash,
       name: 'Admin User',
       emailVerified: new Date(),
