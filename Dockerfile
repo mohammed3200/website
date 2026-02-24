@@ -70,6 +70,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 # Include Prisma config, schema, migrations, and seed scripts for database setup
 COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./
+COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 # Copy src so seed-rbac.ts can import from ../src/lib/rbac
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
