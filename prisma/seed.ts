@@ -5,25 +5,8 @@ import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import bcrypt from 'bcryptjs';
 
 // Validate required environment variables
-const dbHost = process.env.DATABASE_HOST;
-const dbPort = process.env.DATABASE_PORT || '3306';
-const dbUser = process.env.DATABASE_USER || 'root';
-const dbPassword = process.env.DATABASE_PASSWORD || '';
-const dbName = process.env.DATABASE_NAME || 'citcoder_eitdc';
-
-if (!dbHost || !dbUser || !dbPassword || !dbName) {
-  console.error('❌ Missing required database environment variables:');
-  console.error('   DATABASE_HOST:', dbHost ? '✅' : '❌ MISSING');
-  console.error('   DATABASE_USER:', dbUser ? '✅' : '❌ MISSING');
-  console.error(
-    '   DATABASE_PASSWORD:',
-    dbPassword ? '✅ (set)' : '❌ MISSING',
-  );
-  console.error('   DATABASE_NAME:', dbName ? '✅' : '❌ MISSING');
-  console.error('   DATABASE_PORT:', dbPort);
-  throw new Error(
-    'Missing required database environment variables. Please check your .env file.',
-  );
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is required');
 }
 
 // Strategic Plans Data
