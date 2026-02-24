@@ -6,8 +6,13 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
   echo "🔄 Ensuring Prisma engines are ready..."
   prisma generate
   echo "🔄 Running Prisma migrations..."
-  prisma migrate deploy || npx prisma migrate deploy || bunx prisma migrate deploy
-  echo "✅ Migrations complete!"
+  if [ -d "prisma/migrations" ]; then
+    prisma migrate deploy || npx prisma migrate deploy
+  else
+    echo "⚠️ No migrations found. Pushing schema directly..."
+    prisma db push --accept-data-loss --skip-generate || npx prisma db push --accept-data-loss --skip-generate
+  fi
+  echo "✅ Database schema sync complete!"
 fi
 
 # Run seeds if requested
