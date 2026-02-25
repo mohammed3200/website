@@ -112,7 +112,22 @@
     "community": "Industry Partnerships",
     "communityValue": "Active",
     "growth": "Innovation Impact",
-    "growthValue": "Growing"
+    "growthValue": "Growing",
+    "steps": {
+      "planning": {
+        "title": "Strategic Planning",
+        "desc": "Blueprint your vision with expert guidance and industry insights."
+      },
+      "manufacturing": {
+        "title": "Building & Development",
+        "badge": "Active",
+        "desc": "Transform ideas into reality through our incubator programs."
+      },
+      "delivery": {
+        "title": "Launch & Scale",
+        "desc": "Accelerate growth with market access and funding support."
+      }
+    }
   },
   "Contact": {
     "title": "Get in Touch",

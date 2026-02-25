@@ -4,14 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import useLanguage from '@/hooks/use-language';
 import { motion, Variants } from 'framer-motion';
-import {
-  ArrowRight,
-  DraftingCompass,
-  Factory,
-  Zap,
-  CheckCircle2,
-  Timer,
-} from 'lucide-react';
+import { ArrowRight, DraftingCompass, Factory, Zap } from 'lucide-react';
 import { ActiveButton } from '@/components/buttons';
 
 export const HomeHero = () => {
