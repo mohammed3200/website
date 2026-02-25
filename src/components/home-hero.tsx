@@ -66,26 +66,6 @@ export const HomeHero = () => {
             animate="visible"
             className="max-w-xl"
           >
-            {/* Badge */}
-            <motion.div variants={textVariants} className="mb-6">
-              <span className="inline-flex items-center gap-2 px-3 py-1 bg-white border border-gray-200 rounded-full shadow-sm">
-                <Timer className="w-3.5 h-3.5 text-primary" />
-                <span className="font-mono text-xs font-bold text-gray-600 tracking-wider uppercase">
-                  {t('badge', {
-                    date: isArabic
-                      ? new Date().toLocaleDateString('ar-LY', {
-                          year: 'numeric',
-                          month: 'long',
-                        })
-                      : new Date().toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                        }),
-                  })}
-                </span>
-              </span>
-            </motion.div>
-
             {/* Headline */}
             <motion.h1
               variants={textVariants}
@@ -238,23 +218,6 @@ export const HomeHero = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Floating "Completed" Badge */}
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 1, type: 'spring' }}
-                className={`absolute top-6 ${
-                  isArabic ? 'left-6' : 'right-6'
-                } flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-lg border border-green-100 ${
-                  isArabic ? 'flex-row-reverse' : ''
-                }`}
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                <span className="text-xs font-bold">
-                  {t('stats.systemStatus')}
-                </span>
-              </motion.div>
             </div>
 
             {/* Decorative Elements */}
