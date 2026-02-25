@@ -1,17 +1,18 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import Image from "next/image";
-import { useMedia } from "react-use";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { ArrowUpLeft, ArrowUpRight } from "lucide-react";
+import React, { useState } from 'react';
+import Image from 'next/image';
+import { useMedia } from 'react-use';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { ArrowUpLeft, ArrowUpRight } from 'lucide-react';
 
-import useLanguage from "@/hooks/use-language";
-import { useGetStrategicPlans } from "@/features/strategic-plan/api";
+import useLanguage from '@/hooks/use-language';
+import { useGetStrategicPlans } from '@/features/strategic-plan/api';
 
-import { WobbleCard } from "./ui/wobble-card";
-import { ActiveButton } from "@/components";
+import { WobbleCard } from './ui/wobble-card';
+import { ActiveButton } from '@/components/buttons';
+import { HomeStrategicPlanSkeleton } from '@/components/skeletons';
 
 interface StrategicPlanItem {
   id: string;
@@ -33,10 +34,10 @@ interface StrategicPlanItem {
 
 export const StrategicPlan = () => {
   const router = useRouter();
-  const t = useTranslations("ui");
+  const t = useTranslations('ui');
   const { isArabic, lang } = useLanguage();
-  const [selectedIndex, setSelectedIndex] = useState<number>(0); // Default to the first card
-  const isDesktop = useMedia("min-width: 640px", true);
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const isDesktop = useMedia('min-width: 640px', true);
 
   const { data, isLoading, error } = useGetStrategicPlans();
 
@@ -47,13 +48,7 @@ export const StrategicPlan = () => {
   };
 
   if (isLoading) {
-    return (
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl mx-auto w-full md:border-2 md:border-primary rounded-3xl p-4 overflow-hidden">
-        <div className="col-span-2 text-center py-8">
-          <p className="text-gray-500">Loading strategic plans...</p>
-        </div>
-      </section>
-    );
+    return <HomeStrategicPlanSkeleton />;
   }
 
   if (error || !data?.data) {
@@ -68,8 +63,10 @@ export const StrategicPlan = () => {
 
   // Filter plans based on current language by slug suffix
   const allPlans = (data?.data || []) as StrategicPlanItem[];
-  const strategics = allPlans.filter(plan =>
-    lang === 'ar' ? plan.slug.endsWith('-ar-1') || plan.slug.endsWith('-ar-2') : plan.slug.endsWith('-en-1') || plan.slug.endsWith('-en-2')
+  const strategics = allPlans.filter((plan) =>
+    lang === 'ar'
+      ? plan.slug.endsWith('-ar-1') || plan.slug.endsWith('-ar-2')
+      : plan.slug.endsWith('-en-1') || plan.slug.endsWith('-en-2'),
   );
 
   return (
@@ -77,7 +74,7 @@ export const StrategicPlan = () => {
       className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-7xl
        mx-auto w-full md:border-2 md:border-primary
         rounded-3xl p-4 overflow-hidden"
-      dir={isArabic ? "rtl" : "ltr"}
+      dir={isArabic ? 'rtl' : 'ltr'}
     >
       {strategics.map((strategic: StrategicPlanItem, index: number) => {
         const isSelected = selectedIndex === index;
@@ -85,11 +82,11 @@ export const StrategicPlan = () => {
 
         const containerClassName = isDesktop
           ? isFirst
-            ? "bg-primary text-white shadow-md shadow-primary"
-            : "bg-neutral-200 hover:bg-primary hover:text-white hover:shadow-md hover:shadow-primary"
+            ? 'bg-primary text-white shadow-md shadow-primary'
+            : 'bg-neutral-200 hover:bg-primary hover:text-white hover:shadow-md hover:shadow-primary'
           : isSelected
-            ? "bg-primary text-white shadow-md shadow-primary"
-            : "bg-neutral-200 max-md:border-2 max-md:shadow-md max-md:shadow-[#e99]";
+            ? 'bg-primary text-white shadow-md shadow-primary'
+            : 'bg-neutral-200 max-md:border-2 max-md:shadow-md max-md:shadow-[#e99]';
 
         return (
           <WobbleCard
@@ -112,19 +109,22 @@ export const StrategicPlan = () => {
             )}
             <div className="row-span-1 gap-2 flex flex-col justify-center">
               <p className="font-din-bold md:text-base text-sm">
-                {strategic.category || (isArabic ? "خطة إستراتيجية" : "Strategic Plan")}
+                {strategic.category ||
+                  (isArabic ? 'خطة إستراتيجية' : 'Strategic Plan')}
               </p>
               <h2 className="font-din-regular max-w-400 md:h5 h6">
                 {strategic.title}
               </h2>
               <div className="w-full mt-2 px-4">
                 <ActiveButton
-                  onClick={() => router.push(`${lang}/StrategicPlan/${strategic.slug}`)}
-                  className={`${isArabic ? "ml-auto" : "mr-auto"}`}
+                  onClick={() =>
+                    router.push(`${lang}/StrategicPlan/${strategic.slug}`)
+                  }
+                  className={`${isArabic ? 'ml-auto' : 'mr-auto'}`}
                 >
                   <div className="flex items-center gap-2">
                     <p className="font-din-bold text-base text-white">
-                      {t("readMore")}
+                      {t('readMore')}
                     </p>
                     {isArabic ? (
                       <ArrowUpLeft className="size-5 text-white" />
@@ -140,4 +140,4 @@ export const StrategicPlan = () => {
       })}
     </section>
   );
-};;
+};

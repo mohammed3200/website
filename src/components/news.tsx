@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Newspaper } from 'lucide-react';
-import { useTranslations } from "next-intl";
+import { useTranslations } from 'next-intl';
 import useLanguage from '@/hooks/use-language';
 import { cn } from '@/lib/utils';
-import { useGetLatestNews } from "@/features/news/api/use-get-latest-news";
+import { useGetLatestNews } from '@/features/news/api/use-get-latest-news';
 import Image from 'next/image';
 import { ReadMore } from '@/components/buttons/read-more';
+import { HomeNewsSkeleton } from '@/components/skeletons';
 
-
-const truncateString = (str: string, num: number) => str.length > num ? str.slice(0, num) + "..." : str;
-
+const truncateString = (str: string, num: number) =>
+  str.length > num ? str.slice(0, num) + '...' : str;
 
 export const News = () => {
   const { isArabic, lang } = useLanguage();
-  const t = useTranslations("News");
+  const t = useTranslations('News');
   const { data: news = [], isLoading } = useGetLatestNews(6);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
@@ -46,19 +46,26 @@ export const News = () => {
   };
 
   if (isLoading) {
-    return <div className="w-full py-16 flex justify-center"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
+    return <HomeNewsSkeleton />;
   }
 
   if (news.length === 0) return null;
 
   const currentItem = news[currentIndex];
   // Map DB fields to UI
-  const title = isArabic ? currentItem.title : (currentItem.titleEn || currentItem.title);
-  const description = isArabic ? currentItem.content : (currentItem.contentEn || currentItem.content);
+  const title = isArabic
+    ? currentItem.title
+    : currentItem.titleEn || currentItem.title;
+  const description = isArabic
+    ? currentItem.content
+    : currentItem.contentEn || currentItem.content;
   // Strip HTML tags for description preview if needed, or just take substring
   const cleanDescription = description.replace(/<[^>]*>?/gm, '');
-  const image = currentItem.image?.url || '/images/placeholders/news-placeholder.jpg';
-  const updatedTime = new Date(currentItem.updatedAt).toLocaleDateString(isArabic ? 'ar-EG' : 'en-US');
+  const image =
+    currentItem.image?.url || '/images/placeholders/news-placeholder.jpg';
+  const updatedTime = new Date(currentItem.updatedAt).toLocaleDateString(
+    isArabic ? 'ar-EG' : 'en-US',
+  );
 
   const variants = {
     enter: (direction: number) => ({
@@ -72,20 +79,24 @@ export const News = () => {
     exit: (direction: number) => ({
       x: direction > 0 ? -50 : 50,
       opacity: 0,
-    })
+    }),
   };
 
   return (
-    <section className="w-full py-16 bg-background overflow-hidden" dir={isArabic ? "rtl" : "ltr"}>
+    <section
+      className="w-full py-16 bg-background overflow-hidden"
+      dir={isArabic ? 'rtl' : 'ltr'}
+    >
       <div className="container mx-auto px-4">
-
         {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div className="flex items-center gap-3">
             <div className="p-2.5 bg-primary/10 rounded-xl">
               <Newspaper className="w-6 h-6 text-primary" />
             </div>
-            <h2 className="text-3xl font-bold font-almarai text-foreground">{t("latestNews")}</h2>
+            <h2 className="text-3xl font-bold font-almarai text-foreground">
+              {t('latestNews')}
+            </h2>
           </div>
 
           {/* Desktop Navigation */}
@@ -115,11 +126,10 @@ export const News = () => {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{ duration: 0.5, ease: "easeInOut" }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
               className="absolute inset-0 w-full h-full"
             >
               <div className="w-full h-full bg-white rounded-3xl shadow-xl shadow-gray-100 overflow-hidden border border-gray-100 flex flex-col md:flex-row">
-
                 {/* Image Section */}
                 <div className="w-full md:w-1/2 h-1/2 md:h-full relative overflow-hidden group">
                   <Image
@@ -157,7 +167,6 @@ export const News = () => {
                     <ReadMore href={`/${lang}/News/${currentItem.id}`} />
                   </div>
                 </div>
-
               </div>
             </motion.div>
           </AnimatePresence>
@@ -170,13 +179,14 @@ export const News = () => {
               key={idx}
               onClick={() => goToSlide(idx)}
               className={cn(
-                "h-2 rounded-full transition-all duration-300",
-                currentIndex === idx ? "w-8 bg-primary" : "w-2 bg-gray-300 hover:bg-primary/50"
+                'h-2 rounded-full transition-all duration-300',
+                currentIndex === idx
+                  ? 'w-8 bg-primary'
+                  : 'w-2 bg-gray-300 hover:bg-primary/50',
               )}
             />
           ))}
         </div>
-
       </div>
     </section>
   );
