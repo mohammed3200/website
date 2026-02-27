@@ -114,7 +114,7 @@ export const ActiveButton = ({
             </motion.div>
 
             {/* Icon with enhanced animation */}
-            {icon ? (
+            {icon && (
               <motion.div
                 className="relative size-5 shrink-0"
                 animate={{
@@ -129,29 +129,6 @@ export const ActiveButton = ({
                   fill
                   className="object-contain brightness-0 invert"
                 />
-              </motion.div>
-            ) : (
-              <motion.div
-                animate={{
-                  x: isHovered ? (isArabic ? -4 : 4) : 0,
-                  opacity: isHovered ? 1 : 0.7,
-                }}
-                transition={{ type: 'spring', stiffness: 400 }}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className={cn(isArabic && 'rotate-180')}
-                >
-                  <path d="M5 12h14" />
-                  <path d={isArabic ? 'M9 16l-4-4 4-4' : 'm12 5 7 7-7 7'} />
-                </svg>
               </motion.div>
             )}
           </>
