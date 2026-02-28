@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react';
 
 type ActiveButtonProps = {
   children: React.ReactNode;
-  onClick: () => void;
+  onClick: (e?: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   className?: string;
   containerClassName?: string;
   icon?: string;
