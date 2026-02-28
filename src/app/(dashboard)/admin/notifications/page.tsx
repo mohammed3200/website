@@ -27,33 +27,11 @@ import {
   formatTimeAgo,
   getPriorityColor,
   getTypeLabel,
+  isSafeAdminUrl,
+  NOTIFICATION_TYPES,
 } from '@/features/admin/utils';
 
-export const NOTIFICATION_TYPES = {
-  NEW_COLLABORATOR: 'New Collaborator',
-  NEW_INNOVATOR: 'New Innovator',
-  SUBMISSION_APPROVED: 'Submission Approved',
-  SUBMISSION_REJECTED: 'Submission Rejected',
-  SYSTEM_ERROR: 'System Error',
-  SECURITY_ALERT: 'Security Alert',
-} as const;
-
-const isSafeUrl = (url: string) => {
-  return (
-    url.startsWith('/admin/') ||
-    url.startsWith('/en/admin/') ||
-    url.startsWith('/ar/admin/')
-  );
-};
-
-// Polyfill for getTypeLabel without translations
-const labelMapper = (t: string) => {
-  const key = (t.split('.').pop() || t) as keyof typeof NOTIFICATION_TYPES;
-  return (
-    NOTIFICATION_TYPES[key] ||
-    key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
-  );
-};
+// Types and utils moved to @/features/admin/utils
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -82,8 +60,8 @@ export default function NotificationsPage() {
     if (!notification.isRead) {
       await markRead.mutateAsync(notification.id);
     }
-    if (notification.actionUrl && isSafeUrl(notification.actionUrl)) {
-      router.push(notification.actionUrl);
+    if (isSafeAdminUrl(notification.actionUrl)) {
+      router.push(notification.actionUrl!);
     }
   };
 
@@ -102,10 +80,16 @@ export default function NotificationsPage() {
   };
 
   const handleMarkSelectedRead = async () => {
-    for (const id of selectedNotifications) {
-      await markRead.mutateAsync(id);
+    if (selectedNotifications.length === 0) return;
+
+    try {
+      await Promise.all(
+        selectedNotifications.map((id) => markRead.mutateAsync(id)),
+      );
+      setSelectedNotifications([]);
+    } catch (error) {
+      console.error('Failed to mark notifications as read', error);
     }
-    setSelectedNotifications([]);
   };
 
   const [DeleteDialog, confirmDelete] = useConfirm(
@@ -354,7 +338,7 @@ export default function NotificationsPage() {
                               <Badge variant="outline" className="text-xs">
                                 {getTypeLabel(
                                   notification.type,
-                                  labelMapper as any,
+                                  NOTIFICATION_TYPES,
                                 )}
                               </Badge>
                               {!notification.isRead && (

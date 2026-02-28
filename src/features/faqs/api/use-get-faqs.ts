@@ -18,18 +18,21 @@ export const useGetFaqs = () => {
       }
       const payload = await response.json();
       if (
+        !payload ||
         typeof payload !== 'object' ||
-        payload === null ||
         !Array.isArray((payload as any).data)
       ) {
-        throw new Error('Invalid response format: Expected data array');
+        throw new Error('Invalid FAQ response format');
       }
-      return (payload as any).data.map((faq: any) => ({
-        ...faq,
-        questionAr: faq.questionAr ?? undefined,
-        answerAr: faq.answerAr ?? undefined,
-        category: faq.category ?? undefined,
-      }));
+
+      return (payload as any).data
+        .filter((faq: any) => faq !== null && typeof faq === 'object')
+        .map((faq: any) => ({
+          ...faq,
+          questionAr: faq.questionAr ?? undefined,
+          answerAr: faq.answerAr ?? undefined,
+          category: faq.category ?? undefined,
+        }));
     },
   });
 };

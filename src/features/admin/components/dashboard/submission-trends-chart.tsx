@@ -126,9 +126,16 @@ const getMonthNameEn = (month: string) => {
     'Nov',
     'Dec',
   ];
-  const parsedMonth = parseInt(month, 10);
-  if (isNaN(parsedMonth) || parsedMonth < 1 || parsedMonth > 12) {
+
+  if (!/^\d+$/.test(month)) {
     return 'Unknown';
   }
+
+  const parsedMonth = Number.parseInt(month, 10);
+
+  if (!Number.isInteger(parsedMonth) || parsedMonth < 1 || parsedMonth > 12) {
+    return 'Unknown';
+  }
+
   return months[parsedMonth - 1] || 'Unknown';
 };

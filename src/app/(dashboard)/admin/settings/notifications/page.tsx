@@ -39,6 +39,51 @@ const NotificationPreferencesPage = () => {
     handleReset,
   } = useNotificationSettings();
 
+  const PREFERENCE_ITEMS = [
+    {
+      id: 'new-submissions',
+      label: 'New Submissions',
+      description: 'Get notified when new submissions are received',
+      icon: Users,
+      prefKey: 'emailNewSubmissions' as const,
+    },
+    {
+      id: 'status-changes',
+      label: 'Status Changes',
+      description: 'Get notified when submission status changes',
+      icon: Bell,
+      prefKey: 'emailStatusChanges' as const,
+    },
+    {
+      id: 'system-errors',
+      label: 'System Errors',
+      description: 'Receive critical system errors',
+      icon: AlertTriangle,
+      prefKey: 'emailSystemErrors' as const,
+    },
+    {
+      id: 'security-alerts',
+      label: 'Security Alerts',
+      description: 'Get notified about suspicious activity',
+      icon: Shield,
+      prefKey: 'emailSecurityAlerts' as const,
+    },
+    {
+      id: 'user-activity',
+      label: 'User Activity',
+      description: 'Daily user activity digest',
+      icon: Users,
+      prefKey: 'emailUserActivity' as const,
+    },
+    {
+      id: 'backups',
+      label: 'Database Backups',
+      description: 'Receive automated database backup status',
+      icon: Database,
+      prefKey: 'emailBackups' as const,
+    },
+  ];
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-12">
@@ -62,122 +107,22 @@ const NotificationPreferencesPage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label
-                htmlFor="new-submissions"
-                className="flex items-center gap-2"
-              >
-                <Users className="h-4 w-4" />
-                New Submissions
-              </Label>
-              <p className="text-sm text-gray-500">
-                Get notified when new submissions are received
-              </p>
+          {PREFERENCE_ITEMS.map((item) => (
+            <div key={item.id} className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor={item.id} className="flex items-center gap-2">
+                  <item.icon className="h-4 w-4" />
+                  {item.label}
+                </Label>
+                <p className="text-sm text-gray-500">{item.description}</p>
+              </div>
+              <Switch
+                id={item.id}
+                checked={localPreferences[item.prefKey]}
+                onCheckedChange={() => handleToggle(item.prefKey)}
+              />
             </div>
-            <Switch
-              id="new-submissions"
-              checked={localPreferences.emailNewSubmissions}
-              onCheckedChange={() => handleToggle('emailNewSubmissions')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label
-                htmlFor="status-changes"
-                className="flex items-center gap-2"
-              >
-                <Bell className="h-4 w-4" />
-                Status Changes
-              </Label>
-              <p className="text-sm text-gray-500">
-                Get notified when submission status changes
-              </p>
-            </div>
-            <Switch
-              id="status-changes"
-              checked={localPreferences.emailStatusChanges}
-              onCheckedChange={() => handleToggle('emailStatusChanges')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label
-                htmlFor="system-errors"
-                className="flex items-center gap-2"
-              >
-                <AlertTriangle className="h-4 w-4" />
-                System Errors
-              </Label>
-              <p className="text-sm text-gray-500">
-                Receive critical system errors
-              </p>
-            </div>
-            <Switch
-              id="system-errors"
-              checked={localPreferences.emailSystemErrors}
-              onCheckedChange={() => handleToggle('emailSystemErrors')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label
-                htmlFor="security-alerts"
-                className="flex items-center gap-2"
-              >
-                <Shield className="h-4 w-4" />
-                Security Alerts
-              </Label>
-              <p className="text-sm text-gray-500">
-                Get notified about suspicious activity
-              </p>
-            </div>
-            <Switch
-              id="security-alerts"
-              checked={localPreferences.emailSecurityAlerts}
-              onCheckedChange={() => handleToggle('emailSecurityAlerts')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label
-                htmlFor="user-activity"
-                className="flex items-center gap-2"
-              >
-                <Users className="h-4 w-4" />
-                User Activity
-              </Label>
-              <p className="text-sm text-gray-500">
-                Daily user activity digest
-              </p>
-            </div>
-            <Switch
-              id="user-activity"
-              checked={localPreferences.emailUserActivity}
-              onCheckedChange={() => handleToggle('emailUserActivity')}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label htmlFor="backups" className="flex items-center gap-2">
-                <Database className="h-4 w-4" />
-                Database Backups
-              </Label>
-              <p className="text-sm text-gray-500">
-                Receive automated database backup status
-              </p>
-            </div>
-            <Switch
-              id="backups"
-              checked={localPreferences.emailBackups}
-              onCheckedChange={() => handleToggle('emailBackups')}
-            />
-          </div>
+          ))}
         </CardContent>
       </Card>
 

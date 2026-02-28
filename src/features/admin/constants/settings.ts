@@ -2,15 +2,17 @@ import { Bell, User } from 'lucide-react';
 
 export const SETTINGS_OPTIONS = [
   {
-    titleKey: 'notifications.title',
-    descriptionKey: 'notifications.description',
+    id: 'notifications',
+    title: 'Notification Preferences',
+    description: 'Set up global alert and notification rules',
     href: '/admin/settings/notifications',
     icon: Bell,
     disabled: false,
   },
   {
-    titleKey: 'profile.title',
-    descriptionKey: 'profile.description',
+    id: 'profile',
+    title: 'Profile Configuration',
+    description: 'Manage user profile and account settings',
     href: '#',
     icon: User,
     disabled: true,

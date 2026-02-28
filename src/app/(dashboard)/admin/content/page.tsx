@@ -32,9 +32,14 @@ const ContentManagementPage = () => {
 
   useEffect(() => {
     if (status === 'authenticated' && !hasContentAccess) {
-      router.push('/admin');
+      router.push('/');
     }
   }, [status, hasContentAccess, router]);
+
+  // Early return to prevent flash of content before redirect
+  if (status === 'authenticated' && !hasContentAccess) {
+    return null;
+  }
 
   if (status === 'loading' || isLoadingEnt || isLoadingInc) {
     return (

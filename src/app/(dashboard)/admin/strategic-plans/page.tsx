@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { isValidDate } from '@/lib/utils';
 import {
   useGetAllStrategicPlans,
   useDeleteStrategicPlan,
@@ -26,8 +27,7 @@ import { type StrategicPlanItem } from '@/components/strategic-plan';
 
 const StrategicPlansPage = () => {
   const router = useRouter();
-  const params = useParams();
-  const locale = (params?.locale as string) || 'en';
+  const locale = 'en';
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -179,7 +179,7 @@ const StrategicPlansPage = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {plan.createdAt
+                    {plan.createdAt && isValidDate(plan.createdAt)
                       ? new Date(plan.createdAt).toLocaleDateString('en-US')
                       : '—'}
                   </TableCell>

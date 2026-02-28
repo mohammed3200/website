@@ -11,7 +11,17 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { useGetNotifications } from '@/features/admin/api/notifications/use-get-notifications';
+import { client } from '@/lib/rpc';
+import {
+  useGetNotifications,
+  type Notification,
+} from '@/features/admin/api/notifications/use-get-notifications';
+import {
+  formatTimeAgo,
+  getPriorityColor,
+  getTypeLabel,
+  isSafeAdminUrl,
+} from '@/features/admin/utils';
 import { usePatchNotificationRead } from '@/features/admin/api/notifications/use-patch-notification-read';
 import { usePatchNotificationsMarkAllRead } from '@/features/admin/api/notifications/use-patch-notifications-mark-all-read';
 
@@ -56,7 +66,7 @@ export function NotificationBell() {
               <p className="text-sm text-gray-500">No notifications yet</p>
             </div>
           ) : (
-            notifications.map((notification: any) => (
+            notifications.map((notification: Notification) => (
               <DropdownMenuItem
                 key={notification.id}
                 className={cn(
@@ -66,14 +76,8 @@ export function NotificationBell() {
                 onClick={() => {
                   if (!notification.isRead)
                     markReadMutation.mutate(notification.id);
-                  if (notification.actionUrl) {
-                    const isSafe =
-                      notification.actionUrl.startsWith('/admin/') ||
-                      notification.actionUrl.startsWith('/en/admin/') ||
-                      notification.actionUrl.startsWith('/ar/admin/');
-                    if (isSafe) {
-                      router.push(notification.actionUrl);
-                    }
+                  if (isSafeAdminUrl(notification.actionUrl)) {
+                    router.push(notification.actionUrl!);
                   }
                 }}
               >
@@ -88,7 +92,7 @@ export function NotificationBell() {
                           : 'bg-gray-100 text-gray-700',
                     )}
                   >
-                    {notification.type.replace('_', ' ').toLowerCase()}
+                    {getTypeLabel(notification.type).toLowerCase()}
                   </span>
                   <span className="text-[10px] text-gray-400">
                     {formatDistanceToNow(new Date(notification.createdAt), {
