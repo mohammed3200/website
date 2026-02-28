@@ -66,8 +66,15 @@ export function NotificationBell() {
                 onClick={() => {
                   if (!notification.isRead)
                     markReadMutation.mutate(notification.id);
-                  if (notification.actionUrl)
-                    router.push(notification.actionUrl);
+                  if (notification.actionUrl) {
+                    const isSafe =
+                      notification.actionUrl.startsWith('/admin/') ||
+                      notification.actionUrl.startsWith('/en/admin/') ||
+                      notification.actionUrl.startsWith('/ar/admin/');
+                    if (isSafe) {
+                      router.push(notification.actionUrl);
+                    }
+                  }
                 }}
               >
                 <div className="flex items-center justify-between w-full">

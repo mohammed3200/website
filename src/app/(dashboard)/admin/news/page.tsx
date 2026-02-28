@@ -64,6 +64,10 @@ export default function AdminNewsPage() {
     'Delete News',
     'Are you sure you want to delete this news article?',
     'destructive',
+    {
+      confirmLabel: 'Delete',
+      cancelLabel: 'Cancel',
+    },
   );
 
   const handleDelete = async (id: string) => {
@@ -161,7 +165,11 @@ export default function AdminNewsPage() {
             onDelete={handleDelete}
             onView={(item) => {
               const slugOrId = item.slug || item.id;
-              window.open(`/en/News/${slugOrId}`, '_blank');
+              window.open(
+                `/en/News/${encodeURIComponent(slugOrId)}`,
+                '_blank',
+                'noopener,noreferrer',
+              );
             }}
             isDeleting={deleteMutation.isPending}
             locale="en"

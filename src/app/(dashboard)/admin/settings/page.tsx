@@ -1,4 +1,4 @@
-'use client';
+// Settings page definition
 
 import Link from 'next/link';
 import { cn } from '@/lib/utils';

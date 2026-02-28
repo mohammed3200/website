@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import {
   useGetAllStrategicPlans,
   useDeleteStrategicPlan,
@@ -26,6 +26,8 @@ import { type StrategicPlanItem } from '@/components/strategic-plan';
 
 const StrategicPlansPage = () => {
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) || 'en';
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -40,6 +42,10 @@ const StrategicPlansPage = () => {
     'Delete Strategic Plan',
     'Are you sure you want to delete this strategic plan?',
     'destructive',
+    {
+      confirmLabel: 'Delete',
+      cancelLabel: 'Cancel',
+    },
   );
 
   const handleEdit = (plan: StrategicPlanItem) => {
@@ -63,7 +69,7 @@ const StrategicPlansPage = () => {
 
   const handleView = (plan: StrategicPlanItem) => {
     const segment = encodeURIComponent(String(plan.slug || plan.id));
-    router.push(`/en/StrategicPlan/${segment}`);
+    router.push(`/${locale}/StrategicPlan/${segment}`);
   };
 
   if (isLoading) {

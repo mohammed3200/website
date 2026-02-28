@@ -16,6 +16,10 @@ export const useConfirm = (
   title: string,
   message: string,
   variant: ButtonProps['variant'] = 'default',
+  options?: {
+    confirmLabel?: string;
+    cancelLabel?: string;
+  },
 ): [() => JSX.Element, () => Promise<unknown>] => {
   const t = useTranslations('ui');
   const [promise, setPromise] = useState<{
@@ -59,14 +63,14 @@ export const useConfirm = (
               variant="outline"
               className="w-full lg:w-auto"
             >
-              {t('cancel')}
+              {options?.cancelLabel || t('cancel')}
             </Button>
             <Button
               onClick={handleConfirm}
               variant={variant}
               className="w-full lg:w-auto"
             >
-              {t('confirm')}
+              {options?.confirmLabel || t('confirm')}
             </Button>
           </div>
         </CardContent>

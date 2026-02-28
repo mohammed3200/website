@@ -19,18 +19,30 @@ export const useSubmissionsLogic = () => {
     'Approve Submission',
     'Are you sure you want to approve this submission?',
     'default',
+    {
+      confirmLabel: 'Confirm Approve',
+      cancelLabel: 'Cancel',
+    },
   );
 
   const [RejectDialog, confirmReject] = useConfirm(
     'Reject Submission',
     'Are you sure you want to reject this submission?',
     'destructive',
+    {
+      confirmLabel: 'Confirm Reject',
+      cancelLabel: 'Cancel',
+    },
   );
 
   const [DeleteDialog, confirmDelete] = useConfirm(
     'Delete Submission',
     'Are you sure you want to delete this submission? This cannot be undone.',
     'destructive',
+    {
+      confirmLabel: 'Delete Permanently',
+      cancelLabel: 'Cancel',
+    },
   );
 
   const handleView = (type: 'innovators' | 'collaborators', id: string) => {

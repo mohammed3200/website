@@ -69,7 +69,7 @@ const navigation = [
   },
 ];
 
-export default function Sidebar({ locale }: { locale: string }) {
+export default function Sidebar({ locale }: { locale?: string }) {
   const pathname = usePathname();
 
   return (
@@ -88,7 +88,10 @@ export default function Sidebar({ locale }: { locale: string }) {
             <li>
               <ul role="list" className="-mx-2 space-y-1">
                 {navigation.map((item) => {
-                  const href = item.href.replace('#LOCALE#', `/${locale}`);
+                  const href = item.href.replace(
+                    '#LOCALE#',
+                    locale ? `/${locale}` : '',
+                  );
                   const isActive =
                     pathname === href ||
                     (href !== `/${locale}/admin` &&
@@ -114,7 +117,8 @@ export default function Sidebar({ locale }: { locale: string }) {
                           )}
                           aria-hidden="true"
                         />
-                        {item.name[locale as 'en' | 'ar'] ?? item.name.en}
+                        {item.name[((locale as any) || 'en') as 'en' | 'ar'] ??
+                          item.name.en}
                       </Link>
                     </li>
                   );

@@ -129,7 +129,7 @@ const ReportsPage = () => {
             onClick={() =>
               handleGenerateReport(
                 'SUBMISSIONS_SUMMARY',
-                `Submissions Summary - ${new Date().toLocaleDateString('en-US')}`,
+                `Submissions Summary - ${format(new Date(), 'yyyy-MM-dd')}`,
               )
             }
             disabled={generateMutation.isPending}

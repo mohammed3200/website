@@ -29,19 +29,29 @@ import {
   getTypeLabel,
 } from '@/features/admin/utils';
 
+export const NOTIFICATION_TYPES = {
+  NEW_COLLABORATOR: 'New Collaborator',
+  NEW_INNOVATOR: 'New Innovator',
+  SUBMISSION_APPROVED: 'Submission Approved',
+  SUBMISSION_REJECTED: 'Submission Rejected',
+  SYSTEM_ERROR: 'System Error',
+  SECURITY_ALERT: 'Security Alert',
+} as const;
+
+const isSafeUrl = (url: string) => {
+  return (
+    url.startsWith('/admin/') ||
+    url.startsWith('/en/admin/') ||
+    url.startsWith('/ar/admin/')
+  );
+};
+
 // Polyfill for getTypeLabel without translations
 const labelMapper = (t: string) => {
-  const key = t.split('.').pop() || t;
-  const map: Record<string, string> = {
-    NEW_COLLABORATOR: 'New Collaborator',
-    NEW_INNOVATOR: 'New Innovator',
-    SUBMISSION_APPROVED: 'Submission Approved',
-    SUBMISSION_REJECTED: 'Submission Rejected',
-    SYSTEM_ERROR: 'System Error',
-    SECURITY_ALERT: 'Security Alert',
-  };
+  const key = (t.split('.').pop() || t) as keyof typeof NOTIFICATION_TYPES;
   return (
-    map[key] || key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+    NOTIFICATION_TYPES[key] ||
+    key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
   );
 };
 
@@ -72,7 +82,7 @@ export default function NotificationsPage() {
     if (!notification.isRead) {
       await markRead.mutateAsync(notification.id);
     }
-    if (notification.actionUrl) {
+    if (notification.actionUrl && isSafeUrl(notification.actionUrl)) {
       router.push(notification.actionUrl);
     }
   };
@@ -102,6 +112,10 @@ export default function NotificationsPage() {
     'Delete Notification',
     'Are you sure you want to delete this notification?',
     'destructive',
+    {
+      confirmLabel: 'Delete',
+      cancelLabel: 'Cancel',
+    },
   );
 
   const handleDeleteClick = async (id: string) => {
@@ -183,18 +197,11 @@ export default function NotificationsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="NEW_COLLABORATOR">
-                  New Collaborator
-                </SelectItem>
-                <SelectItem value="NEW_INNOVATOR">New Innovator</SelectItem>
-                <SelectItem value="SUBMISSION_APPROVED">
-                  Submission Approved
-                </SelectItem>
-                <SelectItem value="SUBMISSION_REJECTED">
-                  Submission Rejected
-                </SelectItem>
-                <SelectItem value="SYSTEM_ERROR">System Error</SelectItem>
-                <SelectItem value="SECURITY_ALERT">Security Alert</SelectItem>
+                {Object.entries(NOTIFICATION_TYPES).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>
+                    {label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 

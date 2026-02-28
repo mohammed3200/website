@@ -43,7 +43,7 @@ export const StrategicPlan = () => {
   const t = useTranslations('ui');
   const { isArabic, lang } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const isDesktop = useMedia('min-width: 640px', true);
+  const isDesktop = useMedia('(min-width: 640px)', true);
 
   const { data, isLoading, error } = useGetStrategicPlans();
 

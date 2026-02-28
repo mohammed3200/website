@@ -128,7 +128,7 @@ const getMonthNameEn = (month: string) => {
   ];
   const parsedMonth = parseInt(month, 10);
   if (isNaN(parsedMonth) || parsedMonth < 1 || parsedMonth > 12) {
-    return '';
+    return 'Unknown';
   }
-  return months[parsedMonth - 1];
+  return months[parsedMonth - 1] || 'Unknown';
 };

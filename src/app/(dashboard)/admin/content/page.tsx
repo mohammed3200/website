@@ -105,18 +105,20 @@ const ContentManagementPage = () => {
                 <button
                   disabled
                   aria-disabled="true"
+                  aria-label="Edit content"
                   title="Coming Soon"
                   className="inline-flex items-center justify-center p-2 text-sm font-semibold text-gray-400 bg-gray-50 border border-gray-200 rounded-md cursor-not-allowed"
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit className="h-4 w-4" aria-hidden="true" />
                 </button>
                 <button
                   disabled
                   aria-disabled="true"
+                  aria-label="Delete content"
                   title="Coming Soon"
                   className="inline-flex items-center justify-center p-2 text-sm font-semibold text-white bg-red-300 rounded-md cursor-not-allowed"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
             </div>

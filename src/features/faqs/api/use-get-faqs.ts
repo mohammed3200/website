@@ -7,8 +7,14 @@ export const useGetFaqs = () => {
     queryFn: async () => {
       const response = await client.api.faqs.$get();
       if (!response.ok) {
-        const error = (await response.json()) as any;
-        throw new Error(error.message || 'Failed to fetch FAQs');
+        let message = 'Failed to fetch FAQs';
+        try {
+          const error = await response.json();
+          message = error.message || message;
+        } catch (e) {
+          // Fallback if not JSON
+        }
+        throw new Error(message);
       }
       const payload = await response.json();
       if (

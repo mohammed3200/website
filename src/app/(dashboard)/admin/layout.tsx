@@ -22,7 +22,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="min-h-screen bg-gray-50" dir="ltr">
       {/* Sidebar */}
-      <Sidebar locale="en" />
+      <Sidebar />
 
       {/* Main Content Area */}
       <div className="lg:pl-64">

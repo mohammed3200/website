@@ -194,7 +194,7 @@ export function formatDate(date: string | Date): string {
 }
 
 export function isValidDate(date: any): boolean {
-  if (!date) return false;
+  if (date === null || date === undefined) return false;
   const d = new Date(date);
   return !isNaN(d.getTime());
 }

@@ -10,7 +10,7 @@ export const useAdminAuth = () => {
 
   useEffect(() => {
     if (status === 'unauthenticated') {
-      router.push(`/auth/login`);
+      router.replace(`/auth/login`);
     } else if (status === 'authenticated') {
       const permissions = session?.user?.permissions as any;
 
@@ -21,7 +21,7 @@ export const useAdminAuth = () => {
       );
 
       if (!hasDashboardAccess) {
-        router.push(`/`);
+        router.replace(`/`);
       }
     }
   }, [status, session, router]);

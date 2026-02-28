@@ -60,7 +60,6 @@ const NotificationPreferencesPage = () => {
             <Mail className="h-5 w-5" />
             Email Preferences
           </CardTitle>
-          <CardDescription>Manage what emails you receive</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-between">
