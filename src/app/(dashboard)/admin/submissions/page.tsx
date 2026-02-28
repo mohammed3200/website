@@ -1,3 +1,5 @@
+'use client';
+
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { useGetSubmissions } from '@/features/admin/api/submissions/use-get-submissions';
 import { TableSkeleton } from '@/components/skeletons';

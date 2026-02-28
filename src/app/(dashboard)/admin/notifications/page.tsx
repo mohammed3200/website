@@ -110,11 +110,24 @@ export default function NotificationsPage() {
   const hasActiveFilters = Object.keys(filters).length > 0;
 
   // Polyfill for getTypeLabel without translations
-  const labelMapper = (t: string) => t.split('.').pop() || t;
+  const labelMapper = (t: string) => {
+    const key = t.split('.').pop() || t;
+    const map: Record<string, string> = {
+      NEW_COLLABORATOR: 'New Collaborator',
+      NEW_INNOVATOR: 'New Innovator',
+      SUBMISSION_APPROVED: 'Submission Approved',
+      SUBMISSION_REJECTED: 'Submission Rejected',
+      SYSTEM_ERROR: 'System Error',
+      SECURITY_ALERT: 'Security Alert',
+    };
+    return (
+      map[key] ||
+      key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+    );
+  };
 
   return (
     <div className="flex-1 space-y-8 p-8 pt-6 font-din-regular" dir="ltr">
-      <DeleteDialog />
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>

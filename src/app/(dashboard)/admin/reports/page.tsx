@@ -27,6 +27,17 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
+interface Report {
+  id: string;
+  name: string;
+  type: string;
+  format: string;
+  status: 'PENDING' | 'GENERATING' | 'COMPLETED' | 'FAILED';
+  fileUrl?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const ReportsPage = () => {
   const {
     data: reports = [],
@@ -187,7 +198,7 @@ const ReportsPage = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              reports.map((report: any) => (
+              reports.map((report: Report) => (
                 <TableRow key={report.id}>
                   <TableCell className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">

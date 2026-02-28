@@ -10,8 +10,15 @@ export const useGetFaqs = () => {
         const error = (await response.json()) as any;
         throw new Error(error.message || 'Failed to fetch FAQs');
       }
-      const { data } = await response.json();
-      return data.map((faq: any) => ({
+      const payload = await response.json();
+      if (
+        typeof payload !== 'object' ||
+        payload === null ||
+        !Array.isArray((payload as any).data)
+      ) {
+        throw new Error('Invalid response format: Expected data array');
+      }
+      return (payload as any).data.map((faq: any) => ({
         ...faq,
         questionAr: faq.questionAr ?? undefined,
         answerAr: faq.answerAr ?? undefined,

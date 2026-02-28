@@ -70,13 +70,11 @@ export const SubmissionTrendsChart = ({ year }: SubmissionTrendsChartProps) => {
               </defs>
               <XAxis
                 dataKey="name"
-                reversed={false}
                 tick={{ fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis
-                orientation={'left'}
                 tick={{ fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}

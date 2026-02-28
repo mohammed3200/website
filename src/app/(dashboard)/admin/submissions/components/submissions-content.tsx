@@ -16,8 +16,14 @@ const SubmissionsContent = ({
   innovators,
   collaborators,
 }: SubmissionsContentProps) => {
-  const { handleView, handleApprove, handleReject, handleDelete, dialogs } =
-    useSubmissionsLogic();
+  const {
+    handleView,
+    handleApprove,
+    handleReject,
+    handleDelete,
+    dialogs,
+    isLoading,
+  } = useSubmissionsLogic();
 
   return (
     <div className="space-y-12" dir="ltr">
@@ -92,6 +98,7 @@ const SubmissionsContent = ({
                       size="sm"
                       className="h-9 px-4 text-xs font-bold border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800"
                       onClick={() => handleApprove('innovators', innovator.id)}
+                      disabled={isLoading}
                     >
                       <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
                       Approve
@@ -101,6 +108,7 @@ const SubmissionsContent = ({
                       size="sm"
                       className="h-9 px-4 text-xs font-bold border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
                       onClick={() => handleReject('innovators', innovator.id)}
+                      disabled={isLoading}
                     >
                       <XCircle className="w-3.5 h-3.5 mr-1.5" />
                       Reject
@@ -110,6 +118,8 @@ const SubmissionsContent = ({
                       size="icon"
                       className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-50"
                       onClick={() => handleDelete('innovators', innovator.id)}
+                      disabled={isLoading}
+                      aria-label="Delete innovator"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -192,6 +202,7 @@ const SubmissionsContent = ({
                       onClick={() =>
                         handleApprove('collaborators', collaborator.id)
                       }
+                      disabled={isLoading}
                     >
                       <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
                       Approve
@@ -203,6 +214,7 @@ const SubmissionsContent = ({
                       onClick={() =>
                         handleReject('collaborators', collaborator.id)
                       }
+                      disabled={isLoading}
                     >
                       <XCircle className="w-3.5 h-3.5 mr-1.5" />
                       Reject
@@ -214,6 +226,7 @@ const SubmissionsContent = ({
                       onClick={() =>
                         handleDelete('collaborators', collaborator.id)
                       }
+                      disabled={isLoading}
                       aria-label="Delete"
                     >
                       <Trash2 className="w-4 h-4" />

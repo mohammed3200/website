@@ -28,7 +28,7 @@ const StrategicPlansPage = () => {
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [selectedPlan, setSelectedPlan] = useState<any>(null); // Keeping any here as the StrategicPlan type is complex and not fully defined locally
 
   const { data, isLoading, error } = useGetAllStrategicPlans();
   const deleteMutation = useDeleteStrategicPlan();
@@ -59,7 +59,7 @@ const StrategicPlansPage = () => {
   };
 
   const handleView = (plan: any) => {
-    router.push(`/StrategicPlan/${plan.slug || plan.id}`);
+    router.push(`/en/StrategicPlan/${plan.slug || plan.id}`);
   };
 
   if (isLoading) {

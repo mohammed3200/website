@@ -24,7 +24,7 @@ export default function AdminFaqsPage() {
     (FaqSchemaType & { id: string }) | null
   >(null);
 
-  const { data: faqs, isLoading } = useGetFaqs();
+  const { data: faqs, isLoading, isError, error, refetch } = useGetFaqs();
   const createMutation = useCreateFaq();
   const updateMutation = useUpdateFaq();
   const deleteMutation = useDeleteFaq();
@@ -67,7 +67,8 @@ export default function AdminFaqsPage() {
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+          disabled={isLoading || isError}
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
         >
           <Plus className="h-4 w-4" />
           Add FAQ
@@ -77,6 +78,18 @@ export default function AdminFaqsPage() {
       {isLoading ? (
         <div className="flex justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : isError ? (
+        <div className="flex flex-col items-center justify-center p-12 bg-white rounded-lg border border-gray-200">
+          <p className="text-sm text-red-600 font-medium mb-4">
+            {error instanceof Error ? error.message : 'Failed to load FAQs'}
+          </p>
+          <button
+            onClick={() => refetch()}
+            className="px-4 py-2 border border-red-200 bg-red-50 text-red-600 rounded-md hover:bg-red-100 transition-colors"
+          >
+            Retry
+          </button>
         </div>
       ) : (
         <FaqList
@@ -107,6 +120,7 @@ export default function AdminFaqsPage() {
           />
         </DialogContent>
       </Dialog>
+      <DeleteDialog />
     </div>
   );
 }
