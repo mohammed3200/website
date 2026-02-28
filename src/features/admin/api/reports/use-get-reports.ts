@@ -25,30 +25,48 @@ export const useGetReports = () => {
       if (!Array.isArray(reports)) {
         throw new Error('Invalid reports format: Expected array');
       }
-      return reports.map((report: Record<string, unknown>, index: number) => {
+      return reports.map((item: unknown, index: number) => {
         // Assert non-null object
-        if (!report || typeof report !== 'object') {
+        if (!item || typeof item !== 'object') {
           throw new Error(`Invalid report at index ${index}: Expected object`);
         }
 
-        // Strict field validation
-        const requiredStrings = ['id', 'name', 'type', 'format'];
-        for (const field of requiredStrings) {
-          if (typeof report[field] !== 'string') {
-            throw new Error(
-              `Invalid report at index ${index}: ${field} must be a string`,
-            );
-          }
+        const report = item as Record<string, unknown>;
+
+        // Strict field extraction with defaults/validation
+        const id = typeof report.id === 'string' ? report.id : '';
+        const name = typeof report.name === 'string' ? report.name : '';
+        const type = typeof report.type === 'string' ? report.type : '';
+        const format = typeof report.format === 'string' ? report.format : '';
+        const rawStatus =
+          typeof report.status === 'string' ? report.status : '';
+        const rawCreatedAt =
+          typeof report.createdAt === 'string' ? report.createdAt : '';
+        const rawUpdatedAt =
+          typeof report.updatedAt === 'string' ? report.updatedAt : '';
+
+        if (
+          !id ||
+          !name ||
+          !type ||
+          !format ||
+          !rawStatus ||
+          !rawCreatedAt ||
+          !rawUpdatedAt
+        ) {
+          throw new Error(
+            `Invalid report at index ${index}: Missing required string fields`,
+          );
         }
 
         // Date validation and normalization
-        const createdAtParsed = Date.parse(report.createdAt);
+        const createdAtParsed = Date.parse(rawCreatedAt);
         if (isNaN(createdAtParsed)) {
-          throw new Error(`Invalid createdAt date for report ${report.id}`);
+          throw new Error(`Invalid createdAt date for report ${id}`);
         }
-        const updatedAtParsed = Date.parse(report.updatedAt);
+        const updatedAtParsed = Date.parse(rawUpdatedAt);
         if (isNaN(updatedAtParsed)) {
-          throw new Error(`Invalid updatedAt date for report ${report.id}`);
+          throw new Error(`Invalid updatedAt date for report ${id}`);
         }
 
         // Validate optional fileUrl
@@ -56,26 +74,23 @@ export const useGetReports = () => {
           typeof report.fileUrl === 'string' ? report.fileUrl : undefined;
 
         // Compute validated status
-        const status = [
-          'PENDING',
-          'GENERATING',
-          'COMPLETED',
-          'FAILED',
-        ].includes(report.status)
-          ? (report.status as Report['status'])
+        const VALID_STATUSES = ['PENDING', 'GENERATING', 'COMPLETED', 'FAILED'];
+
+        const status = VALID_STATUSES.includes(rawStatus)
+          ? (rawStatus as Report['status'])
           : 'FAILED';
 
         // Construct new object with only validated fields
         return {
-          id: report.id,
-          name: report.name,
-          type: report.type,
-          format: report.format,
+          id,
+          name,
+          type,
+          format,
           status,
           fileUrl,
           createdAt: new Date(createdAtParsed).toISOString(),
           updatedAt: new Date(updatedAtParsed).toISOString(),
-        };
+        } satisfies Report;
       });
     },
   });
