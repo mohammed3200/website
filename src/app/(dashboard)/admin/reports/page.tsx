@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import {
   useGetReports,
-  Report,
+  type Report,
 } from '@/features/admin/api/reports/use-get-reports';
 import { usePostReport } from '@/features/admin/api/reports/use-post-report';
 import { useDeleteReport } from '@/features/admin/api/reports/use-delete-report';
