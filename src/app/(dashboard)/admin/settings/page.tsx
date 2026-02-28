@@ -1,15 +1,12 @@
-'use client';
+// Settings page definition
 
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
-
+import { getTranslations } from 'next-intl/server';
 import { cn } from '@/lib/utils';
 import { SETTINGS_OPTIONS } from '@/features/admin/constants/settings';
 
-const SettingsPage = () => {
-  const t = useTranslations('Admin.Settings');
-  const { lang } = useLanguage();
+const SettingsPage = async () => {
+  const t = await getTranslations('admin.settings');
 
   return (
     <div className="space-y-6">
@@ -42,22 +39,14 @@ const SettingsPage = () => {
 
           if (option.disabled) {
             return (
-              <div
-                key={option.titleKey}
-                className={className}
-                aria-disabled="true"
-              >
+              <div key={option.id} className={className} aria-disabled="true">
                 {content}
               </div>
             );
           }
 
           return (
-            <Link
-              key={option.titleKey}
-              href={`/${lang}${option.href}`}
-              className={className}
-            >
+            <Link key={option.id} href={option.href} className={className}>
               {content}
             </Link>
           );

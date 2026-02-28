@@ -1,14 +1,10 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import { useSubmissionsLogic } from '@/features/admin/hooks/use-submissions-logic';
-
 import { Innovator, Collaborator } from '@/features/admin/types';
-
-import { Button } from '@/components/ui/button';
+import { AdminSubmissionFooter } from './admin-submission-footer';
 import { CardInnovators } from '@/features/innovators/components/card-innovators';
 import { CardCompanies } from '@/features/collaborators/components/card-companies';
-import { CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
 
 interface SubmissionsContentProps {
   innovators: Innovator[];
@@ -19,34 +15,35 @@ const SubmissionsContent = ({
   innovators,
   collaborators,
 }: SubmissionsContentProps) => {
-  const t = useTranslations('Admin.Submissions');
   const {
     handleView,
     handleApprove,
     handleReject,
     handleDelete,
-    isArabic,
     dialogs,
+    isLoading,
   } = useSubmissionsLogic();
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-12" dir="ltr">
       <dialogs.ApproveDialog />
       <dialogs.RejectDialog />
       <dialogs.DeleteDialog />
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 font-outfit">
-          {t('title')}
+          Submissions
         </h1>
-        <p className="mt-2 text-sm text-gray-600">{t('subtitle')}</p>
+        <p className="mt-2 text-sm text-gray-600">
+          Review and manage innovator and collaborator submissions
+        </p>
       </div>
 
       {/* Innovators Section */}
       <section>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            {t('innovators')}
+            Innovators
             <span className="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
               {innovators.length}
             </span>
@@ -55,7 +52,9 @@ const SubmissionsContent = ({
 
         {innovators.length === 0 ? (
           <div className="bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center">
-            <p className="text-gray-500 font-medium">{t('empty')}</p>
+            <p className="text-gray-500 font-medium">
+              No pending innovator submissions
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -85,44 +84,15 @@ const SubmissionsContent = ({
                   className="h-full"
                 />
 
-                {/* Admin Actions Overlay/Footer */}
-                <div className="mt-4 flex items-center justify-between gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                  <div className="flex items-center text-xs text-gray-500">
-                    <Clock className="w-3.5 h-3.5 me-1.5" />
-                    {t('labels.submittedOn')}{' '}
-                    {new Date(innovator.createdAt).toLocaleDateString(
-                      isArabic ? 'ar-EG' : 'en-US',
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-4 text-xs font-bold border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800"
-                      onClick={() => handleApprove('innovators', innovator.id)}
-                    >
-                      <CheckCircle className="w-3.5 h-3.5 me-1.5" />
-                      {t('actions.approve')}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-4 text-xs font-bold border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
-                      onClick={() => handleReject('innovators', innovator.id)}
-                    >
-                      <XCircle className="w-3.5 h-3.5 me-1.5" />
-                      {t('actions.reject')}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-50"
-                      onClick={() => handleDelete('innovators', innovator.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                <AdminSubmissionFooter
+                  createdAt={innovator.createdAt}
+                  onApprove={() => handleApprove('innovators', innovator.id)}
+                  onReject={() => handleReject('innovators', innovator.id)}
+                  onDelete={() => handleDelete('innovators', innovator.id)}
+                  isLoading={isLoading}
+                  submitterName={innovator.name}
+                  entityTypeLabel="innovator"
+                />
               </div>
             ))}
           </div>
@@ -133,7 +103,7 @@ const SubmissionsContent = ({
       <section>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-            {t('collaborators')}
+            Collaborators
             <span className="text-sm font-normal text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
               {collaborators.length}
             </span>
@@ -142,7 +112,9 @@ const SubmissionsContent = ({
 
         {collaborators.length === 0 ? (
           <div className="bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center">
-            <p className="text-gray-500 font-medium">{t('empty')}</p>
+            <p className="text-gray-500 font-medium">
+              No pending collaborator submissions
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-8">
@@ -181,51 +153,21 @@ const SubmissionsContent = ({
                   onClick={() => handleView('collaborators', collaborator.id)}
                 />
 
-                {/* Admin Actions Footer */}
-                <div className="flex items-center justify-between gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 max-w-[600px]">
-                  <div className="flex items-center text-xs text-gray-500 font-outfit">
-                    <Clock className="w-3.5 h-3.5 me-1.5" />
-                    {t('labels.submittedOn')}{' '}
-                    {new Date(collaborator.createdAt).toLocaleDateString(
-                      isArabic ? 'ar-EG' : 'en-US',
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-4 text-xs font-bold border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800"
-                      onClick={() =>
-                        handleApprove('collaborators', collaborator.id)
-                      }
-                    >
-                      <CheckCircle className="w-3.5 h-3.5 me-1.5" />
-                      {t('actions.approve')}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-4 text-xs font-bold border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
-                      onClick={() =>
-                        handleReject('collaborators', collaborator.id)
-                      }
-                    >
-                      <XCircle className="w-3.5 h-3.5 me-1.5" />
-                      {t('actions.reject')}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-50"
-                      onClick={() =>
-                        handleDelete('collaborators', collaborator.id)
-                      }
-                      aria-label={t('actions.delete')}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                <AdminSubmissionFooter
+                  createdAt={collaborator.createdAt}
+                  onApprove={() =>
+                    handleApprove('collaborators', collaborator.id)
+                  }
+                  onReject={() =>
+                    handleReject('collaborators', collaborator.id)
+                  }
+                  onDelete={() =>
+                    handleDelete('collaborators', collaborator.id)
+                  }
+                  isLoading={isLoading}
+                  submitterName={collaborator.companyName}
+                  entityTypeLabel="collaborator"
+                />
               </div>
             ))}
           </div>

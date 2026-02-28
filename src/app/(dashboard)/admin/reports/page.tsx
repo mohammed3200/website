@@ -1,9 +1,6 @@
 'use client';
 
 import { format } from 'date-fns';
-import { ar, enUS } from 'date-fns/locale';
-import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
 import {
   FileText,
   Download,
@@ -15,18 +12,13 @@ import {
   XCircle,
   AlertCircle,
 } from 'lucide-react';
-import { useGetReports } from '@/features/admin/api/reports/use-get-reports';
+import {
+  useGetReports,
+  type Report,
+} from '@/features/admin/api/reports/use-get-reports';
 import { usePostReport } from '@/features/admin/api/reports/use-post-report';
 import { useDeleteReport } from '@/features/admin/api/reports/use-delete-report';
-import { cn } from '@/lib/utils';
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { cn, isValidDate } from '@/lib/utils';
 import { useConfirm } from '@/hooks/use-confirm';
 
 import {
@@ -39,9 +31,6 @@ import {
 } from '@/components/ui/table';
 
 const ReportsPage = () => {
-  const t = useTranslations('Admin.Reports');
-  const { isArabic, lang } = useLanguage();
-
   const {
     data: reports = [],
     isLoading,
@@ -52,8 +41,8 @@ const ReportsPage = () => {
   const deleteMutation = useDeleteReport();
 
   const [DeleteDialog, confirmDelete] = useConfirm(
-    t('dialogs.deleteTitle'),
-    t('dialogs.confirmDelete'),
+    'Delete Report',
+    'Are you sure you want to delete this report?',
     'destructive',
   );
 
@@ -93,28 +82,28 @@ const ReportsPage = () => {
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
             <CheckCircle className="h-3 w-3" />
-            {t('status.completed')}
+            Completed
           </span>
         );
       case 'GENERATING':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
             <RefreshCw className="h-3 w-3 animate-spin" />
-            {t('status.generating')}
+            Generating
           </span>
         );
       case 'PENDING':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
             <Clock className="h-3 w-3" />
-            {t('status.pending')}
+            Pending
           </span>
         );
       case 'FAILED':
         return (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
             <XCircle className="h-3 w-3" />
-            {t('status.failed')}
+            Failed
           </span>
         );
       default:
@@ -123,14 +112,16 @@ const ReportsPage = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" dir="ltr">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 font-outfit">
-            {t('title')}
+            Reports
           </h1>
-          <p className="mt-1 text-sm text-gray-500">{t('subtitle')}</p>
+          <p className="mt-1 text-sm text-gray-500">
+            View and manage generated platform reports
+          </p>
         </div>
 
         <div className="flex gap-2">
@@ -138,7 +129,7 @@ const ReportsPage = () => {
             onClick={() =>
               handleGenerateReport(
                 'SUBMISSIONS_SUMMARY',
-                `${t('types.SUBMISSIONS_SUMMARY')} - ${new Date().toLocaleDateString(isArabic ? 'ar-EG' : 'en-US')}`,
+                `Submissions Summary - ${format(new Date(), 'yyyy-MM-dd')}`,
               )
             }
             disabled={generateMutation.isPending}
@@ -149,13 +140,14 @@ const ReportsPage = () => {
             ) : (
               <Plus className="h-4 w-4" />
             )}
-            {t('actions.generateSummary')}
+            Generate Summary
           </button>
           <button
             onClick={() => refetch()}
             disabled={isFetching}
             className="inline-flex items-center justify-center p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
-            title={t('status.loading')}
+            title="Refresh"
+            aria-label="Refresh reports"
           >
             <RefreshCw
               className={cn('h-4 w-4', isFetching && 'animate-spin')}
@@ -169,10 +161,10 @@ const ReportsPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="px-6">{t('table.name')}</TableHead>
-              <TableHead className="px-6">{t('table.type')}</TableHead>
-              <TableHead className="px-6">{t('table.status')}</TableHead>
-              <TableHead className="px-6">{t('table.createdAt')}</TableHead>
+              <TableHead className="px-6">Name</TableHead>
+              <TableHead className="px-6">Type</TableHead>
+              <TableHead className="px-6">Status</TableHead>
+              <TableHead className="px-6">Created At</TableHead>
               <TableHead className="px-6 text-right">
                 <span className="sr-only">Actions</span>
               </TableHead>
@@ -185,7 +177,7 @@ const ReportsPage = () => {
                   colSpan={5}
                   className="px-6 py-10 text-center text-gray-500"
                 >
-                  {t('status.loading')}
+                  Loading reports...
                 </TableCell>
               </TableRow>
             ) : reports.length === 0 ? (
@@ -195,11 +187,11 @@ const ReportsPage = () => {
                   className="px-6 py-10 text-center text-gray-500"
                 >
                   <AlertCircle className="h-8 w-8 mx-auto mb-2 text-gray-300" />
-                  {t('empty')}
+                  No reports found
                 </TableCell>
               </TableRow>
             ) : (
-              reports.map((report: any) => (
+              reports.map((report) => (
                 <TableRow key={report.id}>
                   <TableCell className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
@@ -211,31 +203,32 @@ const ReportsPage = () => {
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap">
                     <span className="text-xs text-gray-500 px-2 py-1 bg-gray-100 rounded">
-                      {t(`types.${report.type}`)} / {report.format}
+                      {report.type} / {report.format}
                     </span>
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(report.status)}
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {format(new Date(report.createdAt), 'PPP p', {
-                      locale: isArabic ? ar : enUS,
-                    })}
+                    {isValidDate(report.createdAt)
+                      ? format(new Date(report.createdAt), 'PPP p')
+                      : '—'}
                   </TableCell>
-                  <TableCell className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2 rtl:space-x-reverse">
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     {report.status === 'COMPLETED' &&
                       (report.fileUrl ? (
                         <a
                           href={report.fileUrl}
                           className="inline-flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                          title={t('actions.download')}
+                          title="Download"
+                          aria-label="Download report"
                         >
                           <Download className="h-4 w-4" />
                         </a>
                       ) : (
                         <span
                           className="inline-flex items-center justify-center p-2 text-gray-400 bg-gray-50 rounded-md cursor-not-allowed"
-                          title={t('status.failed')}
+                          title="Failed"
                           aria-disabled="true"
                         >
                           <Download className="h-4 w-4" />
@@ -245,7 +238,8 @@ const ReportsPage = () => {
                       onClick={() => handleDeleteReport(report.id)}
                       disabled={deleteMutation.isPending}
                       className="inline-flex items-center justify-center p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
-                      title={t('actions.delete')}
+                      title="Delete"
+                      aria-label="Delete report"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

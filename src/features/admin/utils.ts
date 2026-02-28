@@ -40,9 +40,53 @@ export function getPriorityColor(priority: string) {
   }
 }
 
+export const NOTIFICATION_TYPES = {
+  NEW_COLLABORATOR: 'New Collaborator',
+  NEW_INNOVATOR: 'New Innovator',
+  SUBMISSION_APPROVED: 'Submission Approved',
+  SUBMISSION_REJECTED: 'Submission Rejected',
+  SYSTEM_ERROR: 'System Error',
+  SECURITY_ALERT: 'Security Alert',
+} as const;
+
 /**
  * Returns the translated label for a notification type
  */
-export function getTypeLabel(type: string, t: any): string {
-  return t(`types.${type}`);
+export function getTypeLabel(type: string, t?: any): string {
+  if (t) {
+    try {
+      if (typeof t === 'function') {
+        return t(`types.${type}`);
+      }
+      // If t is the NOTIFICATION_TYPES object
+      return (t as any)[type] || type.replace(/_/g, ' ');
+    } catch {
+      // Fallback to static labels
+    }
+  }
+
+  return (
+    NOTIFICATION_TYPES[type as keyof typeof NOTIFICATION_TYPES] ||
+    type.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+  );
+}
+
+/**
+ * Validates if a URL is a safe internal admin URL
+ */
+export function isSafeAdminUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+
+  try {
+    // Normalize path by resolving relativeness if any (e.g. /admin/../)
+    const normalizedPath = new URL(url, 'http://localhost').pathname;
+
+    return (
+      normalizedPath.startsWith('/admin/') ||
+      normalizedPath.startsWith('/en/admin/') ||
+      normalizedPath.startsWith('/ar/admin/')
+    );
+  } catch {
+    return false;
+  }
 }

@@ -1,8 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
 import { useConfirm } from '@/hooks/use-confirm';
 import { useUpdateInnovatorStatus } from '@/features/innovators/api/use-update-innovator-status';
 import { useUpdateCollaboratorStatus } from '@/features/collaborators/api/use-update-collaborator-status';
@@ -10,9 +8,7 @@ import { useDeleteInnovator } from '@/features/innovators/api/use-delete-innovat
 import { useDeleteCollaborator } from '@/features/collaborators/api/use-delete-collaborator';
 
 export const useSubmissionsLogic = () => {
-  const { lang, isArabic } = useLanguage();
   const router = useRouter();
-  const t = useTranslations('Admin.Submissions');
 
   const updateInnovatorStatus = useUpdateInnovatorStatus();
   const updateCollaboratorStatus = useUpdateCollaboratorStatus();
@@ -20,25 +16,37 @@ export const useSubmissionsLogic = () => {
   const deleteCollaborator = useDeleteCollaborator();
 
   const [ApproveDialog, confirmApprove] = useConfirm(
-    t('dialogs.approveTitle'),
-    t('dialogs.approveMessage'),
+    'Approve Submission',
+    'Are you sure you want to approve this submission?',
     'default',
+    {
+      confirmLabel: 'Confirm Approve',
+      cancelLabel: 'Cancel',
+    },
   );
 
   const [RejectDialog, confirmReject] = useConfirm(
-    t('dialogs.rejectTitle'),
-    t('dialogs.rejectMessage'),
+    'Reject Submission',
+    'Are you sure you want to reject this submission?',
     'destructive',
+    {
+      confirmLabel: 'Confirm Reject',
+      cancelLabel: 'Cancel',
+    },
   );
 
   const [DeleteDialog, confirmDelete] = useConfirm(
-    t('dialogs.deleteTitle'),
-    t('dialogs.deleteMessage'),
+    'Delete Submission',
+    'Are you sure you want to delete this submission? This cannot be undone.',
     'destructive',
+    {
+      confirmLabel: 'Delete Permanently',
+      cancelLabel: 'Cancel',
+    },
   );
 
   const handleView = (type: 'innovators' | 'collaborators', id: string) => {
-    router.push(`/${lang}/admin/submissions/${type}/${id}`);
+    router.push(`/admin/submissions/${type}/${id}`);
   };
 
   const handleApprove = async (
@@ -51,12 +59,12 @@ export const useSubmissionsLogic = () => {
     if (type === 'innovators') {
       updateInnovatorStatus.mutate({
         param: { innovatorId: id },
-        json: { status: 'APPROVED', locale: lang as 'ar' | 'en' },
+        json: { status: 'APPROVED', locale: 'en' },
       });
     } else {
       updateCollaboratorStatus.mutate({
         param: { collaboratorId: id },
-        json: { status: 'APPROVED', locale: lang as 'ar' | 'en' },
+        json: { status: 'APPROVED', locale: 'en' },
       });
     }
   };
@@ -71,12 +79,12 @@ export const useSubmissionsLogic = () => {
     if (type === 'innovators') {
       updateInnovatorStatus.mutate({
         param: { innovatorId: id },
-        json: { status: 'REJECTED', locale: lang as 'ar' | 'en' },
+        json: { status: 'REJECTED', locale: 'en' },
       });
     } else {
       updateCollaboratorStatus.mutate({
         param: { collaboratorId: id },
-        json: { status: 'REJECTED', locale: lang as 'ar' | 'en' },
+        json: { status: 'REJECTED', locale: 'en' },
       });
     }
   };
@@ -100,8 +108,6 @@ export const useSubmissionsLogic = () => {
     handleApprove,
     handleReject,
     handleDelete,
-    isArabic,
-    lang,
     dialogs: {
       ApproveDialog,
       RejectDialog,

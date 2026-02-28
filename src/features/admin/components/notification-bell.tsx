@@ -11,7 +11,16 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { useGetNotifications } from '@/features/admin/api/notifications/use-get-notifications';
+import {
+  useGetNotifications,
+  type Notification,
+} from '@/features/admin/api/notifications/use-get-notifications';
+import {
+  formatTimeAgo,
+  getPriorityColor,
+  getTypeLabel,
+  isSafeAdminUrl,
+} from '@/features/admin/utils';
 import { usePatchNotificationRead } from '@/features/admin/api/notifications/use-patch-notification-read';
 import { usePatchNotificationsMarkAllRead } from '@/features/admin/api/notifications/use-patch-notifications-mark-all-read';
 
@@ -56,7 +65,7 @@ export function NotificationBell() {
               <p className="text-sm text-gray-500">No notifications yet</p>
             </div>
           ) : (
-            notifications.map((notification: any) => (
+            notifications.map((notification: Notification) => (
               <DropdownMenuItem
                 key={notification.id}
                 className={cn(
@@ -66,8 +75,39 @@ export function NotificationBell() {
                 onClick={() => {
                   if (!notification.isRead)
                     markReadMutation.mutate(notification.id);
-                  if (notification.actionUrl)
-                    router.push(notification.actionUrl);
+
+                  if (
+                    notification.actionUrl &&
+                    isSafeAdminUrl(notification.actionUrl)
+                  ) {
+                    try {
+                      const isAbsolute =
+                        notification.actionUrl.startsWith('http') ||
+                        notification.actionUrl.startsWith('//');
+
+                      // Parse URL using current origin as base
+                      const url = new URL(
+                        notification.actionUrl,
+                        window.location.origin,
+                      );
+
+                      // Block external redirects (absolute or protocol-relative)
+                      if (isAbsolute && url.origin !== window.location.origin) {
+                        return;
+                      }
+
+                      // Only push the path component to prevent any hidden origin bypasses
+                      router.push(`${url.pathname}${url.search}${url.hash}`);
+                    } catch (e) {
+                      // Fallback: If it's definitely a relative path, push it as is
+                      if (
+                        !notification.actionUrl.includes('://') &&
+                        !notification.actionUrl.startsWith('//')
+                      ) {
+                        router.push(notification.actionUrl);
+                      }
+                    }
+                  }
                 }}
               >
                 <div className="flex items-center justify-between w-full">
@@ -81,7 +121,7 @@ export function NotificationBell() {
                           : 'bg-gray-100 text-gray-700',
                     )}
                   >
-                    {notification.type.replace('_', ' ').toLowerCase()}
+                    {getTypeLabel(notification.type).toLowerCase()}
                   </span>
                   <span className="text-[10px] text-gray-400">
                     {formatDistanceToNow(new Date(notification.createdAt), {

@@ -124,7 +124,7 @@ export class WhatsAppService {
       if (phoneNumber && phoneNumber.isValid()) {
         return phoneNumber.number as string;
       }
-    } catch (e) {
+    } catch (_e) {
       // Invalid format
     }
     return null;
@@ -150,8 +150,8 @@ export class WhatsAppService {
           sentAt: status === MessageStatus.SENT ? new Date() : null,
         },
       });
-    } catch (e) {
-      console.error('Failed to create WhatsApp log:', e);
+    } catch (_e) {
+      console.error('Failed to create WhatsApp log:', _e);
     }
   }
 }

@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
+import { isValidDate } from '@/lib/utils';
 import {
   useGetAllStrategicPlans,
   useDeleteStrategicPlan,
@@ -20,41 +19,41 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useConfirm } from '@/hooks/use-confirm';
 
 import { CreateStrategicPlanDialog } from '@/features/strategic-plan/components/create_strategic_plan_dialog';
 import { EditStrategicPlanDialog } from '@/features/strategic-plan/components/edit_strategic_plan_dialog';
+import { type StrategicPlanItem } from '@/components/strategic-plan';
 
 const StrategicPlansPage = () => {
   const router = useRouter();
-  const t = useTranslations('Admin.StrategicPlans');
-  const { lang, isArabic } = useLanguage();
+  const locale = 'en';
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [selectedPlan, setSelectedPlan] = useState<StrategicPlanItem | null>(
+    null,
+  );
 
   const { data, isLoading, error } = useGetAllStrategicPlans();
   const deleteMutation = useDeleteStrategicPlan();
 
   const [DeleteDialog, confirmDelete] = useConfirm(
-    t('dialogs.deleteTitle'),
-    t('dialogs.confirmDelete'),
+    'Delete Strategic Plan',
+    'Are you sure you want to delete this strategic plan?',
     'destructive',
+    {
+      confirmLabel: 'Delete',
+      cancelLabel: 'Cancel',
+    },
   );
 
-  const handleEdit = (plan: any) => {
+  const handleEdit = (plan: StrategicPlanItem) => {
     setSelectedPlan(plan);
     setEditDialogOpen(true);
   };
 
-  const handleDelete = async (plan: any) => {
+  const handleDelete = async (plan: StrategicPlanItem) => {
     const ok = await confirmDelete();
     if (ok) {
       deleteMutation.mutate(
@@ -68,14 +67,15 @@ const StrategicPlansPage = () => {
     }
   };
 
-  const handleView = (plan: any) => {
-    router.push(`/${lang}/StrategicPlan/${plan.slug || plan.id}`);
+  const handleView = (plan: StrategicPlanItem) => {
+    const segment = encodeURIComponent(String(plan.slug || plan.id));
+    router.push(`/${locale}/StrategicPlan/${segment}`);
   };
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-gray-500">{t('status.loading')}</p>
+        <p className="text-gray-500">Loading...</p>
       </div>
     );
   }
@@ -83,7 +83,7 @@ const StrategicPlansPage = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-red-500">{t('status.error')}</p>
+        <p className="text-red-500">Error loading plans</p>
       </div>
     );
   }
@@ -94,12 +94,14 @@ const StrategicPlansPage = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="text-gray-600 mt-1">{t('subtitle')}</p>
+          <h1 className="text-3xl font-bold text-gray-900">Strategic Plans</h1>
+          <p className="text-gray-600 mt-1">
+            Manage platform strategic plans and centers
+          </p>
         </div>
         <Button onClick={() => setCreateDialogOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
-          {t('actions.create')}
+          Create
         </Button>
       </div>
 
@@ -107,14 +109,14 @@ const StrategicPlansPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>{t('table.title')}</TableHead>
-              <TableHead>{t('table.slug')}</TableHead>
-              <TableHead>{t('table.category')}</TableHead>
-              <TableHead>{t('table.status')}</TableHead>
-              <TableHead>{t('table.priority')}</TableHead>
-              <TableHead>{t('table.active')}</TableHead>
-              <TableHead>{t('table.created')}</TableHead>
-              <TableHead className="text-right">{t('table.actions')}</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Priority</TableHead>
+              <TableHead>Active</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -124,11 +126,11 @@ const StrategicPlansPage = () => {
                   colSpan={8}
                   className="text-center py-8 text-gray-500"
                 >
-                  {t('empty')}
+                  No strategic plans found
                 </TableCell>
               </TableRow>
             ) : (
-              plans.map((plan: any) => (
+              plans.map((plan: StrategicPlanItem) => (
                 <TableRow key={plan.id}>
                   <TableCell className="max-w-xs truncate font-medium">
                     {plan.title}
@@ -177,9 +179,9 @@ const StrategicPlansPage = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {new Date(plan.createdAt).toLocaleDateString(
-                      isArabic ? 'ar-EG' : 'en-US',
-                    )}
+                    {plan.createdAt && isValidDate(plan.createdAt)
+                      ? new Date(plan.createdAt).toLocaleDateString('en-US')
+                      : '—'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -187,7 +189,8 @@ const StrategicPlansPage = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleView(plan)}
-                        title={t('actions.view')}
+                        title="View"
+                        aria-label="View strategic plan"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -195,7 +198,8 @@ const StrategicPlansPage = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(plan)}
-                        title={t('actions.edit')}
+                        title="Edit"
+                        aria-label="Edit strategic plan"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -204,7 +208,8 @@ const StrategicPlansPage = () => {
                         size="sm"
                         onClick={() => handleDelete(plan)}
                         className="text-red-600 hover:text-red-700"
-                        title={t('actions.delete')}
+                        title="Delete"
+                        aria-label="Delete strategic plan"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

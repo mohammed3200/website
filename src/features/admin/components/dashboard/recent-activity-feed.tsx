@@ -1,8 +1,7 @@
 'use client';
 
-import { useTranslations, useLocale } from 'next-intl';
 import { formatDistanceToNow } from 'date-fns';
-import { ar, enUS } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { useGetActivity } from '@/features/admin/api/activity/use-get-activity';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,8 +10,6 @@ import { cn } from '@/lib/utils';
 import { Bell, Info, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export const RecentActivityFeed = () => {
-  const t = useTranslations('Admin.Dashboard.Activity');
-  const locale = useLocale();
   const { data, isLoading, isError } = useGetActivity(10);
 
   if (isLoading) {
@@ -24,18 +21,18 @@ export const RecentActivityFeed = () => {
   return (
     <Card className="col-span-1">
       <CardHeader>
-        <CardTitle>{t('recentActivity')}</CardTitle>
+        <CardTitle>Recent Activity</CardTitle>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[350px] pr-4">
           <div className="space-y-4">
             {isError ? (
               <p className="text-center text-sm text-red-500 py-8">
-                {t('error')}
+                Failed to load activity
               </p>
             ) : activities.length === 0 ? (
               <p className="text-center text-sm text-gray-500 py-8">
-                {t('noActivity')}
+                No recent activity
               </p>
             ) : (
               activities.map((activity) => {
@@ -73,7 +70,7 @@ export const RecentActivityFeed = () => {
                         {isValidDate
                           ? formatDistanceToNow(date, {
                               addSuffix: true,
-                              locale: locale === 'ar' ? ar : enUS,
+                              locale: enUS,
                             })
                           : '-'}
                       </p>
