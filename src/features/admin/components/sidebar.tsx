@@ -69,7 +69,7 @@ const navigation = [
   },
 ];
 
-export default function Sidebar({ locale = 'en' }: { locale?: 'en' | 'ar' }) {
+export default function Sidebar({ locale }: { locale?: 'en' | 'ar' }) {
   const pathname = usePathname();
 
   return (
@@ -117,7 +117,7 @@ export default function Sidebar({ locale = 'en' }: { locale?: 'en' | 'ar' }) {
                           )}
                           aria-hidden="true"
                         />
-                        {item.name[locale] ?? item.name.en}
+                        {item.name[locale || 'en'] ?? item.name.en}
                       </Link>
                     </li>
                   );

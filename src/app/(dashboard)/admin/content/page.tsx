@@ -58,10 +58,7 @@ const ContentManagementPage = () => {
 
   if (!session) return null;
 
-  const renderContentList = (
-    content: PageContent[] | undefined,
-    pageName: string,
-  ) => (
+  const renderContentList = (content: PageContent[] | undefined) => (
     <div className="space-y-4">
       {!content || content.length === 0 ? (
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-8 text-center">
@@ -175,7 +172,7 @@ const ContentManagementPage = () => {
             Add
           </button>
         </div>
-        {renderContentList(entrepreneurshipContent, 'entrepreneurship')}
+        {renderContentList(entrepreneurshipContent)}
       </div>
 
       {/* Incubators Section */}
@@ -192,7 +189,7 @@ const ContentManagementPage = () => {
             Add
           </button>
         </div>
-        {renderContentList(incubatorsContent, 'incubators')}
+        {renderContentList(incubatorsContent)}
       </div>
     </div>
   );

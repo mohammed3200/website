@@ -26,6 +26,11 @@ export const useGetReports = () => {
         throw new Error('Invalid reports format: Expected array');
       }
       return reports.map((report: any, index: number) => {
+        // Assert non-null object
+        if (!report || typeof report !== 'object') {
+          throw new Error(`Invalid report at index ${index}: Expected object`);
+        }
+
         // Strict field validation
         const requiredStrings = ['id', 'name', 'type', 'format'];
         for (const field of requiredStrings) {
@@ -36,21 +41,40 @@ export const useGetReports = () => {
           }
         }
 
-        // Date validation
-        if (isNaN(Date.parse(report.createdAt))) {
+        // Date validation and normalization
+        const createdAtParsed = Date.parse(report.createdAt);
+        if (isNaN(createdAtParsed)) {
           throw new Error(`Invalid createdAt date for report ${report.id}`);
         }
-        if (isNaN(Date.parse(report.updatedAt))) {
+        const updatedAtParsed = Date.parse(report.updatedAt);
+        if (isNaN(updatedAtParsed)) {
           throw new Error(`Invalid updatedAt date for report ${report.id}`);
         }
 
+        // Validate optional fileUrl
+        const fileUrl =
+          typeof report.fileUrl === 'string' ? report.fileUrl : undefined;
+
+        // Compute validated status
+        const status = [
+          'PENDING',
+          'GENERATING',
+          'COMPLETED',
+          'FAILED',
+        ].includes(report.status)
+          ? (report.status as Report['status'])
+          : 'FAILED';
+
+        // Construct new object with only validated fields
         return {
-          ...report,
-          status: ['PENDING', 'GENERATING', 'COMPLETED', 'FAILED'].includes(
-            report.status,
-          )
-            ? report.status
-            : 'FAILED',
+          id: report.id,
+          name: report.name,
+          type: report.type,
+          format: report.format,
+          status,
+          fileUrl,
+          createdAt: new Date(createdAtParsed).toISOString(),
+          updatedAt: new Date(updatedAtParsed).toISOString(),
         };
       });
     },

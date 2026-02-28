@@ -28,6 +28,51 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
+const PREFERENCE_ITEMS = [
+  {
+    id: 'new-submissions',
+    label: 'New Submissions',
+    description: 'Get notified when new submissions are received',
+    icon: Users,
+    prefKey: 'emailNewSubmissions' as const,
+  },
+  {
+    id: 'status-changes',
+    label: 'Status Changes',
+    description: 'Get notified when submission status changes',
+    icon: Bell,
+    prefKey: 'emailStatusChanges' as const,
+  },
+  {
+    id: 'system-errors',
+    label: 'System Errors',
+    description: 'Receive critical system errors',
+    icon: AlertTriangle,
+    prefKey: 'emailSystemErrors' as const,
+  },
+  {
+    id: 'security-alerts',
+    label: 'Security Alerts',
+    description: 'Get notified about suspicious activity',
+    icon: Shield,
+    prefKey: 'emailSecurityAlerts' as const,
+  },
+  {
+    id: 'user-activity',
+    label: 'User Activity',
+    description: 'Daily user activity digest',
+    icon: Users,
+    prefKey: 'emailUserActivity' as const,
+  },
+  {
+    id: 'backups',
+    label: 'Database Backups',
+    description: 'Receive automated database backup status',
+    icon: Database,
+    prefKey: 'emailBackups' as const,
+  },
+];
+
 const NotificationPreferencesPage = () => {
   const {
     localPreferences,
@@ -38,51 +83,6 @@ const NotificationPreferencesPage = () => {
     handleSave,
     handleReset,
   } = useNotificationSettings();
-
-  const PREFERENCE_ITEMS = [
-    {
-      id: 'new-submissions',
-      label: 'New Submissions',
-      description: 'Get notified when new submissions are received',
-      icon: Users,
-      prefKey: 'emailNewSubmissions' as const,
-    },
-    {
-      id: 'status-changes',
-      label: 'Status Changes',
-      description: 'Get notified when submission status changes',
-      icon: Bell,
-      prefKey: 'emailStatusChanges' as const,
-    },
-    {
-      id: 'system-errors',
-      label: 'System Errors',
-      description: 'Receive critical system errors',
-      icon: AlertTriangle,
-      prefKey: 'emailSystemErrors' as const,
-    },
-    {
-      id: 'security-alerts',
-      label: 'Security Alerts',
-      description: 'Get notified about suspicious activity',
-      icon: Shield,
-      prefKey: 'emailSecurityAlerts' as const,
-    },
-    {
-      id: 'user-activity',
-      label: 'User Activity',
-      description: 'Daily user activity digest',
-      icon: Users,
-      prefKey: 'emailUserActivity' as const,
-    },
-    {
-      id: 'backups',
-      label: 'Database Backups',
-      description: 'Receive automated database backup status',
-      icon: Database,
-      prefKey: 'emailBackups' as const,
-    },
-  ];
 
   if (isLoading) {
     return (

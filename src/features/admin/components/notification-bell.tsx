@@ -11,7 +11,6 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
-import { client } from '@/lib/rpc';
 import {
   useGetNotifications,
   type Notification,

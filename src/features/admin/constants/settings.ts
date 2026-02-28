@@ -1,19 +1,38 @@
-import { Bell, User } from 'lucide-react';
+import { Bell, User, type LucideIcon } from 'lucide-react';
 
-export const SETTINGS_OPTIONS = [
+type EnabledSetting = {
+  id: string;
+  titleKey: string;
+  descriptionKey: string;
+  href: string;
+  icon: LucideIcon;
+  disabled?: false;
+};
+
+type DisabledSetting = {
+  id: string;
+  titleKey: string;
+  descriptionKey: string;
+  href?: undefined;
+  icon: LucideIcon;
+  disabled: true;
+};
+
+type Setting = EnabledSetting | DisabledSetting;
+
+export const SETTINGS_OPTIONS: readonly Setting[] = [
   {
     id: 'notifications',
-    title: 'Notification Preferences',
-    description: 'Set up global alert and notification rules',
+    titleKey: 'notifications.title',
+    descriptionKey: 'notifications.description',
     href: '/admin/settings/notifications',
     icon: Bell,
     disabled: false,
   },
   {
     id: 'profile',
-    title: 'Profile Configuration',
-    description: 'Manage user profile and account settings',
-    href: '#',
+    titleKey: 'profile.title',
+    descriptionKey: 'profile.description',
     icon: User,
     disabled: true,
   },

@@ -1,13 +1,16 @@
 // Settings page definition
 
 import Link from 'next/link';
+import { getTranslations } from 'next-intl/server';
 import { cn } from '@/lib/utils';
 import { SETTINGS_OPTIONS } from '@/features/admin/constants/settings';
 
-const SettingsPage = () => {
+const SettingsPage = async () => {
+  const t = await getTranslations('admin.settings');
+
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
+      <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {SETTINGS_OPTIONS.map((option) => {
@@ -18,10 +21,10 @@ const SettingsPage = () => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {option.title}
+                  {t(option.titleKey)}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  {option.description}
+                  {t(option.descriptionKey)}
                 </p>
               </div>
             </div>
@@ -43,7 +46,7 @@ const SettingsPage = () => {
           }
 
           return (
-            <Link key={option.id} href={option.href} className={className}>
+            <Link key={option.id} href={option.href!} className={className}>
               {content}
             </Link>
           );
