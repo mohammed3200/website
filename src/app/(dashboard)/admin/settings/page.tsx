@@ -1,22 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
-
 import { cn } from '@/lib/utils';
 import { SETTINGS_OPTIONS } from '@/features/admin/constants/settings';
 
 const SettingsPage = () => {
-  const t = useTranslations('Admin.Settings');
-  const { lang } = useLanguage();
-
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+      <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {SETTINGS_OPTIONS.map((option) => {
+        {SETTINGS_OPTIONS.map((option: any) => {
           const content = (
             <div className="flex items-center gap-4">
               <div className="p-3 bg-primary/10 rounded-full">
@@ -24,10 +18,10 @@ const SettingsPage = () => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {t(option.titleKey)}
+                  {option.titleKey.split('.').pop()?.toUpperCase() || 'Setting'}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1">
-                  {t(option.descriptionKey)}
+                  Manage this setting configuration
                 </p>
               </div>
             </div>
@@ -55,7 +49,7 @@ const SettingsPage = () => {
           return (
             <Link
               key={option.titleKey}
-              href={`/${lang}${option.href}`}
+              href={option.href}
               className={className}
             >
               {content}

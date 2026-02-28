@@ -1,6 +1,5 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
 import {
   Area,
   AreaChart,
@@ -19,15 +18,11 @@ interface SubmissionTrendsChartProps {
 }
 
 export const SubmissionTrendsChart = ({ year }: SubmissionTrendsChartProps) => {
-  const t = useTranslations('Admin.Dashboard.Charts');
-  const locale = useLocale();
-  const isArabic = locale === 'ar';
-
   const { data, isLoading } = useGetStatsTrends(year);
 
   const chartData = (data?.trends ?? []).map((item) => ({
     ...item,
-    name: isArabic ? getMonthNameAr(item.month) : getMonthNameEn(item.month),
+    name: getMonthNameEn(item.month),
   }));
 
   if (isLoading) {
@@ -37,7 +32,7 @@ export const SubmissionTrendsChart = ({ year }: SubmissionTrendsChartProps) => {
   return (
     <Card className="col-span-1 lg:col-span-2">
       <CardHeader>
-        <CardTitle>{t('submissionTrends')}</CardTitle>
+        <CardTitle>Submission Trends</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[350px] w-full">
@@ -46,8 +41,8 @@ export const SubmissionTrendsChart = ({ year }: SubmissionTrendsChartProps) => {
               data={chartData}
               margin={{
                 top: 10,
-                right: isArabic ? 40 : 10,
-                left: isArabic ? 10 : 40,
+                right: 10,
+                left: 40,
                 bottom: 0,
               }}
             >
@@ -75,13 +70,13 @@ export const SubmissionTrendsChart = ({ year }: SubmissionTrendsChartProps) => {
               </defs>
               <XAxis
                 dataKey="name"
-                reversed={isArabic}
+                reversed={false}
                 tick={{ fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis
-                orientation={isArabic ? 'right' : 'left'}
+                orientation={'left'}
                 tick={{ fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}
@@ -100,7 +95,7 @@ export const SubmissionTrendsChart = ({ year }: SubmissionTrendsChartProps) => {
                 stroke="#f97316"
                 fillOpacity={1}
                 fill="url(#colorInnovators)"
-                name={t('innovators')}
+                name="Innovators"
               />
               <Area
                 type="monotone"
@@ -108,7 +103,7 @@ export const SubmissionTrendsChart = ({ year }: SubmissionTrendsChartProps) => {
                 stroke="#3b82f6"
                 fillOpacity={1}
                 fill="url(#colorCollaborators)"
-                name={t('collaborators')}
+                name="Collaborators"
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -116,28 +111,6 @@ export const SubmissionTrendsChart = ({ year }: SubmissionTrendsChartProps) => {
       </CardContent>
     </Card>
   );
-};
-
-const getMonthNameAr = (month: string) => {
-  const months = [
-    'يناير',
-    'فبراير',
-    'مارس',
-    'أبريل',
-    'مايو',
-    'يونيو',
-    'يوليو',
-    'أغسطس',
-    'سبتمبر',
-    'أكتوبر',
-    'نوفمبر',
-    'ديسمبر',
-  ];
-  const parsedMonth = parseInt(month, 10);
-  if (isNaN(parsedMonth) || parsedMonth < 1 || parsedMonth > 12) {
-    return '';
-  }
-  return months[parsedMonth - 1];
 };
 
 const getMonthNameEn = (month: string) => {

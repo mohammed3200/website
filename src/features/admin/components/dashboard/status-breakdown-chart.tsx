@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import {
   Cell,
   Legend,
@@ -14,24 +13,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const StatusBreakdownChart = () => {
-  const t = useTranslations('Admin.Dashboard.Charts');
   const { data, isLoading } = useGetStatsBreakdown();
 
   const chartData = [
     {
-      name: t('pending'),
+      name: 'Pending',
       value:
         (data?.innovators.pending || 0) + (data?.collaborators.pending || 0),
       color: '#f59e0b',
     },
     {
-      name: t('approved'),
+      name: 'Approved',
       value:
         (data?.innovators.approved || 0) + (data?.collaborators.approved || 0),
       color: '#10b981',
     },
     {
-      name: t('rejected'),
+      name: 'Rejected',
       value:
         (data?.innovators.rejected || 0) + (data?.collaborators.rejected || 0),
       color: '#ef4444',
@@ -45,7 +43,7 @@ export const StatusBreakdownChart = () => {
   return (
     <Card className="col-span-1">
       <CardHeader>
-        <CardTitle>{t('statusBreakdown')}</CardTitle>
+        <CardTitle>Status Breakdown</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[350px] w-full">

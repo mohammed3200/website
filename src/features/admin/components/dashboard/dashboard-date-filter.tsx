@@ -1,6 +1,5 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import {
   Select,
   SelectContent,
@@ -18,20 +17,18 @@ export const DashboardDateFilter = ({
   value,
   onChange,
 }: DashboardDateFilterProps) => {
-  const t = useTranslations('Admin.Dashboard.Filters');
-
   return (
     <div className="flex items-center gap-2">
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder={t('selectRange')} />
+          <SelectValue placeholder="Select Range" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="LAST_7_DAYS">{t('last7Days')}</SelectItem>
-          <SelectItem value="LAST_30_DAYS">{t('last30Days')}</SelectItem>
-          <SelectItem value="THIS_MONTH">{t('thisMonth')}</SelectItem>
-          <SelectItem value="LAST_MONTH">{t('lastMonth')}</SelectItem>
-          <SelectItem value="THIS_YEAR">{t('thisYear')}</SelectItem>
+          <SelectItem value="LAST_7_DAYS">Last 7 Days</SelectItem>
+          <SelectItem value="LAST_30_DAYS">Last 30 Days</SelectItem>
+          <SelectItem value="THIS_MONTH">This Month</SelectItem>
+          <SelectItem value="LAST_MONTH">Last Month</SelectItem>
+          <SelectItem value="THIS_YEAR">This Year</SelectItem>
         </SelectContent>
       </Select>
     </div>

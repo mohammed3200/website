@@ -2,8 +2,6 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
 import { useGetDashboardStats } from '@/features/admin/api/stats/use-get-dashboard-stats';
 import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 
@@ -25,8 +23,6 @@ import { DashboardStatsGridSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 
 const AdminDashboardPage = () => {
-  const t = useTranslations('Admin.Dashboard');
-  const { lang, isArabic } = useLanguage();
   const { session } = useAdminAuth();
   const { data: statsData, isLoading } = useGetDashboardStats();
 
@@ -35,37 +31,37 @@ const AdminDashboardPage = () => {
   const stats = useMemo(
     () => [
       {
-        name: t('stats.innovators'),
+        name: 'Total Innovators',
         value: statsData?.totalInnovators || 0,
         icon: Users,
         change: `+${statsData?.approvedInnovators || 0}`,
         changeType: 'positive' as const,
       },
       {
-        name: t('stats.collaborators'),
+        name: 'Total Collaborators',
         value: statsData?.totalCollaborators || 0,
         icon: Users,
         change: `+${statsData?.approvedCollaborators || 0}`,
         changeType: 'positive' as const,
       },
       {
-        name: t('stats.pending'),
+        name: 'Pending Reviews',
         value:
           (statsData?.pendingInnovators || 0) +
           (statsData?.pendingCollaborators || 0),
         icon: Clock,
-        change: t('stats.needsAttention'),
+        change: 'Needs Attention',
         changeType: 'warning' as const,
       },
       {
-        name: t('stats.strategicPlans'),
+        name: 'Strategic Plans',
         value: statsData?.totalStrategicPlans || 0,
         icon: Target,
-        change: t('stats.active'),
+        change: 'Active',
         changeType: 'neutral' as const,
       },
     ],
-    [statsData, t],
+    [statsData],
   );
 
   if (isLoading) {
@@ -83,15 +79,15 @@ const AdminDashboardPage = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" dir="ltr">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Dashboard Overview
+          </h1>
           <p className="mt-2 text-sm text-gray-600">
-            {t('welcome', {
-              name: session?.user?.name || (isArabic ? 'المشرف' : 'Admin'),
-            })}
+            Welcome back, {session?.user?.name || 'Admin'}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -101,10 +97,10 @@ const AdminDashboardPage = () => {
             size="sm"
             className="hidden sm:flex items-center gap-2"
             disabled
-            title={t('common.comingSoon')}
+            title="Coming Soon"
           >
             <Download className="h-4 w-4" />
-            {t('quickActions.generateReport')}
+            Generate Report
           </Button>
         </div>
       </div>
@@ -124,7 +120,7 @@ const AdminDashboardPage = () => {
                     aria-hidden="true"
                   />
                 </div>
-                <div className={`${isArabic ? 'mr-5' : 'ml-5'} w-0 flex-1`}>
+                <div className="ml-5 w-0 flex-1">
                   <dl>
                     <dt className="text-sm font-medium text-gray-500 truncate">
                       {stat.name}
@@ -134,7 +130,7 @@ const AdminDashboardPage = () => {
                         {stat.value}
                       </div>
                       <div
-                        className={`${isArabic ? 'mr-2' : 'ml-2'} flex items-baseline text-sm font-semibold ${
+                        className={`ml-2 flex items-baseline text-sm font-semibold ${
                           stat.changeType === 'positive'
                             ? 'text-green-600'
                             : stat.changeType === 'warning'
@@ -173,55 +169,47 @@ const AdminDashboardPage = () => {
         {/* Quick Actions */}
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            {t('quickActions.title')}
+            Quick Actions
           </h2>
           <div className="grid grid-cols-1 gap-4">
             <Link
-              href={`/${lang}/admin/submissions`}
+              href="/admin/submissions"
               className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
             >
               <ClipboardList className="h-6 w-6 text-primary" />
               <div>
                 <p className="font-semibold text-gray-900">
-                  {t('quickActions.reviewSubmissions')}
+                  Review Submissions
                 </p>
                 <p className="text-sm text-gray-600">
-                  {t('quickActions.pendingCount', {
-                    count:
-                      (statsData?.pendingInnovators || 0) +
-                      (statsData?.pendingCollaborators || 0),
-                  })}
+                  {(statsData?.pendingInnovators || 0) +
+                    (statsData?.pendingCollaborators || 0)}{' '}
+                  pending reviews
                 </p>
               </div>
             </Link>
 
             <Link
-              href={`/${lang}/admin/content`}
+              href="/admin/content"
               className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
             >
               <Newspaper className="h-6 w-6 text-primary" />
               <div>
-                <p className="font-semibold text-gray-900">
-                  {t('quickActions.manageContent')}
-                </p>
+                <p className="font-semibold text-gray-900">Manage Content</p>
                 <p className="text-sm text-gray-600">
-                  {t('quickActions.editPages')}
+                  Edit platform pages and news
                 </p>
               </div>
             </Link>
 
             <Link
-              href={`/${lang}/admin/reports`}
+              href="/admin/reports"
               className="flex items-center gap-3 p-4 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 transition-colors"
             >
               <TrendingUp className="h-6 w-6 text-primary" />
               <div>
-                <p className="font-semibold text-gray-900">
-                  {t('quickActions.generateReport')}
-                </p>
-                <p className="text-sm text-gray-600">
-                  {t('quickActions.customReports')}
-                </p>
+                <p className="font-semibold text-gray-900">Generate Report</p>
+                <p className="text-sm text-gray-600">Export custom analytics</p>
               </div>
             </Link>
           </div>

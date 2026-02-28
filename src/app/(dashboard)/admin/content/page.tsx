@@ -3,10 +3,8 @@
 import { useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
-import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/skeletons';
 
-import useLanguage from '@/hooks/use-language';
 // Use Prisma type instead of local fallback
 import type { PageContent } from '@prisma/client';
 import { useGetPageContent } from '@/features/page-content/api/use-get-page-content';
@@ -18,8 +16,6 @@ import { checkPermission, RESOURCES, ACTIONS } from '@/lib/rbac-base';
 const ContentManagementPage = () => {
   const router = useRouter();
   const { session, status } = useAdminAuth();
-  const t = useTranslations('Admin.Content');
-  const { isArabic, lang } = useLanguage();
 
   const hasContentAccess = useMemo(() => {
     return checkPermission(
@@ -36,9 +32,9 @@ const ContentManagementPage = () => {
 
   useEffect(() => {
     if (status === 'authenticated' && !hasContentAccess) {
-      router.push(`/${lang}/admin`);
+      router.push('/admin');
     }
-  }, [status, hasContentAccess, router, lang]);
+  }, [status, hasContentAccess, router]);
 
   if (status === 'loading' || isLoadingEnt || isLoadingInc) {
     return (
@@ -64,7 +60,7 @@ const ContentManagementPage = () => {
     <div className="space-y-4">
       {!content || content.length === 0 ? (
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-8 text-center">
-          <p className="text-gray-500">{t('empty')}</p>
+          <p className="text-gray-500">No content found</p>
         </div>
       ) : (
         content.map((item) => (
@@ -79,32 +75,28 @@ const ContentManagementPage = () => {
                     {item.section}
                   </span>
                   <span className="text-sm text-gray-500">
-                    {t('labels.order')}: {item.order}
+                    Order: {item.order}
                   </span>
                   {!item.isActive && (
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                      {t('labels.inactive')}
+                      Inactive
                     </span>
                   )}
                 </div>
 
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {isArabic
-                    ? item.titleAr || item.titleEn
-                    : item.titleEn || item.titleAr}
+                  {item.titleEn || item.titleAr}
                 </h3>
 
                 {(item.contentEn || item.contentAr) && (
                   <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                    {isArabic
-                      ? item.contentAr || item.contentEn
-                      : item.contentEn || item.contentAr}
+                    {item.contentEn || item.contentAr}
                   </p>
                 )}
 
                 {item.icon && (
                   <p className="text-sm text-gray-500 mt-2">
-                    {t('labels.icon')}: {item.icon}
+                    Icon: {item.icon}
                   </p>
                 )}
               </div>
@@ -113,7 +105,7 @@ const ContentManagementPage = () => {
                 <button
                   disabled
                   aria-disabled="true"
-                  title={t('labels.comingSoon')}
+                  title="Coming Soon"
                   className="inline-flex items-center justify-center p-2 text-sm font-semibold text-gray-400 bg-gray-50 border border-gray-200 rounded-md cursor-not-allowed"
                 >
                   <Edit className="h-4 w-4" />
@@ -121,7 +113,7 @@ const ContentManagementPage = () => {
                 <button
                   disabled
                   aria-disabled="true"
-                  title={t('labels.comingSoon')}
+                  title="Coming Soon"
                   className="inline-flex items-center justify-center p-2 text-sm font-semibold text-white bg-red-300 rounded-md cursor-not-allowed"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -138,8 +130,8 @@ const ContentManagementPage = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-        <p className="mt-2 text-sm text-gray-600">{t('description')}</p>
+        <h1 className="text-3xl font-bold text-gray-900">Content Management</h1>
+        <p className="mt-2 text-sm text-gray-600">Manage platform pages</p>
       </div>
 
       {/* Tabs */}
@@ -149,13 +141,13 @@ const ContentManagementPage = () => {
             href="#entrepreneurship"
             className="border-primary text-primary whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
           >
-            {t('tabs.entrepreneurship')}
+            Entrepreneurship
           </a>
           <a
             href="#incubators"
             className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
           >
-            {t('tabs.incubators')}
+            Incubators
           </a>
         </nav>
       </div>
@@ -164,16 +156,16 @@ const ContentManagementPage = () => {
       <div id="entrepreneurship" className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">
-            {t('sections.entrepreneurship')}
+            Entrepreneurship
           </h2>
           <button
             disabled
             aria-disabled="true"
-            title={t('labels.comingSoon')}
+            title="Coming Soon"
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary/50 rounded-md cursor-not-allowed"
           >
             <Plus className="h-4 w-4" />
-            {t('actions.add')}
+            Add
           </button>
         </div>
         {renderContentList(entrepreneurshipContent, 'entrepreneurship')}
@@ -182,17 +174,15 @@ const ContentManagementPage = () => {
       {/* Incubators Section */}
       <div id="incubators" className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {t('sections.incubators')}
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900">Incubators</h2>
           <button
             disabled
             aria-disabled="true"
-            title={t('labels.comingSoon')}
+            title="Coming Soon"
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary/50 rounded-md cursor-not-allowed"
           >
             <Plus className="h-4 w-4" />
-            {t('actions.add')}
+            Add
           </button>
         </div>
         {renderContentList(incubatorsContent, 'incubators')}

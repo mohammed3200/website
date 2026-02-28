@@ -1,6 +1,5 @@
 'use client';
 
-import useLanguage from '@/hooks/use-language';
 import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 import { NotificationBell } from '@/features/admin/components/notification-bell';
 import { Skeleton } from '@/components/skeletons';
@@ -8,7 +7,6 @@ import Sidebar from '@/features/admin/components/sidebar';
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   const { session, status } = useAdminAuth();
-  const { lang: locale } = useLanguage();
 
   if (status === 'loading') {
     return (
@@ -22,12 +20,9 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   if (!session?.user) return null;
 
   return (
-    <div
-      className="min-h-screen bg-gray-50"
-      dir={locale === 'ar' ? 'rtl' : 'ltr'}
-    >
+    <div className="min-h-screen bg-gray-50" dir="ltr">
       {/* Sidebar */}
-      <Sidebar locale={locale} />
+      <Sidebar locale="en" />
 
       {/* Main Content Area */}
       <div className="lg:pl-64">

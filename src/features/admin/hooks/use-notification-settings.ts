@@ -4,10 +4,8 @@ import { useState, useEffect } from 'react';
 import { useGetNotificationPreferences } from '@/features/admin/api/notifications/use-get-notification-preferences';
 import { usePutNotificationPreferences } from '@/features/admin/api/notifications/use-put-notification-preferences';
 import { toast } from 'sonner';
-import { useTranslations } from 'next-intl';
 
 export const useNotificationSettings = () => {
-  const t = useTranslations('Admin.Notifications.preferences');
   const { data, isLoading } = useGetNotificationPreferences();
   const updatePreferences = usePutNotificationPreferences();
 
@@ -59,9 +57,9 @@ export const useNotificationSettings = () => {
   const handleSave = async () => {
     try {
       await updatePreferences.mutateAsync(localPreferences);
-      toast.success(t('messages.success'));
+      toast.success('Preferences saved successfully');
     } catch (error) {
-      toast.error(t('messages.error'));
+      toast.error('Failed to save preferences');
     }
   };
 
@@ -87,6 +85,5 @@ export const useNotificationSettings = () => {
     handleDigestModeChange,
     handleSave,
     handleReset,
-    t,
   };
 };

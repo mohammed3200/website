@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import useLanguage from '@/hooks/use-language';
 import { Bell, CheckCheck, Trash2, Filter, X, RefreshCw } from 'lucide-react';
 
 import { useGetNotifications } from '@/features/admin/api/notifications/use-get-notifications';
@@ -24,15 +22,6 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 import {
   formatTimeAgo,
@@ -42,8 +31,6 @@ import {
 
 export default function NotificationsPage() {
   const router = useRouter();
-  const t = useTranslations('Admin.Notifications');
-  const { lang, isArabic } = useLanguage();
 
   const [page, setPage] = useState(1);
   const [selectedNotifications, setSelectedNotifications] = useState<string[]>(
@@ -70,7 +57,7 @@ export default function NotificationsPage() {
       await markRead.mutateAsync(notification.id);
     }
     if (notification.actionUrl) {
-      router.push(`/${lang}${notification.actionUrl}`);
+      router.push(notification.actionUrl);
     }
   };
 
@@ -96,8 +83,8 @@ export default function NotificationsPage() {
   };
 
   const [DeleteDialog, confirmDelete] = useConfirm(
-    t('dialogs.deleteTitle'),
-    t('dialogs.deleteConfirm'),
+    'Delete Notification',
+    'Are you sure you want to delete this notification?',
     'destructive',
   );
 
@@ -122,14 +109,19 @@ export default function NotificationsPage() {
 
   const hasActiveFilters = Object.keys(filters).length > 0;
 
+  // Polyfill for getTypeLabel without translations
+  const labelMapper = (t: string) => t.split('.').pop() || t;
+
   return (
-    <div className="flex-1 space-y-8 p-8 pt-6 font-din-regular">
+    <div className="flex-1 space-y-8 p-8 pt-6 font-din-regular" dir="ltr">
       <DeleteDialog />
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-            <p className="text-gray-600 mt-1">{t('subtitle')}</p>
+            <h1 className="text-3xl font-bold text-gray-900">Notifications</h1>
+            <p className="text-gray-600 mt-1">
+              Manage your platform notifications and alerts
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -141,7 +133,7 @@ export default function NotificationsPage() {
               <RefreshCw
                 className={cn('h-4 w-4 mr-2', isFetching && 'animate-spin')}
               />
-              {t('actions.refresh')}
+              Refresh
             </Button>
             {data?.pagination.total && data.pagination.total > 0 && (
               <Button
@@ -151,7 +143,7 @@ export default function NotificationsPage() {
                 disabled={markAllRead.isPending}
               >
                 <CheckCheck className="h-4 w-4 mr-2" />
-                {t('actions.markAllRead')}
+                Mark all as read
               </Button>
             )}
           </div>
@@ -162,9 +154,7 @@ export default function NotificationsPage() {
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium text-gray-700">
-                {t('filters.label')}
-              </span>
+              <span className="text-sm font-medium text-gray-700">Filters</span>
             </div>
 
             <Select
@@ -177,28 +167,18 @@ export default function NotificationsPage() {
               }
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={t('filters.type')} />
+                <SelectValue placeholder="Notification Type" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('statusLabels.all')}</SelectItem>
+                <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="NEW_COLLABORATOR">
-                  {t('types.NEW_COLLABORATOR')}
+                  New Collaborator
                 </SelectItem>
-                <SelectItem value="NEW_INNOVATOR">
-                  {t('types.NEW_INNOVATOR')}
-                </SelectItem>
-                <SelectItem value="SUBMISSION_APPROVED">
-                  {t('types.SUBMISSION_APPROVED')}
-                </SelectItem>
-                <SelectItem value="SUBMISSION_REJECTED">
-                  {t('types.SUBMISSION_REJECTED')}
-                </SelectItem>
-                <SelectItem value="SYSTEM_ERROR">
-                  {t('types.SYSTEM_ERROR')}
-                </SelectItem>
-                <SelectItem value="SECURITY_ALERT">
-                  {t('types.SECURITY_ALERT')}
-                </SelectItem>
+                <SelectItem value="NEW_INNOVATOR">New Innovator</SelectItem>
+                <SelectItem value="SUBMISSION_APPROVED">Approved</SelectItem>
+                <SelectItem value="SUBMISSION_REJECTED">Rejected</SelectItem>
+                <SelectItem value="SYSTEM_ERROR">System Error</SelectItem>
+                <SelectItem value="SECURITY_ALERT">Security Alert</SelectItem>
               </SelectContent>
             </Select>
 
@@ -214,14 +194,12 @@ export default function NotificationsPage() {
               }
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={t('filters.status')} />
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('statusLabels.all')}</SelectItem>
-                <SelectItem value="false">
-                  {t('statusLabels.unread')}
-                </SelectItem>
-                <SelectItem value="true">{t('statusLabels.read')}</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="false">Unread</SelectItem>
+                <SelectItem value="true">Read</SelectItem>
               </SelectContent>
             </Select>
 
@@ -235,10 +213,10 @@ export default function NotificationsPage() {
               }
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder={t('filters.priority')} />
+                <SelectValue placeholder="Priority Level" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">{t('filters.priority')}</SelectItem>
+                <SelectItem value="all">All Priorities</SelectItem>
                 <SelectItem value="URGENT">Urgent</SelectItem>
                 <SelectItem value="HIGH">High</SelectItem>
                 <SelectItem value="NORMAL">Normal</SelectItem>
@@ -254,7 +232,7 @@ export default function NotificationsPage() {
                 className="text-gray-600"
               >
                 <X className="h-4 w-4 mr-1" />
-                {t('filters.clear')}
+                Clear Filters
               </Button>
             )}
           </div>
@@ -264,7 +242,7 @@ export default function NotificationsPage() {
         {selectedNotifications.length > 0 && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
             <span className="text-sm text-blue-900">
-              {t('selected', { count: selectedNotifications.length })}
+              {selectedNotifications.length} selected
             </span>
             <div className="flex items-center gap-2">
               <Button
@@ -274,14 +252,14 @@ export default function NotificationsPage() {
                 disabled={markRead.isPending}
               >
                 <CheckCheck className="h-4 w-4 mr-2" />
-                {t('actions.markSelectedRead')}
+                Mark selected as read
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setSelectedNotifications([])}
               >
-                {t('actions.cancel')}
+                Cancel
               </Button>
             </div>
           </div>
@@ -296,12 +274,12 @@ export default function NotificationsPage() {
           ) : error ? (
             <div className="flex flex-col items-center justify-center p-12">
               <Bell className="h-12 w-12 text-gray-300 mb-2" />
-              <p className="text-gray-600">{t('error')}</p>
+              <p className="text-gray-600">Failed to load notifications</p>
             </div>
           ) : data?.notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12">
               <Bell className="h-12 w-12 text-gray-300 mb-2" />
-              <p className="text-gray-600">{t('empty')}</p>
+              <p className="text-gray-600">No notifications found</p>
             </div>
           ) : (
             <>
@@ -314,9 +292,7 @@ export default function NotificationsPage() {
                   }
                   onCheckedChange={handleSelectAll}
                 />
-                <span className="text-sm text-gray-600">
-                  {t('actions.selectAll')}
-                </span>
+                <span className="text-sm text-gray-600">Select All</span>
               </div>
               <div className="divide-y">
                 {data?.notifications.map((notification) => (
@@ -353,14 +329,17 @@ export default function NotificationsPage() {
                                 {notification.priority}
                               </Badge>
                               <Badge variant="outline" className="text-xs">
-                                {getTypeLabel(notification.type, t)}
+                                {getTypeLabel(
+                                  notification.type,
+                                  labelMapper as any,
+                                )}
                               </Badge>
                               {!notification.isRead && (
                                 <Badge
                                   variant="default"
                                   className="text-xs bg-blue-600"
                                 >
-                                  {t('statusLabels.new')}
+                                  New
                                 </Badge>
                               )}
                             </div>
@@ -378,7 +357,7 @@ export default function NotificationsPage() {
                             <p className="text-xs text-gray-400">
                               {formatTimeAgo(
                                 new Date(notification.createdAt),
-                                lang,
+                                'en',
                               )}
                             </p>
                           </div>
