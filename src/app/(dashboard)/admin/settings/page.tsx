@@ -11,6 +11,7 @@ const TITLES_MAP: Record<string, string> = {
   appearance: 'Appearance & Theme',
   languages: 'Language Support',
   advanced: 'Advanced Configuration',
+  profile: 'Profile Configuration',
 };
 
 const DESCRIPTIONS_MAP: Record<string, string> = {
@@ -20,6 +21,7 @@ const DESCRIPTIONS_MAP: Record<string, string> = {
   appearance: 'Customize platform visual elements and themes',
   languages: 'Manage supported languages and translations',
   advanced: 'Fine-tune technical platform parameters',
+  profile: 'Manage user profile and account settings',
 };
 
 const SettingsPage = () => {
@@ -29,7 +31,7 @@ const SettingsPage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {SETTINGS_OPTIONS.map((option: (typeof SETTINGS_OPTIONS)[number]) => {
-          const key = option.titleKey.split('.').pop() || 'general';
+          const key = option.titleKey.split('.')[0] || 'general';
           const content = (
             <div className="flex items-center gap-4">
               <div className="p-3 bg-primary/10 rounded-full">

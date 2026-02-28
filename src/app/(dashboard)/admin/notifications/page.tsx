@@ -29,6 +29,22 @@ import {
   getTypeLabel,
 } from '@/features/admin/utils';
 
+// Polyfill for getTypeLabel without translations
+const labelMapper = (t: string) => {
+  const key = t.split('.').pop() || t;
+  const map: Record<string, string> = {
+    NEW_COLLABORATOR: 'New Collaborator',
+    NEW_INNOVATOR: 'New Innovator',
+    SUBMISSION_APPROVED: 'Submission Approved',
+    SUBMISSION_REJECTED: 'Submission Rejected',
+    SYSTEM_ERROR: 'System Error',
+    SECURITY_ALERT: 'Security Alert',
+  };
+  return (
+    map[key] || key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
+  );
+};
+
 export default function NotificationsPage() {
   const router = useRouter();
 
@@ -109,23 +125,6 @@ export default function NotificationsPage() {
 
   const hasActiveFilters = Object.keys(filters).length > 0;
 
-  // Polyfill for getTypeLabel without translations
-  const labelMapper = (t: string) => {
-    const key = t.split('.').pop() || t;
-    const map: Record<string, string> = {
-      NEW_COLLABORATOR: 'New Collaborator',
-      NEW_INNOVATOR: 'New Innovator',
-      SUBMISSION_APPROVED: 'Submission Approved',
-      SUBMISSION_REJECTED: 'Submission Rejected',
-      SYSTEM_ERROR: 'System Error',
-      SECURITY_ALERT: 'Security Alert',
-    };
-    return (
-      map[key] ||
-      key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())
-    );
-  };
-
   return (
     <div className="flex-1 space-y-8 p-8 pt-6 font-din-regular" dir="ltr">
       <div className="space-y-6">
@@ -188,8 +187,12 @@ export default function NotificationsPage() {
                   New Collaborator
                 </SelectItem>
                 <SelectItem value="NEW_INNOVATOR">New Innovator</SelectItem>
-                <SelectItem value="SUBMISSION_APPROVED">Approved</SelectItem>
-                <SelectItem value="SUBMISSION_REJECTED">Rejected</SelectItem>
+                <SelectItem value="SUBMISSION_APPROVED">
+                  Submission Approved
+                </SelectItem>
+                <SelectItem value="SUBMISSION_REJECTED">
+                  Submission Rejected
+                </SelectItem>
                 <SelectItem value="SYSTEM_ERROR">System Error</SelectItem>
                 <SelectItem value="SECURITY_ALERT">Security Alert</SelectItem>
               </SelectContent>

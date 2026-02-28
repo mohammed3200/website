@@ -14,17 +14,23 @@ import { WobbleCard } from './ui/wobble-card';
 import { ActiveButton } from '@/components/buttons';
 import { HomeStrategicPlanSkeleton } from '@/components/skeletons';
 
-interface StrategicPlanItem {
+export interface StrategicPlanItem {
   id: string;
   slug: string;
   title: string;
+  titleAr?: string | null;
   content: string;
+  contentAr?: string | null;
   excerpt: string | null;
+  excerptAr?: string | null;
   category: string | null;
+  categoryAr?: string | null;
   priority: string;
   status: string;
   isActive: boolean;
   publishedAt: string | null;
+  createdAt?: string;
+  updatedAt?: string;
   image: {
     id: string;
     url: string;

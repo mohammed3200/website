@@ -192,3 +192,9 @@ export function formatDate(date: string | Date): string {
     year: 'numeric',
   });
 }
+
+export function isValidDate(date: any): boolean {
+  if (!date) return false;
+  const d = new Date(date);
+  return !isNaN(d.getTime());
+}

@@ -12,10 +12,13 @@ import {
   XCircle,
   AlertCircle,
 } from 'lucide-react';
-import { useGetReports } from '@/features/admin/api/reports/use-get-reports';
+import {
+  useGetReports,
+  Report,
+} from '@/features/admin/api/reports/use-get-reports';
 import { usePostReport } from '@/features/admin/api/reports/use-post-report';
 import { useDeleteReport } from '@/features/admin/api/reports/use-delete-report';
-import { cn } from '@/lib/utils';
+import { cn, isValidDate } from '@/lib/utils';
 import { useConfirm } from '@/hooks/use-confirm';
 
 import {
@@ -26,17 +29,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-
-interface Report {
-  id: string;
-  name: string;
-  type: string;
-  format: string;
-  status: 'PENDING' | 'GENERATING' | 'COMPLETED' | 'FAILED';
-  fileUrl?: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 const ReportsPage = () => {
   const {
@@ -155,6 +147,7 @@ const ReportsPage = () => {
             disabled={isFetching}
             className="inline-flex items-center justify-center p-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
             title="Refresh"
+            aria-label="Refresh reports"
           >
             <RefreshCw
               className={cn('h-4 w-4', isFetching && 'animate-spin')}
@@ -198,7 +191,7 @@ const ReportsPage = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              reports.map((report: Report) => (
+              reports.map((report) => (
                 <TableRow key={report.id}>
                   <TableCell className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-3">
@@ -217,7 +210,9 @@ const ReportsPage = () => {
                     {getStatusBadge(report.status)}
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {format(new Date(report.createdAt), 'PPP p')}
+                    {isValidDate(report.createdAt)
+                      ? format(new Date(report.createdAt), 'PPP p')
+                      : '—'}
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
                     {report.status === 'COMPLETED' &&
@@ -226,6 +221,7 @@ const ReportsPage = () => {
                           href={report.fileUrl}
                           className="inline-flex items-center justify-center p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                           title="Download"
+                          aria-label="Download report"
                         >
                           <Download className="h-4 w-4" />
                         </a>
@@ -243,6 +239,7 @@ const ReportsPage = () => {
                       disabled={deleteMutation.isPending}
                       className="inline-flex items-center justify-center p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50"
                       title="Delete"
+                      aria-label="Delete report"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

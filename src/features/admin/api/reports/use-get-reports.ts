@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { client } from '@/lib/rpc';
 
 export const useGetReports = () => {
-  return useQuery({
+  return useQuery<Report[]>({
     queryKey: ['admin-reports'],
     queryFn: async () => {
       const res = await client.api.admin.reports.$get();

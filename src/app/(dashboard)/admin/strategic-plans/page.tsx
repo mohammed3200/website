@@ -22,13 +22,16 @@ import { useConfirm } from '@/hooks/use-confirm';
 
 import { CreateStrategicPlanDialog } from '@/features/strategic-plan/components/create_strategic_plan_dialog';
 import { EditStrategicPlanDialog } from '@/features/strategic-plan/components/edit_strategic_plan_dialog';
+import { type StrategicPlanItem } from '@/components/strategic-plan';
 
 const StrategicPlansPage = () => {
   const router = useRouter();
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<any>(null); // Keeping any here as the StrategicPlan type is complex and not fully defined locally
+  const [selectedPlan, setSelectedPlan] = useState<StrategicPlanItem | null>(
+    null,
+  );
 
   const { data, isLoading, error } = useGetAllStrategicPlans();
   const deleteMutation = useDeleteStrategicPlan();
@@ -39,12 +42,12 @@ const StrategicPlansPage = () => {
     'destructive',
   );
 
-  const handleEdit = (plan: any) => {
+  const handleEdit = (plan: StrategicPlanItem) => {
     setSelectedPlan(plan);
     setEditDialogOpen(true);
   };
 
-  const handleDelete = async (plan: any) => {
+  const handleDelete = async (plan: StrategicPlanItem) => {
     const ok = await confirmDelete();
     if (ok) {
       deleteMutation.mutate(
@@ -58,8 +61,9 @@ const StrategicPlansPage = () => {
     }
   };
 
-  const handleView = (plan: any) => {
-    router.push(`/en/StrategicPlan/${plan.slug || plan.id}`);
+  const handleView = (plan: StrategicPlanItem) => {
+    const segment = encodeURIComponent(String(plan.slug || plan.id));
+    router.push(`/en/StrategicPlan/${segment}`);
   };
 
   if (isLoading) {
@@ -120,7 +124,7 @@ const StrategicPlansPage = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              plans.map((plan: any) => (
+              plans.map((plan: StrategicPlanItem) => (
                 <TableRow key={plan.id}>
                   <TableCell className="max-w-xs truncate font-medium">
                     {plan.title}
@@ -169,7 +173,9 @@ const StrategicPlansPage = () => {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {new Date(plan.createdAt).toLocaleDateString('en-US')}
+                    {plan.createdAt
+                      ? new Date(plan.createdAt).toLocaleDateString('en-US')
+                      : '—'}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
@@ -178,6 +184,7 @@ const StrategicPlansPage = () => {
                         size="sm"
                         onClick={() => handleView(plan)}
                         title="View"
+                        aria-label="View strategic plan"
                       >
                         <Eye className="w-4 h-4" />
                       </Button>
@@ -186,6 +193,7 @@ const StrategicPlansPage = () => {
                         size="sm"
                         onClick={() => handleEdit(plan)}
                         title="Edit"
+                        aria-label="Edit strategic plan"
                       >
                         <Edit className="w-4 h-4" />
                       </Button>
@@ -195,6 +203,7 @@ const StrategicPlansPage = () => {
                         onClick={() => handleDelete(plan)}
                         className="text-red-600 hover:text-red-700"
                         title="Delete"
+                        aria-label="Delete strategic plan"
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>

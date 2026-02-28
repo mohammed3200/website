@@ -2,10 +2,9 @@
 
 import { useSubmissionsLogic } from '@/features/admin/hooks/use-submissions-logic';
 import { Innovator, Collaborator } from '@/features/admin/types';
-import { Button } from '@/components/ui/button';
+import { AdminSubmissionFooter } from './admin-submission-footer';
 import { CardInnovators } from '@/features/innovators/components/card-innovators';
 import { CardCompanies } from '@/features/collaborators/components/card-companies';
-import { CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
 
 interface SubmissionsContentProps {
   innovators: Innovator[];
@@ -85,46 +84,15 @@ const SubmissionsContent = ({
                   className="h-full"
                 />
 
-                {/* Admin Actions Overlay/Footer */}
-                <div className="mt-4 flex items-center justify-between gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                  <div className="flex items-center text-xs text-gray-500">
-                    <Clock className="w-3.5 h-3.5 mr-1.5" />
-                    Submitted on{' '}
-                    {new Date(innovator.createdAt).toLocaleDateString('en-US')}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-4 text-xs font-bold border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800"
-                      onClick={() => handleApprove('innovators', innovator.id)}
-                      disabled={isLoading}
-                    >
-                      <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
-                      Approve
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-4 text-xs font-bold border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
-                      onClick={() => handleReject('innovators', innovator.id)}
-                      disabled={isLoading}
-                    >
-                      <XCircle className="w-3.5 h-3.5 mr-1.5" />
-                      Reject
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-50"
-                      onClick={() => handleDelete('innovators', innovator.id)}
-                      disabled={isLoading}
-                      aria-label="Delete innovator"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                <AdminSubmissionFooter
+                  createdAt={innovator.createdAt}
+                  onApprove={() => handleApprove('innovators', innovator.id)}
+                  onReject={() => handleReject('innovators', innovator.id)}
+                  onDelete={() => handleDelete('innovators', innovator.id)}
+                  isLoading={isLoading}
+                  submitterName={innovator.name}
+                  entityTypeLabel="innovator"
+                />
               </div>
             ))}
           </div>
@@ -185,54 +153,21 @@ const SubmissionsContent = ({
                   onClick={() => handleView('collaborators', collaborator.id)}
                 />
 
-                {/* Admin Actions Footer */}
-                <div className="flex items-center justify-between gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100 max-w-[600px]">
-                  <div className="flex items-center text-xs text-gray-500 font-outfit">
-                    <Clock className="w-3.5 h-3.5 mr-1.5" />
-                    Submitted on{' '}
-                    {new Date(collaborator.createdAt).toLocaleDateString(
-                      'en-US',
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-4 text-xs font-bold border-green-200 text-green-700 hover:bg-green-50 hover:text-green-800"
-                      onClick={() =>
-                        handleApprove('collaborators', collaborator.id)
-                      }
-                      disabled={isLoading}
-                    >
-                      <CheckCircle className="w-3.5 h-3.5 mr-1.5" />
-                      Approve
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-9 px-4 text-xs font-bold border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
-                      onClick={() =>
-                        handleReject('collaborators', collaborator.id)
-                      }
-                      disabled={isLoading}
-                    >
-                      <XCircle className="w-3.5 h-3.5 mr-1.5" />
-                      Reject
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 text-red-500 hover:text-red-600 hover:bg-red-50"
-                      onClick={() =>
-                        handleDelete('collaborators', collaborator.id)
-                      }
-                      disabled={isLoading}
-                      aria-label="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
+                <AdminSubmissionFooter
+                  createdAt={collaborator.createdAt}
+                  onApprove={() =>
+                    handleApprove('collaborators', collaborator.id)
+                  }
+                  onReject={() =>
+                    handleReject('collaborators', collaborator.id)
+                  }
+                  onDelete={() =>
+                    handleDelete('collaborators', collaborator.id)
+                  }
+                  isLoading={isLoading}
+                  submitterName={collaborator.companyName}
+                  entityTypeLabel="collaborator"
+                />
               </div>
             ))}
           </div>
