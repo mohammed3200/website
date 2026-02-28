@@ -25,7 +25,7 @@ export const useGetReports = () => {
       if (!Array.isArray(reports)) {
         throw new Error('Invalid reports format: Expected array');
       }
-      return reports.map((report: any, index: number) => {
+      return reports.map((report: Record<string, unknown>, index: number) => {
         // Assert non-null object
         if (!report || typeof report !== 'object') {
           throw new Error(`Invalid report at index ${index}: Expected object`);

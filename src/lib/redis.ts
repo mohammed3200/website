@@ -40,7 +40,7 @@ function getRedis(): Redis {
 
 // Proxy that lazily creates the Redis connection on first property access
 export const redis: Redis = new Proxy({} as Redis, {
-  get(_target, prop, receiver) {
+  get(_target, prop, _receiver) {
     const instance = getRedis();
     const value = Reflect.get(instance, prop, instance);
     if (typeof value === 'function') {

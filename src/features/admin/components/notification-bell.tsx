@@ -81,27 +81,29 @@ export function NotificationBell() {
                     isSafeAdminUrl(notification.actionUrl)
                   ) {
                     try {
-                      // Parse URL to check for potential bypasses
+                      const isAbsolute =
+                        notification.actionUrl.startsWith('http') ||
+                        notification.actionUrl.startsWith('//');
+
+                      // Parse URL using current origin as base
                       const url = new URL(
                         notification.actionUrl,
-                        typeof window !== 'undefined'
-                          ? window.location.origin
-                          : 'http://localhost',
+                        window.location.origin,
                       );
 
-                      // Ensure absolute URLs are same-origin
-                      if (
-                        notification.actionUrl.startsWith('http') &&
-                        url.origin !== window.location.origin
-                      ) {
+                      // Block external redirects (absolute or protocol-relative)
+                      if (isAbsolute && url.origin !== window.location.origin) {
                         return;
                       }
 
-                      // Navigate using path + search + hash only
+                      // Only push the path component to prevent any hidden origin bypasses
                       router.push(`${url.pathname}${url.search}${url.hash}`);
                     } catch (e) {
-                      // Fallback for relative paths if URL parsing fails
-                      if (!notification.actionUrl.startsWith('http')) {
+                      // Fallback: If it's definitely a relative path, push it as is
+                      if (
+                        !notification.actionUrl.includes('://') &&
+                        !notification.actionUrl.startsWith('//')
+                      ) {
                         router.push(notification.actionUrl);
                       }
                     }
