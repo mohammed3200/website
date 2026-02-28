@@ -75,8 +75,36 @@ export function NotificationBell() {
                 onClick={() => {
                   if (!notification.isRead)
                     markReadMutation.mutate(notification.id);
-                  if (isSafeAdminUrl(notification.actionUrl)) {
-                    router.push(notification.actionUrl!);
+
+                  if (
+                    notification.actionUrl &&
+                    isSafeAdminUrl(notification.actionUrl)
+                  ) {
+                    try {
+                      // Parse URL to check for potential bypasses
+                      const url = new URL(
+                        notification.actionUrl,
+                        typeof window !== 'undefined'
+                          ? window.location.origin
+                          : 'http://localhost',
+                      );
+
+                      // Ensure absolute URLs are same-origin
+                      if (
+                        notification.actionUrl.startsWith('http') &&
+                        url.origin !== window.location.origin
+                      ) {
+                        return;
+                      }
+
+                      // Navigate using path + search + hash only
+                      router.push(`${url.pathname}${url.search}${url.hash}`);
+                    } catch (e) {
+                      // Fallback for relative paths if URL parsing fails
+                      if (!notification.actionUrl.startsWith('http')) {
+                        router.push(notification.actionUrl);
+                      }
+                    }
                   }
                 }}
               >

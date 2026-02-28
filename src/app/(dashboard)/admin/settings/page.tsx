@@ -46,7 +46,7 @@ const SettingsPage = async () => {
           }
 
           return (
-            <Link key={option.id} href={option.href!} className={className}>
+            <Link key={option.id} href={option.href} className={className}>
               {content}
             </Link>
           );

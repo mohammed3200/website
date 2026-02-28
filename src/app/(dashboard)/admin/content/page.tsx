@@ -13,6 +13,23 @@ import { Plus, Edit, Trash2 } from 'lucide-react';
 
 import { checkPermission, RESOURCES, ACTIONS } from '@/lib/rbac-base';
 
+const UI_LABELS = {
+  TITLE: 'Content Management',
+  DESCRIPTION: 'Manage platform pages',
+  ADD: 'Add',
+  COMING_SOON: 'Coming Soon',
+  NO_CONTENT: 'No content found',
+  SECTIONS: {
+    ENTREPRENEURSHIP: 'Entrepreneurship',
+    INCUBATORS: 'Incubators',
+  },
+  ARIA: {
+    EDIT: 'Edit content',
+    DELETE: 'Delete content',
+    TABS: 'Tabs',
+  },
+} as const;
+
 const ContentManagementPage = () => {
   const router = useRouter();
   const { session, status } = useAdminAuth();
@@ -62,7 +79,7 @@ const ContentManagementPage = () => {
     <div className="space-y-4">
       {!content || content.length === 0 ? (
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-8 text-center">
-          <p className="text-gray-500">No content found</p>
+          <p className="text-gray-500">{UI_LABELS.NO_CONTENT}</p>
         </div>
       ) : (
         content.map((item) => (
@@ -107,8 +124,8 @@ const ContentManagementPage = () => {
                 <button
                   disabled
                   aria-disabled="true"
-                  aria-label="Edit content"
-                  title="Coming Soon"
+                  aria-label={UI_LABELS.ARIA.EDIT}
+                  title={UI_LABELS.COMING_SOON}
                   className="inline-flex items-center justify-center p-2 text-sm font-semibold text-gray-400 bg-gray-50 border border-gray-200 rounded-md cursor-not-allowed"
                 >
                   <Edit className="h-4 w-4" aria-hidden="true" />
@@ -116,8 +133,8 @@ const ContentManagementPage = () => {
                 <button
                   disabled
                   aria-disabled="true"
-                  aria-label="Delete content"
-                  title="Coming Soon"
+                  aria-label={UI_LABELS.ARIA.DELETE}
+                  title={UI_LABELS.COMING_SOON}
                   className="inline-flex items-center justify-center p-2 text-sm font-semibold text-white bg-red-300 rounded-md cursor-not-allowed"
                 >
                   <Trash2 className="h-4 w-4" aria-hidden="true" />
@@ -134,24 +151,24 @@ const ContentManagementPage = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Content Management</h1>
-        <p className="mt-2 text-sm text-gray-600">Manage platform pages</p>
+        <h1 className="text-3xl font-bold text-gray-900">{UI_LABELS.TITLE}</h1>
+        <p className="mt-2 text-sm text-gray-600">{UI_LABELS.DESCRIPTION}</p>
       </div>
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+        <nav className="-mb-px flex space-x-8" aria-label={UI_LABELS.ARIA.TABS}>
           <a
             href="#entrepreneurship"
             className="border-primary text-primary whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
           >
-            Entrepreneurship
+            {UI_LABELS.SECTIONS.ENTREPRENEURSHIP}
           </a>
           <a
             href="#incubators"
             className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium"
           >
-            Incubators
+            {UI_LABELS.SECTIONS.INCUBATORS}
           </a>
         </nav>
       </div>
@@ -160,16 +177,16 @@ const ContentManagementPage = () => {
       <div id="entrepreneurship" className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">
-            Entrepreneurship
+            {UI_LABELS.SECTIONS.ENTREPRENEURSHIP}
           </h2>
           <button
             disabled
             aria-disabled="true"
-            title="Coming Soon"
+            title={UI_LABELS.COMING_SOON}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary/50 rounded-md cursor-not-allowed"
           >
             <Plus className="h-4 w-4" />
-            Add
+            {UI_LABELS.ADD}
           </button>
         </div>
         {renderContentList(entrepreneurshipContent)}
@@ -178,15 +195,17 @@ const ContentManagementPage = () => {
       {/* Incubators Section */}
       <div id="incubators" className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">Incubators</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {UI_LABELS.SECTIONS.INCUBATORS}
+          </h2>
           <button
             disabled
             aria-disabled="true"
-            title="Coming Soon"
+            title={UI_LABELS.COMING_SOON}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-primary/50 rounded-md cursor-not-allowed"
           >
             <Plus className="h-4 w-4" />
-            Add
+            {UI_LABELS.ADD}
           </button>
         </div>
         {renderContentList(incubatorsContent)}

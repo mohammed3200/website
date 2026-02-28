@@ -6,7 +6,7 @@ type EnabledSetting = {
   descriptionKey: string;
   href: string;
   icon: LucideIcon;
-  disabled?: false;
+  disabled: false;
 };
 
 type DisabledSetting = {
@@ -20,7 +20,7 @@ type DisabledSetting = {
 
 type Setting = EnabledSetting | DisabledSetting;
 
-export const SETTINGS_OPTIONS: readonly Setting[] = [
+export const SETTINGS_OPTIONS = [
   {
     id: 'notifications',
     titleKey: 'notifications.title',
@@ -36,4 +36,4 @@ export const SETTINGS_OPTIONS: readonly Setting[] = [
     icon: User,
     disabled: true,
   },
-] as const;
+] as const satisfies readonly Setting[];
