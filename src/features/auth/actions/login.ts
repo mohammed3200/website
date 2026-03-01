@@ -111,7 +111,7 @@ export const login = async (
           code: twoFactorToken.token,
         },
         'en', // You can add locale detection here
-        '10 minutes',
+        '5 minutes',
       );
 
       if (!result.success) {
