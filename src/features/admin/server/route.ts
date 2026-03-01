@@ -531,7 +531,7 @@ const app = new Hono<{ Variables: Variables }>()
   // --- Message Templates ---
 
   // GET /api/admin/templates - List message templates
-  .get('/templates', verifyAuth, async (c) => {
+  .get('/templates', async (c) => {
     try {
       const user = c.get('user');
       if (
@@ -558,7 +558,6 @@ const app = new Hono<{ Variables: Variables }>()
   // GET /api/admin/templates/:id - Get a specific message template
   .get(
     '/templates/:id',
-    verifyAuth,
     zValidator('param', templateIdParamSchema),
     async (c) => {
       try {
@@ -593,7 +592,6 @@ const app = new Hono<{ Variables: Variables }>()
   // POST /api/admin/templates - Create a new message template
   .post(
     '/templates',
-    verifyAuth,
     zValidator('json', createTemplateSchema),
     async (c) => {
       try {
@@ -638,7 +636,6 @@ const app = new Hono<{ Variables: Variables }>()
   // PATCH /api/admin/templates/:id - Update a message template
   .patch(
     '/templates/:id',
-    verifyAuth,
     zValidator('param', templateIdParamSchema),
     zValidator('json', updateTemplateSchema),
     async (c) => {
@@ -687,7 +684,6 @@ const app = new Hono<{ Variables: Variables }>()
   // DELETE /api/admin/templates/:id - Delete a message template
   .delete(
     '/templates/:id',
-    verifyAuth,
     zValidator('param', templateIdParamSchema),
     async (c) => {
       try {
