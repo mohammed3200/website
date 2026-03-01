@@ -1,6 +1,7 @@
 # ==========================================
 # Production Dockerfile for Background Worker
 # Runs email, report, and WhatsApp queue workers
+# Complies with DEP-01 & ARCH-SERVER-04
 # ==========================================
 
 # ------------------------------------------
@@ -10,38 +11,38 @@ FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files
+# Copy package configurations
 COPY package.json bun.lock ./
 
-# Install dependencies using Bun
-RUN npm install -g bun && bun install --frozen-lockfile --ignore-scripts
+# Install ONLY production dependencies using Bun to minimize size
+RUN npm install -g bun && bun install --frozen-lockfile --production --ignore-scripts
 
 # ------------------------------------------
 # Stage 2: Runner
-# Unlike the app Dockerfile, the worker needs
-# the full node_modules and source to run tsx
 # ------------------------------------------
 FROM node:20-alpine AS runner
 RUN apk add --no-cache libc6-compat openssl && npm install -g bun prisma
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Don't run as root
+# Security: Don't run as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 worker
 
-# Copy dependencies and source
-COPY --from=deps /app/node_modules ./node_modules
-COPY package.json ./
-COPY tsconfig.json ./
-COPY prisma.config.ts ./
-COPY prisma ./prisma
-COPY src ./src
+# Copy dependencies and pruned node_modules
+COPY --from=deps --chown=worker:nodejs /app/node_modules ./node_modules
+COPY --chown=worker:nodejs package.json ./
+COPY --chown=worker:nodejs tsconfig.json ./
+COPY --chown=worker:nodejs prisma.config.ts ./
+COPY --chown=worker:nodejs prisma ./prisma
+COPY --chown=worker:nodejs src ./src
 
-# Generate Prisma client
+# Generate Prisma client via dummy url (bypasses runtime requirement during build)
 RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
 
 USER worker
 
+# Execute worker script directly via bun
 CMD ["bun", "run", "src/worker.ts"]
