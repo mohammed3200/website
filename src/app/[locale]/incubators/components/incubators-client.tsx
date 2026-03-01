@@ -47,6 +47,13 @@ export default function IncubatorsClient({ locale, content }: Props) {
     const resourcesContent = getSection('resources');
     const metricsContent = getSection('metrics');
     const ctaContent = getSection('cta')[0];
+    const emptyStateContent = getSection('emptyState')[0];
+    const defaultEmptyState = t('emptyState') || 'No content available.';
+    const localizedEmptyState = emptyStateContent
+        ? (isArabic
+            ? emptyStateContent.contentAr || emptyStateContent.titleAr || defaultEmptyState
+            : emptyStateContent.contentEn || emptyStateContent.titleEn || defaultEmptyState)
+        : defaultEmptyState;
 
     return (
         <section
@@ -109,7 +116,9 @@ export default function IncubatorsClient({ locale, content }: Props) {
                 ) : (
                     // Fallback phases
                     <div className="text-center py-12">
-                        <p className="text-gray-400 dark:text-gray-500">No content available.</p>
+                        <p className="text-gray-400 dark:text-gray-500">
+                            {localizedEmptyState}
+                        </p>
                     </div>
                 )}
 
@@ -144,7 +153,9 @@ export default function IncubatorsClient({ locale, content }: Props) {
                 ) : (
                     // Fallback resources
                     <div className="text-center py-12">
-                        <p className="text-gray-400 dark:text-gray-500">No content available.</p>
+                        <p className="text-gray-400 dark:text-gray-500">
+                            {t('emptyState') || 'No content available.'}
+                        </p>
                     </div>
                 )}
 

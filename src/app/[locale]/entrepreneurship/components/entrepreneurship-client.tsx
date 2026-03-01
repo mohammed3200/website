@@ -47,6 +47,13 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
     const valuesContent = getSection('values');
     const missionContent = getSection('mission')[0];
     const ctaContent = getSection('cta')[0];
+    const emptyStateContent = getSection('emptyState')[0];
+    const defaultEmptyState = t('emptyState') || 'No content available.';
+    const localizedEmptyState = emptyStateContent
+        ? (isArabic
+            ? emptyStateContent.contentAr || emptyStateContent.titleAr || defaultEmptyState
+            : emptyStateContent.contentEn || emptyStateContent.titleEn || defaultEmptyState)
+        : defaultEmptyState;
 
     return (
         <section
@@ -107,7 +114,9 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                 ) : (
                     // Fallback programs
                     <div className="text-center py-12">
-                        <p className="text-gray-400 dark:text-gray-500">No content available.</p>
+                        <p className="text-gray-400 dark:text-gray-500">
+                            {localizedEmptyState}
+                        </p>
                     </div>
                 )}
 
@@ -138,7 +147,9 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                 ) : (
                     // Fallback values
                     <div className="text-center py-12">
-                        <p className="text-gray-400 dark:text-gray-500">No content available.</p>
+                        <p className="text-gray-400 dark:text-gray-500">
+                            {t('emptyState') || 'No content available.'}
+                        </p>
                     </div>
                 )}
 
