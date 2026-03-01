@@ -58,10 +58,8 @@ const app = new Hono<{ Variables: Variables }>()
         db.user.count({ where }),
       ]);
 
-      const mappedUsers = users.map((u) => ({ ...u, lastLoginAt: null }));
-
       return c.json({
-        data: mappedUsers,
+        data: users,
         metadata: {
           total,
           page,
@@ -97,8 +95,23 @@ const app = new Hono<{ Variables: Variables }>()
       const { id } = c.req.valid('param');
       const data = c.req.valid('json');
 
-      const user = await db.user.findUnique({ where: { id } });
+      const user = await db.user.findUnique({
+        where: { id },
+        include: { role: true },
+      });
       if (!user) return c.json({ error: 'User not found' }, 404);
+
+      const requester = c.get('user');
+      if (requester.id === id) {
+        return c.json({ error: 'You cannot modify your own roles or status' }, 403);
+      }
+
+      if (data.roleId || data.isActive !== undefined) {
+        // Enforce role hierarchy: Admins cannot modify Super Admins
+        if (user.role?.name === 'super_admin' && requester.role !== 'super_admin') {
+          return c.json({ error: 'Not permitted to modify super_admin accounts' }, 403);
+        }
+      }
 
       const updated = await db.user.update({
         where: { id },
@@ -113,7 +126,7 @@ const app = new Hono<{ Variables: Variables }>()
         },
       });
 
-      return c.json({ data: { ...updated, lastLoginAt: null } });
+      return c.json({ data: updated });
     },
   )
 
@@ -167,6 +180,10 @@ const app = new Hono<{ Variables: Variables }>()
         const { email, roleId } = c.req.valid('json');
 
         const invitation = await createUserInvitation(user.id, email, roleId);
+
+        if (!process.env.NEXT_PUBLIC_APP_URL) {
+          throw new Error('NEXT_PUBLIC_APP_URL is not configured in environment variables');
+        }
 
         const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/join?token=${invitation.token}`;
 

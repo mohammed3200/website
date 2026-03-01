@@ -54,6 +54,15 @@ const ContentManagementPage = () => {
   const [selectedContent, setSelectedContent] = useState<PageContent | null>(
     null,
   );
+  const editCloseTimeoutRef = useState<NodeJS.Timeout | null>(null)[0];
+  const deleteCloseTimeoutRef = useState<NodeJS.Timeout | null>(null)[0];
+
+  useEffect(() => {
+    return () => {
+      if (editCloseTimeoutRef) clearTimeout(editCloseTimeoutRef);
+      if (deleteCloseTimeoutRef) clearTimeout(deleteCloseTimeoutRef);
+    };
+  }, [editCloseTimeoutRef, deleteCloseTimeoutRef]);
 
   const hasContentAccess = useMemo(() => {
     return checkPermission(
@@ -298,6 +307,7 @@ const ContentManagementPage = () => {
         isOpen={isEditOpen}
         onClose={() => {
           setIsEditOpen(false);
+          // Set timeout to clear content after animation, but allow unmount cleanup
           setTimeout(() => setSelectedContent(null), 300);
         }}
         page={selectedPage}

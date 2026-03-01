@@ -198,9 +198,15 @@ export const ContentFormDialog = ({
                         <Input
                           type="number"
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(parseInt(e.target.value))
-                          }
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            if (val === '') {
+                              field.onChange(0);
+                            } else {
+                              const parsed = parseInt(val, 10);
+                              field.onChange(isNaN(parsed) ? 0 : parsed);
+                            }
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -319,14 +325,7 @@ export const ContentFormDialog = ({
                       <Input
                         placeholder="e.g. 500+, $1M"
                         {...field}
-                        value={form.watch('metadata.number') || ''}
-                        onChange={(e) => {
-                          const currentMeta = form.getValues('metadata') || {};
-                          form.setValue('metadata', {
-                            ...currentMeta,
-                            number: e.target.value,
-                          });
-                        }}
+                        value={field.value || ''}
                       />
                     </FormControl>
                     <FormMessage />

@@ -8,7 +8,14 @@ export type UserWithRole = Pick<
   role: Pick<Role, 'id' | 'name'> | null;
 };
 
-export type InvitationWithRole = UserInvitation & {
+export type InvitationWithRole = Omit<
+  UserInvitation,
+  'createdAt' | 'updatedAt' | 'expiresAt' | 'acceptedAt'
+> & {
+  createdAt: string;
+  updatedAt: string;
+  expiresAt: string;
+  acceptedAt: string | null;
   role: Pick<Role, 'id' | 'name'>;
   inviter: Pick<User, 'id' | 'name' | 'email'>;
 };

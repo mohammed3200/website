@@ -1,17 +1,20 @@
 import { Queue } from 'bullmq';
 import { redis } from '@/lib/redis';
+import { isBuildPhase } from '@/lib/env-utils';
 
 export const REPORT_QUEUE_NAME = 'report-generation';
 
-export const reportQueue = new Queue(REPORT_QUEUE_NAME, {
-    connection: redis,
-    defaultJobOptions: {
-        attempts: 3,
-        backoff: {
-            type: 'exponential',
-            delay: 1000,
+export const reportQueue = isBuildPhase
+    ? ({ add: async () => console.log('Mock queue add in build phase') } as unknown as Queue)
+    : new Queue(REPORT_QUEUE_NAME, {
+        connection: redis,
+        defaultJobOptions: {
+            attempts: 3,
+            backoff: {
+                type: 'exponential',
+                delay: 1000,
+            },
+            removeOnComplete: true,
+            removeOnFail: false,
         },
-        removeOnComplete: true,
-        removeOnFail: false,
-    },
-});
+    });

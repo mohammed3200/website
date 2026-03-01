@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/alert-dialog';
 
 const LIMIT = 25;
+const DIALOG_CLOSE_DELAY_MS = 300;
 
 const UsersManagementPage = () => {
   const router = useRouter();
@@ -45,7 +46,7 @@ const UsersManagementPage = () => {
 
   const hasUsersAccess = useMemo(() => {
     return checkPermission(
-      session?.user?.permissions as any,
+      session?.user?.permissions,
       RESOURCES.USERS,
       ACTIONS.READ,
     );
@@ -53,7 +54,7 @@ const UsersManagementPage = () => {
 
   const hasManageAccess = useMemo(() => {
     return checkPermission(
-      session?.user?.permissions as any,
+      session?.user?.permissions,
       RESOURCES.USERS,
       ACTIONS.MANAGE,
     );
@@ -61,7 +62,7 @@ const UsersManagementPage = () => {
 
   const hasInvitationsAccess = useMemo(() => {
     return checkPermission(
-      session?.user?.permissions as any,
+      session?.user?.permissions,
       RESOURCES.INVITATIONS,
       ACTIONS.READ,
     );
@@ -69,7 +70,7 @@ const UsersManagementPage = () => {
 
   const hasInviteAccess = useMemo(() => {
     return checkPermission(
-      session?.user?.permissions as any,
+      session?.user?.permissions,
       RESOURCES.INVITATIONS,
       ACTIONS.CREATE,
     );
@@ -147,11 +148,10 @@ const UsersManagementPage = () => {
         <nav className="-mb-px flex space-x-8" aria-label="Tabs">
           <button
             onClick={() => setActiveTab('users')}
-            className={`whitespace-nowrap flex items-center gap-2 border-b-2 py-4 px-1 text-sm font-medium ${
-              activeTab === 'users'
+            className={`whitespace-nowrap flex items-center gap-2 border-b-2 py-4 px-1 text-sm font-medium ${activeTab === 'users'
                 ? 'border-primary text-primary'
                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-            }`}
+              }`}
           >
             <Users className="h-4 w-4" />
             Users
@@ -165,18 +165,17 @@ const UsersManagementPage = () => {
           {hasInvitationsAccess && (
             <button
               onClick={() => setActiveTab('invitations')}
-              className={`whitespace-nowrap flex items-center gap-2 border-b-2 py-4 px-1 text-sm font-medium ${
-                activeTab === 'invitations'
+              className={`whitespace-nowrap flex items-center gap-2 border-b-2 py-4 px-1 text-sm font-medium ${activeTab === 'invitations'
                   ? 'border-primary text-primary'
                   : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-              }`}
+                }`}
             >
               <Mail className="h-4 w-4" />
               Invitations
               {invitationsData && (
                 <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs">
                   {
-                    invitationsData.data.filter((i) => i.status === 'PENDING')
+                    invitationsData.data.filter((i: any) => i.status === 'PENDING')
                       .length
                   }{' '}
                   Pending
@@ -190,7 +189,7 @@ const UsersManagementPage = () => {
       <div className="mt-8">
         {activeTab === 'users' && (
           <UserTable
-            users={(usersData?.data as any) || []}
+            users={usersData?.data || []}
             isLoading={isLoadingUsers}
             onEdit={handleEditUser}
           />
@@ -198,7 +197,7 @@ const UsersManagementPage = () => {
 
         {activeTab === 'invitations' && hasInvitationsAccess && (
           <InvitationTable
-            invitations={(invitationsData?.data as any) || []}
+            invitations={invitationsData?.data || []}
             isLoading={isLoadingInvitations}
             onDelete={openRevokeDialog}
             isDeleting={isDeleting}
@@ -215,7 +214,7 @@ const UsersManagementPage = () => {
         isOpen={isEditOpen}
         onClose={() => {
           setIsEditOpen(false);
-          setTimeout(() => setSelectedUser(null), 300);
+          setTimeout(() => setSelectedUser(null), DIALOG_CLOSE_DELAY_MS);
         }}
         user={selectedUser}
       />

@@ -1,7 +1,7 @@
 'use client';
 
 import { format, isValid } from 'date-fns';
-import { Trash2, UserPlus, CheckCircle, Mail } from 'lucide-react';
+import { Trash2, CheckCircle, Mail } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -107,6 +107,7 @@ export const InvitationTable = ({
                     disabled={isDeleting}
                     className="p-2 text-gray-400 hover:text-red-600 rounded-md transition-colors disabled:opacity-50"
                     title="Revoke invitation"
+                    aria-label={`Revoke invitation for ${inv.email}`}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>

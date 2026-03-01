@@ -69,6 +69,6 @@ export const requirePermission = (resource: Resource, action: Action) => {
       return c.json({ error: 'Forbidden' }, 403);
     }
 
-    await next();
+    return await next();
   };
 };
