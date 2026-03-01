@@ -30,6 +30,7 @@ jest.mock('next-intl', () => ({
       fundingDesc: 'Investment opportunities',
       networking: 'Networking Events',
       networkingDesc: 'Connect with investors',
+      emptyState: 'No content available.',
     };
     return translations[key] || key;
   },
@@ -174,21 +175,12 @@ describe('IncubatorsClient Component', () => {
       ).toBeInTheDocument();
     });
 
-    it('should render fallback phases', async () => {
+    it('should render empty state when phases and resources are missing', async () => {
       render(<IncubatorsClient locale="en" content={mockEmptyContent} />);
 
-      expect(await screen.findByText('Ideation Phase')).toBeInTheDocument();
-      expect(await screen.findByText('Development Phase')).toBeInTheDocument();
-      expect(await screen.findByText('Scaling Phase')).toBeInTheDocument();
-    });
-
-    it('should render fallback resources', async () => {
-      render(<IncubatorsClient locale="en" content={mockEmptyContent} />);
-
-      expect(await screen.findByText('Expert Mentorship')).toBeInTheDocument();
-      expect(await screen.findByText('Co-working Space')).toBeInTheDocument();
-      expect(await screen.findByText('Funding Access')).toBeInTheDocument();
-      expect(await screen.findByText('Networking Events')).toBeInTheDocument();
+      const emptyStates = await screen.findAllByText('No content available.');
+      // One for phases, one for resources
+      expect(emptyStates).toHaveLength(2);
     });
   });
 

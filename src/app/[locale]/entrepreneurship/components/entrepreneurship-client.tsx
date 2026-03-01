@@ -47,6 +47,13 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
     const valuesContent = getSection('values');
     const missionContent = getSection('mission')[0];
     const ctaContent = getSection('cta')[0];
+    const emptyStateContent = getSection('emptyState')[0];
+    const defaultEmptyState = t('emptyState') || 'No content available.';
+    const localizedEmptyState = emptyStateContent
+        ? (isArabic
+            ? emptyStateContent.contentAr || emptyStateContent.titleAr || defaultEmptyState
+            : emptyStateContent.contentEn || emptyStateContent.titleEn || defaultEmptyState)
+        : defaultEmptyState;
 
     return (
         <section
@@ -106,29 +113,10 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                     </div>
                 ) : (
                     // Fallback programs
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[
-                            { icon: BookOpen, titleKey: 'workshops', descKey: 'workshopsDesc' },
-                            { icon: Users, titleKey: 'mentorship', descKey: 'mentorshipDesc' },
-                            { icon: Target, titleKey: 'strategic', descKey: 'strategicDesc' },
-                            { icon: TrendingUp, titleKey: 'growth', descKey: 'growthDesc' },
-                        ].map((program, index) => (
-                            <motion.div
-                                key={program.titleKey}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="p-6 bg-white dark:bg-stone-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-stone-200 dark:border-stone-700"
-                            >
-                                <program.icon className="w-12 h-12 text-orange-500 mb-4" />
-                                <h3 className="font-din-bold text-xl mb-2 text-gray-900 dark:text-white">
-                                    {t(program.titleKey)}
-                                </h3>
-                                <p className="font-din-regular text-gray-600 dark:text-gray-300">
-                                    {t(program.descKey)}
-                                </p>
-                            </motion.div>
-                        ))}
+                    <div className="text-center py-12">
+                        <p className="text-gray-400 dark:text-gray-500">
+                            {localizedEmptyState}
+                        </p>
                     </div>
                 )}
 
@@ -158,27 +146,11 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                     </motion.div>
                 ) : (
                     // Fallback values
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="flex flex-wrap justify-center gap-6"
-                    >
-                        {[
-                            { icon: Award, labelKey: 'excellence' },
-                            { icon: Lightbulb, labelKey: 'innovation' },
-                            { icon: Users, labelKey: 'collaboration' },
-                        ].map((value) => (
-                            <div
-                                key={value.labelKey}
-                                className="flex items-center gap-3 px-6 py-3 bg-orange-50 dark:bg-orange-900/20 rounded-full border-2 border-orange-200 dark:border-orange-800"
-                            >
-                                <value.icon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                                <span className="font-din-bold text-gray-900 dark:text-white">
-                                    {t(value.labelKey)}
-                                </span>
-                            </div>
-                        ))}
-                    </motion.div>
+                    <div className="text-center py-12">
+                        <p className="text-gray-400 dark:text-gray-500">
+                            {localizedEmptyState}
+                        </p>
+                    </div>
                 )}
 
                 {/* Mission Statement */}

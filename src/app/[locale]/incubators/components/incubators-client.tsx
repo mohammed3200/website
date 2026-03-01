@@ -47,6 +47,13 @@ export default function IncubatorsClient({ locale, content }: Props) {
     const resourcesContent = getSection('resources');
     const metricsContent = getSection('metrics');
     const ctaContent = getSection('cta')[0];
+    const emptyStateContent = getSection('emptyState')[0];
+    const defaultEmptyState = t('emptyState') || 'No content available.';
+    const localizedEmptyState = emptyStateContent
+        ? (isArabic
+            ? emptyStateContent.contentAr || emptyStateContent.titleAr || defaultEmptyState
+            : emptyStateContent.contentEn || emptyStateContent.titleEn || defaultEmptyState)
+        : defaultEmptyState;
 
     return (
         <section
@@ -108,30 +115,10 @@ export default function IncubatorsClient({ locale, content }: Props) {
                     </div>
                 ) : (
                     // Fallback phases
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {[
-                            { icon: Lightbulb, titleKey: 'ideation', descKey: 'ideationDesc' },
-                            { icon: Rocket, titleKey: 'development', descKey: 'developmentDesc' },
-                            { icon: TrendingUp, titleKey: 'scaling', descKey: 'scalingDesc' },
-                        ].map((phase, index) => (
-                            <motion.div
-                                key={phase.titleKey}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: index * 0.15 }}
-                                className="relative p-8 bg-white dark:bg-stone-800 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-blue-100 dark:border-blue-900"
-                            >
-                                <div className="absolute -top-6 left-8 bg-blue-600 dark:bg-blue-500 rounded-full p-4 shadow-lg">
-                                    <phase.icon className="w-8 h-8 text-white" />
-                                </div>
-                                <h3 className="font-din-bold text-2xl mb-3 mt-6 text-gray-900 dark:text-white">
-                                    {t(phase.titleKey)}
-                                </h3>
-                                <p className="font-din-regular text-gray-600 dark:text-gray-300">
-                                    {t(phase.descKey)}
-                                </p>
-                            </motion.div>
-                        ))}
+                    <div className="text-center py-12">
+                        <p className="text-gray-400 dark:text-gray-500">
+                            {localizedEmptyState}
+                        </p>
                     </div>
                 )}
 
@@ -165,29 +152,10 @@ export default function IncubatorsClient({ locale, content }: Props) {
                     </div>
                 ) : (
                     // Fallback resources
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {[
-                            { icon: Users, titleKey: 'mentorship', descKey: 'mentorshipDesc' },
-                            { icon: Target, titleKey: 'workspace', descKey: 'workspaceDesc' },
-                            { icon: TrendingUp, titleKey: 'funding', descKey: 'fundingDesc' },
-                            { icon: Award, titleKey: 'networking', descKey: 'networkingDesc' },
-                        ].map((resource, index) => (
-                            <motion.div
-                                key={resource.titleKey}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="p-6 bg-gradient-to-br from-blue-50 to-white dark:from-blue-900/20 dark:to-stone-900 rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300"
-                            >
-                                <resource.icon className="w-10 h-10 text-blue-600 dark:text-blue-400 mb-3" />
-                                <h4 className="font-din-bold text-lg mb-2 text-gray-900 dark:text-white">
-                                    {t(resource.titleKey)}
-                                </h4>
-                                <p className="font-din-regular text-sm text-gray-600 dark:text-gray-300">
-                                    {t(resource.descKey)}
-                                </p>
-                            </motion.div>
-                        ))}
+                    <div className="text-center py-12">
+                        <p className="text-gray-400 dark:text-gray-500">
+                            {localizedEmptyState}
+                        </p>
                     </div>
                 )}
 
