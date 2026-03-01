@@ -22,8 +22,8 @@ jest.mock('next-intl', () => ({
       mentorshipDesc: 'One-on-one guidance',
       strategic: 'Strategic Planning',
       strategicDesc: 'Business strategy development',
-      growth: 'Growth Support',
-      growthDesc: 'Scaling your business',
+      workshopsDesc: 'Intensive training programs',
+      emptyState: 'No content available.',
       excellence: 'Excellence',
       innovation: 'Innovation',
       collaboration: 'Collaboration',
@@ -190,21 +190,12 @@ describe('EntrepreneurshipClient Component', () => {
       expect(screen.getByText('Empowering the next generation')).toBeInTheDocument();
     });
 
-    it('should render fallback programs grid', () => {
+    it('should render empty state when programs and values are missing', () => {
       render(<EntrepreneurshipClient locale="en" content={mockEmptyContent} />);
 
-      expect(screen.getByText('Workshops & Training')).toBeInTheDocument();
-      expect(screen.getByText('Mentorship Programs')).toBeInTheDocument();
-      expect(screen.getByText('Strategic Planning')).toBeInTheDocument();
-      expect(screen.getByText('Growth Support')).toBeInTheDocument();
-    });
-
-    it('should render fallback values', () => {
-      render(<EntrepreneurshipClient locale="en" content={mockEmptyContent} />);
-
-      expect(screen.getByText('Excellence')).toBeInTheDocument();
-      expect(screen.getByText('Innovation')).toBeInTheDocument();
-      expect(screen.getByText('Collaboration')).toBeInTheDocument();
+      const emptyStates = screen.getAllByText('No content available.');
+      // One for programs, one for values
+      expect(emptyStates).toHaveLength(2);
     });
   });
 
