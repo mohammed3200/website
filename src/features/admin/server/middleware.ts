@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import { Resource, Action, checkPermission } from '@/lib/rbac-base';
 import type { Session } from 'next-auth';
 
-type Variables = {
+export type Variables = {
   user: Session['user'] & {
     id: string;
   };
@@ -40,8 +40,11 @@ export const verifyAuth = async (
       id: 'system',
       name: 'System Admin',
       role: 'SUPER_ADMIN', // Assume super admin for API key
-      permissions: ['*'], // All permissions
-    } as any);
+      permissions: [{ resource: '*', action: '*' }], // All permissions
+      isTwoFactorEnabled: false,
+      isOAuth: true,
+      isActive: true,
+    } as unknown as Variables['user']);
     return await next();
   }
 
@@ -61,7 +64,7 @@ export const requirePermission = (resource: Resource, action: Action) => {
       return c.json({ error: 'Unauthorized' }, 401);
     }
 
-    const permissions = user.permissions as any;
+    const permissions = user.permissions as Array<{ resource: string; action: string }> | undefined;
 
     const hasPermission = checkPermission(permissions, resource, action);
 
@@ -69,6 +72,6 @@ export const requirePermission = (resource: Resource, action: Action) => {
       return c.json({ error: 'Forbidden' }, 403);
     }
 
-    await next();
+    return await next();
   };
 };

@@ -23,6 +23,11 @@ const navigation = [
     icon: LayoutDashboard,
   },
   {
+    name: { en: 'Users', ar: 'المستخدمين' },
+    href: '#LOCALE#/admin/users',
+    icon: Users,
+  },
+  {
     name: { en: 'Submissions', ar: 'الطلبات' },
     href: '#LOCALE#/admin/submissions',
     icon: ClipboardList,

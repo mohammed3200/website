@@ -17,3 +17,4 @@ export { HomeStrategicPlanSkeleton } from './home-strategic-plan-skeleton';
 export { FAQItemSkeleton, FAQListSkeleton } from './faq-skeleton';
 export { HomeFaqSkeleton } from './home-faq-skeleton';
 export { DetailPageSkeleton } from './detail-page-skeleton';
+export { InvitationTableSkeleton } from './invitation-table-skeleton';

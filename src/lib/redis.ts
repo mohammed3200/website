@@ -1,8 +1,43 @@
 import Redis from 'ioredis';
+import { isBuildPhase } from './env-utils';
 
 const globalForRedis = global as unknown as { redis: Redis | undefined };
 
 let _redis: Redis | undefined;
+
+function createBuildPhaseRedisMock(): Redis {
+  const mock = {
+    get: async () => null,
+    set: async () => 'OK',
+    del: async () => 1,
+    hget: async () => null,
+    hset: async () => 1,
+    hdel: async () => 1,
+    hgetall: async () => ({}),
+    expire: async () => 1,
+    incr: async () => 1,
+    decr: async () => 0,
+    lpush: async () => 1,
+    rpush: async () => 1,
+    lpop: async () => null,
+    rpop: async () => null,
+    sadd: async () => 1,
+    srem: async () => 1,
+    smembers: async () => [],
+    publish: async () => 0,
+    subscribe: async () => { },
+    on: function (_event: string, _handler: (...args: unknown[]) => void) {
+      return this;
+    },
+    once: function (_event: string, _handler: (...args: unknown[]) => void) {
+      return this;
+    },
+    quit: async () => 'OK',
+    disconnect: () => { },
+  } as unknown as Redis;
+
+  return mock;
+}
 
 function getRedis(): Redis {
   if (_redis) return _redis;
@@ -14,22 +49,40 @@ function getRedis(): Redis {
   const redisUrl = process.env.REDIS_URL;
 
   if (!redisUrl) {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === 'production' && !isBuildPhase) {
       throw new Error(
         '❌ REDIS_URL is not defined. Redis is required for production caching and queues.',
       );
     }
+
+    if (isBuildPhase) {
+      // Return a mock instance during Next.js static build to prevent ECONNREFUSED crashes
+      _redis = createBuildPhaseRedisMock();
+      return _redis;
+    }
+
     // Fallback for development/test only
     _redis = new Redis('redis://localhost:6379', {
       maxRetriesPerRequest: null,
       lazyConnect: true,
     });
   } else {
+    // We shouldn't eagerly connect during build phase even if URL is present
+    if (isBuildPhase) {
+      _redis = createBuildPhaseRedisMock();
+      return _redis;
+    }
+
     _redis = new Redis(redisUrl, {
       maxRetriesPerRequest: null,
       lazyConnect: true,
     });
   }
+
+  // Prevent uncaught ECONNREFUSED from crashing the process
+  _redis.on('error', (err) => {
+    console.error('Redis connection error:', err.message);
+  });
 
   if (process.env.NODE_ENV !== 'production') {
     globalForRedis.redis = _redis;

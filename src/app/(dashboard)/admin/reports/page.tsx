@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import {
   useGetReports,
-  type Report,
 } from '@/features/admin/api/reports/use-get-reports';
 import { usePostReport } from '@/features/admin/api/reports/use-post-report';
 import { useDeleteReport } from '@/features/admin/api/reports/use-delete-report';
@@ -40,7 +39,7 @@ const ReportsPage = () => {
   const generateMutation = usePostReport();
   const deleteMutation = useDeleteReport();
 
-  const [DeleteDialog, confirmDelete] = useConfirm(
+  const [, confirmDelete] = useConfirm(
     'Delete Report',
     'Are you sure you want to delete this report?',
     'destructive',
