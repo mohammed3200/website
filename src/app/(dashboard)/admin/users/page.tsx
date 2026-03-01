@@ -183,7 +183,7 @@ const UsersManagementPage = () => {
               {invitationsData && (
                 <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs">
                   {
-                    invitationsData.data.filter((i) => i.status === 'PENDING')
+                    invitationsData.data.filter((i: { status: string }) => i.status === 'PENDING')
                       .length
                   }{' '}
                   Pending
