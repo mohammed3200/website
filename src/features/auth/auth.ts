@@ -97,43 +97,39 @@ export const {
     },
 
     async jwt({ token, user, trigger }) {
-      // Handle initial sign in
       if (user && user.id !== undefined) {
         token.id = user.id;
       }
 
       if (!token.sub) return token;
 
-      // Always fetch fresh user data
-      const existingUser = await db.user.findUnique({
-        where: { id: token.sub },
-        include: {
-          role: true,
-        },
-      });
-
-      if (!existingUser) return token;
-
-      const existingAccount = await getAccountByUserId(existingUser.id);
-
-      // Get user permissions
-      const permissions = await getUserPermissions(existingUser.id);
-
-      token.isOAuth = !!existingAccount;
-      token.name = existingUser.name;
-      token.email = existingUser.email;
-      token.roleId = existingUser.roleId;
-      token.roleName = existingUser.role?.name;
-      token.permissions = permissions;
-      token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
-      token.isActive = existingUser.isActive;
-
-      // Update last login time on sign in
-      if (trigger === "signIn") {
-        await db.user.update({
-          where: { id: existingUser.id },
-          data: { lastLoginAt: new Date() },
+      // Only fetch fresh data on sign-in, explicit update, or if token lacks context
+      if (trigger === 'signIn' || trigger === 'update' || !token.roleName) {
+        const existingUser = await db.user.findUnique({
+          where: { id: token.sub },
+          include: { role: true },
         });
+
+        if (!existingUser) return token;
+
+        const existingAccount = await getAccountByUserId(existingUser.id);
+        const permissions = await getUserPermissions(existingUser.id);
+
+        token.isOAuth = !!existingAccount;
+        token.name = existingUser.name;
+        token.email = existingUser.email;
+        token.roleId = existingUser.roleId;
+        token.roleName = existingUser.role?.name;
+        token.permissions = permissions;
+        token.isTwoFactorEnabled = existingUser.isTwoFactorEnabled;
+        token.isActive = existingUser.isActive;
+
+        if (trigger === 'signIn') {
+          await db.user.update({
+            where: { id: existingUser.id },
+            data: { lastLoginAt: new Date() },
+          });
+        }
       }
 
       return token;
