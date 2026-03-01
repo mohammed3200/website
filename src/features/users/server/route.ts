@@ -242,9 +242,9 @@ const app = new Hono<{ Variables: Variables }>()
             },
           });
           emailQueued = true;
-        } catch (err: any) {
+        } catch (err: unknown) {
           console.error('Failed to queue email', err);
-          emailError = err.message || 'Unknown error';
+          emailError = (err as Error).message || 'Unknown error';
         }
 
         return c.json({
@@ -252,10 +252,10 @@ const app = new Hono<{ Variables: Variables }>()
           emailQueued,
           emailError,
         }, 201);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Invitation error:', error);
         return c.json(
-          { error: error.message || 'Failed to create invitation' },
+          { error: (error as Error).message || 'Failed to create invitation' },
           400,
         );
       }

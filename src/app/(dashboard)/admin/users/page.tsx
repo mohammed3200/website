@@ -96,7 +96,7 @@ const UsersManagementPage = () => {
   });
 
   const { data: invitationsData, isLoading: isLoadingInvitations } =
-    useGetInvitations();
+    useGetInvitations(page, limit);
   const { mutate: deleteInvitation, isPending: isDeleting } =
     useDeleteInvitation();
 

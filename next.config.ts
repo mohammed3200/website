@@ -40,15 +40,15 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
       ...(process.env.NODE_ENV === 'development' ||
-      process.env.S3_ENDPOINT?.includes('localhost')
+        process.env.S3_ENDPOINT?.includes('localhost')
         ? [
-            {
-              protocol: 'http' as const,
-              hostname: 'localhost',
-              port: '9000',
-              pathname: '/**',
-            },
-          ]
+          {
+            protocol: 'http' as const,
+            hostname: 'localhost',
+            port: '9000',
+            pathname: '/**',
+          },
+        ]
         : []),
     ],
   },
@@ -56,7 +56,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['mariadb'],
 
   // Reduce file system operations to minimize EPERM errors on Windows
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer: _isServer }) => {
     if (process.platform === 'win32') {
       // Increase retry attempts for file operations
       config.watchOptions = {

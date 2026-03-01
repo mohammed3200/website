@@ -77,7 +77,7 @@ export default function AdminNewsPage() {
     }
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: Record<string, unknown>) => {
     try {
       if (editingNews) {
         await updateMutation.mutateAsync({

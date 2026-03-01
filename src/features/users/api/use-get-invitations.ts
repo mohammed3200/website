@@ -8,11 +8,16 @@ type ResponseType = InferResponseType<
   200
 >;
 
-export const useGetInvitations = () => {
+export const useGetInvitations = (page: number = 1, limit: number = 10) => {
   const query = useQuery<ResponseType, Error>({
-    queryKey: ['invitations'],
+    queryKey: ['invitations', { page, limit }],
     queryFn: async () => {
-      const response = await client.api.users.invitations.list.$get();
+      const response = await client.api.users.invitations.list.$get({
+        query: {
+          page: page.toString(),
+          limit: limit.toString(),
+        },
+      });
 
       if (!response.ok) {
         throw new Error('Failed to fetch invitations');
