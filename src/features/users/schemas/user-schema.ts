@@ -10,9 +10,12 @@ export const createInvitationSchema = z.object({
   roleId: z.string().min(1, 'Role is required'),
 });
 
-export const userQuerySchema = z.object({
+export const paginationSchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(100).default(10),
+  limit: z.coerce.number().int().min(1).max(100).default(25),
+});
+
+export const userQuerySchema = paginationSchema.extend({
   role: z.string().optional(),
   status: z.enum(['active', 'inactive']).optional(),
   search: z.string().optional(),

@@ -15,6 +15,7 @@ import {
   createInvitationSchema,
   userQuerySchema,
   invitationIdParamSchema,
+  paginationSchema,
 } from '../schemas/user-schema';
 import { emailQueue } from '@/lib/queue/email-queue';
 
@@ -177,10 +178,7 @@ const app = new Hono<{ Variables: Variables }>()
     '/invitations/list',
     verifyAuth,
     requirePermission(RESOURCES.INVITATIONS, ACTIONS.READ),
-    zValidator('query', z.object({
-      page: z.string().transform(Number).default(1),
-      limit: z.string().transform(Number).default(25),
-    })),
+    zValidator('query', paginationSchema),
     async (c) => {
       const { page, limit } = c.req.valid('query');
       const skip = (page - 1) * limit;

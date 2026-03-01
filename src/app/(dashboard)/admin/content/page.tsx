@@ -82,7 +82,7 @@ const ContentManagementPage = () => {
   const { data: incubatorsContent, isLoading: isLoadingInc } =
     useGetPageContent('incubators', { enabled: hasContentAccess });
   const { data: statsData, isLoading: isLoadingStats } =
-    useGetPageContentStats();
+    useGetPageContentStats({ enabled: hasContentAccess });
 
   useEffect(() => {
     if (status === 'authenticated' && !hasContentAccess) {
@@ -160,6 +160,10 @@ const ContentManagementPage = () => {
               <div className="flex gap-2 ml-4">
                 <button
                   onClick={() => {
+                    if (editCloseTimeoutRef.current) {
+                      clearTimeout(editCloseTimeoutRef.current);
+                      editCloseTimeoutRef.current = null;
+                    }
                     setSelectedContent(item);
                     if (isAllowedPage(item.page)) {
                       setSelectedPage(item.page);
@@ -174,6 +178,10 @@ const ContentManagementPage = () => {
                 </button>
                 <button
                   onClick={() => {
+                    if (deleteCloseTimeoutRef.current) {
+                      clearTimeout(deleteCloseTimeoutRef.current);
+                      deleteCloseTimeoutRef.current = null;
+                    }
                     setSelectedContent(item);
                     setIsDeleteOpen(true);
                   }}

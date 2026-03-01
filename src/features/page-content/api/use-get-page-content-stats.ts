@@ -8,7 +8,7 @@ type ResponseType = InferResponseType<
   200
 >;
 
-export const useGetPageContentStats = () => {
+export const useGetPageContentStats = (options?: { enabled?: boolean }) => {
   const query = useQuery<ResponseType, Error>({
     queryKey: ['page-content-stats'],
     queryFn: async () => {
@@ -21,6 +21,7 @@ export const useGetPageContentStats = () => {
       return await response.json();
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
+    ...options,
   });
 
   return query;
