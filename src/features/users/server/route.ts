@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 import { db } from '@/lib/db';
 import {
   verifyAuth,
@@ -28,13 +29,13 @@ const app = new Hono<{ Variables: Variables }>()
       const { page, limit, role, status, search } = c.req.valid('query');
       const skip = (page - 1) * limit;
 
-      const where: any = {};
+      const where: Prisma.UserWhereInput = {};
       if (role) where.roleId = role;
       if (status) where.isActive = status === 'active';
       if (search) {
         where.OR = [
-          { name: { contains: search, mode: 'insensitive' } },
-          { email: { contains: search, mode: 'insensitive' } },
+          { name: { contains: search } },
+          { email: { contains: search } },
         ];
       }
 
@@ -176,15 +177,36 @@ const app = new Hono<{ Variables: Variables }>()
     '/invitations/list',
     verifyAuth,
     requirePermission(RESOURCES.INVITATIONS, ACTIONS.READ),
+    zValidator('query', z.object({
+      page: z.string().transform(Number).default(1),
+      limit: z.string().transform(Number).default(25),
+    })),
     async (c) => {
-      const invitations = await db.userInvitation.findMany({
-        include: {
-          role: { select: { id: true, name: true } },
-          inviter: { select: { id: true, name: true, email: true } },
+      const { page, limit } = c.req.valid('query');
+      const skip = (page - 1) * limit;
+
+      const [invitations, total] = await Promise.all([
+        db.userInvitation.findMany({
+          skip,
+          take: limit,
+          include: {
+            role: { select: { id: true, name: true } },
+            inviter: { select: { id: true, name: true, email: true } },
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+        db.userInvitation.count(),
+      ]);
+
+      return c.json({
+        data: invitations,
+        metadata: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
         },
-        orderBy: { createdAt: 'desc' },
       });
-      return c.json({ data: invitations });
     },
   )
 
@@ -207,6 +229,9 @@ const app = new Hono<{ Variables: Variables }>()
 
         const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/join?token=${invitation.token}`;
 
+        let emailQueued = false;
+        let emailError = null;
+
         try {
           await emailQueue.add('send-invitation', {
             to: email,
@@ -216,11 +241,17 @@ const app = new Hono<{ Variables: Variables }>()
               html: `<p>Please click <a href="${inviteLink}">here</a> to join.</p>`,
             },
           });
-        } catch (err) {
+          emailQueued = true;
+        } catch (err: any) {
           console.error('Failed to queue email', err);
+          emailError = err.message || 'Unknown error';
         }
 
-        return c.json({ data: invitation }, 201);
+        return c.json({
+          data: invitation,
+          emailQueued,
+          emailError,
+        }, 201);
       } catch (error: any) {
         console.error('Invitation error:', error);
         return c.json(

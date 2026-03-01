@@ -66,7 +66,7 @@ const ContentManagementPage = () => {
 
   const hasContentAccess = useMemo(() => {
     return checkPermission(
-      session?.user?.permissions as any,
+      session?.user?.permissions,
       RESOURCES.CONTENT,
       ACTIONS.MANAGE,
     );
@@ -107,7 +107,14 @@ const ContentManagementPage = () => {
 
   if (!session) return null;
 
-  const renderContentList = (content: PageContent[] | undefined) => (
+  const renderContentList = (
+    content:
+      | (Omit<PageContent, 'createdAt' | 'updatedAt'> & {
+        createdAt: string | Date;
+        updatedAt: string | Date;
+      })[]
+      | undefined,
+  ) => (
     <div className="space-y-4">
       {!content || content.length === 0 ? (
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-8 text-center">
@@ -204,15 +211,15 @@ const ContentManagementPage = () => {
             <div className="flex gap-4 text-sm">
               <div className="flex items-center gap-1 text-gray-600">
                 <Layout className="h-4 w-4" />{' '}
-                {statsData.data.entrepreneurship.sections} sections
+                {statsData?.data?.entrepreneurship?.sections || 0} sections
               </div>
               <div className="flex items-center gap-1 text-emerald-600">
                 <CheckCircle className="h-4 w-4" />{' '}
-                {statsData.data.entrepreneurship.active} active
+                {statsData?.data?.entrepreneurship?.active || 0} active
               </div>
               <div className="flex items-center gap-1 text-gray-400">
                 <XCircle className="h-4 w-4" />{' '}
-                {statsData.data.entrepreneurship.inactive} inactive
+                {statsData?.data?.entrepreneurship?.inactive || 0} inactive
               </div>
             </div>
           </div>
@@ -223,15 +230,15 @@ const ContentManagementPage = () => {
             <div className="flex gap-4 text-sm">
               <div className="flex items-center gap-1 text-gray-600">
                 <Layout className="h-4 w-4" />{' '}
-                {statsData.data.incubators.sections} sections
+                {statsData?.data?.incubators?.sections || 0} sections
               </div>
               <div className="flex items-center gap-1 text-emerald-600">
                 <CheckCircle className="h-4 w-4" />{' '}
-                {statsData.data.incubators.active} active
+                {statsData?.data?.incubators?.active || 0} active
               </div>
               <div className="flex items-center gap-1 text-gray-400">
                 <XCircle className="h-4 w-4" />{' '}
-                {statsData.data.incubators.inactive} inactive
+                {statsData?.data?.incubators?.inactive || 0} inactive
               </div>
             </div>
           </div>
@@ -273,7 +280,7 @@ const ContentManagementPage = () => {
             {UI_LABELS.ADD}
           </button>
         </div>
-        {renderContentList(entrepreneurshipContent as any)}
+        {renderContentList(entrepreneurshipContent)}
       </div>
 
       {/* Incubators Section */}
@@ -293,7 +300,7 @@ const ContentManagementPage = () => {
             {UI_LABELS.ADD}
           </button>
         </div>
-        {renderContentList(incubatorsContent as any)}
+        {renderContentList(incubatorsContent)}
       </div>
 
       <ContentFormDialog

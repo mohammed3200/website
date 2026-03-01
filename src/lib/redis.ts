@@ -6,12 +6,37 @@ const globalForRedis = global as unknown as { redis: Redis | undefined };
 let _redis: Redis | undefined;
 
 function createBuildPhaseRedisMock(): Redis {
-  return {
+  const mock = {
     get: async () => null,
     set: async () => 'OK',
     del: async () => 1,
-    on: () => { },
+    hget: async () => null,
+    hset: async () => 1,
+    hdel: async () => 1,
+    hgetall: async () => ({}),
+    expire: async () => 1,
+    incr: async () => 1,
+    decr: async () => 0,
+    lpush: async () => 1,
+    rpush: async () => 1,
+    lpop: async () => null,
+    rpop: async () => null,
+    sadd: async () => 1,
+    srem: async () => 1,
+    smembers: async () => [],
+    publish: async () => 0,
+    subscribe: async () => { },
+    on: function (event: string, handler: Function) {
+      return this;
+    },
+    once: function (event: string, handler: Function) {
+      return this;
+    },
+    quit: async () => 'OK',
+    disconnect: () => { },
   } as unknown as Redis;
+
+  return mock;
 }
 
 function getRedis(): Redis {

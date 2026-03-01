@@ -60,6 +60,14 @@ const UsersManagementPage = () => {
     );
   }, [session]);
 
+  const hasInvitationsManageAccess = useMemo(() => {
+    return checkPermission(
+      session?.user?.permissions,
+      RESOURCES.INVITATIONS,
+      ACTIONS.MANAGE,
+    );
+  }, [session]);
+
   const hasInvitationsAccess = useMemo(() => {
     return checkPermission(
       session?.user?.permissions,
@@ -175,7 +183,7 @@ const UsersManagementPage = () => {
               {invitationsData && (
                 <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs">
                   {
-                    invitationsData.data.filter((i: typeof invitationsData.data[number]) => i.status === 'PENDING')
+                    invitationsData.data.filter((i) => i.status === 'PENDING')
                       .length
                   }{' '}
                   Pending
@@ -201,7 +209,7 @@ const UsersManagementPage = () => {
             isLoading={isLoadingInvitations}
             onDelete={openRevokeDialog}
             isDeleting={isDeleting}
-            canRevoke={hasManageAccess}
+            canRevoke={hasInvitationsManageAccess}
           />
         )}
       </div>
