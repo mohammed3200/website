@@ -2,7 +2,7 @@ import { QueryProvider } from '@/components';
 import type { Metadata } from 'next';
 import '../globals.css';
 import { AppProviders } from '@/components/providers/app-providers';
-
+import { Toaster } from 'sonner';
 // TODO: change Metadata
 export const metadata: Metadata = {
   title: 'Entrepreneurship and Business Incubators Center - Misurata',
@@ -16,10 +16,13 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html suppressHydrationWarning>
+    <html lang="en" dir="ltr" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <AppProviders>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            {children}
+            <Toaster richColors position="top-right" />
+          </QueryProvider>
         </AppProviders>
       </body>
     </html>
