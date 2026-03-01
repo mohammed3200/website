@@ -1,0 +1,55 @@
+# Engine Node Deployment Guide
+
+Follow these steps to deploy the latest refactoring changes from the `refactor/delocalize-admin-dashboard` branch to your production environment.
+
+## 1. Connect via SSH
+Access your Jelastic Engine Node using the SSH credentials provided in your dashboard or your configured SSH key.
+
+```bash
+ssh <user>@<engine-node-ip>
+```
+
+## 2. Navigate to Project Directory
+Navigate to the root folder where the project is cloned.
+
+```bash
+cd /root/website # or your specific project path
+```
+
+## 3. Update Source Code
+Fetch the new branch and pull the latest changes.
+
+```bash
+# Update the local repository
+git fetch origin
+
+# Switch to the refactored branch
+git checkout refactor/delocalize-admin-dashboard
+
+# Pull the latest commits
+git pull origin refactor/delocalize-admin-dashboard
+```
+
+## 4. Rebuild and Restart Containers
+Use Docker Compose to rebuild the application and worker images with the new code adjustments. This ensures that the `'use client'` directives and API hook changes are correctly bundled.
+
+```bash
+docker compose up -d --build app worker
+```
+
+## 5. Verify the Update
+Check the logs of the app container to ensure it started correctly and is serving the new admin routes.
+
+```bash
+docker logs ebic-app --tail 50
+```
+
+> [!TIP]
+> If you notice any environment-related issues (like the database or trust host errors mentioned in the walkthrough), remember that the [.env](file:///c:/Users/HP/Documents/Next.JS/website/.env) file on the server must match the updated structure. You can edit it using `nano .env` if necessary before restarting the containers.
+
+## 6. Cleanup (Optional)
+Prune any dangling images to save disk space on the node.
+
+```bash
+docker image prune -f
+```

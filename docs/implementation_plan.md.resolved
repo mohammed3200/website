@@ -1,0 +1,208 @@
+# Implementation Plan — Content CRUD, User Management & Statistics
+
+Full compliance with [rules.yaml](file:///c:/Users/HP/Documents/Next.JS/website/antigravity/rules.yaml). **No new dependencies required** (`DEP-01`).
+
+---
+
+## Phase 1: Enable Content Management CRUD
+
+> Backend API exists. Only the admin dashboard UI needs wiring.
+
+### page-content Feature (Existing)
+
+#### [NEW] `src/features/page-content/api/use-create-page-content.ts`
+- `useMutation` hook calling `POST /api/pageContent` (`FEAT-API-01`, `FEAT-API-02`)
+- Invalidates `['page-content']` query on success
+
+#### [NEW] `src/features/page-content/api/use-update-page-content.ts`
+- `useMutation` hook calling `PATCH /api/pageContent/:id`
+- Invalidates `['page-content']` query on success
+
+#### [NEW] `src/features/page-content/api/use-delete-page-content.ts`
+- `useMutation` hook calling `DELETE /api/pageContent/:id`
+- Invalidates `['page-content']` query on success
+
+#### [NEW] `src/features/page-content/components/content-form-dialog.tsx`
+- Shared dialog for **Add** and **Edit** operations
+- Uses existing [dialog.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/dialog.tsx), [form.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/form.tsx), [input.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/input.tsx), [select.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/select.tsx), [textarea.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/textarea.tsx) from `@/components/ui` (`UI-01`)
+- Fields: page (select), section (select), titleEn, titleAr, contentEn, contentAr, icon, color, order, isActive, metadata
+- Validates via `createPageContentSchema` / `updatePageContentSchema` (`FEAT-SERVER-02`)
+
+#### [NEW] `src/features/page-content/components/delete-content-dialog.tsx`
+- Confirmation dialog using existing [alert-dialog.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/alert-dialog.tsx) (`UI-01`)
+- Shows content title/section before confirming deletion
+
+#### [MODIFY] [src/features/page-content/index.ts](file:///c:/Users/HP/Documents/Next.JS/website/src/features/page-content/index.ts)
+- Export the 3 new mutation hooks and 2 new components
+
+#### [MODIFY] [src/app/(dashboard)/admin/content/page.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/app/%28dashboard%29/admin/content/page.tsx)
+- Remove `disabled` + `cursor-not-allowed` from Add/Edit/Delete buttons
+- Wire **Add** button → opens `ContentFormDialog` in create mode
+- Wire **Edit** button → opens `ContentFormDialog` in edit mode with prefilled data
+- Wire **Delete** button → opens `DeleteContentDialog`
+- Add stats summary at top: count of Entrepreneurship / Incubators blocks, active/inactive counts
+- Uses [useGetPageContent](file:///c:/Users/HP/Documents/Next.JS/website/src/features/page-content/api/use-get-page-content.ts#5-30) for reading + new mutation hooks for writes
+
+---
+
+## Phase 2: Build User Management System
+
+> New feature following `ARCH-01`, `ARCH-02`, `ARCH-REF-01` structure.
+
+### users Feature (New — `src/features/users/`)
+
+#### [NEW] `src/features/users/server/route.ts`
+- Hono router with `verifyAuth` + `requirePermission(RESOURCES.USERS, ACTIONS.READ)` middleware (`FEAT-SERVER-01`)
+- **`GET /`** — List all users with role, status, lastLoginAt (paginated)
+- **`GET /:id`** — Get single user with role details
+- **`PATCH /:id`** — Update user: `roleId`, `isActive` (deactivate/reactivate)
+- **`DELETE /:id`** — Soft-delete by setting `isActive = false` (not hard delete)
+- **`POST /invite`** — Create invitation using existing [createUserInvitation()](file:///c:/Users/HP/Documents/Next.JS/website/src/lib/rbac.ts#225-281) from `@/lib/rbac`
+  - Permission check: `RESOURCES.INVITATIONS`, `ACTIONS.CREATE`
+  - Sends invitation email via `emailService`
+- **`GET /invitations`** — List pending/accepted/expired invitations
+- **`DELETE /invitations/:id`** — Cancel a pending invitation
+- All endpoints use `zValidator` with Zod schemas (`FEAT-SERVER-02`)
+
+#### [NEW] `src/features/users/schemas/user-schema.ts`
+- `updateUserSchema`: `z.object({ roleId: z.string().optional(), isActive: z.boolean().optional() })`
+- `createInvitationSchema`: `z.object({ email: z.string().email(), roleId: z.string() })`
+- `userQuerySchema`: pagination params + filters (role, status)
+- `invitationIdParamSchema`: `z.object({ id: z.string() })`
+
+#### [NEW] `src/features/users/types/user-type.ts`
+- `UserWithRole`, `InvitationWithRole` type exports using Prisma types
+
+#### [NEW] `src/features/users/api/use-get-users.ts`
+- React Query hook: `GET /api/users` → `UserWithRole[]` (`FEAT-API-01`, `FEAT-API-02`)
+
+#### [NEW] `src/features/users/api/use-update-user.ts`
+- `useMutation` hook: `PATCH /api/users/:id`
+
+#### [NEW] `src/features/users/api/use-invite-user.ts`
+- `useMutation` hook: `POST /api/users/invite`
+
+#### [NEW] `src/features/users/api/use-get-invitations.ts`
+- React Query hook: `GET /api/users/invitations`
+
+#### [NEW] `src/features/users/api/use-delete-invitation.ts`
+- `useMutation` hook: `DELETE /api/users/invitations/:id`
+
+#### [NEW] `src/features/users/components/invite-user-dialog.tsx`
+- Dialog with email input + role select (lists all roles from DB)
+- Uses [dialog.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/dialog.tsx), [form.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/form.tsx), [input.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/input.tsx), [select.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/select.tsx) (`UI-01`)
+
+#### [NEW] `src/features/users/components/edit-user-dialog.tsx`
+- Dialog to change role and toggle active status
+- Uses [dialog.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/dialog.tsx), [form.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/form.tsx), [select.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/select.tsx), [switch.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/switch.tsx) (`UI-01`)
+
+#### [NEW] `src/features/users/components/user-table.tsx`
+- Table of users with columns: Name, Email, Role, Status, Last Login, Actions
+- Uses [table.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/table.tsx), [badge.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/components/ui/badge.tsx) (`UI-01`)
+
+#### [NEW] `src/features/users/index.ts`
+- Barrel export for all hooks, components, types, schemas
+
+#### [MODIFY] [src/app/api/[[...route]]/route.ts](file:///c:/Users/HP/Documents/Next.JS/website/src/app/api/%5B%5B...route%5D%5D/route.ts)
+- Import `users` from `@/features/users/server/route`
+- Add `.route('/users', users)` to the chain (`API-GLOBAL-01`, `API-GLOBAL-02`)
+
+### Admin Dashboard — Users Page
+
+#### [NEW] `src/app/(dashboard)/admin/users/page.tsx`
+- `'use client'` page with permission guard (`users:read`)
+- Renders `UserTable` + "Invite User" button
+- Tab for "Invitations" listing pending/accepted invitations
+- Statistics: total users, active, inactive, pending invitations
+
+#### [MODIFY] [src/features/admin/components/sidebar.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/features/admin/components/sidebar.tsx)
+- Add `Users` navigation entry with `Users` icon at position after "Overview"
+- `href: '#LOCALE#/admin/users'`
+
+#### [MODIFY] [src/features/admin/constants/settings.ts](file:///c:/Users/HP/Documents/Next.JS/website/src/features/admin/constants/settings.ts)
+- Enable the "Profile" setting card (change `disabled: true` → `disabled: false`)
+- Add `href: '/admin/settings/profile'`
+
+### RBAC Update
+
+#### [MODIFY] [src/lib/rbac.ts](file:///c:/Users/HP/Documents/Next.JS/website/src/lib/rbac.ts)
+- Add `CONTENT` resource with `manage` action to `SUPER_ADMIN` permissions
+- Add `CONTENT` resource with `manage` action to `ADMIN` permissions
+- This enables both roles to use the Content Management CRUD
+
+---
+
+## Phase 3: Content Statistics Enhancement
+
+#### [MODIFY] [src/features/page-content/server/route.ts](file:///c:/Users/HP/Documents/Next.JS/website/src/features/page-content/server/route.ts)
+- Add `GET /stats` endpoint (before admin middleware):
+  ```
+  Returns: { entrepreneurship: { total, active, inactive, sections }, incubators: { ... } }
+  ```
+- Uses `db.pageContent.groupBy()` for efficient aggregation
+
+#### [NEW] `src/features/page-content/api/use-get-page-content-stats.ts`
+- React Query hook for `GET /api/pageContent/stats`
+
+#### [MODIFY] [src/app/(dashboard)/admin/content/page.tsx](file:///c:/Users/HP/Documents/Next.JS/website/src/app/%28dashboard%29/admin/content/page.tsx)
+- Add stats cards at page top showing per-page totals using the stats hook
+
+---
+
+## Testing
+
+All new files require corresponding tests per `TEST-01`:
+
+| Test File | Tests |
+|---|---|
+| `tests/features/page-content/mutations.test.ts` | Create, update, delete operations |
+| `tests/features/users/schemas.test.ts` | User and invitation schema validation |
+| `tests/features/users/api-routes.test.ts` | User CRUD, invitation CRUD, permission checks |
+| `tests/components/content-form-dialog.test.tsx` | Form rendering, validation, submit |
+| `tests/components/user-table.test.tsx` | Table rendering, actions |
+
+---
+
+## Verification Plan
+
+### Automated
+1. `bunx tsc --noEmit` — zero errors
+2. `bun run build` — successful production build
+3. `bun test` — all tests pass with exit code 0
+
+### Manual
+1. Log in as super_admin → verify Content Management Add/Edit/Delete works
+2. Log in as super_admin → verify Users page shows user list
+3. Invite a new user → verify invitation email sent
+4. Change a user's role → verify permissions change
+5. Deactivate a user → verify they can no longer log in
+
+---
+
+## File Summary
+
+| Phase | New Files | Modified Files |
+|---|---|---|
+| **Phase 1: Content CRUD** | 5 | 2 |
+| **Phase 2: User Management** | 13 | 3 |
+| **Phase 3: Statistics** | 1 | 2 |
+| **Tests** | 5 | 0 |
+| **Total** | **24** | **7** |
+
+---
+
+## Rules Compliance Matrix
+
+| Rule | How Satisfied |
+|---|---|
+| `DEP-01` | No new packages added |
+| `ARCH-01/02/REF-01` | All new code in `src/features/users/` and `src/features/page-content/` with correct structure |
+| `UI-01/02` | Only existing `@/components/ui/*` components used |
+| `FEAT-API-01/02` | Hooks in `api/` folders, named `use-<method>-<feature>.ts`, using React Query |
+| `API-GLOBAL-01/02/03` | Users route registered in global router via `.route()` |
+| `FEAT-SERVER-01/02/03` | Hono routes in `server/route.ts`, Zod validation, Prisma-synced operations |
+| `FEAT-SERVER-04` | Prisma `cuid()` used for IDs |
+| `NAME-01` | All files/folders kebab-case |
+| `API-01` | Only `get`, `post`, `patch`, `delete` methods |
+| `TEST-01` | All tests must pass with exit code 0 |
+| `GIT-01` | All changes on dedicated branch |
