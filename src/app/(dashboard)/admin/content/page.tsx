@@ -41,6 +41,11 @@ function isAllowedPage(
   return ['entrepreneurship', 'incubators'].includes(page);
 }
 
+type SerializablePageContent = Omit<PageContent, 'createdAt' | 'updatedAt'> & {
+  createdAt: string | Date;
+  updatedAt: string | Date;
+};
+
 const ContentManagementPage = () => {
   const router = useRouter();
   const { session, status } = useAdminAuth();
@@ -51,7 +56,7 @@ const ContentManagementPage = () => {
   const [selectedPage, setSelectedPage] = useState<
     'entrepreneurship' | 'incubators'
   >('entrepreneurship');
-  const [selectedContent, setSelectedContent] = useState<PageContent | null>(
+  const [selectedContent, setSelectedContent] = useState<SerializablePageContent | null>(
     null,
   );
   const editCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -107,14 +112,7 @@ const ContentManagementPage = () => {
 
   if (!session) return null;
 
-  const renderContentList = (
-    content:
-      | (Omit<PageContent, 'createdAt' | 'updatedAt'> & {
-        createdAt: string | Date;
-        updatedAt: string | Date;
-      })[]
-      | undefined,
-  ) => (
+  const renderContentList = (content: SerializablePageContent[] | undefined) => (
     <div className="space-y-4">
       {!content || content.length === 0 ? (
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-8 text-center">
@@ -318,7 +316,7 @@ const ContentManagementPage = () => {
           editCloseTimeoutRef.current = setTimeout(() => setSelectedContent(null), 300);
         }}
         page={selectedPage}
-        content={selectedContent}
+        content={selectedContent as any}
       />
 
       <DeleteContentDialog
@@ -327,7 +325,7 @@ const ContentManagementPage = () => {
           setIsDeleteOpen(false);
           deleteCloseTimeoutRef.current = setTimeout(() => setSelectedContent(null), 300);
         }}
-        content={selectedContent}
+        content={selectedContent as any}
       />
     </div>
   );
