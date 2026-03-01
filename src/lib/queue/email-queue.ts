@@ -5,7 +5,7 @@ import { isBuildPhase } from '@/lib/env-utils';
 export const EMAIL_QUEUE_NAME = 'email-sending';
 
 export const emailQueue = isBuildPhase
-    ? ({ add: async () => console.log('Mock queue add in build phase') } as unknown as Queue)
+    ? ({ add: async () => ({ id: `mock-job-${Date.now()}` }) } as unknown as Queue)
     : new Queue(EMAIL_QUEUE_NAME, {
         connection: redis,
         defaultJobOptions: {

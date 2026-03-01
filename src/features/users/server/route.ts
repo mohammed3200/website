@@ -108,8 +108,16 @@ const app = new Hono<{ Variables: Variables }>()
 
       if (data.roleId || data.isActive !== undefined) {
         // Enforce role hierarchy: Admins cannot modify Super Admins
-        if (user.role?.name === 'super_admin' && requester.role !== 'super_admin') {
+        if (user.role?.name?.toLowerCase() === 'super_admin' && requester.role?.toLowerCase() !== 'super_admin') {
           return c.json({ error: 'Not permitted to modify super_admin accounts' }, 403);
+        }
+      }
+
+      if (data.roleId) {
+        // Enforce role hierarchy: Admins cannot promote to Super Admin
+        const newRole = await db.role.findUnique({ where: { id: data.roleId } });
+        if (newRole?.name?.toLowerCase() === 'super_admin' && requester.role?.toLowerCase() !== 'super_admin') {
+          return c.json({ error: 'Not permitted to promote to super_admin role' }, 403);
         }
       }
 
@@ -139,8 +147,20 @@ const app = new Hono<{ Variables: Variables }>()
     async (c) => {
       const { id } = c.req.valid('param');
 
-      const user = await db.user.findUnique({ where: { id } });
+      const user = await db.user.findUnique({
+        where: { id },
+        include: { role: true },
+      });
       if (!user) return c.json({ error: 'User not found' }, 404);
+
+      const requester = c.get('user');
+      if (requester.id === id) {
+        return c.json({ error: 'You cannot deactivate your own account' }, 403);
+      }
+
+      if (user.role?.name?.toLowerCase() === 'super_admin' && requester.role?.toLowerCase() !== 'super_admin') {
+        return c.json({ error: 'Not permitted to deactivate super_admin accounts' }, 403);
+      }
 
       await db.user.update({
         where: { id },

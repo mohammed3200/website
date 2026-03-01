@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 import { Skeleton } from '@/components/skeletons';
@@ -54,15 +54,15 @@ const ContentManagementPage = () => {
   const [selectedContent, setSelectedContent] = useState<PageContent | null>(
     null,
   );
-  const editCloseTimeoutRef = useState<NodeJS.Timeout | null>(null)[0];
-  const deleteCloseTimeoutRef = useState<NodeJS.Timeout | null>(null)[0];
+  const editCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const deleteCloseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     return () => {
-      if (editCloseTimeoutRef) clearTimeout(editCloseTimeoutRef);
-      if (deleteCloseTimeoutRef) clearTimeout(deleteCloseTimeoutRef);
+      if (editCloseTimeoutRef.current) clearTimeout(editCloseTimeoutRef.current);
+      if (deleteCloseTimeoutRef.current) clearTimeout(deleteCloseTimeoutRef.current);
     };
-  }, [editCloseTimeoutRef, deleteCloseTimeoutRef]);
+  }, []);
 
   const hasContentAccess = useMemo(() => {
     return checkPermission(
@@ -308,7 +308,7 @@ const ContentManagementPage = () => {
         onClose={() => {
           setIsEditOpen(false);
           // Set timeout to clear content after animation, but allow unmount cleanup
-          setTimeout(() => setSelectedContent(null), 300);
+          editCloseTimeoutRef.current = setTimeout(() => setSelectedContent(null), 300);
         }}
         page={selectedPage}
         content={selectedContent}
@@ -318,7 +318,7 @@ const ContentManagementPage = () => {
         isOpen={isDeleteOpen}
         onClose={() => {
           setIsDeleteOpen(false);
-          setTimeout(() => setSelectedContent(null), 300);
+          deleteCloseTimeoutRef.current = setTimeout(() => setSelectedContent(null), 300);
         }}
         content={selectedContent}
       />

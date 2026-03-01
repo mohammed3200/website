@@ -5,6 +5,15 @@ const globalForRedis = global as unknown as { redis: Redis | undefined };
 
 let _redis: Redis | undefined;
 
+function createBuildPhaseRedisMock(): Redis {
+  return {
+    get: async () => null,
+    set: async () => 'OK',
+    del: async () => 1,
+    on: () => { },
+  } as unknown as Redis;
+}
+
 function getRedis(): Redis {
   if (_redis) return _redis;
   if (globalForRedis.redis) {
@@ -23,12 +32,7 @@ function getRedis(): Redis {
 
     if (isBuildPhase) {
       // Return a mock instance during Next.js static build to prevent ECONNREFUSED crashes
-      _redis = {
-        get: async () => null,
-        set: async () => 'OK',
-        del: async () => 1,
-        on: () => { },
-      } as unknown as Redis;
+      _redis = createBuildPhaseRedisMock();
       return _redis;
     }
 
@@ -40,12 +44,7 @@ function getRedis(): Redis {
   } else {
     // We shouldn't eagerly connect during build phase even if URL is present
     if (isBuildPhase) {
-      _redis = {
-        get: async () => null,
-        set: async () => 'OK',
-        del: async () => 1,
-        on: () => { },
-      } as unknown as Redis;
+      _redis = createBuildPhaseRedisMock();
       return _redis;
     }
 

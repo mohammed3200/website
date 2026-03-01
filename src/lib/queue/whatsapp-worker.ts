@@ -1,7 +1,5 @@
 import { Worker } from 'bullmq';
 import { whatsAppService } from '@/lib/whatsapp/service';
-import { db } from '@/lib/db';
-import { MessageStatus } from '@prisma/client';
 
 // Parse REDIS_URL into host/port for BullMQ (requires ConnectionOptions, not a URL string)
 function getRedisConnection() {

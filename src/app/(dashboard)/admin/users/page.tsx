@@ -149,8 +149,8 @@ const UsersManagementPage = () => {
           <button
             onClick={() => setActiveTab('users')}
             className={`whitespace-nowrap flex items-center gap-2 border-b-2 py-4 px-1 text-sm font-medium ${activeTab === 'users'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
               }`}
           >
             <Users className="h-4 w-4" />
@@ -166,8 +166,8 @@ const UsersManagementPage = () => {
             <button
               onClick={() => setActiveTab('invitations')}
               className={`whitespace-nowrap flex items-center gap-2 border-b-2 py-4 px-1 text-sm font-medium ${activeTab === 'invitations'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                 }`}
             >
               <Mail className="h-4 w-4" />
@@ -175,7 +175,7 @@ const UsersManagementPage = () => {
               {invitationsData && (
                 <span className="ml-2 bg-gray-100 text-gray-900 py-0.5 px-2.5 rounded-full text-xs">
                   {
-                    invitationsData.data.filter((i: any) => i.status === 'PENDING')
+                    invitationsData.data.filter((i: typeof invitationsData.data[number]) => i.status === 'PENDING')
                       .length
                   }{' '}
                   Pending
@@ -201,6 +201,7 @@ const UsersManagementPage = () => {
             isLoading={isLoadingInvitations}
             onDelete={openRevokeDialog}
             isDeleting={isDeleting}
+            canRevoke={hasManageAccess}
           />
         )}
       </div>

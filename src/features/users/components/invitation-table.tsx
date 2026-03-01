@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { InvitationTableSkeleton } from '@/components/skeletons';
 import type { InvitationWithRole } from '../types/user-type';
 
 type Props = {
@@ -18,6 +19,7 @@ type Props = {
   isLoading: boolean;
   onDelete: (id: string) => void;
   isDeleting: boolean;
+  canRevoke?: boolean;
 };
 
 export const InvitationTable = ({
@@ -25,19 +27,24 @@ export const InvitationTable = ({
   isLoading,
   onDelete,
   isDeleting,
+  canRevoke,
 }: Props) => {
   if (isLoading) {
-    return (
-      <div className="w-full h-48 flex items-center justify-center text-gray-500">
-        Loading invitations...
-      </div>
-    );
+    return <InvitationTableSkeleton canRevoke={canRevoke} />;
   }
 
   if (invitations.length === 0) {
     return (
-      <div className="w-full h-48 flex items-center justify-center text-gray-500 border rounded-md bg-white">
-        No active invitations found.
+      <div className="w-full h-64 flex flex-col items-center justify-center text-center border rounded-md bg-white shadow-sm p-8">
+        <div className="bg-gray-50 p-4 rounded-full mb-4">
+          <Mail className="h-8 w-8 text-gray-400" />
+        </div>
+        <h3 className="text-lg font-medium text-gray-900 mb-1">
+          No active invitations
+        </h3>
+        <p className="text-sm text-gray-500 max-w-sm">
+          There are currently no pending or active invitations. Click &quot;Invite User&quot; to send a new invitation.
+        </p>
       </div>
     );
   }
@@ -52,7 +59,7 @@ export const InvitationTable = ({
             <TableHead>Status</TableHead>
             <TableHead>Invited By</TableHead>
             <TableHead>Expires</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            {canRevoke && <TableHead className="text-right">Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -100,19 +107,21 @@ export const InvitationTable = ({
                   ? format(new Date(inv.expiresAt), 'MMM d, yyyy')
                   : 'N/A'}
               </TableCell>
-              <TableCell className="text-right">
-                {inv.status === 'PENDING' && (
-                  <button
-                    onClick={() => onDelete(inv.id)}
-                    disabled={isDeleting}
-                    className="p-2 text-gray-400 hover:text-red-600 rounded-md transition-colors disabled:opacity-50"
-                    title="Revoke invitation"
-                    aria-label={`Revoke invitation for ${inv.email}`}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                )}
-              </TableCell>
+              {canRevoke && (
+                <TableCell className="text-right">
+                  {inv.status === 'PENDING' && (
+                    <button
+                      onClick={() => onDelete(inv.id)}
+                      disabled={isDeleting}
+                      className="p-2 text-gray-400 hover:text-red-600 rounded-md transition-colors disabled:opacity-50"
+                      title="Revoke invitation"
+                      aria-label={`Revoke invitation for ${inv.email}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
