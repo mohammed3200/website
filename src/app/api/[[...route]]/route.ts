@@ -10,6 +10,7 @@ import strategicPlan from '@/features/strategic-plan/server/route';
 import news from '@/features/news/server/route';
 import pageContent from '@/features/page-content/server/route';
 import faqs from '@/features/faqs/server/route';
+import users from '@/features/users/server/route';
 
 const app = new Hono().basePath('/api');
 
@@ -48,7 +49,8 @@ const routes = app
   .route('/strategicPlan', strategicPlan)
   .route('/news', news)
   .route('/pageContent', pageContent)
-  .route('/faqs', faqs);
+  .route('/faqs', faqs)
+  .route('/users', users);
 
 // Error handling
 app.onError((err, c) => {

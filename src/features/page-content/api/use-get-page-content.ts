@@ -1,29 +1,28 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import type { PageContent } from '@prisma/client';
-import type { PageContentResponse } from '../types/page-content-type';
+import { useQuery } from '@tanstack/react-query';
 
-/**
- * React Query hook to fetch page content
- * @param page - The page name (entrepreneurship or incubators)
- * @param options - Query options including enabled flag
- */
+import { client } from '@/lib/rpc';
+
 export const useGetPageContent = (
   page: 'entrepreneurship' | 'incubators',
   options?: { enabled?: boolean },
-): UseQueryResult<PageContent[], Error> => {
-  return useQuery({
+) => {
+  const query = useQuery({
     queryKey: ['page-content', page],
     queryFn: async () => {
-      const response = await fetch(`/api/pageContent/public/${page}`);
+      const response = await client.api.pageContent.public[':page'].$get({
+        param: { page },
+      });
 
       if (!response.ok) {
         throw new Error('Failed to fetch page content');
       }
 
-      const data: PageContentResponse = await response.json();
-      return data.data;
+      const { data } = await response.json();
+      return data;
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     ...options,
   });
+
+  return query;
 };

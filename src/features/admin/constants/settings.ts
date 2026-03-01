@@ -33,7 +33,8 @@ export const SETTINGS_OPTIONS = [
     id: 'profile',
     titleKey: 'profile.title',
     descriptionKey: 'profile.description',
+    href: '/admin/settings/profile',
     icon: User,
-    disabled: true,
+    disabled: false,
   },
 ] as const satisfies readonly Setting[];

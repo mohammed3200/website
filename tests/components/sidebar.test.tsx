@@ -31,7 +31,7 @@ describe('Sidebar Component', () => {
   });
 
   describe('English Locale', () => {
-    it('should render all 10 navigation items', async () => {
+    it('should render all 11 navigation items', async () => {
       (usePathname as any).mockReturnValue('/en/admin');
 
       render(<Sidebar locale="en" />);
@@ -44,6 +44,7 @@ describe('Sidebar Component', () => {
       expect(await screen.findByText('Templates')).toBeInTheDocument();
       expect(await screen.findByText('Notifications')).toBeInTheDocument();
       expect(await screen.findByText('Reports')).toBeInTheDocument();
+      expect(await screen.findByText('Users')).toBeInTheDocument();
       expect(await screen.findByText('FAQs')).toBeInTheDocument();
       expect(await screen.findByText('Settings')).toBeInTheDocument();
     });
@@ -93,6 +94,7 @@ describe('Sidebar Component', () => {
       expect(await screen.findByText('القوالب')).toBeInTheDocument();
       expect(await screen.findByText('الإشعارات')).toBeInTheDocument();
       expect(await screen.findByText('التقارير')).toBeInTheDocument();
+      expect(await screen.findByText('المستخدمين')).toBeInTheDocument();
       expect(await screen.findByText('الأسئلة الشائعة')).toBeInTheDocument();
       expect(await screen.findByText('الإعدادات')).toBeInTheDocument();
     });
@@ -173,13 +175,13 @@ describe('Sidebar Component', () => {
   });
 
   describe('Navigation Structure', () => {
-    it('should render all 7 navigation items', () => {
+    it('should render all 8 navigation items', () => {
       (usePathname as any).mockReturnValue('/en/admin');
 
       const { container } = render(<Sidebar locale="en" />);
 
       const links = container.querySelectorAll('a[href*="/admin"]');
-      expect(links).toHaveLength(10);
+      expect(links).toHaveLength(11);
     });
 
     it('should maintain navigation order', () => {
@@ -200,6 +202,7 @@ describe('Sidebar Component', () => {
         'Strategic Plans',
         'News',
         'Reports',
+        'Users',
         'FAQs',
         'Settings',
       ];
@@ -215,7 +218,7 @@ describe('Sidebar Component', () => {
       const { container } = render(<Sidebar locale="en" />);
 
       const svgs = container.querySelectorAll('svg');
-      expect(svgs.length).toBeGreaterThanOrEqual(8); // At least one icon per nav item
+      expect(svgs.length).toBeGreaterThanOrEqual(9); // At least one icon per nav item
     });
 
     it('should apply correct icon classes when active', () => {

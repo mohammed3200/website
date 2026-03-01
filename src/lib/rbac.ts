@@ -32,6 +32,7 @@ export const ROLE_PERMISSIONS: Record<
     { resource: RESOURCES.MESSAGES, action: ACTIONS.MANAGE },
     { resource: RESOURCES.REPORTS, action: ACTIONS.MANAGE },
     { resource: RESOURCES.STRATEGIC_PLANS, action: ACTIONS.MANAGE },
+    { resource: RESOURCES.CONTENT, action: ACTIONS.MANAGE },
   ],
   [SYSTEM_ROLES.ADMIN]: [
     // Can manage most things except system settings
@@ -47,6 +48,7 @@ export const ROLE_PERMISSIONS: Record<
     { resource: RESOURCES.TEMPLATES, action: ACTIONS.READ },
     { resource: RESOURCES.REPORTS, action: ACTIONS.READ },
     { resource: RESOURCES.STRATEGIC_PLANS, action: ACTIONS.MANAGE },
+    { resource: RESOURCES.CONTENT, action: ACTIONS.MANAGE },
   ],
   [SYSTEM_ROLES.NEWS_EDITOR]: [
     // Can only manage news
