@@ -316,7 +316,7 @@ const ContentManagementPage = () => {
           editCloseTimeoutRef.current = setTimeout(() => setSelectedContent(null), 300);
         }}
         page={selectedPage}
-        content={selectedContent as any}
+        content={selectedContent as unknown as PageContent}
       />
 
       <DeleteContentDialog
@@ -325,7 +325,7 @@ const ContentManagementPage = () => {
           setIsDeleteOpen(false);
           deleteCloseTimeoutRef.current = setTimeout(() => setSelectedContent(null), 300);
         }}
-        content={selectedContent as any}
+        content={selectedContent as unknown as PageContent}
       />
     </div>
   );

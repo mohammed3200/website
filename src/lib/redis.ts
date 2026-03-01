@@ -26,10 +26,10 @@ function createBuildPhaseRedisMock(): Redis {
     smembers: async () => [],
     publish: async () => 0,
     subscribe: async () => { },
-    on: function (event: string, handler: Function) {
+    on: function (_event: string, _handler: (...args: any[]) => void) {
       return this;
     },
-    once: function (event: string, handler: Function) {
+    once: function (_event: string, _handler: (...args: any[]) => void) {
       return this;
     },
     quit: async () => 'OK',

@@ -38,7 +38,7 @@ const UsersManagementPage = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
 
-  const [page, setPage] = useState(1);
+  const [page] = useState(1);
   const [invitationToRevoke, setInvitationToRevoke] = useState<string | null>(
     null,
   );
