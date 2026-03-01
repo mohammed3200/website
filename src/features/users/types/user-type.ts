@@ -4,13 +4,9 @@ export type UserWithRole = Pick<
   User,
   'id' | 'name' | 'email' | 'image' | 'isActive'
 > & {
-  lastLoginAt: Date | null | undefined; // Adjusting type to match schema if it doesn't exist explicitly, we can fallback
+  lastLoginAt?: Date | null;
   role: Pick<Role, 'id' | 'name'> | null;
 };
-
-// NextAuth updates the user in db on login usually, but let's check schema for lastLoginAt.
-// Currently Prisma schema doesn't seem to have `lastLoginAt` on the User model natively.
-// We will omit lastLoginAt if not present, and map it.
 
 export type InvitationWithRole = UserInvitation & {
   role: Pick<Role, 'id' | 'name'>;

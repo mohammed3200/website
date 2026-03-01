@@ -1,4 +1,4 @@
-import { getPageContent } from '@/features/page-content';
+import { getPageContent } from '@/features/page-content/server/route';
 import IncubatorsClient from './components/incubators-client';
 
 export default async function IncubatorsPage({

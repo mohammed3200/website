@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import { Resource, Action, checkPermission } from '@/lib/rbac-base';
 import type { Session } from 'next-auth';
 
-type Variables = {
+export type Variables = {
   user: Session['user'] & {
     id: string;
   };

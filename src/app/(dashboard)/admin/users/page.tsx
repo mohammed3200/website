@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/features/admin/hooks/use-admin-auth';
 import { checkPermission, RESOURCES, ACTIONS } from '@/lib/rbac-base';
@@ -14,7 +14,19 @@ import {
   EditUserDialog,
   type UserWithRole,
 } from '@/features/users';
-import { Users, Mail, UserPlus } from 'lucide-react';
+import { Users, Mail, UserPlus, AlertTriangle } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
+const LIMIT = 25;
 
 const UsersManagementPage = () => {
   const router = useRouter();
@@ -26,7 +38,10 @@ const UsersManagementPage = () => {
   const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
 
   const [page, setPage] = useState(1);
-  const [limit] = useState(25);
+  const [invitationToRevoke, setInvitationToRevoke] = useState<string | null>(
+    null,
+  );
+  const [isRevokeDialogOpen, setIsRevokeDialogOpen] = useState(false);
 
   const hasUsersAccess = useMemo(() => {
     return checkPermission(
@@ -60,20 +75,24 @@ const UsersManagementPage = () => {
     );
   }, [session]);
 
-  const { data: usersData, isLoading: isLoadingUsers } = useGetUsers(
+  useEffect(() => {
+    if (status === 'authenticated' && !hasUsersAccess) {
+      router.push('/');
+    }
+  }, [status, hasUsersAccess, router]);
+
+  const { data: usersData, isLoading: isLoadingUsers } = useGetUsers({
     page,
-    limit,
-    undefined,
-    undefined,
-    undefined,
-  );
+    limit: LIMIT,
+  });
+
   const { data: invitationsData, isLoading: isLoadingInvitations } =
     useGetInvitations();
   const { mutate: deleteInvitation, isPending: isDeleting } =
     useDeleteInvitation();
 
+  // Early return to prevent flash of content before redirect
   if (status === 'authenticated' && !hasUsersAccess) {
-    router.push('/');
     return null;
   }
 
@@ -84,9 +103,22 @@ const UsersManagementPage = () => {
     setIsEditOpen(true);
   };
 
-  const handleDeleteInvitation = (id: string) => {
-    if (window.confirm('Are you sure you want to revoke this invitation?')) {
-      deleteInvitation({ param: { id } });
+  const openRevokeDialog = (id: string) => {
+    setInvitationToRevoke(id);
+    setIsRevokeDialogOpen(true);
+  };
+
+  const handleConfirmRevoke = () => {
+    if (invitationToRevoke) {
+      deleteInvitation(
+        { param: { id: invitationToRevoke } },
+        {
+          onSuccess: () => {
+            setIsRevokeDialogOpen(false);
+            setInvitationToRevoke(null);
+          },
+        },
+      );
     }
   };
 
@@ -168,7 +200,7 @@ const UsersManagementPage = () => {
           <InvitationTable
             invitations={(invitationsData?.data as any) || []}
             isLoading={isLoadingInvitations}
-            onDelete={handleDeleteInvitation}
+            onDelete={openRevokeDialog}
             isDeleting={isDeleting}
           />
         )}
@@ -187,6 +219,39 @@ const UsersManagementPage = () => {
         }}
         user={selectedUser}
       />
+
+      {/* Revoke Invitation Dialog */}
+      <AlertDialog
+        open={isRevokeDialogOpen}
+        onOpenChange={setIsRevokeDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-500" />
+              Revoke Invitation
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to revoke this invitation? This action
+              cannot be undone and the user will no longer be able to use the
+              invite link.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                handleConfirmRevoke();
+              }}
+              disabled={isDeleting}
+              className="bg-red-500 hover:bg-red-600 focus:ring-red-500"
+            >
+              {isDeleting ? 'Revoking...' : 'Revoke Invitation'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

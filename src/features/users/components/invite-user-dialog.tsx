@@ -103,7 +103,7 @@ export const InviteUserDialog = ({ isOpen, onClose }: Props) => {
                   <FormLabel>Role</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                     disabled={isLoadingRoles}
                   >
                     <FormControl>

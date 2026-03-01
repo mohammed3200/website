@@ -1,7 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { Edit2, ShieldAlert } from 'lucide-react';
+import { Edit2 } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -65,7 +65,7 @@ export const UserTable = ({ users, isLoading, onEdit }: Props) => {
                     variant="outline"
                     className="bg-blue-50 text-blue-700 border-blue-200"
                   >
-                    {user.role.name.replace('_', ' ').toUpperCase()}
+                    {user.role.name.replace(/_/g, ' ').toUpperCase()}
                   </Badge>
                 ) : (
                   <span className="text-gray-400 italic">No Role</span>
@@ -98,6 +98,7 @@ export const UserTable = ({ users, isLoading, onEdit }: Props) => {
                   onClick={() => onEdit(user)}
                   className="p-2 text-gray-400 hover:text-primary rounded-md transition-colors"
                   title="Edit user"
+                  aria-label={`Edit ${user.name || user.email}`}
                 >
                   <Edit2 className="h-4 w-4" />
                 </button>

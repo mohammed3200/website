@@ -100,7 +100,7 @@ export const EditUserDialog = ({ isOpen, onClose, user }: Props) => {
                     <FormLabel>Role</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={field.value}
                       disabled={isLoadingRoles}
                     >
                       <FormControl>

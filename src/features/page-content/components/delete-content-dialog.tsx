@@ -51,9 +51,9 @@ export const DeleteContentDialog = ({ isOpen, onClose, content }: Props) => {
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
-              handleConfirm();
+              if (content) handleConfirm();
             }}
-            disabled={isPending}
+            disabled={isPending || !content}
             className="bg-red-600 hover:bg-red-700"
           >
             {isPending ? 'Deleting...' : 'Delete Content'}

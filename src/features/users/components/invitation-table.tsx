@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { format } from 'date-fns';
+import { format, isValid } from 'date-fns';
 import { Trash2, UserPlus, CheckCircle, Mail } from 'lucide-react';
 import {
   Table,
@@ -64,7 +63,7 @@ export const InvitationTable = ({
               </TableCell>
               <TableCell>
                 <Badge variant="outline">
-                  {inv.role.name.replace('_', ' ').toUpperCase()}
+                  {inv.role.name.replace(/_/g, ' ').toUpperCase()}
                 </Badge>
               </TableCell>
               <TableCell>
@@ -97,7 +96,9 @@ export const InvitationTable = ({
                 {inv.inviter.name || inv.inviter.email}
               </TableCell>
               <TableCell className="text-gray-500 text-sm">
-                {format(new Date(inv.expiresAt), 'MMM d, yyyy')}
+                {inv.expiresAt && isValid(new Date(inv.expiresAt))
+                  ? format(new Date(inv.expiresAt), 'MMM d, yyyy')
+                  : 'N/A'}
               </TableCell>
               <TableCell className="text-right">
                 {inv.status === 'PENDING' && (

@@ -175,7 +175,7 @@ describe('Sidebar Component', () => {
   });
 
   describe('Navigation Structure', () => {
-    it('should render all 8 navigation items', () => {
+    it('should render all 11 navigation items', () => {
       (usePathname as any).mockReturnValue('/en/admin');
 
       const { container } = render(<Sidebar locale="en" />);

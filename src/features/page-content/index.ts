@@ -21,6 +21,3 @@ export {
   type CreatePageContentInput,
   type UpdatePageContentInput,
 } from './schemas/page-content-schema';
-
-// Server helper for RSC
-export { getPageContent } from './server/route';

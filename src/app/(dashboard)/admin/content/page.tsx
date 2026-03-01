@@ -35,6 +35,12 @@ const UI_LABELS = {
   },
 } as const;
 
+function isAllowedPage(
+  page: string,
+): page is 'entrepreneurship' | 'incubators' {
+  return ['entrepreneurship', 'incubators'].includes(page);
+}
+
 const ContentManagementPage = () => {
   const router = useRouter();
   const { session, status } = useAdminAuth();
@@ -75,7 +81,7 @@ const ContentManagementPage = () => {
     return null;
   }
 
-  if (status === 'loading' || isLoadingEnt || isLoadingInc) {
+  if (status === 'loading' || isLoadingEnt || isLoadingInc || isLoadingStats) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-9 w-64" />
@@ -141,7 +147,9 @@ const ContentManagementPage = () => {
                 <button
                   onClick={() => {
                     setSelectedContent(item);
-                    setSelectedPage(item.page as any);
+                    if (isAllowedPage(item.page)) {
+                      setSelectedPage(item.page);
+                    }
                     setIsEditOpen(true);
                   }}
                   aria-label={UI_LABELS.ARIA.EDIT}
@@ -186,6 +194,7 @@ const ContentManagementPage = () => {
             </h3>
             <div className="flex gap-4 text-sm">
               <div className="flex items-center gap-1 text-gray-600">
+                <Layout className="h-4 w-4" />{' '}
                 {statsData.data.entrepreneurship.sections} sections
               </div>
               <div className="flex items-center gap-1 text-emerald-600">

@@ -6,6 +6,7 @@ import {
   verifyAuth,
   requirePermission,
 } from '@/features/admin/server/middleware';
+import type { Variables } from '@/features/admin/server/middleware';
 import { RESOURCES, ACTIONS } from '@/lib/rbac-base';
 import { createUserInvitation } from '@/lib/rbac';
 import {
@@ -16,7 +17,7 @@ import {
 } from '../schemas/user-schema';
 import { emailQueue } from '@/lib/queue/email-queue';
 
-const app = new Hono()
+const app = new Hono<{ Variables: Variables }>()
   // GET /api/users
   .get(
     '/',
@@ -32,8 +33,8 @@ const app = new Hono()
       if (status) where.isActive = status === 'active';
       if (search) {
         where.OR = [
-          { name: { contains: search } },
-          { email: { contains: search } },
+          { name: { contains: search, mode: 'insensitive' } },
+          { email: { contains: search, mode: 'insensitive' } },
         ];
       }
 
@@ -162,7 +163,7 @@ const app = new Hono()
     zValidator('json', createInvitationSchema),
     async (c) => {
       try {
-        const user = c.get('user') as any;
+        const user = c.get('user');
         const { email, roleId } = c.req.valid('json');
 
         const invitation = await createUserInvitation(user.id, email, roleId);

@@ -5,13 +5,21 @@ import { client } from '@/lib/rpc';
 
 type ResponseType = InferResponseType<typeof client.api.users.$get, 200>;
 
-export const useGetUsers = (
-  page: number = 1,
-  limit: number = 10,
-  role?: string,
-  status?: 'active' | 'inactive',
-  search?: string,
-) => {
+interface GetUsersOptions {
+  page?: number;
+  limit?: number;
+  role?: string;
+  status?: 'active' | 'inactive';
+  search?: string;
+}
+
+export const useGetUsers = ({
+  page = 1,
+  limit = 10,
+  role,
+  status,
+  search,
+}: GetUsersOptions = {}) => {
   const query = useQuery<ResponseType, Error>({
     queryKey: ['users', { page, limit, role, status, search }],
     queryFn: async () => {

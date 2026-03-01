@@ -1,4 +1,4 @@
-import { getPageContent } from '@/features/page-content';
+import { getPageContent } from '@/features/page-content/server/route';
 import EntrepreneurshipClient from './components/entrepreneurship-client';
 
 export default async function EntrepreneurshipPage({
