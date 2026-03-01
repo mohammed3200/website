@@ -148,7 +148,7 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                     // Fallback values
                     <div className="text-center py-12">
                         <p className="text-gray-400 dark:text-gray-500">
-                            {t('emptyState') || 'No content available.'}
+                            {localizedEmptyState}
                         </p>
                     </div>
                 )}

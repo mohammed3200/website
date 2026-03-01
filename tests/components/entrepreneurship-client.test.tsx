@@ -22,7 +22,6 @@ jest.mock('next-intl', () => ({
       mentorshipDesc: 'One-on-one guidance',
       strategic: 'Strategic Planning',
       strategicDesc: 'Business strategy development',
-      workshopsDesc: 'Intensive training programs',
       emptyState: 'No content available.',
       excellence: 'Excellence',
       innovation: 'Innovation',
