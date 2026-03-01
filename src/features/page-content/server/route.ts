@@ -17,7 +17,7 @@ export const getPageContent = async (
   page: 'entrepreneurship' | 'incubators',
 ) => {
   return db.pageContent.findMany({
-    where: { page },
+    where: { page, isActive: true },
     orderBy: [{ section: 'asc' }, { order: 'asc' }],
   });
 };
