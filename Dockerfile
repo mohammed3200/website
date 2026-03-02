@@ -76,8 +76,8 @@ COPY --from=oven/bun:alpine /usr/local/bin/bun /usr/local/bin/bun
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install openssl (required for Prisma) and prisma
-RUN apk add --no-cache libc6-compat openssl && npm install -g prisma
+# Install openssl (required for Prisma) and prisma via bun to avoid npm registry EAI_AGAIN timeouts
+RUN apk add --no-cache libc6-compat openssl && bun add -g prisma
 
 # Don't run as root
 RUN addgroup --system --gid 1001 nodejs

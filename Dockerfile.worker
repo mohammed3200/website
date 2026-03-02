@@ -25,7 +25,7 @@ RUN bun install --frozen-lockfile --production --ignore-scripts
 FROM node:20-alpine AS runner
 # Copy Bun from official image
 COPY --from=oven/bun:alpine /usr/local/bin/bun /usr/local/bin/bun
-RUN apk add --no-cache libc6-compat openssl && npm install -g prisma
+RUN apk add --no-cache libc6-compat openssl && bun add -g prisma
 WORKDIR /app
 
 ENV NODE_ENV=production
