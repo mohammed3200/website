@@ -5,10 +5,10 @@
 
 # ------------------------------------------
 # Stage 1: Dependencies
-# ONLY stage that downloads packages from registry.
 # ------------------------------------------
-FROM oven/bun:alpine AS deps
+FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat python3 make g++
+RUN npm install -g bun
 WORKDIR /app
 
 COPY package.json bun.lock ./
@@ -16,16 +16,14 @@ RUN bun install --frozen-lockfile
 
 # ------------------------------------------
 # Stage 2: Runner
-# NO network access. NO package manager installs.
-# Copies pre-installed node_modules from deps.
 # ------------------------------------------
 FROM node:20-alpine AS runner
 
-# openssl is required by Prisma's query engine at runtime
+# openssl required by Prisma query engine
 RUN apk add --no-cache libc6-compat openssl
 
-# Copy bun binary for running TypeScript worker
-COPY --from=oven/bun:alpine /usr/local/bin/bun /usr/local/bin/bun
+# Copy bun binary from deps stage
+COPY --from=deps /usr/local/bin/bun /usr/local/bin/bun
 
 WORKDIR /app
 
@@ -36,7 +34,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 worker
 
-# Copy node_modules from deps (includes prisma CLI + all runtime deps)
+# Copy node_modules from deps
 COPY --from=deps --chown=worker:nodejs /app/node_modules ./node_modules
 COPY --chown=worker:nodejs package.json ./
 COPY --chown=worker:nodejs tsconfig.json ./
@@ -44,7 +42,7 @@ COPY --chown=worker:nodejs prisma.config.ts ./
 COPY --chown=worker:nodejs prisma ./prisma
 COPY --chown=worker:nodejs src ./src
 
-# Generate Prisma client (uses prisma from node_modules via npx)
+# Generate Prisma client
 RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
 
 USER worker

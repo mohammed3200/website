@@ -1,17 +1,17 @@
 # ==========================================
 # Production Dockerfile for Next.js App
-# Optimized for Performance, Security, and Size
 # ==========================================
 
 # ------------------------------------------
 # Stage 1: Dependencies
-# Install dependencies only when needed.
-# Uses oven/bun:alpine for native lockfile support.
-# This is the ONLY stage that downloads packages.
+# Uses node:20-alpine as base so node-gyp works
+# for native packages (bcrypt). Bun installed
+# for fast dependency resolution.
 # ------------------------------------------
-FROM oven/bun:alpine AS deps
-# libc6-compat for Alpine, python3/make/g++ for bcrypt native compilation (discarded after build)
+FROM node:20-alpine AS deps
+# python3/make/g++ for native compilation, libc6-compat for Alpine
 RUN apk add --no-cache libc6-compat python3 make g++
+RUN npm install -g bun
 WORKDIR /app
 
 COPY package.json bun.lock ./
@@ -19,10 +19,10 @@ RUN bun install --frozen-lockfile
 
 # ------------------------------------------
 # Stage 2: Builder
-# Builds the Next.js app. Copies node_modules
-# from deps (no network access needed here).
+# Builds the Next.js app using Bun.
 # ------------------------------------------
-FROM oven/bun:alpine AS builder
+FROM node:20-alpine AS builder
+RUN npm install -g bun
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -52,22 +52,21 @@ ENV NEXT_PUBLIC_INNOVATORS_THRESHOLD=$NEXT_PUBLIC_INNOVATORS_THRESHOLD
 ENV NEXT_PUBLIC_COLLABORATORS_THRESHOLD=$NEXT_PUBLIC_COLLABORATORS_THRESHOLD
 ENV NEXT_PUBLIC_FAQ_THRESHOLD=$NEXT_PUBLIC_FAQ_THRESHOLD
 
-# Generate Prisma Client (bunx resolves prisma from node_modules)
-RUN DATABASE_URL=mysql://localhost:3306/dummy bunx prisma generate
+# Generate Prisma Client
+RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
 
 # Build Next.js app
 RUN DATABASE_URL=mysql://localhost:3306/dummy bun run build
 
 # ------------------------------------------
 # Stage 3: Runner
-# Minimal production image.
-# NO package manager installs. NO network access.
-# Only copies pre-built artifacts from builder.
+# Minimal production image. NO package installs
+# except system libs.
 # ------------------------------------------
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-# openssl is required by Prisma's query engine at runtime
+# openssl required by Prisma query engine
 RUN apk add --no-cache libc6-compat openssl
 
 ENV NODE_ENV=production
@@ -84,7 +83,7 @@ COPY --from=builder /app/public ./public
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
-# Automatically leverage output traces to reduce image size
+# Copy standalone output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
@@ -92,18 +91,14 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./
 COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-
-# Copy src so seed-rbac.ts can import from ../src/lib/rbac
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
-
-# Copy node_modules (prisma CLI, seed deps, @prisma/client all live here)
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 
-# Add node_modules/.bin to PATH so bare "prisma" and "bun" commands work
+# Add node_modules/.bin to PATH so bare "prisma" commands work
 ENV PATH="/app/node_modules/.bin:$PATH"
 
-# Copy bun binary from builder for seed scripts (bun run prisma/seed-rbac.ts)
-COPY --from=oven/bun:alpine /usr/local/bin/bun /usr/local/bin/bun
+# Copy bun binary for seed scripts
+COPY --from=deps /usr/local/bin/bun /usr/local/bin/bun
 
 # Copy entrypoint script
 COPY --chown=nextjs:nodejs docker-entrypoint.sh ./
