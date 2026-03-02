@@ -7,7 +7,7 @@
 # Stage 1: Dependencies
 # Install dependencies only when needed
 # ------------------------------------------
-FROM oven/bun:latest-alpine AS deps
+FROM oven/bun:alpine AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -22,7 +22,7 @@ RUN bun install --frozen-lockfile --ignore-scripts
 # Stage 2: Builder
 # Rebuild the source code only when needed
 # ------------------------------------------
-FROM oven/bun:latest-alpine AS builder
+FROM oven/bun:alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -71,7 +71,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 # Copy Bun from the official image to the final stage
-COPY --from=oven/bun:latest-alpine /usr/local/bin/bun /usr/local/bin/bun
+COPY --from=oven/bun:alpine /usr/local/bin/bun /usr/local/bin/bun
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
