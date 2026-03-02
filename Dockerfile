@@ -51,8 +51,8 @@ ENV NEXT_PUBLIC_INNOVATORS_THRESHOLD=$NEXT_PUBLIC_INNOVATORS_THRESHOLD
 ENV NEXT_PUBLIC_COLLABORATORS_THRESHOLD=$NEXT_PUBLIC_COLLABORATORS_THRESHOLD
 ENV NEXT_PUBLIC_FAQ_THRESHOLD=$NEXT_PUBLIC_FAQ_THRESHOLD
 
-# Generate Prisma Client (prisma CLI comes from node_modules)
-RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
+# Generate Prisma Client (bunx resolves prisma from node_modules)
+RUN DATABASE_URL=mysql://localhost:3306/dummy bunx prisma generate
 
 # Build Next.js app
 RUN DATABASE_URL=mysql://localhost:3306/dummy bun run build
