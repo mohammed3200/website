@@ -10,7 +10,8 @@
 # This is the ONLY stage that downloads packages.
 # ------------------------------------------
 FROM oven/bun:alpine AS deps
-RUN apk add --no-cache libc6-compat
+# libc6-compat for Alpine, python3/make/g++ for bcrypt native compilation (discarded after build)
+RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /app
 
 COPY package.json bun.lock ./
