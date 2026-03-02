@@ -7,7 +7,9 @@
 # ------------------------------------------
 # Stage 1: Dependencies
 # ------------------------------------------
-FROM node:20-alpine AS deps
+# Stage 1: Dependencies
+# ------------------------------------------
+FROM oven/bun:latest-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
@@ -15,13 +17,15 @@ WORKDIR /app
 COPY package.json bun.lock ./
 
 # Install ONLY production dependencies using Bun to minimize size
-RUN npm install -g bun && bun install --frozen-lockfile --production --ignore-scripts
+RUN bun install --frozen-lockfile --production --ignore-scripts
 
 # ------------------------------------------
 # Stage 2: Runner
 # ------------------------------------------
 FROM node:20-alpine AS runner
-RUN apk add --no-cache libc6-compat openssl && npm install -g bun prisma
+# Copy Bun from official image
+COPY --from=oven/bun:latest-alpine /usr/local/bin/bun /usr/local/bin/bun
+RUN apk add --no-cache libc6-compat openssl && npm install -g prisma
 WORKDIR /app
 
 ENV NODE_ENV=production

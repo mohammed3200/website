@@ -7,7 +7,7 @@
 # Stage 1: Dependencies
 # Install dependencies only when needed
 # ------------------------------------------
-FROM node:20-alpine AS deps
+FROM oven/bun:latest-alpine AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
@@ -16,15 +16,14 @@ WORKDIR /app
 COPY package.json bun.lock ./
 
 # Install dependencies using Bun
-RUN npm install -g bun && bun install --frozen-lockfile --ignore-scripts
+RUN bun install --frozen-lockfile --ignore-scripts
 
 # ------------------------------------------
 # Stage 2: Builder
 # Rebuild the source code only when needed
 # ------------------------------------------
-FROM node:20-alpine AS builder
+FROM oven/bun:latest-alpine AS builder
 WORKDIR /app
-RUN npm install -g bun
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
@@ -71,11 +70,14 @@ RUN DATABASE_URL=mysql://localhost:3306/dummy bun run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
+# Copy Bun from the official image to the final stage
+COPY --from=oven/bun:latest-alpine /usr/local/bin/bun /usr/local/bin/bun
+
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Install bun and openssl (required for Prisma)
-RUN apk add --no-cache libc6-compat openssl && npm install -g bun prisma
+# Install openssl (required for Prisma) and prisma
+RUN apk add --no-cache libc6-compat openssl && npm install -g prisma
 
 # Don't run as root
 RUN addgroup --system --gid 1001 nodejs
