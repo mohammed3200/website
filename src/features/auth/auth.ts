@@ -171,6 +171,7 @@ export const {
     strategy: "jwt",
     maxAge: 2 * 60 * 60, // 2 hours
   },
+  trustHost: true, // Required: app runs behind nginx reverse proxy on Virtuozzo
   secret: process.env.NEXTAUTH_SECRET!,
 });
 
