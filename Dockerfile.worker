@@ -1,31 +1,32 @@
 # ==========================================
 # Production Dockerfile for Background Worker
 # Runs email, report, and WhatsApp queue workers
-# Complies with DEP-01 & ARCH-SERVER-04
 # ==========================================
 
 # ------------------------------------------
 # Stage 1: Dependencies
-# ------------------------------------------
-# Stage 1: Dependencies
+# ONLY stage that downloads packages from registry.
 # ------------------------------------------
 FROM oven/bun:alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package configurations
 COPY package.json bun.lock ./
-
-# Install ONLY production dependencies using Bun to minimize size
-RUN bun install --frozen-lockfile --production --ignore-scripts
+RUN bun install --frozen-lockfile --ignore-scripts
 
 # ------------------------------------------
 # Stage 2: Runner
+# NO network access. NO package manager installs.
+# Copies pre-installed node_modules from deps.
 # ------------------------------------------
 FROM node:20-alpine AS runner
-# Copy Bun from official image
+
+# openssl is required by Prisma's query engine at runtime
+RUN apk add --no-cache libc6-compat openssl
+
+# Copy bun binary for running TypeScript worker
 COPY --from=oven/bun:alpine /usr/local/bin/bun /usr/local/bin/bun
-RUN apk add --no-cache libc6-compat openssl && bun add -g prisma
+
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -35,7 +36,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 worker
 
-# Copy dependencies and pruned node_modules
+# Copy node_modules from deps (includes prisma CLI + all runtime deps)
 COPY --from=deps --chown=worker:nodejs /app/node_modules ./node_modules
 COPY --chown=worker:nodejs package.json ./
 COPY --chown=worker:nodejs tsconfig.json ./
@@ -43,10 +44,9 @@ COPY --chown=worker:nodejs prisma.config.ts ./
 COPY --chown=worker:nodejs prisma ./prisma
 COPY --chown=worker:nodejs src ./src
 
-# Generate Prisma client via dummy url (bypasses runtime requirement during build)
+# Generate Prisma client (uses prisma from node_modules via npx)
 RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
 
 USER worker
 
-# Execute worker script directly via bun
 CMD ["bun", "run", "src/worker.ts"]

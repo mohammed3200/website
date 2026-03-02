@@ -5,33 +5,30 @@
 
 # ------------------------------------------
 # Stage 1: Dependencies
-# Install dependencies only when needed
+# Install dependencies only when needed.
+# Uses oven/bun:alpine for native lockfile support.
+# This is the ONLY stage that downloads packages.
 # ------------------------------------------
 FROM oven/bun:alpine AS deps
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files
 COPY package.json bun.lock ./
-
-# Install dependencies using Bun
 RUN bun install --frozen-lockfile --ignore-scripts
 
 # ------------------------------------------
 # Stage 2: Builder
-# Rebuild the source code only when needed
+# Builds the Next.js app. Copies node_modules
+# from deps (no network access needed here).
 # ------------------------------------------
 FROM oven/bun:alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Disable Next.js telemetry
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build-time args for NEXT_PUBLIC_* variables
-# These are baked into the client JS bundle at build time
 ARG NEXT_PUBLIC_APP_URL=https://ebic.cit.edu.ly
 ARG NEXT_PUBLIC_APP_NAME="Misurata Entrepreneurship Center"
 ARG NEXT_PUBLIC_CONTACT_EMAIL=ebic@cit.edu.ly
@@ -43,7 +40,6 @@ ARG NEXT_PUBLIC_INNOVATORS_THRESHOLD=3
 ARG NEXT_PUBLIC_COLLABORATORS_THRESHOLD=3
 ARG NEXT_PUBLIC_FAQ_THRESHOLD=1
 
-# Expose build args as env vars for Next.js build
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 ENV NEXT_PUBLIC_APP_NAME=$NEXT_PUBLIC_APP_NAME
 ENV NEXT_PUBLIC_CONTACT_EMAIL=$NEXT_PUBLIC_CONTACT_EMAIL
@@ -55,29 +51,26 @@ ENV NEXT_PUBLIC_INNOVATORS_THRESHOLD=$NEXT_PUBLIC_INNOVATORS_THRESHOLD
 ENV NEXT_PUBLIC_COLLABORATORS_THRESHOLD=$NEXT_PUBLIC_COLLABORATORS_THRESHOLD
 ENV NEXT_PUBLIC_FAQ_THRESHOLD=$NEXT_PUBLIC_FAQ_THRESHOLD
 
-# Run Prisma Generate (CRITICAL for Type Safety and Runtime access)
-# Generate Prisma Client with dummy DATABASE_URL
-# This must run before build
+# Generate Prisma Client (prisma CLI comes from node_modules)
 RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
 
-# Build Next.js app using Bun
+# Build Next.js app
 RUN DATABASE_URL=mysql://localhost:3306/dummy bun run build
 
 # ------------------------------------------
 # Stage 3: Runner
-# Production image, copy all the files and run next
+# Minimal production image.
+# NO package manager installs. NO network access.
+# Only copies pre-built artifacts from builder.
 # ------------------------------------------
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-# Copy Bun from the official image to the final stage
-COPY --from=oven/bun:alpine /usr/local/bin/bun /usr/local/bin/bun
+# openssl is required by Prisma's query engine at runtime
+RUN apk add --no-cache libc6-compat openssl
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-
-# Install openssl (required for Prisma) and prisma via bun to avoid npm registry EAI_AGAIN timeouts
-RUN apk add --no-cache libc6-compat openssl && bun add -g prisma
 
 # Don't run as root
 RUN addgroup --system --gid 1001 nodejs
@@ -91,18 +84,25 @@ RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
 # Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Include Prisma config, schema, migrations, and seed scripts for database setup
+# Include Prisma config, schema, migrations, and seed scripts
 COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./
 COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+
 # Copy src so seed-rbac.ts can import from ../src/lib/rbac
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
-# Copy all node_modules so seed scripts have access to mysql2, bcryptjs, @prisma/adapter-mysql2, etc.
+
+# Copy node_modules (prisma CLI, seed deps, @prisma/client all live here)
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+
+# Add node_modules/.bin to PATH so bare "prisma" and "bun" commands work
+ENV PATH="/app/node_modules/.bin:$PATH"
+
+# Copy bun binary from builder for seed scripts (bun run prisma/seed-rbac.ts)
+COPY --from=oven/bun:alpine /usr/local/bin/bun /usr/local/bin/bun
 
 # Copy entrypoint script
 COPY --chown=nextjs:nodejs docker-entrypoint.sh ./
@@ -113,7 +113,6 @@ USER nextjs
 EXPOSE 3000
 
 ENV PORT=3000
-# set hostname to localhost
 ENV HOSTNAME="0.0.0.0"
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
