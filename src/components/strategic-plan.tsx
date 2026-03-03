@@ -140,6 +140,11 @@ export const StrategicPlan = () => {
           const isSelected = selectedIndex === index;
           const isHovered = hoveredCard === index;
 
+          // Localized content selection
+          const displayTitle = isArabic ? (strategic.titleAr ?? strategic.title) : strategic.title;
+          const displayCategory = isArabic ? (strategic.categoryAr ?? strategic.category) : strategic.category;
+          const displayExcerpt = isArabic ? (strategic.excerptAr ?? strategic.excerpt) : strategic.excerpt;
+
           // Determine entity type - improved with entityType override and slug fallback
           const isCenter = strategic.entityType === 'CENTER' ||
             (!strategic.entityType && (
@@ -160,7 +165,19 @@ export const StrategicPlan = () => {
           // Use string paths for logos to avoid TSC errors with relative public imports
           const LogoSrc = isCenter ? '/assets/icons/logo.svg' : '/assets/icons/college.png';
           const IconComponent = isCenter ? Sparkles : Building2;
+
+          // Progress calculation
           const currentProgress = Math.min(100, Math.max(0, strategic.progress ?? (strategic.status === 'COMPLETED' ? 100 : 65)));
+
+          // Date validation and formatting
+          const publishedDate = strategic.publishedAt ? new Date(strategic.publishedAt) : null;
+          const isValidDate = publishedDate && !isNaN(publishedDate.getTime());
+          const displayDate = isValidDate
+            ? publishedDate.toLocaleDateString(isArabic ? 'ar-LY' : 'en-US', {
+              year: 'numeric',
+              month: 'short'
+            })
+            : new Date().getFullYear().toString();
 
           return (
             <motion.div
@@ -169,9 +186,19 @@ export const StrategicPlan = () => {
               onClick={() => handleCardClick(index)}
               onMouseEnter={() => setHoveredCard(index)}
               onMouseLeave={() => setHoveredCard(null)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleCardClick(index);
+                }
+              }}
+              tabIndex={0}
+              role="button"
+              aria-pressed={isSelected}
               className={cn(
                 "group relative bg-white rounded-3xl overflow-hidden cursor-pointer",
                 "border-2 transition-all duration-500",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-4",
                 isDesktop || isSelected
                   ? "border-orange-200 shadow-xl shadow-orange-500/10 hover:shadow-2xl hover:shadow-orange-500/20 hover:border-orange-300"
                   : "border-gray-100 shadow-md opacity-80 scale-95",
@@ -217,16 +244,10 @@ export const StrategicPlan = () => {
                     <div>
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider">
                         <IconComponent className="w-3 h-3" />
-                        {strategic.category || (isArabic ? 'خطة إستراتيجية' : 'Strategic Plan')}
+                        {displayCategory || (isArabic ? 'خطة إستراتيجية' : 'Strategic Plan')}
                       </span>
                       <p className="text-xs text-gray-400 mt-2 font-medium">
-                        {isArabic ? 'تم النشر:' : 'Published:'} {strategic.publishedAt
-                          ? new Date(strategic.publishedAt).toLocaleDateString(isArabic ? 'ar-LY' : 'en-US', {
-                            year: 'numeric',
-                            month: 'short'
-                          })
-                          : new Date().getFullYear().toString()
-                        }
+                        {isArabic ? 'تم النشر:' : 'Published:'} {displayDate}
                       </p>
                     </div>
                   </div>
@@ -251,13 +272,13 @@ export const StrategicPlan = () => {
                       {entityName}
                     </p>
                     <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-almarai leading-tight group-hover:text-primary transition-colors">
-                      {strategic.title}
+                      {displayTitle}
                     </h3>
                   </div>
 
-                  {strategic.excerpt && (
+                  {displayExcerpt && (
                     <p className="text-gray-600 leading-relaxed line-clamp-3 font-din-regular">
-                      {strategic.excerpt}
+                      {displayExcerpt}
                     </p>
                   )}
 
