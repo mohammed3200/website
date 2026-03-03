@@ -14,6 +14,7 @@ import { getTwoFactorConfirmationByUserId } from '@/data/two-factor-confirmation
 import { db } from '@/lib/db';
 import { AuthError } from 'next-auth';
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
+import { rateLimit } from '@/lib/rate-limit';
 
 export const login = async (
   values: z.infer<typeof LoginSchema>,
@@ -26,6 +27,12 @@ export const login = async (
   }
 
   const { email, password, code } = validatedFields.data;
+
+  // W-04: Basic rate limiting to prevent brute-force
+  const limiter = await rateLimit(`login:${email}`, 5, 900); // 5 attempts per 15 mins
+  if (!limiter.success) {
+    return { error: 'Too many login attempts. Please try again in 15 minutes.' };
+  }
 
   const existingUser = await getUserByEmail(email);
 
