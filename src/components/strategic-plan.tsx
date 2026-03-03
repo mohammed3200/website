@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useMedia } from 'react-use';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   ArrowUpLeft,
   ArrowUpRight,
@@ -18,10 +18,6 @@ import { cn } from '@/lib/utils';
 import useLanguage from '@/hooks/use-language';
 import { useGetStrategicPlans } from '@/features/strategic-plan/api';
 import { HomeStrategicPlanSkeleton } from '@/components/skeletons';
-
-// Import logos
-import CollegeLogo from '../../public/assets/icons/college.png';
-import CenterLogo from '../../public/assets/icons/logo.svg';
 
 export interface StrategicPlanItem {
   id: string;
@@ -40,6 +36,8 @@ export interface StrategicPlanItem {
   publishedAt: string | null;
   createdAt?: string;
   updatedAt?: string;
+  progress?: number;
+  entityType?: 'CENTER' | 'COLLEGE';
   image: {
     id: string;
     url: string;
@@ -93,12 +91,14 @@ export const StrategicPlan = () => {
     }
   };
 
+  const cubicBezierEasing = [0.22, 1, 0.36, 1] as const;
+
   const cardVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as any }
+      transition: { duration: 0.6, ease: cubicBezierEasing }
     }
   };
 
@@ -140,12 +140,14 @@ export const StrategicPlan = () => {
           const isSelected = selectedIndex === index;
           const isHovered = hoveredCard === index;
 
-          // Determine entity type
-          const isCenter =
-            strategic.slug.includes('-center-') ||
-            strategic.slug.includes('-ebic-') ||
-            strategic.slug.includes('مركز') ||
-            strategic.slug.includes('incubator');
+          // Determine entity type - improved with entityType override and slug fallback
+          const isCenter = strategic.entityType === 'CENTER' ||
+            (!strategic.entityType && (
+              strategic.slug.includes('-center-') ||
+              strategic.slug.includes('-ebic-') ||
+              strategic.slug.includes('مركز') ||
+              strategic.slug.includes('incubator')
+            ));
 
           const entityName = isCenter
             ? isArabic
@@ -155,8 +157,10 @@ export const StrategicPlan = () => {
               ? 'كلية التقنية الصناعية - مصراتة'
               : 'College of Industrial Technology - Misurata';
 
-          const LogoSrc = isCenter ? CenterLogo : CollegeLogo;
+          // Use string paths for logos to avoid TSC errors with relative public imports
+          const LogoSrc = isCenter ? '/assets/icons/logo.svg' : '/assets/icons/college.png';
           const IconComponent = isCenter ? Sparkles : Building2;
+          const currentProgress = Math.min(100, Math.max(0, strategic.progress ?? (strategic.status === 'COMPLETED' ? 100 : 65)));
 
           return (
             <motion.div
@@ -221,7 +225,7 @@ export const StrategicPlan = () => {
                             year: 'numeric',
                             month: 'short'
                           })
-                          : '2024'
+                          : new Date().getFullYear().toString()
                         }
                       </p>
                     </div>
@@ -262,14 +266,14 @@ export const StrategicPlan = () => {
                     <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
-                        whileInView={{ width: strategic.status === 'COMPLETED' ? '100%' : '65%' }}
+                        whileInView={{ width: `${currentProgress}%` }}
                         viewport={{ once: true }}
                         transition={{ duration: 1, delay: 0.5 }}
                         className="h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"
                       />
                     </div>
                     <span className="text-xs font-bold text-gray-500">
-                      {strategic.status === 'COMPLETED' ? '100%' : '65%'}
+                      {currentProgress}%
                     </span>
                   </div>
                 </div>
@@ -292,7 +296,7 @@ export const StrategicPlan = () => {
                   <motion.button
                     onClick={(e) => {
                       e.stopPropagation();
-                      router.push(`${lang}/StrategicPlan/${strategic.slug}`);
+                      router.push(`/${lang}/StrategicPlan/${strategic.slug}`);
                     }}
                     whileHover={{ scale: 1.05, x: isArabic ? -4 : 4 }}
                     whileTap={{ scale: 0.95 }}
