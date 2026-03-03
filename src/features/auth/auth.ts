@@ -23,14 +23,20 @@ export const {
   // Cast to any to bypass type mismatch due to Prisma 7 adapter patterns
   adapter: PrismaAdapter(db as any),
   providers: [
-    Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-    Github({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
+    // Google Provider (Conditional with safety warnings)
+    ...(() => {
+      const { GOOGLE_CLIENT_ID: id, GOOGLE_CLIENT_SECRET: secret } = process.env;
+      if (id && !secret) console.warn("OAuth Warning: GOOGLE_CLIENT_ID is set but GOOGLE_CLIENT_SECRET is missing. Google provider disabled.");
+      if (!id && secret) console.warn("OAuth Warning: GOOGLE_CLIENT_SECRET is set but GOOGLE_CLIENT_ID is missing. Google provider disabled.");
+      return id && secret ? [Google({ clientId: id, clientSecret: secret })] : [];
+    })(),
+    // Github Provider (Conditional with safety warnings)
+    ...(() => {
+      const { GITHUB_CLIENT_ID: id, GITHUB_CLIENT_SECRET: secret } = process.env;
+      if (id && !secret) console.warn("OAuth Warning: GITHUB_CLIENT_ID is set but GITHUB_CLIENT_SECRET is missing. Github provider disabled.");
+      if (!id && secret) console.warn("OAuth Warning: GITHUB_CLIENT_SECRET is set but GITHUB_CLIENT_ID is missing. Github provider disabled.");
+      return id && secret ? [Github({ clientId: id, clientSecret: secret })] : [];
+    })(),
     Credentials({
       name: "Credentials",
       credentials: {
@@ -171,6 +177,7 @@ export const {
     strategy: "jwt",
     maxAge: 2 * 60 * 60, // 2 hours
   },
+  trustHost: true, // Required: app runs behind nginx reverse proxy on Virtuozzo
   secret: process.env.NEXTAUTH_SECRET!,
 });
 
