@@ -59,12 +59,27 @@ export function LoginForm() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isArabic, lang } = useLanguage();
+  const { isArabic } = useLanguage();
 
   const callbackUrl = searchParams.get('callbackUrl') || DEFAULT_LOGIN_REDIRECT;
-  const urlError = searchParams.get('error') === 'OAuthAccountNotLinked'
-    ? 'Email already in use with different provider!'
-    : '';
+
+  const getUrlError = () => {
+    const error = searchParams.get('error');
+    if (!error) return "";
+
+    const errorMap: Record<string, string> = {
+      'OAuthAccountNotLinked': 'Email already in use with different provider!',
+      'OAuthCallbackError': 'Failed to complete the external authentication.',
+      'OAuthSignin': 'Error occurred during sign in process.',
+      'CredentialsSignin': 'Invalid credentials provided.',
+      'SessionRequired': 'Please sign in to access this page.',
+      'Default': 'An unexpected authentication error occurred.'
+    };
+
+    return errorMap[error] || errorMap['Default'];
+  };
+
+  const urlError = getUrlError();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -95,6 +110,11 @@ export function LoginForm() {
       router.push(callbackUrl);
     }
   }, [session, status, callbackUrl, router, isClient]);
+
+  const handleBackToLogin = () => {
+    setShowTwoFactor(false);
+    form.setValue('code', ''); // Reset 2FA input state
+  };
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     setError('');
@@ -514,7 +534,7 @@ export function LoginForm() {
                       type="button"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      onClick={() => setShowTwoFactor(false)}
+                      onClick={handleBackToLogin}
                       className="w-full text-center text-sm text-gray-500 hover:text-gray-700 transition-colors py-2"
                     >
                       {isArabic ? 'العودة إلى تسجيل الدخول' : 'Back to login'}
@@ -528,10 +548,29 @@ export function LoginForm() {
           {/* Footer */}
           <div className="px-8 py-4 bg-gray-50/50 border-t border-gray-100">
             <p className="text-center text-xs text-gray-400">
-              {isArabic
-                ? 'بتسجيل الدخول، أنت توافق على شروط الاستخدام وسياسة الخصوصية'
-                : 'By signing in, you agree to our Terms of Use and Privacy Policy'
-              }
+              {isArabic ? (
+                <>
+                  بتسجيل الدخول، أنت توافق على{" "}
+                  <Link href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-600 transition-colors">
+                    شروط الاستخدام
+                  </Link>{" "}
+                  و
+                  <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-600 transition-colors">
+                    سياسة الخصوصية
+                  </Link>
+                </>
+              ) : (
+                <>
+                  By signing in, you agree to our{" "}
+                  <Link href="/terms" target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-600 transition-colors">
+                    Terms of Use
+                  </Link>{" "}
+                  and{" "}
+                  <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-600 transition-colors">
+                    Privacy Policy
+                  </Link>
+                </>
+              )}
             </p>
           </div>
         </motion.div>
