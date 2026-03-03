@@ -46,7 +46,11 @@ import {
 import { FormError } from '@/features/auth/components/form-error';
 import { FormSuccess } from '@/features/auth/components/form-success';
 
-export function LoginForm() {
+export interface LoginFormProps {
+  isGoogleEnabled?: boolean;
+}
+
+export function LoginForm({ isGoogleEnabled = true }: LoginFormProps) {
   const [isClient, setIsClient] = useState(false);
   const [showTwoFactor, setShowTwoFactor] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -61,7 +65,25 @@ export function LoginForm() {
   const searchParams = useSearchParams();
   const { isArabic } = useLanguage();
 
-  const callbackUrl = searchParams.get('callbackUrl') || DEFAULT_LOGIN_REDIRECT;
+  // SANITIZE callbackUrl: Allow only internal relative paths starting with /
+  const getSanitizedCallbackUrl = () => {
+    const rawUrl = searchParams.get('callbackUrl');
+    if (!rawUrl) return DEFAULT_LOGIN_REDIRECT;
+
+    // Reject absolute URLs (containing :// or starting with //) to avoid open redirect vulnerabilities
+    if (rawUrl.includes('://') || rawUrl.startsWith('//')) {
+      return DEFAULT_LOGIN_REDIRECT;
+    }
+
+    // Ensure it starts with / and doesn't contain a host portion
+    if (rawUrl.startsWith('/')) {
+      return rawUrl;
+    }
+
+    return DEFAULT_LOGIN_REDIRECT;
+  };
+
+  const callbackUrl = getSanitizedCallbackUrl();
 
   const getUrlError = () => {
     const error = searchParams.get('error');
@@ -278,29 +300,33 @@ export function LoginForm() {
                       exit={{ opacity: 0, x: isArabic ? -20 : 20 }}
                       className="space-y-5"
                     >
-                      {/* Google Sign In */}
-                      <motion.button
-                        type="button"
-                        onClick={() => onSocialClick('google')}
-                        disabled={isPending}
-                        whileHover={{ scale: 1.02, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full h-14 flex items-center justify-center gap-3 bg-white border-2 border-gray-200 rounded-xl hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/10 transition-all disabled:opacity-50 group"
-                      >
-                        <FcGoogle className="w-5 h-5" />
-                        <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900">
-                          {isArabic ? 'المتابعة مع Google' : 'Continue with Google'}
-                        </span>
-                      </motion.button>
+                      {/* Google Sign In (Conditional) */}
+                      {isGoogleEnabled && (
+                        <motion.button
+                          type="button"
+                          onClick={() => onSocialClick('google')}
+                          disabled={isPending}
+                          whileHover={{ scale: 1.02, y: -2 }}
+                          whileTap={{ scale: 0.98 }}
+                          className="w-full h-14 flex items-center justify-center gap-3 bg-white border-2 border-gray-200 rounded-xl hover:border-orange-300 hover:shadow-lg hover:shadow-orange-500/10 transition-all disabled:opacity-50 group"
+                        >
+                          <FcGoogle className="w-5 h-5" />
+                          <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900">
+                            {isArabic ? 'المتابعة مع Google' : 'Continue with Google'}
+                          </span>
+                        </motion.button>
+                      )}
 
                       {/* Divider */}
-                      <div className="relative flex items-center gap-4">
-                        <div className="flex-1 h-px bg-gray-200" />
-                        <span className="text-xs text-gray-400 font-medium uppercase">
-                          {isArabic ? 'أو' : 'OR'}
-                        </span>
-                        <div className="flex-1 h-px bg-gray-200" />
-                      </div>
+                      {isGoogleEnabled && (
+                        <div className="relative flex items-center gap-4">
+                          <div className="flex-1 h-px bg-gray-200" />
+                          <span className="text-xs text-gray-400 font-medium uppercase">
+                            {isArabic ? 'أو' : 'OR'}
+                          </span>
+                          <div className="flex-1 h-px bg-gray-200" />
+                        </div>
+                      )}
 
                       {/* Email Field */}
                       <FormField
@@ -308,7 +334,10 @@ export function LoginForm() {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                            <label
+                              htmlFor="login-email"
+                              className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 cursor-pointer"
+                            >
                               {isArabic ? 'البريد الإلكتروني' : 'Email Address'}
                             </label>
                             <FormControl>
@@ -320,6 +349,7 @@ export function LoginForm() {
                                 )} />
                                 <input
                                   {...field}
+                                  id="login-email"
                                   type="email"
                                   disabled={isPending}
                                   placeholder={isArabic ? 'your@email.com' : 'your@email.com'}
@@ -346,7 +376,10 @@ export function LoginForm() {
                         render={({ field }) => (
                           <FormItem>
                             <div className="flex items-center justify-between mb-2">
-                              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                              <label
+                                htmlFor="login-password"
+                                className="text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer"
+                              >
                                 {isArabic ? 'كلمة المرور' : 'Password'}
                               </label>
                               <Link
@@ -365,6 +398,7 @@ export function LoginForm() {
                                 )} />
                                 <input
                                   {...field}
+                                  id="login-password"
                                   type={showPassword ? 'text' : 'password'}
                                   disabled={isPending}
                                   placeholder={isArabic ? '••••••••' : '••••••••'}
@@ -380,6 +414,8 @@ export function LoginForm() {
                                 <button
                                   type="button"
                                   onClick={() => setShowPassword(!showPassword)}
+                                  aria-label={showPassword ? (isArabic ? 'إخفاء كلمة المرور' : 'Hide password') : (isArabic ? 'إظهار كلمة المرور' : 'Show password')}
+                                  aria-pressed={showPassword}
                                   className={cn(
                                     "absolute top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-200 transition-colors",
                                     isArabic ? "left-3" : "right-3"
@@ -418,7 +454,10 @@ export function LoginForm() {
                         name="code"
                         render={({ field }) => (
                           <FormItem className="flex flex-col items-center">
-                            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">
+                            <label
+                              htmlFor="two-factor-code"
+                              className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 cursor-pointer"
+                            >
                               {isArabic ? 'رمز التحقق' : 'Verification Code'}
                             </label>
                             <FormControl>
@@ -426,6 +465,7 @@ export function LoginForm() {
                                 <div className="relative">
                                   <input
                                     {...field}
+                                    id="two-factor-code"
                                     disabled={isPending}
                                     maxLength={6}
                                     placeholder="000000"
