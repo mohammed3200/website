@@ -7,7 +7,8 @@ export const getTwoFactorConfirmationByUserId = async (userId: string) => {
     });
 
     return twoFactorConfirmation;
-  } catch {
+  } catch (error) {
+    console.error('[Data] getTwoFactorConfirmationByUserId failed:', error);
     return null;
   }
 };

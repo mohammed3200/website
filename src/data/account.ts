@@ -7,7 +7,8 @@ export const getAccountByUserId = async (userId: string) => {
     });
 
     return account;
-  } catch {
+  } catch (error) {
+    console.error('[Data] getAccountByUserId failed:', error);
     return null;
   }
 };

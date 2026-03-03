@@ -65,9 +65,9 @@ export class EmailService {
   }
 
   /**
-   * Send an email
+   * Send an email with retry logic (up to 2 retries with exponential backoff)
    */
-  async sendEmail(options: EmailOptions): Promise<SendResult> {
+  async sendEmail(options: EmailOptions, maxRetries: number = 2): Promise<SendResult> {
     if (!this.transporter) {
       return {
         success: false,
@@ -75,52 +75,61 @@ export class EmailService {
       };
     }
 
-    try {
-      const mailOptions: nodemailer.SendMailOptions = {
-        from: options.from || process.env.EMAIL_FROM || 'ebic@cit.edu.ly',
-        to: options.to,
-        subject: options.subject,
-        text: options.text,
-        html: options.html,
-      };
+    const mailOptions: nodemailer.SendMailOptions = {
+      from: options.from || process.env.EMAIL_FROM || 'ebic@cit.edu.ly',
+      to: options.to,
+      subject: options.subject,
+      text: options.text,
+      html: options.html,
+    };
 
-      const info = await this.transporter.sendMail(mailOptions);
+    let lastError = '';
 
-      // Log to database
-      await this.logEmail({
-        to: options.to,
-        from: mailOptions.from as string,
-        subject: options.subject,
-        status: EmailStatus.SENT,
-        messageId: info.messageId,
-        template: 'custom',
-      });
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const info = await this.transporter.sendMail(mailOptions);
 
-      return {
-        success: true,
-        messageId: info.messageId,
-      };
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Unknown error';
+        // Log to database
+        await this.logEmail({
+          to: options.to,
+          from: mailOptions.from as string,
+          subject: options.subject,
+          status: EmailStatus.SENT,
+          messageId: info.messageId,
+          template: 'custom',
+        });
 
-      console.error('❌ Email send error:', errorMessage);
+        return {
+          success: true,
+          messageId: info.messageId,
+        };
+      } catch (error) {
+        lastError = error instanceof Error ? error.message : 'Unknown error';
 
-      // Log failed email to database
-      await this.logEmail({
-        to: options.to,
-        from: options.from || process.env.EMAIL_FROM || 'ebic@cit.edu.ly',
-        subject: options.subject,
-        status: EmailStatus.FAILED,
-        errorMessage,
-        template: 'custom',
-      });
-
-      return {
-        success: false,
-        error: errorMessage,
-      };
+        if (attempt < maxRetries) {
+          const delay = Math.pow(2, attempt) * 1000; // 1s, 2s
+          console.warn(`⚠️ Email send attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      }
     }
+
+    console.error('❌ Email send failed after retries:', lastError);
+
+    // Log failed email to database
+    await this.logEmail({
+      to: options.to,
+      from: mailOptions.from as string,
+      subject: options.subject,
+      status: EmailStatus.FAILED,
+      errorMessage: lastError,
+      template: 'custom',
+    });
+
+    return {
+      success: false,
+      error: lastError,
+    };
   }
 
   /**

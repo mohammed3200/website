@@ -8,21 +8,22 @@ export const getPasswordResetTokenByToken = async (token: string) => {
       },
     });
     return passwordResetToken;
-  } catch {
+  } catch (error) {
+    console.error('[Data] getPasswordResetTokenByToken failed:', error);
     return null;
   }
 };
 
 export const getPasswordRestTokenByEmail = async (email: string) => {
-    try {
-      const passwordResetToken = await db.passwordResetToken.findFirst({
-        where: {
-          email,
-        },
-      });
-      return passwordResetToken;
-    } catch {
-      return null;
-    }
-  };
-  
+  try {
+    const passwordResetToken = await db.passwordResetToken.findFirst({
+      where: {
+        email,
+      },
+    });
+    return passwordResetToken;
+  } catch (error) {
+    console.error('[Data] getPasswordRestTokenByEmail failed:', error);
+    return null;
+  }
+};
