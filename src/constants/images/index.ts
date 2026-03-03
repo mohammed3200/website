@@ -1,8 +1,3 @@
-export const strategicsImage = {
-  college: "/assets/icons/collegeWithEffect.png",
-  leadership: "/assets/icons/logoWithEffect.png",
-};
-
 export const BackGroundEffect = {
   GlassBackground: "/assets/images/GlassBack.png",
   Noise: "/assets/images/noise.webp",
@@ -34,8 +29,8 @@ export const InterfaceImage = {
 
 export const CorporateCompanies = {
   AfterPay: "/assets/corporateLogos/afterpay.svg",
-  Amplitude : "/assets/corporateLogos/amplitude.svg",
+  Amplitude: "/assets/corporateLogos/amplitude.svg",
   Drips: "/assets/corporateLogos/drips.svg",
   Maze: "/assets/corporateLogos/maze.svg",
-  Sonos : "/assets/corporateLogos/sonos.svg",
+  Sonos: "/assets/corporateLogos/sonos.svg",
 }
