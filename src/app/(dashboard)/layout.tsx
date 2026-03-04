@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import '../globals.css';
 import { AppProviders } from '@/components/providers/app-providers';
 import { Toaster } from 'sonner';
-// TODO: change Metadata
+
 export const metadata: Metadata = {
   title: 'Entrepreneurship and Business Incubators Center - Misurata',
   description:
