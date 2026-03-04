@@ -102,9 +102,9 @@ ENV PATH="/app/node_modules/.bin:$PATH"
 # Copy bun binary for seed scripts
 COPY --from=deps /usr/local/bin/bun /usr/local/bin/bun
 
-# Copy entrypoint script
+# Copy entrypoint script and fix Windows line endings
 COPY --chown=nextjs:nodejs docker-entrypoint.sh ./
-RUN chmod +x docker-entrypoint.sh
+RUN sed -i 's/\r$//' docker-entrypoint.sh && chmod +x docker-entrypoint.sh
 
 USER nextjs
 
