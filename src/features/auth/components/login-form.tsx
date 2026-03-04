@@ -239,7 +239,6 @@ export function LoginForm({ isGoogleEnabled = true }: LoginFormProps) {
         animate="visible"
         variants={containerVariants}
         className="relative z-10 w-full max-w-md mx-4"
-        dir="ltr"
       >
         {/* Logo Header */}
         <motion.div variants={itemVariants} className="flex justify-center mb-8">
