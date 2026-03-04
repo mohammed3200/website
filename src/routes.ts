@@ -12,6 +12,8 @@ export const publicRoutes = [
     "/innovators",
     "/News",
     "/StrategicPlan",
+    "/terms",
+    "/privacy",
 ];
 
 /**
