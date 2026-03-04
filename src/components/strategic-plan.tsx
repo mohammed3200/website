@@ -47,7 +47,8 @@ export interface StrategicPlanItem {
 
 export const StrategicPlan = () => {
   const router = useRouter();
-  const t = useTranslations('ui');
+  const t = useTranslations('StrategicPlan');
+  const tUi = useTranslations('ui');
   const { isArabic, lang } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -69,7 +70,7 @@ export const StrategicPlan = () => {
     return (
       <section className="max-w-7xl mx-auto w-full px-4">
         <div className="bg-white rounded-3xl border border-gray-100 shadow-lg p-8 text-center">
-          <p className="text-red-500">Failed to load strategic plans</p>
+          <p className="text-red-500">{t('loadError')}</p>
         </div>
       </section>
     );
@@ -114,17 +115,14 @@ export const StrategicPlan = () => {
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full mb-4">
           <Target className="w-4 h-4 text-primary" />
           <span className="text-sm font-bold text-primary uppercase tracking-wider">
-            {isArabic ? 'خططنا الاستراتيجية' : 'Our Strategic Plans'}
+            {t('badge')}
           </span>
         </div>
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-almarai mb-3">
-          {isArabic ? 'رؤيتنا للمستقبل' : 'Vision for the Future'}
+          {t('title')}
         </h2>
         <p className="text-gray-500 max-w-2xl mx-auto">
-          {isArabic
-            ? 'استكشف خططنا الاستراتيجية الشاملة لتطوير ريادة الأعمال والتعليم التقني'
-            : 'Explore our comprehensive strategic plans for entrepreneurship and technical education development'
-          }
+          {t('subtitle')}
         </p>
       </motion.div>
 
@@ -154,20 +152,12 @@ export const StrategicPlan = () => {
               strategic.slug.includes('incubator')
             ));
 
-          const entityName = isCenter
-            ? isArabic
-              ? 'مركز الريادة وحاضنات الأعمال'
-              : 'Entrepreneurship & Business Incubators Center'
-            : isArabic
-              ? 'كلية التقنية الصناعية - مصراتة'
-              : 'College of Industrial Technology - Misurata';
 
           // Use string paths for logos to avoid TSC errors with relative public imports
           const LogoSrc = isCenter ? '/assets/icons/logo.svg' : '/assets/icons/college.png';
           const IconComponent = isCenter ? Sparkles : Building2;
 
-          // Progress calculation
-          const currentProgress = Math.min(100, Math.max(0, strategic.progress ?? (strategic.status === 'COMPLETED' ? 100 : 65)));
+
 
           // Date validation and formatting
           const publishedDate = strategic.publishedAt ? new Date(strategic.publishedAt) : null;
@@ -237,40 +227,26 @@ export const StrategicPlan = () => {
 
                       {/* Decorative corner accent for center logo */}
                       {isCenter && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full border-2 border-white" />
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full border-2 border-orange-200 shadow-sm" />
                       )}
                     </motion.div>
 
                     <div>
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider">
                         <IconComponent className="w-3 h-3" />
-                        {displayCategory || (isArabic ? 'خطة إستراتيجية' : 'Strategic Plan')}
+                        {displayCategory || t('defaultCategory')}
                       </span>
                       <p className="text-xs text-gray-400 mt-2 font-medium">
-                        {isArabic ? 'تم النشر:' : 'Published:'} {displayDate}
+                        {t('published')} {displayDate}
                       </p>
                     </div>
                   </div>
 
-                  {/* Priority Badge */}
-                  <div className={cn(
-                    "w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg shadow-sm",
-                    strategic.priority === 'HIGH'
-                      ? "bg-red-50 text-red-600 border border-red-100"
-                      : strategic.priority === 'MEDIUM'
-                        ? "bg-orange-50 text-orange-600 border border-orange-100"
-                        : "bg-blue-50 text-blue-600 border border-blue-100"
-                  )}>
-                    {strategic.priority?.charAt(0) || 'P'}
-                  </div>
                 </div>
 
                 {/* Content */}
                 <div className="flex-1 flex flex-col justify-center space-y-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-500 mb-1 uppercase tracking-wide">
-                      {entityName}
-                    </p>
                     <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-almarai leading-tight group-hover:text-primary transition-colors">
                       {displayTitle}
                     </h3>
@@ -282,21 +258,6 @@ export const StrategicPlan = () => {
                     </p>
                   )}
 
-                  {/* Progress Indicator */}
-                  <div className="flex items-center gap-3 pt-2">
-                    <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${currentProgress}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: 0.5 }}
-                        className="h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"
-                      />
-                    </div>
-                    <span className="text-xs font-bold text-gray-500">
-                      {currentProgress}%
-                    </span>
-                  </div>
                 </div>
 
                 {/* Footer Action */}
@@ -308,9 +269,9 @@ export const StrategicPlan = () => {
                         strategic.status === 'COMPLETED' ? "bg-blue-500" : "bg-amber-500"
                     )} />
                     <span className="text-sm font-medium text-gray-500">
-                      {strategic.status === 'ACTIVE' ? (isArabic ? 'نشط' : 'Active') :
-                        strategic.status === 'COMPLETED' ? (isArabic ? 'مكتمل' : 'Completed') :
-                          (isArabic ? 'قيد التنفيذ' : 'In Progress')}
+                      {strategic.status === 'ACTIVE' ? t('statusActive') :
+                        strategic.status === 'COMPLETED' ? t('statusCompleted') :
+                          t('statusInProgress')}
                     </span>
                   </div>
 
@@ -327,7 +288,7 @@ export const StrategicPlan = () => {
                       "hover:shadow-xl hover:shadow-orange-500/40 hover:from-orange-500 hover:to-orange-700"
                     )}
                   >
-                    <span>{t('readMore')}</span>
+                    <span>{tUi('readMore')}</span>
                     {isArabic ? (
                       <ArrowUpLeft className="w-4 h-4" />
                     ) : (
@@ -357,7 +318,7 @@ export const StrategicPlan = () => {
         className="mt-12 text-center"
       >
         <p className="text-gray-500 mb-4">
-          {isArabic ? 'هل تريد معرفة المزيد عن استراتيجيتنا؟' : 'Want to learn more about our strategy?'}
+          {t('ctaQuestion')}
         </p>
         <motion.button
           whileHover={{ scale: 1.02 }}
@@ -365,7 +326,7 @@ export const StrategicPlan = () => {
           onClick={() => router.push(`/${lang}/about`)}
           className="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-gray-200 rounded-full text-gray-700 font-bold hover:border-orange-300 hover:text-primary transition-all"
         >
-          {isArabic ? 'استكشف المزيد' : 'Explore More'}
+          {t('ctaButton')}
           {isArabic ? <ArrowUpLeft className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
         </motion.button>
       </motion.div>
