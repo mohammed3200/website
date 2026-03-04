@@ -36,6 +36,19 @@
     "deleteTitle": "Delete Confirmation",
     "deleteMessage": "Are you sure you want to delete this item? This action cannot be undone."
   },
+  "StrategicPlan": {
+    "badge": "Our Strategic Plans",
+    "title": "Vision for the Future",
+    "subtitle": "Explore our comprehensive strategic plans for entrepreneurship and technical education development",
+    "loadError": "Failed to load strategic plans",
+    "defaultCategory": "Strategic Plan",
+    "published": "Published:",
+    "statusActive": "Active",
+    "statusCompleted": "Completed",
+    "statusInProgress": "In Progress",
+    "ctaQuestion": "Want to learn more about our strategy?",
+    "ctaButton": "Explore More"
+  },
   "Faq": {
     "title": "Inquiry fosters understanding, it leads to valuable insights.",
     "subtitle": "You've got questions, we've got answers."
