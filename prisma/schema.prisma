@@ -580,6 +580,18 @@ model Report {
   @@index([createdById])
 }
 
+model LegalContent {
+  id        String   @id @default(uuid())
+  type      String   // "privacy" | "terms"
+  locale    String   // "en" | "ar"
+  title     String
+  content   String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@unique([type, locale])
+  @@index([type, locale])
+}
+
 enum StageDevelopment {
   STAGE
   PROTOTYPE
