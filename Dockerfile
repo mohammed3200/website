@@ -26,6 +26,7 @@ RUN bun install --frozen-lockfile
 # ------------------------------------------
 FROM node:20-alpine AS builder
 ARG BUN_VERSION
+ARG PRISMA_VERSION
 RUN npm install -g bun@${BUN_VERSION}
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -34,7 +35,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Generate Prisma Client
-RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
+RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma@${PRISMA_VERSION} generate
 
 # Build Next.js app (Standalone output enabled in next.config.ts)
 RUN DATABASE_URL=mysql://localhost:3306/dummy bun run build
@@ -59,7 +60,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy standalone output and static assets
-COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
