@@ -14,6 +14,7 @@ export default [
       'out/**',
       'next-env.d.ts',
       'public/**',
+      'coverage/**',
       'scripts/**', // Ignore scripts if not in tsconfig
       'tests/**',    // Ignore tests if not in tsconfig or handle separately
     ],
