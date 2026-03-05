@@ -581,15 +581,15 @@ model Report {
 }
 
 model LegalContent {
-  id        String   @id @default(uuid())
-  type      String   // "privacy" | "terms"
-  locale    String   // "en" | "ar"
+  id        String             @id @default(cuid())
+  type      LegalContentType
+  locale    LegalContentLocale
   title     String
-  content   String   @db.Text
-  updatedAt DateTime @updatedAt
+  content   String             @db.Text
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 
   @@unique([type, locale])
-  @@index([type, locale])
 }
 
 enum StageDevelopment {
@@ -682,4 +682,14 @@ enum MessageStatus {
   DELIVERED
   READ
   FAILED
+}
+
+enum LegalContentType {
+  privacy
+  terms
+}
+
+enum LegalContentLocale {
+  en
+  ar
 }
