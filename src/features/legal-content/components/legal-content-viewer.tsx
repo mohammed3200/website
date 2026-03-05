@@ -1,6 +1,6 @@
 'use client';
 
-import DOMPurify from 'isomorphic-dompurify';
+import { sanitizeHtml } from '@/lib/sanitizer';
 import type { LegalContentType, LegalContentLocale } from '../types/legal-content-type';
 import { useGetLegalContent } from '../api/use-get-legal-content';
 import { LEGAL_CONTENT_DEFAULTS, type LegalContentKey } from '../constants/legal-content-constants';
@@ -33,7 +33,7 @@ export function LegalContentViewer({ type, locale }: LegalContentViewerProps) {
     const rawContent = data?.content ?? defaults?.content ?? '';
 
     // Sanitize HTML content safely on both server and client
-    const sanitizedContent = DOMPurify.sanitize(rawContent);
+    const sanitizedContent = sanitizeHtml(rawContent);
 
     if (isError) {
         return (
