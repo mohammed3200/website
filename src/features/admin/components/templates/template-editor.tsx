@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import DOMPurify from 'dompurify';
+import { sanitizeHtml } from '@/lib/sanitizer';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -99,7 +99,7 @@ export const TemplateEditor = ({
         `<span class="bg-yellow-100 text-yellow-800 font-mono px-1 rounded">${match}</span>`,
     );
     // Sanitize the HTML to prevent XSS
-    return DOMPurify.sanitize(highlighted);
+    return sanitizeHtml(highlighted);
   };
 
   const parsedVariables = (() => {
