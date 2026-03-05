@@ -10,7 +10,7 @@ import {
     getLegalContentQuerySchema,
     patchLegalContentSchema,
 } from '../schemas/legal-content-schema';
-import { LEGAL_CONTENT_DEFAULTS } from '../constants/legal-content-constants';
+import { LEGAL_CONTENT_DEFAULTS, type LegalContentKey } from '../constants/legal-content-constants';
 
 // Helper for Server Components (direct DB access, no HTTP round-trip)
 export const getLegalContent = async (
@@ -24,7 +24,7 @@ export const getLegalContent = async (
     if (record) return record;
 
     // Return fallback defaults if nothing is in the DB yet
-    const key = `${type}:${locale}`;
+    const key = `${type}:${locale}` as LegalContentKey;
     const defaults = LEGAL_CONTENT_DEFAULTS[key];
 
     return {

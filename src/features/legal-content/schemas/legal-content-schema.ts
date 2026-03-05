@@ -1,15 +1,16 @@
 import { z } from 'zod';
+import { LegalContentType, LegalContentLocale } from '@prisma/client';
 
 export const getLegalContentQuerySchema = z.object({
-    type: z.enum(['privacy', 'terms']),
-    locale: z.enum(['en', 'ar']).default('en'),
+    type: z.nativeEnum(LegalContentType),
+    locale: z.nativeEnum(LegalContentLocale).default(LegalContentLocale.en),
 });
 
 export const patchLegalContentSchema = z.object({
-    type: z.enum(['privacy', 'terms']),
-    locale: z.enum(['en', 'ar']),
-    title: z.string().min(1, 'Title is required'),
-    content: z.string().min(1, 'Content is required'),
+    type: z.nativeEnum(LegalContentType),
+    locale: z.nativeEnum(LegalContentLocale),
+    title: z.string().trim().min(1, 'Title is required'),
+    content: z.string().trim().min(1, 'Content is required'),
 });
 
 export type GetLegalContentQuery = z.infer<typeof getLegalContentQuerySchema>;

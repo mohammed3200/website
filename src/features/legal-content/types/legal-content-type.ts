@@ -1,9 +1,6 @@
-import type { LegalContent } from '@prisma/client';
+import type { LegalContent, LegalContentType, LegalContentLocale } from '@prisma/client';
 
-export type { LegalContent };
-
-export type LegalContentType = 'privacy' | 'terms';
-export type LegalContentLocale = 'en' | 'ar';
+export type { LegalContent, LegalContentType, LegalContentLocale };
 
 export interface LegalContentResponse {
     data: LegalContent;

@@ -1,9 +1,9 @@
 'use client';
 
-import DOMPurify from 'dompurify';
+import DOMPurify from 'isomorphic-dompurify';
 import type { LegalContentType, LegalContentLocale } from '../types/legal-content-type';
 import { useGetLegalContent } from '../api/use-get-legal-content';
-import { LEGAL_CONTENT_DEFAULTS } from '../constants/legal-content-constants';
+import { LEGAL_CONTENT_DEFAULTS, type LegalContentKey } from '../constants/legal-content-constants';
 
 interface LegalContentViewerProps {
     type: LegalContentType;
@@ -26,16 +26,14 @@ export function LegalContentViewer({ type, locale }: LegalContentViewerProps) {
         );
     }
 
-    const fallbackKey = `${type}:${locale}`;
+    const fallbackKey = `${type}:${locale}` as LegalContentKey;
     const defaults = LEGAL_CONTENT_DEFAULTS[fallbackKey];
 
     const title = data?.title ?? defaults?.title ?? type;
     const rawContent = data?.content ?? defaults?.content ?? '';
 
-    // Sanitize HTML content to prevent XSS
-    const sanitizedContent = typeof window !== 'undefined'
-        ? DOMPurify.sanitize(rawContent)
-        : rawContent;
+    // Sanitize HTML content safely on both server and client
+    const sanitizedContent = DOMPurify.sanitize(rawContent);
 
     if (isError) {
         return (

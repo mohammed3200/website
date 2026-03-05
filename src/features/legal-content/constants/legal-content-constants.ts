@@ -1,9 +1,19 @@
-export const LEGAL_CONTENT_TYPES = ['privacy', 'terms'] as const;
+import { LegalContentType, LegalContentLocale } from '@prisma/client';
 
-export const LEGAL_CONTENT_LOCALES = ['en', 'ar'] as const;
+export const LEGAL_CONTENT_TYPES = [
+    'privacy',
+    'terms',
+] as const satisfies readonly LegalContentType[];
+
+export const LEGAL_CONTENT_LOCALES = [
+    'en',
+    'ar',
+] as const satisfies readonly LegalContentLocale[];
+
+export type LegalContentKey = `${LegalContentType}:${LegalContentLocale}`;
 
 export const LEGAL_CONTENT_DEFAULTS: Record<
-    string,
+    LegalContentKey,
     { title: string; content: string }
 > = {
     'privacy:en': {

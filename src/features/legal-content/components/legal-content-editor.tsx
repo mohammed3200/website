@@ -11,7 +11,7 @@ interface LegalContentEditorProps {
 }
 
 export function LegalContentEditor({ type, locale }: LegalContentEditorProps) {
-    const { data, isLoading } = useGetLegalContent(type, locale);
+    const { data, isLoading, isError } = useGetLegalContent(type, locale);
     const { mutate, isPending } = usePatchLegalContent();
 
     const [title, setTitle] = useState('');
@@ -25,8 +25,20 @@ export function LegalContentEditor({ type, locale }: LegalContentEditorProps) {
     }, [data]);
 
     const handleSave = () => {
+        const trimmedTitle = title.trim();
+        const trimmedContent = content.trim();
+
+        if (!trimmedTitle || !trimmedContent) {
+            alert('Title and Content cannot be empty or just whitespace.');
+            return;
+        }
+
+        if (isError || !data) {
+            return;
+        }
+
         mutate({
-            json: { type, locale, title, content },
+            json: { type, locale, title: trimmedTitle, content: trimmedContent },
         });
     };
 
@@ -35,6 +47,15 @@ export function LegalContentEditor({ type, locale }: LegalContentEditorProps) {
             <div className="space-y-4 animate-pulse">
                 <div className="h-10 bg-gray-200 rounded w-1/3" />
                 <div className="h-40 bg-gray-200 rounded" />
+            </div>
+        );
+    }
+
+    if (isError) {
+        return (
+            <div className="p-8 border border-red-200 bg-red-50 rounded-lg text-center">
+                <p className="text-red-600 font-medium">Failed to load content for editing.</p>
+                <p className="text-sm text-red-500 mt-1">Please refresh the page or try again later.</p>
             </div>
         );
     }
