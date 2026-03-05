@@ -1,6 +1,5 @@
 # ==========================================
 # Production Dockerfile for Background Worker
-# Runs email, report, and WhatsApp queue workers
 # ==========================================
 
 # ------------------------------------------
@@ -20,33 +19,19 @@ RUN bun install --frozen-lockfile
 # Stage 2: Runner
 # ------------------------------------------
 FROM node:20-alpine AS runner
-
-# openssl required by Prisma query engine
 RUN apk add --no-cache libc6-compat openssl
-
-# Copy bun binary from deps stage
-COPY --from=deps /usr/local/bin/bun /usr/local/bin/bun
-
+RUN npm install -g bun
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 worker
 
-# Security: Don't run as root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 worker
-
-# Copy node_modules from deps
-COPY --from=deps --chown=worker:nodejs /app/node_modules ./node_modules
-COPY --chown=worker:nodejs package.json ./
-COPY --chown=worker:nodejs tsconfig.json ./
-COPY --chown=worker:nodejs prisma.config.ts ./
-COPY --chown=worker:nodejs prisma ./prisma
-COPY --chown=worker:nodejs src ./src
+# Copy node_modules and necessary source files
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
 # Generate Prisma client
 RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
 
 USER worker
-
 CMD ["bun", "run", "src/worker.ts"]
