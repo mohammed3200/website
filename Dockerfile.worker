@@ -1,14 +1,17 @@
 # ==========================================
 # Production Dockerfile for Background Worker
-# Runs email, report, and WhatsApp queue workers
 # ==========================================
+
+ARG BUN_VERSION=1.3.10
+ARG PRISMA_VERSION=7.4.0
 
 # ------------------------------------------
 # Stage 1: Dependencies
 # ------------------------------------------
 FROM node:20-alpine AS deps
+ARG BUN_VERSION
 RUN apk add --no-cache libc6-compat python3 make g++
-RUN npm install -g bun
+RUN npm install -g bun@${BUN_VERSION}
 WORKDIR /app
 
 COPY package.json bun.lock ./
@@ -17,36 +20,34 @@ COPY prisma.config.ts ./
 RUN bun install --frozen-lockfile
 
 # ------------------------------------------
-# Stage 2: Runner
+# Stage 2: Builder (Prisma Generation)
+# ------------------------------------------
+FROM node:20-alpine AS builder
+ARG PRISMA_VERSION
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY prisma ./prisma
+COPY prisma.config.ts ./
+RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma@${PRISMA_VERSION} generate
+
+# ------------------------------------------
+# Stage 3: Runner
 # ------------------------------------------
 FROM node:20-alpine AS runner
-
-# openssl required by Prisma query engine
+ARG BUN_VERSION
 RUN apk add --no-cache libc6-compat openssl
-
-# Copy bun binary from deps stage
-COPY --from=deps /usr/local/bin/bun /usr/local/bin/bun
-
+RUN npm install -g bun@${BUN_VERSION}
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 worker
 
-# Security: Don't run as root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 worker
-
-# Copy node_modules from deps
+# Copy only necessary runtime files
 COPY --from=deps --chown=worker:nodejs /app/node_modules ./node_modules
-COPY --chown=worker:nodejs package.json ./
-COPY --chown=worker:nodejs tsconfig.json ./
-COPY --chown=worker:nodejs prisma.config.ts ./
+COPY --from=builder --chown=worker:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --chown=worker:nodejs package.json bun.lock tsconfig.json prisma.config.ts ./
 COPY --chown=worker:nodejs prisma ./prisma
 COPY --chown=worker:nodejs src ./src
 
-# Generate Prisma client
-RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma generate
-
 USER worker
-
 CMD ["bun", "run", "src/worker.ts"]
