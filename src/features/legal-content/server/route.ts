@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
+import DOMPurify from 'isomorphic-dompurify';
 import { db } from '@/lib/db';
 import {
     verifyAuth,
@@ -64,10 +65,13 @@ const app = new Hono()
             try {
                 const { type, locale, title, content } = c.req.valid('json');
 
+                // Server-side sanitization before saving to DB
+                const sanitizedContent = DOMPurify.sanitize(content);
+
                 const record = await db.legalContent.upsert({
                     where: { type_locale: { type, locale } },
-                    update: { title, content },
-                    create: { type, locale, title, content },
+                    update: { title, content: sanitizedContent },
+                    create: { type, locale, title, content: sanitizedContent },
                 });
 
                 return c.json({ data: record });

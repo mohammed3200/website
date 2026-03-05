@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { usePatchLegalContent } from '../api/use-patch-legal-content';
 import { useGetLegalContent } from '../api/use-get-legal-content';
 import type { LegalContentType, LegalContentLocale } from '../types/legal-content-type';
@@ -29,11 +30,12 @@ export function LegalContentEditor({ type, locale }: LegalContentEditorProps) {
         const trimmedContent = content.trim();
 
         if (!trimmedTitle || !trimmedContent) {
-            alert('Title and Content cannot be empty or just whitespace.');
+            toast.error('Title and Content cannot be empty or just whitespace.');
             return;
         }
 
         if (isError || !data) {
+            toast.error('Cannot save while there is an error or data is missing.');
             return;
         }
 
