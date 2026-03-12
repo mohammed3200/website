@@ -101,7 +101,10 @@ export const HomeHero = () => {
 
               <ActiveButton
                 onClick={() => {
-                  router.push(`/${lang}/StrategicPlan/2`);
+                  const slug = isArabic
+                    ? 'entrepreneurship-and-business-incubators-center-ar-2'
+                    : 'entrepreneurship-and-business-incubators-center-en-2';
+                  router.push(`/${lang}/StrategicPlan/${slug}`);
                 }}
                 variant="secondary"
                 className="px-8 py-4 text-lg"
@@ -122,9 +125,8 @@ export const HomeHero = () => {
             <div className="relative bg-white rounded-3xl shadow-2xl shadow-gray-200/50 border border-gray-100 p-8 overflow-hidden">
               {/* Connecting Line */}
               <div
-                className={`absolute ${
-                  isArabic ? 'right-[3.25rem]' : 'left-[3.25rem]'
-                } top-12 bottom-12 w-0.5 bg-gray-100`}
+                className={`absolute ${isArabic ? 'right-[3.25rem]' : 'left-[3.25rem]'
+                  } top-12 bottom-12 w-0.5 bg-gray-100`}
               >
                 <motion.div
                   className="w-full bg-primary"
@@ -136,9 +138,8 @@ export const HomeHero = () => {
               <div className="space-y-10 relative z-10">
                 {/* Step 1: Planning (Blueprint) */}
                 <div
-                  className={`flex items-start gap-6 group ${
-                    isArabic ? 'flex-row-reverse' : ''
-                  }`}
+                  className={`flex items-start gap-6 group ${isArabic ? 'flex-row-reverse' : ''
+                    }`}
                 >
                   <div className="relative w-14 h-14 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0 group-hover:border-primary/30 transition-colors">
                     <DraftingCompass className="w-6 h-6 text-gray-400 group-hover:text-primary transition-colors" />
@@ -155,9 +156,8 @@ export const HomeHero = () => {
 
                 {/* Step 2: Manufacturing (Active) */}
                 <div
-                  className={`flex items-start gap-6 group ${
-                    isArabic ? 'flex-row-reverse' : ''
-                  }`}
+                  className={`flex items-start gap-6 group ${isArabic ? 'flex-row-reverse' : ''
+                    }`}
                 >
                   <div className="relative w-14 h-14 rounded-2xl bg-primary/5 border border-primary/20 flex items-center justify-center shrink-0">
                     <div className="absolute inset-0 bg-primary/10 rounded-2xl animate-ping opacity-20" />
@@ -165,9 +165,8 @@ export const HomeHero = () => {
                   </div>
                   <div className={`pt-2 ${isArabic ? 'text-right' : ''}`}>
                     <div
-                      className={`flex items-center gap-2 mb-1 ${
-                        isArabic ? 'flex-row-reverse' : ''
-                      }`}
+                      className={`flex items-center gap-2 mb-1 ${isArabic ? 'flex-row-reverse' : ''
+                        }`}
                     >
                       <h3 className="text-lg font-bold text-foreground">
                         {t('steps.manufacturing.title')}
@@ -184,9 +183,8 @@ export const HomeHero = () => {
 
                 {/* Step 3: Delivery (Speed) */}
                 <div
-                  className={`flex items-start gap-6 group ${
-                    isArabic ? 'flex-row-reverse' : ''
-                  }`}
+                  className={`flex items-start gap-6 group ${isArabic ? 'flex-row-reverse' : ''
+                    }`}
                 >
                   <div className="relative w-14 h-14 rounded-2xl bg-gray-900 flex items-center justify-center shrink-0 overflow-hidden">
                     {/* Speed Lines Animation */}
@@ -215,9 +213,8 @@ export const HomeHero = () => {
 
             {/* Decorative Elements */}
             <motion.div
-              className={`absolute -bottom-6 ${
-                isArabic ? '-left-6' : '-right-6'
-              } w-24 h-24 bg-primary/10 rounded-full blur-2xl -z-10`}
+              className={`absolute -bottom-6 ${isArabic ? '-left-6' : '-right-6'
+                } w-24 h-24 bg-primary/10 rounded-full blur-2xl -z-10`}
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 4, repeat: Infinity }}
             />

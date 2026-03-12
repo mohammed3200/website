@@ -1,14 +1,10 @@
-/**
- * RBAC Integrity Verification Script
- * Run after seeding to ensure RBAC system integrity
- * Usage: bun run rbac:verify
- */
+import 'dotenv/config';
 import { db } from '../src/lib/db';
 import { SYSTEM_ROLES, ROLE_PERMISSIONS, RESOURCES, ACTIONS } from '../src/lib/rbac';
 
 async function verifyRBAC() {
   console.log('🔍 Verifying RBAC Integrity...\n');
-  
+
   let errors = 0;
 
   // 1. Verify all system roles exist
@@ -27,7 +23,7 @@ async function verifyRBAC() {
   console.log('\n🔐 Checking permissions...');
   const expectedPerms = Object.values(RESOURCES).length * Object.values(ACTIONS).length;
   const actualPerms = await db.permission.count();
-  
+
   if (actualPerms !== expectedPerms) {
     console.error(`  ❌ Permission count mismatch: expected ${expectedPerms}, got ${actualPerms}`);
     errors++;
@@ -42,7 +38,7 @@ async function verifyRBAC() {
       where: { name: roleKey },
       include: { permissions: { include: { permission: true } } }
     });
-    
+
     if (!role) {
       console.error(`  ❌ Role not found: ${roleKey}`);
       errors++;
@@ -90,7 +86,7 @@ async function verifyRBAC() {
   console.log('\n🛡️  Verifying system role protection...');
   const systemRoles = await db.role.findMany({ where: { isSystem: true } });
   const expectedSystemRoles = Object.values(SYSTEM_ROLES).length;
-  
+
   if (systemRoles.length !== expectedSystemRoles) {
     console.error(`  ❌ System role count mismatch: expected ${expectedSystemRoles}, got ${systemRoles.length}`);
     errors++;
