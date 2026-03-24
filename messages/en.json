@@ -336,7 +336,10 @@
       "contactDetails": "Contact Details",
       "howToReach": "How can we reach you?",
       "branding": "Branding",
-      "uploadLogoDesc": "Upload your company logo or main image"
+      "uploadLogoDesc": "Upload your company logo or main image",
+      "reviewInformation": "Review Information",
+      "reviewDescription": "Please review all information before submitting.",
+      "agreeTo": "I agree to "
     }
   },
   "Common": {
@@ -354,12 +357,14 @@
       "name": "Full Name",
       "Image": "Choose or select a profile picture",
       "phone": "Phone Number",
+      "phoneNumber": "Phone Number",
       "email": "Email Address",
       "country": "Country",
       "city": "City / Address",
       "specialization": "Scientific Specialization",
       "projectTitle": "Project or Idea Title",
       "projectDescription": "Project Description",
+      "projectDescriptionHint": "Provide a detailed description of your project or idea",
       "objective": "Project Objectives",
       "stageDevelopment": "Project progress",
       "projectFiles": "Project Files (Optional)",
@@ -373,7 +378,25 @@
       "objectiveHint": "Define specific, measurable goals",
       "TermsOfUse": "I agree to the terms of use",
       "RequestSuccess": "Your request was sent successfully",
-      "RequestFailed": "Failed to send your request"
+      "RequestFailed": "Failed to send your request",
+      "personalInfoTitle": "Personal Information",
+      "personalInfoDescription": "Please provide your personal details and contact information.",
+      "basicInfo": "Basic Information",
+      "basicInfoDesc": "Your identification information.",
+      "profileImage": "Profile Picture",
+      "profileImageDesc": "A professional photo of yourself.",
+      "projectOverviewTitle": "Project Overview",
+      "projectOverviewDescription": "Tell us about your project or idea.",
+      "projectBasicInfo": "Project Basics",
+      "projectBasicInfoDesc": "Core details of your innovation.",
+      "projectDetailsTitle": "Project Details",
+      "projectDetailsDescription": "Details about the development stage and files.",
+      "reviewInformation": "Review Information",
+      "reviewDescription": "Please review all information before submitting.",
+      "summaryTitle": "Review & Submit",
+      "projectDetails": "Project Details",
+      "agreeTo": "I agree to ",
+      "selectStage": "Select stage"
     }
   },
   "ImageUpload": {

@@ -354,6 +354,7 @@
       "specialization": "التخصص العلمي",
       "projectTitle": "عنوان المشروع أو الفكرة",
       "projectDescription": "وصف المشروع",
+      "projectDescriptionHint": "قدم وصفاً تفصيلياً لمشروعك أو فكرتك",
       "objective": "أهداف المشروع...(اختياري)",
       "stageDevelopment": "تقدم المشروع",
       "projectFiles": "ملفات المشروع (اختياري)",
@@ -387,7 +388,8 @@
       "image": "صورة الملف الشخصي",
       "imageDescription": "قم بتحميل صورة مهنية",
       "agreeTo": "أوافق على ",
-      "phoneNumber": "رقم الهاتف"
+      "phoneNumber": "رقم الهاتف",
+      "selectStage": "اختر المرحلة"
     }
   },
   "FileUpload": {
