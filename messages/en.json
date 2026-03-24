@@ -339,7 +339,17 @@
       "uploadLogoDesc": "Upload your company logo or main image",
       "reviewInformation": "Review Information",
       "reviewDescription": "Please review all information before submitting.",
-      "agreeTo": "I agree to "
+      "agreeTo": "I agree to ",
+      "success": {
+        "title": "Registration Successful!",
+        "message": "Thank you for registering as a collaborating partner. Your application has been submitted successfully.",
+        "whatNext": "What happens next?",
+        "step1": "Our team will review your application",
+        "step2": "You will receive an email confirmation",
+        "step3": "We will contact you within 3-5 business days",
+        "returnHome": "Return to Home",
+        "goToDashboard": "Go to Dashboard"
+      }
     }
   },
   "Common": {
@@ -350,7 +360,9 @@
     "validating": "Validating...",
     "back": "Back",
     "homePage": "Home Page",
-    "formNavigation": "Form Navigation"
+    "formNavigation": "Form Navigation",
+    "processing": "Processing...",
+    "navigation": "Navigation"
   },
   "Innovators": {
     "form": {
@@ -397,6 +409,12 @@
       "projectDetails": "Project Details",
       "agreeTo": "I agree to ",
       "selectStage": "Select stage"
+    },
+    "success": {
+      "title": "Registration Successful!",
+      "message": "Thank you for registering as an innovator. Your application has been submitted successfully.",
+      "returnHome": "Return to Home",
+      "goToDashboard": "Go to Dashboard"
     }
   },
   "ImageUpload": {
@@ -690,6 +708,47 @@
         "active": "Active",
         "inactive": "Inactive",
         "featured": "Featured"
+      }
+    },
+    "FAQs": {
+      "title": "FAQ Management",
+      "subtitle": "Manage frequently asked questions for the website",
+      "actions": {
+        "create": "Create FAQ",
+        "edit": "Edit",
+        "delete": "Delete",
+        "view": "View",
+        "cancel": "Cancel",
+        "save": "Save",
+        "saving": "Saving..."
+      },
+      "form": {
+        "question": "Question",
+        "answer": "Answer",
+        "category": "Category",
+        "isActive": "Active",
+        "isSticky": "Sticky (Always First)",
+        "order": "Display Order"
+      },
+      "table": {
+        "question": "Question",
+        "category": "Category",
+        "status": "Status",
+        "sticky": "Sticky",
+        "actions": "Actions"
+      },
+      "empty": "No FAQs found. Create one to get started.",
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "sticky": "Sticky"
+      },
+      "dialogs": {
+        "deleteConfirm": "Are you sure you want to delete this FAQ? This action cannot be undone."
+      },
+      "messages": {
+        "success": "FAQ saved successfully",
+        "error": "Failed to save FAQ"
       }
     }
   }
