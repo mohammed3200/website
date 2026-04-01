@@ -3,6 +3,8 @@
 import React, { useCallback } from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Target, CheckCircle2, Layers, Share2, Download } from 'lucide-react';
+import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import useLanguage from '@/hooks/use-language';
 import { Back } from '@/components/buttons';
@@ -65,27 +67,48 @@ function StatusBadge({ status, isArabic }: { status: string; isArabic: boolean }
 interface ActionButtonsProps {
   title: string;
   isArabic: boolean;
+  t: any;
 }
 
-async function shareUrl(title: string) {
+async function shareUrl(title: string, t: any, isArabic: boolean) {
   const url = window.location.href;
+  
+  const showToast = (success: boolean) => {
+    const position = isArabic ? 'bottom-left' : 'bottom-right';
+    if (success) {
+      toast.success(t('shareSuccess'), { position });
+    } else {
+      toast.error(t('shareError'), { position });
+    }
+  };
+
   if (navigator.share) {
     try {
       await navigator.share({ title, url });
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') return; // User cancelled
       console.warn('Share API failed, falling back to clipboard:', err);
-      await navigator.clipboard.writeText(url);
+      try {
+        await navigator.clipboard.writeText(url);
+        showToast(true);
+      } catch {
+        showToast(false);
+      }
     }
   } else {
-    await navigator.clipboard.writeText(url);
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast(true);
+    } catch {
+      showToast(false);
+    }
   }
 }
 
-function ActionButtons({ title, isArabic }: ActionButtonsProps) {
+function ActionButtons({ title, isArabic, t }: ActionButtonsProps) {
   const handleShare = useCallback(async () => {
-    await shareUrl(title);
-  }, [title]);
+    await shareUrl(title, t, isArabic);
+  }, [title, t, isArabic]);
 
   const handleDownload = useCallback(() => {
     window.print();
@@ -143,7 +166,8 @@ function ActionButtons({ title, isArabic }: ActionButtonsProps) {
 // ─── Phase Card ───────────────────────────────────────────────────────────────
 
 function PhaseCard({ phase, isArabic }: { phase: string | null | undefined; isArabic: boolean }) {
-  const label = phase || (isArabic ? 'قيد التنفيذ' : 'Execution');
+  if (!phase) return null;
+
   return (
     <div className="bg-gray-50 rounded-2xl p-5 flex items-center gap-4 border border-transparent hover:bg-white hover:border-gray-100 hover:shadow-md transition-all duration-200">
       <div className="p-3 bg-blue-100 text-blue-600 rounded-xl flex-shrink-0">
@@ -153,7 +177,7 @@ function PhaseCard({ phase, isArabic }: { phase: string | null | undefined; isAr
         <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-0.5">
           {isArabic ? 'المرحلة' : 'Phase'}
         </p>
-        <p className="font-bold text-foreground text-sm">{label}</p>
+        <p className="font-bold text-foreground text-sm">{phase}</p>
       </div>
     </div>
   );
@@ -164,6 +188,7 @@ function PhaseCard({ phase, isArabic }: { phase: string | null | undefined; isAr
 const PageStrategicPlan = () => {
   const StrategicPlanId = useStrategicPlanId();
   const { isArabic } = useLanguage();
+  const t = useTranslations('StrategicPlan');
   const { data, isLoading, error } = useGetStrategicPlan(StrategicPlanId);
 
   // ── Loading ──
@@ -220,7 +245,7 @@ const PageStrategicPlan = () => {
           className="flex items-center justify-between mb-12 gap-4 flex-wrap"
         >
           <Back />
-          <ActionButtons title={title} isArabic={isArabic} />
+          <ActionButtons title={title} isArabic={isArabic} t={t} />
         </motion.div>
 
         {/* ── Main Content ── */}
@@ -330,7 +355,7 @@ const PageStrategicPlan = () => {
                     <span>{isArabic ? 'تحميل PDF' : 'Download PDF'}</span>
                   </button>
                   <button
-                    onClick={() => shareUrl(title)}
+                    onClick={() => shareUrl(title, t, isArabic)}
                     className={cn(
                       'w-full flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold',
                       'bg-white border border-gray-200 text-gray-700',

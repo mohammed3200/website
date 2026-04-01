@@ -27,9 +27,10 @@ const app = new Hono()
           include: {
             image: true,
           },
-          orderBy: {
-            createdAt: 'desc',
-          },
+          orderBy: [
+            { createdAt: 'desc' },
+            { id: 'desc' }
+          ],
           skip,
           take: limit,
         }),
@@ -142,7 +143,10 @@ const app = new Hono()
       const [strategicPlans, total] = await db.$transaction([
         db.strategicPlan.findMany({
           include: { image: true },
-          orderBy: { createdAt: 'desc' },
+          orderBy: [
+            { createdAt: 'desc' },
+            { id: 'desc' }
+          ],
           skip,
           take: limit,
         }),
@@ -205,48 +209,50 @@ const app = new Hono()
 
       const validatedData = c.req.valid('json');
 
-      const existingSlug = await db.strategicPlan.findUnique({ where: { slug: validatedData.slug } });
-      if (existingSlug) {
-        return c.json({ error: 'A strategic plan with this slug already exists', message: 'A strategic plan with this slug already exists' }, 400);
+      try {
+        const strategicPlan = await db.strategicPlan.create({
+          data: {
+            title: validatedData.title,
+            titleAr: validatedData.titleAr || null,
+            slug: validatedData.slug,
+            content: validatedData.content,
+            contentAr: validatedData.contentAr || null,
+            excerpt: validatedData.excerpt || null,
+            excerptAr: validatedData.excerptAr || null,
+            category: validatedData.category || null,
+            categoryAr: validatedData.categoryAr || null,
+            status: validatedData.status,
+            isActive: validatedData.isActive,
+            phase: validatedData.phase || null,
+            phaseAr: validatedData.phaseAr || null,
+            publishedAt: validatedData.publishedAt ? new Date(validatedData.publishedAt) : null,
+            startDate: validatedData.startDate ? new Date(validatedData.startDate) : null,
+            endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
+            imageId: validatedData.imageId || null,
+            metaTitle: validatedData.metaTitle || null,
+            metaDescription: validatedData.metaDescription || null,
+            createdById: session.user.id,
+            updatedById: session.user.id,
+          },
+        });
+
+        return c.json({
+          data: {
+            id: strategicPlan.id,
+            slug: strategicPlan.slug,
+            title: strategicPlan.title,
+            status: strategicPlan.status,
+            isActive: strategicPlan.isActive,
+            createdAt: strategicPlan.createdAt,
+          },
+          message: 'Strategic plan created successfully',
+        }, 201);
+      } catch (err: any) {
+        if (err.code === 'P2002' && err.meta?.target?.includes('slug')) {
+          return c.json({ error: 'A strategic plan with this slug already exists', message: 'A strategic plan with this slug already exists' }, 409);
+        }
+        throw err;
       }
-
-      const strategicPlan = await db.strategicPlan.create({
-        data: {
-          title: validatedData.title,
-          titleAr: validatedData.titleAr || null,
-          slug: validatedData.slug,
-          content: validatedData.content,
-          contentAr: validatedData.contentAr || null,
-          excerpt: validatedData.excerpt || null,
-          excerptAr: validatedData.excerptAr || null,
-          category: validatedData.category || null,
-          categoryAr: validatedData.categoryAr || null,
-          status: validatedData.status,
-          isActive: validatedData.isActive,
-          phase: validatedData.phase || null,
-          phaseAr: validatedData.phaseAr || null,
-          publishedAt: validatedData.publishedAt ? new Date(validatedData.publishedAt) : null,
-          startDate: validatedData.startDate ? new Date(validatedData.startDate) : null,
-          endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
-          imageId: validatedData.imageId || null,
-          metaTitle: validatedData.metaTitle || null,
-          metaDescription: validatedData.metaDescription || null,
-          createdById: session.user.id,
-          updatedById: session.user.id,
-        },
-      });
-
-      return c.json({
-        data: {
-          id: strategicPlan.id,
-          slug: strategicPlan.slug,
-          title: strategicPlan.title,
-          status: strategicPlan.status,
-          isActive: strategicPlan.isActive,
-          createdAt: strategicPlan.createdAt,
-        },
-        message: 'Strategic plan created successfully',
-      }, 201);
     } catch (error) {
       console.error('Error creating strategic plan:', error);
       return c.json({ code: 'SERVER_ERROR', message: 'Failed to create strategic plan' }, 500);
@@ -280,10 +286,7 @@ const app = new Hono()
       }
 
       if (validatedData.slug && validatedData.slug !== existingPlan.slug) {
-        const existingSlug = await db.strategicPlan.findUnique({ where: { slug: validatedData.slug } });
-        if (existingSlug) {
-          return c.json({ error: 'A strategic plan with this slug already exists', message: 'A strategic plan with this slug already exists' }, 400);
-        }
+        // Optional pre-check to fail fast without db.update, but mostly rely on Prisma P2002
       }
 
       const updateData: Record<string, unknown> = { updatedById: session.user.id };
@@ -307,9 +310,15 @@ const app = new Hono()
         }
       }
 
-      const updatedPlan = await db.strategicPlan.update({ where: { id }, data: updateData });
-
-      return c.json({ data: updatedPlan, message: 'Strategic plan updated successfully' }, 200);
+      try {
+        const updatedPlan = await db.strategicPlan.update({ where: { id }, data: updateData });
+        return c.json({ data: updatedPlan, message: 'Strategic plan updated successfully' }, 200);
+      } catch (err: any) {
+        if (err.code === 'P2002' && err.meta?.target?.includes('slug')) {
+          return c.json({ error: 'A strategic plan with this slug already exists', message: 'A strategic plan with this slug already exists' }, 409);
+        }
+        throw err;
+      }
     } catch (error) {
       console.error('Error updating strategic plan:', error);
       return c.json({ code: 'SERVER_ERROR', message: 'Failed to update strategic plan' }, 500);

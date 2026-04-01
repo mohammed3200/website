@@ -89,7 +89,9 @@
     "statusCompleted": "مكتمل",
     "statusInProgress": "قيد التنفيذ",
     "ctaQuestion": "هل تريد معرفة المزيد عن استراتيجيتنا؟",
-    "ctaButton": "استكشف المزيد"
+    "ctaButton": "استكشف المزيد",
+    "shareSuccess": "تم نسخ الرابط بنجاح!",
+    "shareError": "فشل في نسخ الرابط"
   },
   "Error": {
     "title": "حدث خطأ ما",

@@ -175,9 +175,130 @@ export function CreateStrategicPlanDialog({ open, onOpenChange }: CreateStrategi
             </div>
           </div>
 
+          {/* Arabic Information */}
+          <div className="space-y-4 pt-4 border-t">
+            <h3 className="font-semibold text-base text-gray-900 pb-2">Arabic Content</h3>
+            <div className="space-y-2">
+              <Label htmlFor="sp-title-ar">Title (Arabic)</Label>
+              <Input
+                id="sp-title-ar"
+                value={formData.titleAr || ''}
+                onChange={(e) => updateField('titleAr', e.target.value)}
+                placeholder="Enter title in Arabic"
+                dir="rtl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sp-excerpt-ar">Excerpt (Arabic)</Label>
+              <Input
+                id="sp-excerpt-ar"
+                value={formData.excerptAr || ''}
+                onChange={(e) => updateField('excerptAr', e.target.value)}
+                placeholder="Short description in Arabic"
+                dir="rtl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sp-content-ar">Content (Arabic)</Label>
+              <Textarea
+                id="sp-content-ar"
+                value={formData.contentAr || ''}
+                onChange={(e) => updateField('contentAr', e.target.value)}
+                rows={4}
+                placeholder="Enter full content in Arabic"
+                dir="rtl"
+              />
+            </div>
+          </div>
+
+          {/* Dates & Meta */}
+          <div className="space-y-4 pt-4 border-t">
+            <h3 className="font-semibold text-base text-gray-900 pb-2">Dates & Extra</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sp-phase">Phase</Label>
+                <Input
+                  id="sp-phase"
+                  value={formData.phase || ''}
+                  onChange={(e) => updateField('phase', e.target.value)}
+                  placeholder="e.g., Execution"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sp-phase-ar">Phase (Arabic)</Label>
+                <Input
+                  id="sp-phase-ar"
+                  value={formData.phaseAr || ''}
+                  onChange={(e) => updateField('phaseAr', e.target.value)}
+                  placeholder="e.g., قيد التنفيذ"
+                  dir="rtl"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sp-published-at">Published At</Label>
+                <Input
+                  type="datetime-local"
+                  id="sp-published-at"
+                  value={formData.publishedAt || ''}
+                  onChange={(e) => updateField('publishedAt', e.target.value || null)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sp-start-date">Start Date</Label>
+                <Input
+                  type="datetime-local"
+                  id="sp-start-date"
+                  value={formData.startDate || ''}
+                  onChange={(e) => updateField('startDate', e.target.value || null)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sp-end-date">End Date</Label>
+                <Input
+                  type="datetime-local"
+                  id="sp-end-date"
+                  value={formData.endDate || ''}
+                  onChange={(e) => updateField('endDate', e.target.value || null)}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sp-meta-title">Meta Title</Label>
+                <Input
+                  id="sp-meta-title"
+                  value={formData.metaTitle || ''}
+                  onChange={(e) => updateField('metaTitle', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sp-meta-desc">Meta Description</Label>
+                <Input
+                  id="sp-meta-desc"
+                  value={formData.metaDescription || ''}
+                  onChange={(e) => updateField('metaDescription', e.target.value)}
+                />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="sp-image-id">Image ID / URL</Label>
+              <Input
+                id="sp-image-id"
+                value={formData.imageId || ''}
+                onChange={(e) => updateField('imageId', e.target.value)}
+                placeholder="Image URL or ID"
+              />
+            </div>
+          </div>
+
           {/* Metadata */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-base text-gray-900 border-b pb-2">Metadata</h3>
+          <div className="space-y-4 pt-4 border-t">
+            <h3 className="font-semibold text-base text-gray-900 pb-2">Status & Category</h3>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -191,6 +312,17 @@ export function CreateStrategicPlanDialog({ open, onOpenChange }: CreateStrategi
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="sp-category-ar">Category (Arabic)</Label>
+                <Input
+                  id="sp-category-ar"
+                  value={formData.categoryAr || ''}
+                  onChange={(e) => updateField('categoryAr', e.target.value || null)}
+                  placeholder="e.g., سنوي"
+                  dir="rtl"
+                />
+              </div>
+
+              <div className="col-span-2 space-y-2 pt-2">
                 <Label htmlFor="sp-status">Status</Label>
                 <Select
                   value={formData.status}

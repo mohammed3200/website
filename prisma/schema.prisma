@@ -283,6 +283,8 @@ model StrategicPlan {
   @@index([isActive, publishedAt])
   @@index([status])
   @@index([category])
+  @@index([createdAt])
+  @@index([isActive, status, createdAt])
   @@index([imageId], map: "StrategicPlan_imageId_fkey")
 }
 

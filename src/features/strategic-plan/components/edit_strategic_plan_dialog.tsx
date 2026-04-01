@@ -90,8 +90,21 @@ export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrate
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Only PATCH the fields that are actively managed in this dialog
+    // to prevent overwriting missing/unloaded data with nulls.
+    const payload: Partial<UpdateStrategicPlanInput> = {
+      title: formData.title,
+      slug: formData.slug,
+      excerpt: formData.excerpt,
+      content: formData.content,
+      category: formData.category,
+      status: formData.status,
+      isActive: formData.isActive,
+    };
+    
     mutation.mutate(
-      { param: { id: plan.id }, json: formData },
+      { param: { id: plan.id }, json: payload as UpdateStrategicPlanInput },
       { onSuccess: () => onOpenChange(false) },
     );
   };

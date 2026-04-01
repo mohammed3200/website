@@ -87,7 +87,9 @@
     "statusCompleted": "Completed",
     "statusInProgress": "In Progress",
     "ctaQuestion": "Want to learn more about our strategy?",
-    "ctaButton": "Explore More"
+    "ctaButton": "Explore More",
+    "shareSuccess": "Link copied successfully!",
+    "shareError": "Failed to copy link"
   },
   "Faq": {
     "title": "Inquiry fosters understanding, it leads to valuable insights.",
