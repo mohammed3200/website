@@ -176,7 +176,25 @@
     "home": "العودة إلى الصفحة الرئيسية",
     "form": {
       "title": "الهدف من الشراكة.",
-      "subtitle": "دمج الخبرات الأكاديمية مع الخبرات العملية و التعاون في تطوير الصناعة المحلية."
+      "subtitle": "دمج الخبرات الأكاديمية مع الخبرات العملية و التعاون في تطوير الصناعة المحلية.",
+      "CompanyNameField": "اسم الشركة (المؤسسة)",
+      "Image": "اختر أو حدد صورة الملف الشخصي",
+      "MainImage": "اختر أو حدد صورتك الرئيسية",
+      "PrimaryPhone": "رقم الهاتف الأساسي",
+      "OptionalPhone": "رقم الهاتف الإضافي (اختياري)",
+      "Email": "البريد الإلكتروني",
+      "Location": "الموقع",
+      "Website": "رابط موقعك (اختياري)",
+      "IndustrialSector": "القطاع الصناعي",
+      "Specialization": "المجال التخصصي",
+      "CompanyCapabilities": "إمكانيات الشركة",
+      "ExperienceProvided": "الخبرة المقدمة (اختياري)",
+      "ExperienceProvidedMedia": "ملفات، صور، فيديوهات... (اختياري)",
+      "MachineryAndEquipment": "الآلات والمعدات (اختياري)",
+      "MachineryAndEquipmentMedia": "ملفات، صور، فيديوهات... (اختياري)",
+      "TermsOfUse": "أوافق على شروط الاستخدام",
+      "RequestSuccess": "تم إرسال طلب التعاون بنجاح",
+      "RequestFailed": "فشل إرسال طلب التعاون"
     }
   },
   "CreatorsAndInnovators": {
@@ -605,7 +623,13 @@
       "dialogs": {
         "confirmDelete": "هل أنت متأكد من حذف هذا التقرير؟"
       },
-      "empty": "لا توجد تقارير حالياً"
+      "empty": "لا توجد تقارير حالياً",
+      "types": {
+        "SUBMISSIONS_SUMMARY": "ملخص الطلبات",
+        "USER_ACTIVITY": "نشاط المستخدمين",
+        "STRATEGIC_PLANS": "الخطط الاستراتيجية",
+        "FULL_PLATFORM": "المنصة الكاملة"
+      }
     },
     "Submissions": {
       "title": "مراجعة الطلبات",
