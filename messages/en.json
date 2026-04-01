@@ -417,6 +417,14 @@
       "goToDashboard": "Go to Dashboard"
     }
   },
+  "FileUpload": {
+    "uploadFile": "Upload file",
+    "dragOrDrop": "Drag and drop files here or click to upload",
+    "dropIt": "Drop it",
+    "modified": "Modified",
+    "clickOrDrag": "Click or drag files to upload",
+    "dropHere": "Drop files here"
+  },
   "ImageUpload": {
     "chooseProfilePicture": "Choose profile picture",
     "chooseLogo": "Choose logo",
