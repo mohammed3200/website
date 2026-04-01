@@ -67,19 +67,24 @@ interface ActionButtonsProps {
   isArabic: boolean;
 }
 
-function ActionButtons({ title, isArabic }: ActionButtonsProps) {
-  const handleShare = useCallback(async () => {
-    const url = window.location.href;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title, url });
-      } catch {
-        // User cancelled or not supported — silent fallback
-        await navigator.clipboard.writeText(url);
-      }
-    } else {
+async function shareUrl(title: string) {
+  const url = window.location.href;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, url });
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return; // User cancelled
+      console.warn('Share API failed, falling back to clipboard:', err);
       await navigator.clipboard.writeText(url);
     }
+  } else {
+    await navigator.clipboard.writeText(url);
+  }
+}
+
+function ActionButtons({ title, isArabic }: ActionButtonsProps) {
+  const handleShare = useCallback(async () => {
+    await shareUrl(title);
   }, [title]);
 
   const handleDownload = useCallback(() => {
@@ -192,8 +197,7 @@ const PageStrategicPlan = () => {
   const excerpt = isArabic ? (plan.excerptAr || plan.excerpt) : plan.excerpt;
   const phase = isArabic ? (plan.phaseAr || plan.phase) : plan.phase;
 
-  // Unreachable guard (data.data is already checked above)
-  if (!plan) return null;
+
 
   return (
     <div
@@ -326,14 +330,7 @@ const PageStrategicPlan = () => {
                     <span>{isArabic ? 'تحميل PDF' : 'Download PDF'}</span>
                   </button>
                   <button
-                    onClick={async () => {
-                      const url = window.location.href;
-                      if (navigator.share) {
-                        try { await navigator.share({ title, url }); } catch { /* cancelled */ }
-                      } else {
-                        await navigator.clipboard.writeText(url);
-                      }
-                    }}
+                    onClick={() => shareUrl(title)}
                     className={cn(
                       'w-full flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold',
                       'bg-white border border-gray-200 text-gray-700',

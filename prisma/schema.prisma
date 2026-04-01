@@ -28,6 +28,8 @@ model User {
   auditLogs               AuditLog[]
   createdNews             News[]                 @relation("NewsCreator")
   updatedNews             News[]                 @relation("NewsUpdater")
+  createdStrategicPlans   StrategicPlan[]        @relation("StrategicPlanCreator")
+  updatedStrategicPlans   StrategicPlan[]        @relation("StrategicPlanUpdater")
   twoFactorConfirmation   TwoFactorConfirmation?
   inviter                 User?                  @relation("UserInvitedBy", fields: [invitedBy], references: [id])
   invitedUsers            User[]                 @relation("UserInvitedBy")
@@ -271,8 +273,12 @@ model StrategicPlan {
   updatedAt       DateTime   @updatedAt
   createdById     String?
   updatedById     String?
+  createdBy       User?      @relation("StrategicPlanCreator", fields: [createdById], references: [id])
+  updatedBy       User?      @relation("StrategicPlanUpdater", fields: [updatedById], references: [id])
   image           Image?     @relation(fields: [imageId], references: [id])
 
+  @@index([createdById], map: "StrategicPlan_createdById_fkey")
+  @@index([updatedById], map: "StrategicPlan_updatedById_fkey")
   @@index([slug])
   @@index([isActive, publishedAt])
   @@index([status])

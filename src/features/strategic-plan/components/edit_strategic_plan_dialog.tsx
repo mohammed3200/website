@@ -33,10 +33,14 @@ interface EditStrategicPlanDialogProps {
 
 const EMPTY_STATE: UpdateStrategicPlanInput = {
   title: '',
+  titleAr: '',
   slug: '',
   content: '',
+  contentAr: '',
   excerpt: null,
+  excerptAr: null,
   category: null,
+  categoryAr: null,
   status: 'DRAFT',
   isActive: true,
   publishedAt: null,
@@ -45,6 +49,8 @@ const EMPTY_STATE: UpdateStrategicPlanInput = {
   imageId: null,
   metaTitle: null,
   metaDescription: null,
+  phase: null,
+  phaseAr: null,
 };
 
 export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrategicPlanDialogProps) {
@@ -60,18 +66,24 @@ export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrate
     if (plan) {
       setFormData({
         title: plan.title || '',
+        titleAr: plan.titleAr || '',
         slug: plan.slug || '',
         content: plan.content || '',
+        contentAr: plan.contentAr || '',
         excerpt: plan.excerpt || null,
+        excerptAr: plan.excerptAr || null,
         category: plan.category || null,
+        categoryAr: plan.categoryAr || null,
         status: (plan.status as PlanStatus) || 'DRAFT',
         isActive: plan.isActive ?? true,
         publishedAt: plan.publishedAt ? new Date(plan.publishedAt).toISOString() : null,
-        startDate: null,
-        endDate: null,
-        imageId: null,
-        metaTitle: null,
-        metaDescription: null,
+        startDate: plan.startDate ? new Date(plan.startDate).toISOString() : null,
+        endDate: plan.endDate ? new Date(plan.endDate).toISOString() : null,
+        imageId: plan.imageId || null,
+        metaTitle: plan.metaTitle || null,
+        metaDescription: plan.metaDescription || null,
+        phase: plan.phase || null,
+        phaseAr: plan.phaseAr || null,
       });
     }
   }, [plan]);

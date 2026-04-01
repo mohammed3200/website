@@ -35,10 +35,14 @@ interface CreateStrategicPlanDialogProps {
 
 const INITIAL_STATE: CreateStrategicPlanInput = {
   title: '',
+  titleAr: '',
   slug: '',
   content: '',
+  contentAr: '',
   excerpt: null,
+  excerptAr: null,
   category: null,
+  categoryAr: null,
   status: 'DRAFT',
   isActive: true,
   publishedAt: null,
@@ -47,6 +51,8 @@ const INITIAL_STATE: CreateStrategicPlanInput = {
   imageId: null,
   metaTitle: null,
   metaDescription: null,
+  phase: null,
+  phaseAr: null,
 };
 
 export function CreateStrategicPlanDialog({ open, onOpenChange }: CreateStrategicPlanDialogProps) {

@@ -12,18 +12,29 @@ const app = new Hono()
   // Public endpoint - get all active strategic plans
   .get('/public', async (c) => {
     try {
-      const strategicPlans = await db.strategicPlan.findMany({
-        where: {
-          isActive: true,
-          status: 'PUBLISHED',
-        },
-        include: {
-          image: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      const page = Math.max(1, Number(c.req.query('page')) || 1);
+      const limit = Math.max(1, Math.min(100, Number(c.req.query('limit')) || 10));
+      const skip = (page - 1) * limit;
+
+      const where = {
+        isActive: true,
+        status: 'PUBLISHED' as const,
+      };
+
+      const [strategicPlans, total] = await db.$transaction([
+        db.strategicPlan.findMany({
+          where,
+          include: {
+            image: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+          skip,
+          take: limit,
+        }),
+        db.strategicPlan.count({ where }),
+      ]);
 
       const transformedPlans = strategicPlans.map((plan) => ({
         id: plan.id,
@@ -46,7 +57,10 @@ const app = new Hono()
           : null,
       }));
 
-      return c.json({ data: transformedPlans }, 200);
+      return c.json({
+        data: transformedPlans,
+        pagination: { total, page, limit },
+      }, 200);
     } catch (error) {
       console.error('Error fetching strategic plans:', error);
       return c.json({ code: 'SERVER_ERROR', message: 'Failed to fetch strategic plans' }, 500);
@@ -121,10 +135,19 @@ const app = new Hono()
         return c.json({ error: 'Insufficient permissions', message: 'Insufficient permissions' }, 403);
       }
 
-      const strategicPlans = await db.strategicPlan.findMany({
-        include: { image: true },
-        orderBy: { createdAt: 'desc' },
-      });
+      const page = Math.max(1, Number(c.req.query('page')) || 1);
+      const limit = Math.max(1, Math.min(100, Number(c.req.query('limit')) || 10));
+      const skip = (page - 1) * limit;
+
+      const [strategicPlans, total] = await db.$transaction([
+        db.strategicPlan.findMany({
+          include: { image: true },
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+        }),
+        db.strategicPlan.count(),
+      ]);
 
       const transformedPlans = strategicPlans.map((plan) => ({
         id: plan.id,
@@ -152,7 +175,10 @@ const app = new Hono()
         updatedAt: plan.updatedAt,
       }));
 
-      return c.json({ data: transformedPlans }, 200);
+      return c.json({
+        data: transformedPlans,
+        pagination: { total, page, limit },
+      }, 200);
     } catch (error) {
       console.error('Error fetching strategic plans:', error);
       return c.json({ code: 'SERVER_ERROR', message: 'Failed to fetch strategic plans' }, 500);
@@ -262,25 +288,24 @@ const app = new Hono()
 
       const updateData: Record<string, unknown> = { updatedById: session.user.id };
 
-      if (validatedData.title !== undefined) updateData.title = validatedData.title;
-      if (validatedData.titleAr !== undefined) updateData.titleAr = validatedData.titleAr;
-      if (validatedData.slug !== undefined) updateData.slug = validatedData.slug;
-      if (validatedData.content !== undefined) updateData.content = validatedData.content;
-      if (validatedData.contentAr !== undefined) updateData.contentAr = validatedData.contentAr;
-      if (validatedData.excerpt !== undefined) updateData.excerpt = validatedData.excerpt;
-      if (validatedData.excerptAr !== undefined) updateData.excerptAr = validatedData.excerptAr;
-      if (validatedData.category !== undefined) updateData.category = validatedData.category;
-      if (validatedData.categoryAr !== undefined) updateData.categoryAr = validatedData.categoryAr;
-      if (validatedData.status !== undefined) updateData.status = validatedData.status;
-      if (validatedData.isActive !== undefined) updateData.isActive = validatedData.isActive;
-      if (validatedData.phase !== undefined) updateData.phase = validatedData.phase;
-      if (validatedData.phaseAr !== undefined) updateData.phaseAr = validatedData.phaseAr;
-      if (validatedData.publishedAt !== undefined) updateData.publishedAt = validatedData.publishedAt ? new Date(validatedData.publishedAt) : null;
-      if (validatedData.startDate !== undefined) updateData.startDate = validatedData.startDate ? new Date(validatedData.startDate) : null;
-      if (validatedData.endDate !== undefined) updateData.endDate = validatedData.endDate ? new Date(validatedData.endDate) : null;
-      if (validatedData.imageId !== undefined) updateData.imageId = validatedData.imageId;
-      if (validatedData.metaTitle !== undefined) updateData.metaTitle = validatedData.metaTitle;
-      if (validatedData.metaDescription !== undefined) updateData.metaDescription = validatedData.metaDescription;
+      const allowedFields = [
+        'title', 'titleAr', 'slug', 'content', 'contentAr', 'excerpt', 'excerptAr',
+        'category', 'categoryAr', 'status', 'isActive', 'phase', 'phaseAr',
+        'imageId', 'metaTitle', 'metaDescription',
+      ] as const;
+
+      for (const field of allowedFields) {
+        if (validatedData[field] !== undefined) {
+          updateData[field] = validatedData[field];
+        }
+      }
+
+      const dateFields = ['publishedAt', 'startDate', 'endDate'] as const;
+      for (const field of dateFields) {
+        if (validatedData[field] !== undefined) {
+          updateData[field] = validatedData[field] ? new Date(validatedData[field]!) : null;
+        }
+      }
 
       const updatedPlan = await db.strategicPlan.update({ where: { id }, data: updateData });
 

@@ -33,6 +33,11 @@ export interface StrategicPlanItem {
   phase?: string | null;
   phaseAr?: string | null;
   entityType?: 'CENTER' | 'COLLEGE';
+  startDate?: string | null;
+  endDate?: string | null;
+  imageId?: string | null;
+  metaTitle?: string | null;
+  metaDescription?: string | null;
   image: {
     id: string;
     url: string | null;
