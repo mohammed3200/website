@@ -1,0 +1,50 @@
+# SpecKit Enforceable Rules
+# These rules enforce the standards discovered during project analysis for EBIC.
+
+# Form Validation Hardening
+validation_rules:
+  no_optional_required_fields:
+    description: "Zod schemas for required fields must never use .optional(). It silently bypasses payload validation during empty object initialization."
+    pattern: "z\\.object\\(\\{[^}]+\\b(?!optional\\(\\))\\b[^}]+\\}\\)"
+    files: ["src/features/**/schemas/*.ts"]
+    enforce: true
+  schema_syntax:
+    description: "Use Zod v4 syntax { error: 'message' } instead of legacy required_error."
+    pattern: "error\\s*:\\s*(t\\(|['\"])"
+    files: ["src/features/**/schemas/*.ts"]
+    enforce: true
+
+# i18n Guardrails
+i18n_rules:
+  no_hardcoded_text:
+    description: "Components MUST NOT contain manual 'COPY' objects or hardcoded Arabic/English text dicts. Use next-intl useTranslations()."
+    exclude_pattern: "const COPY ="
+    files: ["src/components/**/*.tsx", "src/features/**/*.tsx"]
+    enforce: true
+  stable_closures:
+    description: "useMemo, useEffect, and useCallback hooks using 't' or 'tValidation' must include it in their dependency arrays to avoid stagnant language caches."
+    pattern: "\\[.*tValidation.*\\]"
+    files: ["src/features/**/components/*-wizard.tsx"]
+    enforce: true
+
+# System Rules
+arch_rules:
+  route_protection:
+    description: "Hono server routes under protected domains must explicitly call checkPermission()."
+    pattern: "checkPermission\\("
+    files: ["src/features/**/server/route.ts"]
+  s3_rollback:
+    description: "API routes utilizing S3 uploads must catch Prisma failures and issue s3Service.deleteFile() for orphan cleanup."
+    pattern: "s3Service\\.deleteFile"
+    files: ["src/features/**/server/route.ts"]
+
+# UX Rules
+ux_rules:
+  aria_live_errors:
+    description: "Form layout components rendering error messages must wrap dynamically injected errors in aria-live='polite' regions."
+    pattern: "aria-live=[\"']polite[\"']"
+    files: ["src/lib/forms/components/**/*.tsx"]
+  url_navigation_guards:
+    description: "Multi-step wizards must block forward URL deep-linking without step completion validity."
+    pattern: "router.replace"
+    files: ["src/features/**/components/*-wizard.tsx"]

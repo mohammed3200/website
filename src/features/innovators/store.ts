@@ -4,5 +4,5 @@ import { CompleteFormData } from './schemas/step-schemas';
 
 export const useInnovatorFormStore = createFormStore<CompleteFormData>({
   storageKey: 'innovator-registration-storage',
-  version: 1,
+  version: 2,
 });

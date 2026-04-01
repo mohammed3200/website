@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useEffect } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -43,17 +44,26 @@ export function StepLayout({
   className,
 }: StepLayoutProps) {
   const t = useTranslations('Common');
-  // We might want specific translations for keys if passed,
-  // but for now we'll use passed labels or defaults from Common namespace.
+  const tValidation = useTranslations('Validation');
+  const errorAlertRef = useRef<HTMLDivElement>(null);
 
   const hasErrors = errors && Object.keys(errors).length > 0;
 
+  // Auto-scroll to error alert when validation fails
+  useEffect(() => {
+    if (hasErrors && errorAlertRef.current) {
+      errorAlertRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+      // Focus the alert for screen readers
+      errorAlertRef.current.focus();
+    }
+  }, [hasErrors, errors]);
+
   return (
     <div className={cn('space-y-8', className)}>
-      {/* Optional: Step-specific title/description 
-          (Note: FormContentArea usually handles the main step title, 
-           but this can be used for sub-sections or standalone usage) 
-      */}
+      {/* Optional: Step-specific title/description */}
       {(title || description) && (
         <div className="space-y-1">
           {title && <h2 className="text-xl font-semibold">{title}</h2>}
@@ -66,16 +76,20 @@ export function StepLayout({
       {/* Validation Summary */}
       {hasErrors && (
         <Alert
+          ref={errorAlertRef}
           variant="destructive"
           className="animate-in slide-in-from-top-2 fade-in duration-300"
+          role="alert"
+          tabIndex={-1}
+          aria-live="assertive"
         >
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>
-            {/* We can hardcode "Please fix errors" or use a translation key if available */}
-            Validation Error
+            {tValidation('validationError')}
           </AlertTitle>
           <AlertDescription>
-            <ul className="list-disc list-inside space-y-1 mt-2">
+            <p className="text-sm mb-2">{tValidation('pleaseFixErrors')}</p>
+            <ul className="list-disc list-inside space-y-1">
               {Object.entries(errors).map(([field, message]) => (
                 <li key={field} className="text-sm">
                   {message}

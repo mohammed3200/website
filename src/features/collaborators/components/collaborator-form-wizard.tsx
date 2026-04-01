@@ -2,7 +2,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useMemo, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 
@@ -19,8 +19,10 @@ export function CollaboratorFormWizard() {
         return tValidation(key) || key;
     };
 
-    const config = useMemo(() => getCollaboratorFormConfig(tV), []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tV is stable per locale
+    const config = useMemo(() => getCollaboratorFormConfig(tV), [tValidation]);
     const params = useParams();
+    const router = useRouter();
 
     const {
         currentStep,
@@ -46,11 +48,19 @@ export function CollaboratorFormWizard() {
         if (stepIdFromUrl) {
             const stepIndex = config.steps.findIndex(s => s.id === stepIdFromUrl);
             if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
-                // Only update if different to avoid loops
-                useCollaboratorFormStore.setState({ currentStepIndex: stepIndex });
+                // Only allow backward navigation or same step via URL.
+                // Forward jumps via URL are blocked — user must use Next button.
+                if (stepIndex <= currentStepIndex) {
+                    useCollaboratorFormStore.setState({ currentStepIndex: stepIndex });
+                } else {
+                    // Redirect back to current valid step
+                    router.replace(
+                        `/${params.locale}/collaborators/registration/${config.steps[currentStepIndex].id}`,
+                    );
+                }
             }
         }
-    }, [stepIdFromUrl, config.steps, currentStepIndex]);
+    }, [stepIdFromUrl, config.steps, currentStepIndex, router, params.locale]);
 
     if (!currentStep) return null;
 

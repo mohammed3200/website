@@ -5,6 +5,10 @@ import { mediaTypes } from '@/constants';
 /**
  * Step 1: Personal Information
  * Fields: image, name, phoneNumber, email, country, city, specialization
+ *
+ * IMPORTANT: Required fields must NOT use .optional().
+ * The store initializes with {}, so undefined fields must fail validation.
+ * Zod v4 uses { error: string } instead of { required_error: string }.
  */
 export const step1Schema = (t: (key: string) => string) =>
   z.object({
@@ -15,40 +19,32 @@ export const step1Schema = (t: (key: string) => string) =>
       ])
       .optional(),
     name: z
-      .string()
-      .min(1, { message: t('RequiredField') })
-      .optional(),
+      .string({ error: t('nameRequired') })
+      .min(1, { message: t('nameRequired') }),
     phoneNumber: z
-      .string()
-      .optional()
-      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
+      .string({ error: t('phoneRequired') })
+      .min(1, { message: t('phoneRequired') })
       .refine(
-        (phone) => !phone || /^\+[\d\s-]{6,15}$/.test(phone),
+        (phone) => /^\+[\d\s-]{6,15}$/.test(phone),
         { message: t('InvalidPhoneNumber') },
       ),
     email: z
-      .string()
-      .optional()
-      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
-      .refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+      .string({ error: t('emailRequired') })
+      .min(1, { message: t('emailRequired') })
+      .refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
         message: t('InvalidEmail'),
       }),
     country: z
-      .string()
-      .min(1, { message: t('RequiredField') })
-      .optional(),
+      .string({ error: t('countryRequired') })
+      .min(1, { message: t('countryRequired') }),
     city: z
-      .string()
-      .optional()
-      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
-      .refine((val) => !val || val.length <= 100, { message: t('CityTooLong') }),
+      .string({ error: t('cityRequired') })
+      .min(1, { message: t('cityRequired') })
+      .max(100, { message: t('CityTooLong') }),
     specialization: z
-      .string()
-      .optional()
-      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
-      .refine((val) => !val || val.length <= 200, {
-        message: t('SpecializationTooLong'),
-      }),
+      .string({ error: t('specializationRequired') })
+      .min(1, { message: t('specializationRequired') })
+      .max(200, { message: t('SpecializationTooLong') }),
   });
 
 /**
@@ -132,16 +128,12 @@ export const innovatorServerSchema = z.object({
 export const step2Schema = (t: (key: string) => string) =>
   z.object({
     projectTitle: z
-      .string()
-      .min(1, { message: t('RequiredField') })
-      .optional(),
+      .string({ error: t('projectTitleRequired') })
+      .min(1, { message: t('projectTitleRequired') }),
     projectDescription: z
-      .string()
-      .optional()
-      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
-      .refine((val) => !val || val.length <= 1000, {
-        message: t('MaximumFieldSize') + ' 1000',
-      }),
+      .string({ error: t('projectDescriptionRequired') })
+      .min(1, { message: t('projectDescriptionRequired') })
+      .max(1000, { message: t('MaximumFieldSize') }),
     objective: z.string().optional(),
   });
 

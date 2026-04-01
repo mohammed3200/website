@@ -4,5 +4,5 @@ import { Collaborator } from '@/features/collaborators/types/types';
 
 export const useCollaboratorFormStore = createFormStore<Collaborator>({
   storageKey: 'collaborator-registration-storage',
-  version: 1,
+  version: 2,
 });

@@ -1,4 +1,44 @@
 {
+  "Auth": {
+    "login": {
+      "incubator": "Incubator",
+      "signIn": "Sign In",
+      "welcomeBack": "Welcome Back",
+      "verifyAccountHeader": "Verify Account",
+      "verificationSent": "Enter the 6-digit code sent to your email",
+      "signInDescription": "Sign in to access your dashboard",
+      "continueWithGoogle": "Continue with Google",
+      "or": "OR",
+      "emailLabel": "Email Address",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot?",
+      "verificationCodeLabel": "Verification Code",
+      "resendIn": "Resend in",
+      "resendCode": "Resend code",
+      "processing": "Processing...",
+      "verifyAndSignIn": "Verify & Sign In",
+      "backToLogin": "Back to login",
+      "termsAgreement": "By signing in, you agree to our",
+      "termsOfUse": "Terms of Use",
+      "and": "and",
+      "privacyPolicy": "Privacy Policy",
+      "emailPlaceholder": "your@email.com",
+      "passwordPlaceholder": "••••••••",
+      "hidePassword": "Hide password",
+      "showPassword": "Show password",
+      "errors": {
+        "OAuthAccountNotLinked": "Email already in use with different provider!",
+        "OAuthCallbackError": "Failed to complete the external authentication.",
+        "OAuthSignin": "Error occurred during sign in process.",
+        "CredentialsSignin": "Invalid credentials provided.",
+        "SessionRequired": "Please sign in to access this page.",
+        "Default": "An unexpected authentication error occurred.",
+        "somethingWentWrong": "Something went wrong!",
+        "emailRequiredToResend": "Email is required to resend code",
+        "failedToResend": "Failed to resend code"
+      }
+    }
+  },
   "Navigation": {
     "home": "Home",
     "entrepreneurship": "Entrepreneurship",
@@ -263,19 +303,33 @@
     "developerCredit": "Designed & Developed by Eng. Mohamed Fouad Balah"
   },
   "Validation": {
-    "RequiredField": "Field is required",
-    "MaximumFieldSize": "Exceeded available size",
+    "RequiredField": "This field is required",
+    "validationError": "Validation Error",
+    "pleaseFixErrors": "Please fix the errors below before continuing.",
+    "nameRequired": "Full Name is required",
+    "emailRequired": "Email Address is required",
+    "phoneRequired": "Phone Number is required",
+    "countryRequired": "Country is required",
+    "cityRequired": "City is required",
+    "specializationRequired": "Specialization is required",
+    "projectTitleRequired": "Project Title is required",
+    "projectDescriptionRequired": "Project Description is required",
+    "companyNameRequired": "Company Name is required",
+    "primaryPhoneRequired": "Primary Phone Number is required",
+    "industrialSectorRequired": "Industrial Sector is required",
+    "MaximumFieldSize": "Exceeded maximum allowed size",
+    "maxLength": "Must be less than {max} characters",
     "CityTooLong": "City must be less than 100 characters",
     "SpecializationTooLong": "Specialization must be less than 200 characters",
     "MaximumFiles": "Maximum 10 files allowed",
     "FileTooLarge": "File size exceeds 10MB",
     "InvalidFileType": "Invalid file type",
-    "InvalidPhoneNumber": "Invalid phone number",
-    "InvalidEmail": "Invalid email",
-    "InvalidURL": "Invalid URL",
+    "InvalidPhoneNumber": "Invalid phone number format (e.g. +218...)",
+    "InvalidEmail": "Invalid email address",
+    "InvalidURL": "Invalid URL format",
     "InvalidMediaType": "This file type is not allowed",
     "InvalidFileSize": "File size is larger than 50MB",
-    "TermsOfUse": "Terms of Use must be agreed to",
+    "TermsOfUse": "You must agree to the Terms of Use",
     "EmailExists": "Email already exists",
     "PhoneExists": "Phone number already exists"
   },
@@ -333,6 +387,8 @@
       "requestFailed": "Collaboration request sent failed",
       "errorTitle": "Validation Error",
       "errorDescription": "Please fix the errors below.",
+      "error_submitting": "An error occurred while submitting the form",
+      "error_phone_exists": "This phone number is already registered. Please use a different one",
       "contactDetails": "Contact Details",
       "howToReach": "How can we reach you?",
       "branding": "Branding",
@@ -362,7 +418,8 @@
     "homePage": "Home Page",
     "formNavigation": "Form Navigation",
     "processing": "Processing...",
-    "navigation": "Navigation"
+    "navigation": "Navigation",
+    "files": "files"
   },
   "Innovators": {
     "form": {
@@ -408,7 +465,10 @@
       "summaryTitle": "Review & Submit",
       "projectDetails": "Project Details",
       "agreeTo": "I agree to ",
-      "selectStage": "Select stage"
+      "selectStage": "Select stage",
+      "image": "Profile Picture",
+      "imageDescription": "Upload a professional photo",
+      "termsOfUse": "Terms of Use"
     },
     "success": {
       "title": "Registration Successful!",
