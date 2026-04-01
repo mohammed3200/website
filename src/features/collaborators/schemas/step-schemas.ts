@@ -4,13 +4,16 @@ import { mediaTypes } from '@/constants';
 
 /**
  * Step 1: Company Information
+ *
+ * IMPORTANT: Required fields must NOT use .optional().
+ * The store initializes with {}, so undefined fields must fail validation.
+ * Zod v4 uses { error: string } instead of { required_error: string }.
  */
 export const step1Schema = (t: (key: string) => string) => {
   return z.object({
     companyName: z
-      .string()
-      .min(1, { message: t('RequiredField') })
-      .optional(),
+      .string({ error: t('companyNameRequired') })
+      .min(1, { message: t('companyNameRequired') }),
     image: z
       .union([
         z.instanceof(File),
@@ -18,11 +21,10 @@ export const step1Schema = (t: (key: string) => string) => {
       ])
       .optional(),
     primaryPhoneNumber: z
-      .string()
-      .optional()
-      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
+      .string({ error: t('primaryPhoneRequired') })
+      .min(1, { message: t('primaryPhoneRequired') })
       .refine(
-        (phone) => !phone || /^\+[\d\s-]{6,15}$/.test(phone),
+        (phone) => /^\+[\d\s-]{6,15}$/.test(phone),
         { message: t('InvalidPhoneNumber') },
       ),
     optionalPhoneNumber: z
@@ -32,10 +34,9 @@ export const step1Schema = (t: (key: string) => string) => {
         message: t('InvalidPhoneNumber'),
       }),
     email: z
-      .string()
-      .optional()
-      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
-      .refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+      .string({ error: t('emailRequired') })
+      .min(1, { message: t('emailRequired') })
+      .refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
         message: t('InvalidEmail'),
       }),
     location: z.string().optional(),
@@ -59,12 +60,11 @@ export const step1Schema = (t: (key: string) => string) => {
 export const step2Schema = (t: (key: string) => string) => {
   return z.object({
     industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
-      message: t('RequiredField'),
+      error: t('industrialSectorRequired'),
     }),
     specialization: z
-      .string()
-      .min(1, { message: t('RequiredField') })
-      .optional(),
+      .string({ error: t('specializationRequired') })
+      .min(1, { message: t('specializationRequired') }),
   });
 };
 
@@ -186,12 +186,11 @@ export const completeCollaboratorRegistrationSchemaServer = z.object({
 
   // Step 2
   industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
-    message: 'RequiredField',
+    error: 'RequiredField',
   }),
   specialization: z
     .string()
-    .min(1, 'RequiredField')
-    .optional(),
+    .min(1, 'RequiredField'),
 
   // Step 3
   experienceProvided: z.string().optional(),

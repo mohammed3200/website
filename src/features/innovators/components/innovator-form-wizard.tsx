@@ -17,7 +17,7 @@ export function InnovatorFormWizard() {
     return tValidation(key) || key;
   };
 
-  const config = useMemo(() => getInnovatorFormConfig(tV), []);
+  const config = useMemo(() => getInnovatorFormConfig(tV), [tValidation]);
   const params = useParams();
 
   const {
@@ -44,11 +44,19 @@ export function InnovatorFormWizard() {
     if (stepIdFromUrl) {
       const stepIndex = config.steps.findIndex((s) => s.id === stepIdFromUrl);
       if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
-        // only update if different
-        useInnovatorFormStore.setState({ currentStepIndex: stepIndex });
+        // Only allow backward navigation or same step via URL.
+        // Forward jumps via URL are blocked — user must use Next button.
+        if (stepIndex <= currentStepIndex) {
+          useInnovatorFormStore.setState({ currentStepIndex: stepIndex });
+        } else {
+          // Redirect back to current valid step
+          router.replace(
+            `/${params.locale}/innovators/registration/${config.steps[currentStepIndex].id}`,
+          );
+        }
       }
     }
-  }, [stepIdFromUrl, config.steps, currentStepIndex]);
+  }, [stepIdFromUrl, config.steps, currentStepIndex, router, params.locale]);
 
   if (!currentStep) return null;
 

@@ -46,62 +46,7 @@ import {
 import { FormError } from '@/features/auth/components/form-error';
 import { FormSuccess } from '@/features/auth/components/form-success';
 
-const COPY = {
-  en: {
-    incubator: 'Incubator',
-    signIn: 'Sign In',
-    welcomeBack: 'Welcome Back',
-    verifyAccountHeader: 'Verify Account',
-    verificationSent: 'Enter the 6-digit code sent to your email',
-    signInDescription: 'Sign in to access your dashboard',
-    continueWithGoogle: 'Continue with Google',
-    or: 'OR',
-    emailLabel: 'Email Address',
-    passwordLabel: 'Password',
-    forgotPassword: 'Forgot?',
-    verificationCodeLabel: 'Verification Code',
-    resendIn: 'Resend in',
-    resendCode: 'Resend code',
-    processing: 'Processing...',
-    verifyAndSignIn: 'Verify & Sign In',
-    backToLogin: 'Back to login',
-    termsAgreement: 'By signing in, you agree to our',
-    termsOfUse: 'Terms of Use',
-    and: 'and',
-    privacyPolicy: 'Privacy Policy',
-    emailPlaceholder: 'your@email.com',
-    passwordPlaceholder: '••••••••',
-    hidePassword: 'Hide password',
-    showPassword: 'Show password',
-  },
-  ar: {
-    incubator: 'مركز الريادة',
-    signIn: 'تسجيل الدخول',
-    welcomeBack: 'مرحباً بعودتك',
-    verifyAccountHeader: 'التحقق من الحساب',
-    verificationSent: 'أدخل رمز التحقق المرسل إلى بريدك',
-    signInDescription: 'سجل دخولك للوصول إلى لوحة التحكم',
-    continueWithGoogle: 'المتابعة مع Google',
-    or: 'أو',
-    emailLabel: 'البريد الإلكتروني',
-    passwordLabel: 'كلمة المرور',
-    forgotPassword: 'نسيت كلمة المرور؟',
-    verificationCodeLabel: 'رمز التحقق',
-    resendIn: 'إعادة الإرسال بعد',
-    resendCode: 'إعادة إرسال الرمز',
-    processing: 'جاري المعالجة...',
-    verifyAndSignIn: 'تحقق وتسجيل الدخول',
-    backToLogin: 'العودة إلى تسجيل الدخول',
-    termsAgreement: 'بتسجيل الدخول، أنت توافق على',
-    termsOfUse: 'شروط الاستخدام',
-    and: 'و',
-    privacyPolicy: 'سياسة الخصوصية',
-    emailPlaceholder: 'your@email.com',
-    passwordPlaceholder: '••••••••',
-    hidePassword: 'إخفاء كلمة المرور',
-    showPassword: 'إظهار كلمة المرور',
-  }
-};
+import { useTranslations } from 'next-intl';
 
 export interface LoginFormProps {
   isGoogleEnabled?: boolean;
@@ -118,9 +63,8 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
   const [resendCooldown, setResendCooldown] = useState(0);
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const activeLocale = (locale === 'ar' || locale === 'en' ? locale : 'en') as 'en' | 'ar';
-  const t = COPY[activeLocale];
-  const isArabic = activeLocale === 'ar';
+  const t = useTranslations('Auth.login');
+  const isArabic = locale === 'ar';
 
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -151,12 +95,12 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
     if (!error) return "";
 
     const errorMap: Record<string, string> = {
-      'OAuthAccountNotLinked': 'Email already in use with different provider!',
-      'OAuthCallbackError': 'Failed to complete the external authentication.',
-      'OAuthSignin': 'Error occurred during sign in process.',
-      'CredentialsSignin': 'Invalid credentials provided.',
-      'SessionRequired': 'Please sign in to access this page.',
-      'Default': 'An unexpected authentication error occurred.'
+      'OAuthAccountNotLinked': t('errors.OAuthAccountNotLinked'),
+      'OAuthCallbackError': t('errors.OAuthCallbackError'),
+      'OAuthSignin': t('errors.OAuthSignin'),
+      'CredentialsSignin': t('errors.CredentialsSignin'),
+      'SessionRequired': t('errors.SessionRequired'),
+      'Default': t('errors.Default')
     };
 
     return errorMap[error] || errorMap['Default'];
@@ -210,7 +154,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
           if (data?.success) setSuccess(data.success);
           if (data?.twoFactor) setShowTwoFactor(true);
         })
-        .catch(() => setError('Something went wrong!'));
+        .catch(() => setError(t('errors.somethingWentWrong')));
     });
   };
 
@@ -220,7 +164,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
     setSuccess('');
     const email = form.getValues('email');
     if (!email) {
-      setError('Email is required to resend code');
+      setError(t('errors.emailRequiredToResend'));
       return;
     }
 
@@ -233,7 +177,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
             setResendCooldown(60);
           }
         })
-        .catch(() => setError('Failed to resend code'));
+        .catch(() => setError(t('errors.failedToResend')));
     });
   };
 
@@ -313,10 +257,10 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
             </div>
             <div className="text-left">
               <h2 className="text-xl font-bold text-gray-900 font-almarai">
-                {t.incubator}
+                {t('incubator')}
               </h2>
               <p className="text-xs text-gray-500 uppercase tracking-wider">
-                {t.signIn}
+                {t('signIn')}
               </p>
             </div>
           </div>
@@ -337,12 +281,12 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                 className="text-2xl font-bold text-gray-900 font-almarai mb-2"
                 layout
               >
-                {showTwoFactor ? t.verifyAccountHeader : t.welcomeBack}
+                {showTwoFactor ? t('verifyAccountHeader') : t('welcomeBack')}
               </motion.h1>
               <p className="text-sm text-gray-500">
                 {showTwoFactor
-                  ? t.verificationSent
-                  : t.signInDescription
+                  ? t('verificationSent')
+                  : t('signInDescription')
                 }
               </p>
             </div>
@@ -370,7 +314,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                         >
                           <FcGoogle className="w-5 h-5" />
                           <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900">
-                            {t.continueWithGoogle}
+                            {t('continueWithGoogle')}
                           </span>
                         </motion.button>
                       )}
@@ -380,7 +324,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                         <div className="relative flex items-center gap-4">
                           <div className="flex-1 h-px bg-gray-200" />
                           <span className="text-xs text-gray-400 font-medium uppercase">
-                            {t.or}
+                            {t('or')}
                           </span>
                           <div className="flex-1 h-px bg-gray-200" />
                         </div>
@@ -396,7 +340,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                               htmlFor="login-email"
                               className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 cursor-pointer"
                             >
-                              {t.emailLabel}
+                              {t('emailLabel')}
                             </label>
                             <FormControl>
                               <div className="relative group">
@@ -410,7 +354,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                                   id="login-email"
                                   type="email"
                                   disabled={isPending}
-                                  placeholder={t.emailPlaceholder}
+                                  placeholder={t('emailPlaceholder')}
                                   onFocus={() => setFocusedField('email')}
                                   onBlur={() => setFocusedField(null)}
                                   className={cn(
@@ -438,13 +382,13 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                                 htmlFor="login-password"
                                 className="text-xs font-bold text-gray-500 uppercase tracking-wider cursor-pointer"
                               >
-                                {t.passwordLabel}
+                                {t('passwordLabel')}
                               </label>
                               <Link
                                 href="/auth/reset"
                                 className="text-xs text-orange-600 hover:text-orange-700 font-medium transition-colors"
                               >
-                                {t.forgotPassword}
+                                {t('forgotPassword')}
                               </Link>
                             </div>
                             <FormControl>
@@ -459,7 +403,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                                   id="login-password"
                                   type={showPassword ? 'text' : 'password'}
                                   disabled={isPending}
-                                  placeholder={t.passwordPlaceholder}
+                                  placeholder={t('passwordPlaceholder')}
                                   onFocus={() => setFocusedField('password')}
                                   onBlur={() => setFocusedField(null)}
                                   className={cn(
@@ -472,7 +416,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                                 <button
                                   type="button"
                                   onClick={() => setShowPassword(!showPassword)}
-                                  aria-label={showPassword ? t.hidePassword : t.showPassword}
+                                  aria-label={showPassword ? t('hidePassword') : t('showPassword')}
                                   aria-pressed={showPassword}
                                   className={cn(
                                     "absolute top-1/2 -translate-y-1/2 p-1 rounded-lg hover:bg-gray-200 transition-colors",
@@ -516,7 +460,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                               htmlFor="two-factor-code"
                               className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4 cursor-pointer"
                             >
-                              {t.verificationCodeLabel}
+                              {t('verificationCodeLabel')}
                             </label>
                             <FormControl>
                               <div className="flex flex-col items-center gap-6 w-full">
@@ -550,8 +494,8 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                                 >
                                   <RefreshCw className={cn("w-4 h-4", isPending && "animate-spin")} />
                                   {resendCooldown > 0
-                                    ? `${t.resendIn} ${resendCooldown}s`
-                                    : t.resendCode}
+                                    ? `${t('resendIn')} ${resendCooldown}s`
+                                    : t('resendCode')}
                                 </button>
                               </div>
                             </FormControl>
@@ -609,16 +553,16 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                     {isPending ? (
                       <>
                         <RefreshCw className="w-5 h-5 animate-spin" />
-                        {t.processing}
+                        {t('processing')}
                       </>
                     ) : showTwoFactor ? (
                       <>
-                        {t.verifyAndSignIn}
+                        {t('verifyAndSignIn')}
                         <CheckCircle2 className="w-5 h-5" />
                       </>
                     ) : (
                       <>
-                        {t.signIn}
+                        {t('signIn')}
                         {isArabic ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
                       </>
                     )}
@@ -635,7 +579,7 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
                       onClick={handleBackToLogin}
                       className="w-full text-center text-sm text-gray-500 hover:text-gray-700 transition-colors py-2"
                     >
-                      {t.backToLogin}
+                      {t('backToLogin')}
                     </motion.button>
                   )}
                 </AnimatePresence>
@@ -646,13 +590,13 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
           {/* Footer */}
           <div className="px-8 py-4 bg-gray-50/50 border-t border-gray-100">
             <p className="text-center text-xs text-gray-400">
-              {t.termsAgreement}{" "}
-              <Link href={`/${activeLocale}/terms`} target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-600 transition-colors">
-                {t.termsOfUse}
+              {t('termsAgreement')}{" "}
+              <Link href={`/${locale}/terms`} target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-600 transition-colors">
+                {t('termsOfUse')}
               </Link>{" "}
-              {t.and}{" "}
-              <Link href={`/${activeLocale}/privacy`} target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-600 transition-colors">
-                {t.privacyPolicy}
+              {t('and')}{" "}
+              <Link href={`/${locale}/privacy`} target="_blank" rel="noopener noreferrer" className="underline hover:text-orange-600 transition-colors">
+                {t('privacyPolicy')}
               </Link>
             </p>
           </div>
