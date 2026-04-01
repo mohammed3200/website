@@ -29,8 +29,8 @@ You **MUST** consider the user input before proceeding (if not empty).
   - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
   - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
 - For each executable hook, output the following based on its `optional` flag:
-  - **Optional hook** (`optional: true`):
-    ```
+  - **Optional Pre-Hook** (`optional: true`):
+    ```text
     ## Extension Hooks
 
     **Optional Pre-Hook**: {extension}
@@ -40,8 +40,8 @@ You **MUST** consider the user input before proceeding (if not empty).
     Prompt: {prompt}
     To execute: `/{command}`
     ```
-  - **Mandatory hook** (`optional: false`):
-    ```
+  - **Automatic Pre-Hook** (`optional: false`):
+    ```text
     ## Extension Hooks
 
     **Automatic Pre-Hook**: {extension}
@@ -74,8 +74,8 @@ You **MUST** consider the user input before proceeding (if not empty).
      - If the hook has no `condition` field, or it is null/empty, treat the hook as executable
      - If the hook defines a non-empty `condition`, skip the hook and leave condition evaluation to the HookExecutor implementation
    - For each executable hook, output the following based on its `optional` flag:
-     - **Optional hook** (`optional: true`):
-       ```
+     - **Optional Hook** (`optional: true`):
+       ```text
        ## Extension Hooks
 
        **Optional Hook**: {extension}
@@ -85,8 +85,8 @@ You **MUST** consider the user input before proceeding (if not empty).
        Prompt: {prompt}
        To execute: `/{command}`
        ```
-     - **Mandatory hook** (`optional: false`):
-       ```
+     - **Automatic Hook** (`optional: false`):
+       ```text
        ## Extension Hooks
 
        **Automatic Hook**: {extension}
@@ -137,10 +137,9 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 3. **Agent context update**:
    - Run `.specify/integrations/claude/scripts/update-context.ps1`
-   - These scripts auto-detect which AI agent is in use.
-   - Update the appropriate agent-specific context file
+   - These scripts auto-detect which AI agent is in use and update the context file (e.g., `CLAUDE.md`)
    - Add only new technology from current plan
-   - Preserve manual additions between markers
+   - Preserve manual additions between `<!-- BEGIN CUSTOM CONTEXT -->` and `<!-- END CUSTOM CONTEXT -->` markers
 
 **Output**: data-model.md, /contracts/*, quickstart.md, agent-specific file
 

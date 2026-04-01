@@ -35,7 +35,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 1. **Setup**: Run `.specify/scripts/bash/check-prerequisites.sh --json` from repo root and parse JSON for FEATURE_DIR and AVAILABLE_DOCS list.
    - All file paths must be absolute.
-   - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+   - For arguments containing single quotes, prefer double-quoting (e.g., "I'm Groot"). If single quotes must be used, use escape syntax: e.g. 'I'\''m Groot'.
 
 2. **Clarify intent (dynamic)**: Derive up to THREE initial contextual clarifying questions (no pre-baked catalog). They MUST:
    - Be generated from the user's phrasing + extracted signals from spec/plan/tasks
@@ -98,14 +98,14 @@ You **MUST** consider the user input before proceeding (if not empty).
 
    **CORE PRINCIPLE - Test the Requirements, Not the Implementation**:
    Every checklist item MUST evaluate the REQUIREMENTS THEMSELVES for:
-   - **Completeness**: Are all necessary requirements present?
+   - **Completeness**: Are all requirements present?
    - **Clarity**: Are requirements unambiguous and specific?
    - **Consistency**: Do requirements align with each other?
    - **Measurability**: Can requirements be objectively verified?
    - **Coverage**: Are all scenarios/edge cases addressed?
 
    **Category Structure** - Group items by requirement quality dimensions:
-   - **Requirement Completeness** (Are all necessary requirements documented?)
+   - **Requirement Completeness** (Are all requirements documented?)
    - **Requirement Clarity** (Are requirements specific and unambiguous?)
    - **Requirement Consistency** (Do requirements align without conflicts?)
    - **Acceptance Criteria Quality** (Are success criteria measurable?)
@@ -171,9 +171,18 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Include resilience/rollback when state mutation occurs: "Are rollback requirements defined for migration failures? [Gap]"
 
    **Traceability Requirements**:
-   - MINIMUM: ≥80% of items MUST include at least one traceability reference
-   - Each item should reference: spec section `[Spec §X.Y]`, or use markers: `[Gap]`, `[Ambiguity]`, `[Conflict]`, `[Assumption]`
-   - If no ID system exists: "Is a requirement & acceptance criteria ID scheme established? [Traceability]"
+   - **Metric**: Minimum 80% coverage.
+   - **Calculation**: (Items with ≥1 reference) ÷ (Total items assessed) × 100.
+   - **Scope**: Includes all items in categories above; excludes draft/optional annotations.
+   - **Requirement**: Each item should reference: spec section `[Spec §X.Y]`, or use standard markers: `[Gap]`, `[Ambiguity]`, `[Conflict]`, `[Assumption]`.
+   - **No ID Scheme Policy**: If no canonical ID scheme exists yet:
+       1. Add item: "Is a requirement & acceptance criteria ID scheme established? [Traceability, Gap]"
+       2. Use temporary descriptive tags: `[Spec §HeaderName]` or `[NewRequirement]` until IDs are assigned.
+       3. Mandatory Plan: The next task MUST be "Establish Requirement ID Scheme".
+   - **Enforcement**: If metric < 80%:
+       - **Status**: Failing Grade.
+       - **Remediation**: Re-scan specification to find missing anchors.
+       - **Responsibility**: The agent generating the checklist is responsible for immediate remediation before reporting completion.
 
    **Surface & Resolve Issues** (Requirements Quality Problems):
    Ask questions about the requirements themselves:
@@ -204,7 +213,13 @@ You **MUST** consider the user input before proceeding (if not empty).
    - ✅ "Are [edge cases/scenarios] addressed in requirements?"
    - ✅ "Does the spec define [missing aspect]?"
 
-6. **Structure Reference**: Generate the checklist following the canonical template in `.specify/templates/checklist-template.md` for title, meta section, category headings, and ID formatting. Try to load and use it unconditionally. If the template is physically missing, unreadable, empty (zero-length), or fails structure validation, explicitly trigger the programmatic fallback path: generate an H1 title, purpose/created meta lines, `##` category sections containing `- [ ] CHK### <requirement item>` lines with globally incrementing IDs starting at CHK001.
+6. **Structure Reference**: Generate the checklist following the canonical template in `.specify/templates/checklist-template.md`. Try to load and use it unconditionally.
+   - **Validation Phase**: Perform `validateChecklistStructure(template: string)` to enforce:
+     - Non-empty file starting with an H1 title ("# ").
+     - Meta section with "purpose:" and "created:" lines.
+     - At least one category heading ("## ").
+     - Items matching `- [ ] CHK### ` where IDs conform to `/^CHK\d{3}$/`.
+   - **Fallback logic**: If the template is physically missing, unreadable, empty (zero-length), or fails structure validation, explicitly trigger the programmatic fallback path: generate an H1 title, purpose/created meta lines, `##` category sections containing `- [ ] CHK### <requirement item>` lines with globally incrementing IDs starting at CHK001.
 
 7. **Report**: Output full path to checklist file, item count, and summarize whether the run created a new file or appended to an existing one. Summarize:
    - Focus areas selected
@@ -238,7 +253,7 @@ Sample items (testing the requirements, NOT the implementation):
 Sample items:
 
 - "Are error response formats specified for all failure scenarios? [Completeness]"
-- "Are rate limiting requirements quantified with specific thresholds? [Clarity]"
+- "Are rate-limiting requirements quantified with specific thresholds? [Clarity]"
 - "Are authentication requirements consistent across all endpoints? [Consistency]"
 - "Are retry/timeout requirements defined for external dependencies? [Coverage, Gap]"
 - "Is versioning strategy documented in requirements? [Gap]"

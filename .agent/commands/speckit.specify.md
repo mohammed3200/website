@@ -130,28 +130,28 @@ Given that feature description, do this:
       
       ## Content Quality
       
-      - [ ] No implementation details (languages, frameworks, APIs)
-      - [ ] Focused on user value and business needs
-      - [ ] Written for non-technical stakeholders
-      - [ ] All mandatory sections completed
+      - [ ] CHK001: No implementation details (languages, frameworks, APIs)
+      - [ ] CHK002: Focused on user value and business needs
+      - [ ] CHK003: Written for non-technical stakeholders
+      - [ ] CHK004: All mandatory sections completed
       
       ## Requirement Completeness
       
-      - [ ] No [NEEDS CLARIFICATION] markers remain
-      - [ ] Requirements are testable and unambiguous
-      - [ ] Success criteria are measurable
-      - [ ] Success criteria are technology-agnostic (no implementation details)
-      - [ ] All acceptance scenarios are defined
-      - [ ] Edge cases are identified
-      - [ ] Scope is clearly bounded
-      - [ ] Dependencies and assumptions identified
+      - [ ] CHK005: No [NEEDS CLARIFICATION] markers remain
+      - [ ] CHK006: Requirements are testable and unambiguous
+      - [ ] CHK007: Success criteria are measurable
+      - [ ] CHK008: Success criteria are technology-agnostic (no implementation details)
+      - [ ] CHK009: All acceptance scenarios are defined
+      - [ ] CHK010: Edge cases are identified
+      - [ ] CHK011: Scope is clearly bounded
+      - [ ] CHK012: Dependencies and assumptions identified
       
       ## Feature Readiness
       
-      - [ ] All functional requirements have clear acceptance criteria
-      - [ ] User scenarios cover primary flows
-      - [ ] Feature meets measurable outcomes defined in Success Criteria
-      - [ ] No implementation details leak into specification
+      - [ ] CHK013: All functional requirements have clear acceptance criteria
+      - [ ] CHK014: User scenarios cover primary flows
+      - [ ] CHK015: Feature meets measurable outcomes defined in Success Criteria
+      - [ ] CHK016: No implementation details leak into specification
       
       ## Notes
       

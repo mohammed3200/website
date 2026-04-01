@@ -8,7 +8,16 @@ Follow this execution flow:
 
 1. Load the existing constitution at `.specify/memory/constitution.md`.
    - Identify every placeholder token of the form `[ALL_CAPS_IDENTIFIER]`.
-   **IMPORTANT**: The user might require less or more principles than the ones used in the template. If a number is specified, respect that - follow the general template. You will update the doc accordingly.
+   - **Normative Language**: All principles and rules MUST use RFC2119 terms:
+     - **MUST**: This requirement is absolute.
+     - **SHOULD**: Valid reasons may exist to ignore, but full implications must be understood.
+     - **MAY**: Truly optional item.
+   - **Precedence Rules**: When deriving values for placeholders or conflicting rules:
+     1. Direct User Prompt (Highest)
+     2. Project documentation (`spec.md`, `README.md`)
+     3. Global Configuration (`.specify/init-options.json`)
+     4. Default Template Values (Lowest)
+   - **Principle Count**: If a specific number of principles is requested, respect it. Otherwise, follow the general template.
 
 2. Collect/derive values for placeholders:
    - If user input (conversation) supplies a value, use it.
@@ -26,12 +35,14 @@ Follow this execution flow:
    - Ensure each Principle section: succinct name line, paragraph (or bullet list) capturing non‑negotiable rules, explicit rationale if not obvious.
    - Ensure Governance section lists amendment procedure, versioning policy, and compliance review expectations.
 
-4. Consistency propagation checklist (convert prior checklist into active validations):
-   - Read `.specify/templates/plan-template.md` and ensure any "Constitution Check" or rules align with updated principles.
-   - Read `.specify/templates/spec-template.md` for scope/requirements alignment—update if constitution adds/removes mandatory sections or constraints.
-   - Read `.specify/templates/tasks-template.md` and ensure task categorization reflects new or removed principle-driven task types (e.g., observability, versioning, testing discipline).
-   - Read each command file in `.agent/commands/*.md` and `.claude/commands/*.md` to verify no outdated references (agent-specific names like CLAUDE only) remain when generic guidance is required (including this one).
-   - Read any runtime guidance docs (e.g., `README.md`, `docs/quickstart.md`, or agent-specific guidance files if present). Update references to principles changed.
+4. Consistency propagation checklist:
+   For each item below, perform a sub-action: **[Auto-fix]**, **[Flag]**, or **[Prompt]**.
+   - Read `.specify/templates/plan-template.md` and ensures any "Constitution Check" or rules align with updated principles. **[Auto-fix]**
+   - Read `.specify/templates/spec-template.md` for scope/requirements alignment. **[Auto-fix]**
+   - Read `.specify/templates/tasks-template.md` for task categorization alignment. **[Auto-fix]**
+   - Read all command files in `.agent/commands/*.md` and `.claude/commands/*.md` to verify no outdated references remain. **[Auto-fix]**
+   - Read any runtime guidance docs (e.g., `README.md`, `docs/quickstart.md`). **[Flag]** if manual text requires rewriting.
+   - **Placeholder Rule**: ALL bracketed tokens (e.g. `[TOKEN]`) MUST be removed from the final output. If a value is unknown, use "TBD" or "NOT DEFINED" without brackets.
 
 5. Produce a Sync Impact Report (prepend as an HTML comment at top of the constitution file after update):
    - Version change: old → new
