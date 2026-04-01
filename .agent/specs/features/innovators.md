@@ -11,7 +11,7 @@ The Innovators module powers the public registration form and admin review pipel
 
 ## Validation Strategy
 - strict Zod payloads (`innovatorServerSchema`).
-- `.optional()` MUST NEVER be applied to logically required fields (e.g., `companyName`, `email`).
+- `.optional()` MUST NEVER be applied to logically required fields (e.g., `name`, `projectTitle`).
 - Zod `error` objects must map exactly to keys in `messages/en.json` and `messages/ar.json`.
 
 ## API Contract

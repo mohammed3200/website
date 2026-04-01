@@ -17,7 +17,6 @@ export function InnovatorFormWizard() {
     return tValidation(key) || key;
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- tV is stable per locale
   const config = useMemo(() => getInnovatorFormConfig(tV), [tValidation]);
   const params = useParams();
 

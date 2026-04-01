@@ -1,4 +1,4 @@
-# update-context.ps1 — Claude Code integration: create/update CLAUDE.md
+# update-context.ps1 - Claude Code integration: create/update CLAUDE.md
 #
 # Thin wrapper that delegates to the shared update-agent-context script.
 # Activated in Stage 7 when the shared script uses integration.json dispatch.
@@ -18,6 +18,10 @@ if (-not $repoRoot -or -not (Test-Path (Join-Path $repoRoot '.specify'))) {
     while ($repoRoot -and $repoRoot -ne $fsRoot -and -not (Test-Path (Join-Path $repoRoot '.specify'))) {
         $repoRoot = Split-Path -Parent $repoRoot
     }
+}
+if (-not $repoRoot -or -not (Test-Path (Join-Path $repoRoot '.specify'))) {
+    Write-Error "Failed to locate .specify directory in the repository hierarchy."
+    Exit 1
 }
 
 & "$repoRoot/.specify/scripts/powershell/update-agent-context.ps1" -AgentType claude

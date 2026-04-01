@@ -5,7 +5,7 @@
 validation_rules:
   no_optional_required_fields:
     description: "Zod schemas for required fields must never use .optional(). It silently bypasses payload validation during empty object initialization."
-    pattern: "z\\.object\\(\\{[^}]+\\b(?!optional\\(\\))\\b[^}]+\\}\\)"
+    pattern: "\\.optional\\(\\)"
     files: ["src/features/**/schemas/*.ts"]
     enforce: true
   schema_syntax:

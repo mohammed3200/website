@@ -2,7 +2,7 @@
 
 ## NextAuth Mechanics
 - Version: NextAuth.js v5.
-- Connectors: `auth.ts` handles generic configuration binding `CredentialsSignin` alongside supported third party providers. OAuth routes flow via `/api/auth/callback/...`.
+- Connectors: `auth.ts` handles generic configuration binding `CredentialsSignin` alongside supported third-party providers. OAuth routes flow via `/api/auth/callback/...`.
 - All routes inside `(dashboard)/admin` utilize server-side hydration tracking `auth()` resolution, throwing standard 401s interceptable by `Next.js` error boundaries or direct middleware traps redirecting to `/auth/login`.
 
 ## Security Enforcement

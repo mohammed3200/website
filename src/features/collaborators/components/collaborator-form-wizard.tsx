@@ -19,7 +19,6 @@ export function CollaboratorFormWizard() {
         return tValidation(key) || key;
     };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- tV is stable per locale
     const config = useMemo(() => getCollaboratorFormConfig(tV), [tValidation]);
     const params = useParams();
     const router = useRouter();
