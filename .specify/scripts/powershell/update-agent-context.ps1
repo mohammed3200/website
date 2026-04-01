@@ -27,7 +27,9 @@ if (-not $repoRoot -or -not (Test-Path (Join-Path $repoRoot '.specify'))) {
         $repoRoot = Split-Path -Parent $repoRoot
     }
 }
-if (-not $repoRoot) { throw "Failed to locate repository root." }
+if (-not $repoRoot -or -not (Test-Path (Join-Path $repoRoot '.specify'))) {
+    throw "Failed to locate repository root (missing .specify directory)."
+}
 
 $targetPath = Join-Path $repoRoot $contextFile
 $customContext = ""
@@ -40,7 +42,7 @@ if (Test-Path $targetPath) {
 
     if ($startIndex -ge 0 -and $endIndex -gt $startIndex) {
         $customContext = $content.Substring($startIndex + $beginMarker.Length, $endIndex - ($startIndex + $beginMarker.Length)).Trim()
-        Write-Host "Preserving custom context from markers."
+        Write-Information "Preserving custom context from markers."
     }
 }
 
@@ -49,7 +51,7 @@ $templatePath = Join-Path $repoRoot ".specify/templates/agent-context-template.m
 $newContent = if (Test-Path $templatePath) {
     Get-Content $templatePath -Raw
 } else {
-    "# Agent Context (Auto-generated)`n`n[NEW_TECHNOLOGY_PLACEHOLDER]"
+    "# Agent Context (Auto-generated)`n`n[CUSTOM_CONTEXT_PLACEHOLDER]"
 }
 
 # Wrap custom context in markers and re-insert
@@ -67,4 +69,4 @@ if ($newContent.Contains("[CUSTOM_CONTEXT_PLACEHOLDER]")) {
 
 # Write out the updated context file
 Set-Content -Path $targetPath -Value $newContent -Encoding utf8
-Write-Host "Updated $contextFile with marker preservation."
+Write-Output "Updated $contextFile with marker preservation."
