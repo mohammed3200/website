@@ -7,7 +7,7 @@ Sync Impact Report
 - Follow-up TODOs: N/A
 -->
 
-# DigitoPub Constitution
+# EBIC Constitution
 
 ## Core Principles
 
