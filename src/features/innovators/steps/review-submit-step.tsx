@@ -21,6 +21,7 @@ export function ReviewSubmitStep({
 }: StepComponentProps<CompleteFormData>) {
   const t = useTranslations('Innovators.form');
   const tCommon = useTranslations('Common');
+  const tEnum = useTranslations('Enums.StageDevelopment');
   // const tSummary = useTranslations('Innovators.summary'); // Unused in original code?
 
   const SummaryItem = ({
@@ -72,7 +73,7 @@ export function ReviewSubmitStep({
             <SummaryItem label={t('projectTitle')} value={data.projectTitle} />
             <SummaryItem
               label={t('stageDevelopment')}
-              value={data.stageDevelopment}
+              value={tEnum(data.stageDevelopment as any)}
             />
             <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-4 py-3 border-b last:border-0 border-border/50">
               <dt className="font-medium text-muted-foreground">
