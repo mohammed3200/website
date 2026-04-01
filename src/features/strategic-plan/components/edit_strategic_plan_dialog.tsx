@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -21,37 +22,39 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { usePatchStrategicPlan } from '@/features/strategic-plan/api';
-import { UpdateStrategicPlanInput, PlanPriority, PlanStatus } from '@/features/strategic-plan/schemas/strategic-plan-schema';
+import { UpdateStrategicPlanInput, PlanStatus } from '@/features/strategic-plan/schemas/strategic-plan-schema';
+import { type StrategicPlanItem } from '@/components/strategic-plan';
 
 interface EditStrategicPlanDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  plan: any;
+  plan: StrategicPlanItem;
 }
 
-export function EditStrategicPlanDialog({
-  open,
-  onOpenChange,
-  plan,
-}: EditStrategicPlanDialogProps) {
-  const [formData, setFormData] = useState<UpdateStrategicPlanInput>({
-    title: '',
-    slug: '',
-    content: '',
-    excerpt: null,
-    category: null,
-    priority: 'MEDIUM',
-    status: 'DRAFT',
-    isActive: true,
-    publishedAt: null,
-    startDate: null,
-    endDate: null,
-    imageId: null,
-    metaTitle: null,
-    metaDescription: null,
-  });
+const EMPTY_STATE: UpdateStrategicPlanInput = {
+  title: '',
+  slug: '',
+  content: '',
+  excerpt: null,
+  category: null,
+  status: 'DRAFT',
+  isActive: true,
+  publishedAt: null,
+  startDate: null,
+  endDate: null,
+  imageId: null,
+  metaTitle: null,
+  metaDescription: null,
+};
 
+export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrategicPlanDialogProps) {
+  const [formData, setFormData] = useState<UpdateStrategicPlanInput>(EMPTY_STATE);
   const mutation = usePatchStrategicPlan();
+
+  const updateField = <K extends keyof UpdateStrategicPlanInput>(
+    key: K,
+    value: UpdateStrategicPlanInput[K],
+  ) => setFormData((prev) => ({ ...prev, [key]: value }));
 
   useEffect(() => {
     if (plan) {
@@ -61,15 +64,14 @@ export function EditStrategicPlanDialog({
         content: plan.content || '',
         excerpt: plan.excerpt || null,
         category: plan.category || null,
-        priority: plan.priority || 'MEDIUM',
-        status: plan.status || 'DRAFT',
+        status: (plan.status as PlanStatus) || 'DRAFT',
         isActive: plan.isActive ?? true,
         publishedAt: plan.publishedAt ? new Date(plan.publishedAt).toISOString() : null,
-        startDate: plan.startDate ? new Date(plan.startDate).toISOString() : null,
-        endDate: plan.endDate ? new Date(plan.endDate).toISOString() : null,
-        imageId: plan.imageId || null,
-        metaTitle: plan.metaTitle || null,
-        metaDescription: plan.metaDescription || null,
+        startDate: null,
+        endDate: null,
+        imageId: null,
+        metaTitle: null,
+        metaDescription: null,
       });
     }
   }, [plan]);
@@ -77,78 +79,67 @@ export function EditStrategicPlanDialog({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     mutation.mutate(
-      {
-        param: { id: plan.id },
-        json: formData,
-      },
-      {
-        onSuccess: () => {
-          onOpenChange(false);
-        },
-      }
+      { param: { id: plan.id }, json: formData },
+      { onSuccess: () => onOpenChange(false) },
     );
   };
-
-  if (!plan) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit Strategic Plan</DialogTitle>
-          <DialogDescription>
-            Update the strategic plan information.
-          </DialogDescription>
+          <DialogDescription>Update the strategic plan information.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Basic Information</h3>
-            
+            <h3 className="font-semibold text-base text-gray-900 border-b pb-2">Basic Information</h3>
+
             <div className="space-y-2">
-              <Label htmlFor="edit-title">Title *</Label>
+              <Label htmlFor="edit-sp-title">Title (English) *</Label>
               <Input
-                id="edit-title"
+                id="edit-sp-title"
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) => updateField('title', e.target.value)}
                 required
                 placeholder="Enter the strategic plan title"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-slug">Slug *</Label>
+              <Label htmlFor="edit-sp-slug">Slug *</Label>
               <Input
-                id="edit-slug"
+                id="edit-sp-slug"
                 value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                onChange={(e) => updateField('slug', e.target.value)}
                 required
                 placeholder="url-friendly-slug"
                 pattern="^[a-z0-9-]+$"
               />
-              <p className="text-xs text-gray-500">
-                URL-friendly identifier (lowercase letters, numbers, and hyphens only)
+              <p className="text-xs text-amber-600">
+                ⚠ Changing the slug will break existing links to this plan.
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-excerpt">Excerpt</Label>
+              <Label htmlFor="edit-sp-excerpt">Excerpt</Label>
               <Input
-                id="edit-excerpt"
+                id="edit-sp-excerpt"
                 value={formData.excerpt || ''}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value || null })}
+                onChange={(e) => updateField('excerpt', e.target.value || null)}
                 placeholder="Short description or caption"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-content">Content *</Label>
+              <Label htmlFor="edit-sp-content">Content (English) *</Label>
               <Textarea
-                id="edit-content"
+                id="edit-sp-content"
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                rows={12}
+                onChange={(e) => updateField('content', e.target.value)}
+                rows={8}
                 required
                 placeholder="Enter the full strategic plan content"
               />
@@ -156,45 +147,27 @@ export function EditStrategicPlanDialog({
           </div>
 
           {/* Metadata */}
-          <div className="space-y-4 pt-4 border-t">
-            <h3 className="font-semibold text-lg">Metadata</h3>
-            
+          <div className="space-y-4">
+            <h3 className="font-semibold text-base text-gray-900 border-b pb-2">Metadata</h3>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-category">Category</Label>
+                <Label htmlFor="edit-sp-category">Category</Label>
                 <Input
-                  id="edit-category"
+                  id="edit-sp-category"
                   value={formData.category || ''}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value || null })}
+                  onChange={(e) => updateField('category', e.target.value || null)}
                   placeholder="e.g., Annual, 5-Year"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="edit-priority">Priority</Label>
-                <Select
-                  value={formData.priority}
-                  onValueChange={(value: PlanPriority) => setFormData({ ...formData, priority: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="LOW">Low</SelectItem>
-                    <SelectItem value="MEDIUM">Medium</SelectItem>
-                    <SelectItem value="HIGH">High</SelectItem>
-                    <SelectItem value="CRITICAL">Critical</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="edit-status">Status</Label>
+                <Label htmlFor="edit-sp-status">Status</Label>
                 <Select
                   value={formData.status}
-                  onValueChange={(value: PlanStatus) => setFormData({ ...formData, status: value })}
+                  onValueChange={(value: PlanStatus) => updateField('status', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="edit-sp-status">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -206,31 +179,26 @@ export function EditStrategicPlanDialog({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
 
-              <div className="space-y-2 flex items-center pt-6">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.isActive}
-                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="w-4 h-4"
-                  />
-                  <span>Active</span>
-                </label>
-              </div>
+            <div className="flex items-center gap-3 pt-1">
+              <Switch
+                id="edit-sp-active"
+                checked={formData.isActive}
+                onCheckedChange={(checked) => updateField('isActive', checked)}
+              />
+              <Label htmlFor="edit-sp-active" className="cursor-pointer">
+                Active
+              </Label>
             </div>
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? 'Updating...' : 'Update'}
+              {mutation.isPending ? 'Saving…' : 'Save Changes'}
             </Button>
           </DialogFooter>
         </form>

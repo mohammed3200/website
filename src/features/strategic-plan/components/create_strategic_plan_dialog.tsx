@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -23,7 +24,6 @@ import {
 import { usePostStrategicPlan } from '@/features/strategic-plan/api';
 import {
   CreateStrategicPlanInput,
-  PlanPriority,
   PlanStatus,
 } from '@/features/strategic-plan/schemas/strategic-plan-schema';
 import { generateSlug } from '@/features/strategic-plan/utils/slug';
@@ -33,71 +33,59 @@ interface CreateStrategicPlanDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateStrategicPlanDialog({
-  open,
-  onOpenChange,
-}: CreateStrategicPlanDialogProps) {
-  const [formData, setFormData] = useState<CreateStrategicPlanInput>({
-    title: '',
-    slug: '',
-    content: '',
-    excerpt: '',
-    category: '',
-    priority: 'MEDIUM',
-    status: 'DRAFT',
-    isActive: true,
-    progress: 0,
-    publishedAt: null,
-    startDate: null,
-    endDate: null,
-    imageId: null,
-    metaTitle: null,
-    metaDescription: null,
-  });
+const INITIAL_STATE: CreateStrategicPlanInput = {
+  title: '',
+  slug: '',
+  content: '',
+  excerpt: null,
+  category: null,
+  status: 'DRAFT',
+  isActive: true,
+  publishedAt: null,
+  startDate: null,
+  endDate: null,
+  imageId: null,
+  metaTitle: null,
+  metaDescription: null,
+};
 
+export function CreateStrategicPlanDialog({ open, onOpenChange }: CreateStrategicPlanDialogProps) {
+  const [formData, setFormData] = useState<CreateStrategicPlanInput>(INITIAL_STATE);
   const [autoGenerateSlug, setAutoGenerateSlug] = useState(true);
-
   const mutation = usePostStrategicPlan();
 
-  // Auto-generate slug from title
-  const generatedSlug = useMemo(() => {
-    if (!formData.title || !autoGenerateSlug) return '';
-    const baseSlug = generateSlug(formData.title);
-    // Add language suffix based on content (detect Arabic characters)
-    const hasArabic = /[\u0600-\u06FF]/.test(formData.title);
-    return hasArabic ? `${baseSlug}-ar` : `${baseSlug}-en`;
-  }, [formData.title, autoGenerateSlug]);
+  const updateField = <K extends keyof CreateStrategicPlanInput>(
+    key: K,
+    value: CreateStrategicPlanInput[K],
+  ) => setFormData((prev) => ({ ...prev, [key]: value }));
+
+  const handleTitleChange = (value: string) => {
+    if (autoGenerateSlug) {
+      setFormData((prev) => ({
+        ...prev,
+        title: value,
+        slug: generateSlug(value),
+      }));
+    } else {
+      updateField('title', value);
+    }
+  };
+
+  const handleAutoSlugToggle = (checked: boolean) => {
+    setAutoGenerateSlug(checked);
+    if (checked && formData.title) {
+      updateField('slug', generateSlug(formData.title));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const submitData = {
-      ...formData,
-      slug: autoGenerateSlug ? generatedSlug : formData.slug,
-    };
-
     mutation.mutate(
-      { json: submitData },
+      { json: formData },
       {
         onSuccess: () => {
           onOpenChange(false);
-          setFormData({
-            title: '',
-            slug: '',
-            content: '',
-            excerpt: '',
-            category: '',
-            priority: 'MEDIUM',
-            status: 'DRAFT',
-            isActive: true,
-            progress: 0,
-            publishedAt: null,
-            startDate: null,
-            endDate: null,
-            imageId: null,
-            metaTitle: null,
-            metaDescription: null,
-          });
+          setFormData(INITIAL_STATE);
           setAutoGenerateSlug(true);
         },
       },
@@ -110,32 +98,21 @@ export function CreateStrategicPlanDialog({
         <DialogHeader>
           <DialogTitle>Create Strategic Plan</DialogTitle>
           <DialogDescription>
-            Create a new strategic plan record. Each record represents one
-            language version.
+            Create a new strategic plan with bilingual content support.
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-lg">Basic Information</h3>
+            <h3 className="font-semibold text-base text-gray-900 border-b pb-2">Basic Information</h3>
 
             <div className="space-y-2">
-              <Label htmlFor="title">Title *</Label>
+              <Label htmlFor="sp-title">Title (English) *</Label>
               <Input
-                id="title"
+                id="sp-title"
                 value={formData.title}
-                onChange={(e) => {
-                  setFormData({ ...formData, title: e.target.value });
-                  if (autoGenerateSlug) {
-                    const baseSlug = generateSlug(e.target.value);
-                    const hasArabic = /[\u0600-\u06FF]/.test(e.target.value);
-                    setFormData((prev) => ({
-                      ...prev,
-                      slug: hasArabic ? `${baseSlug}-ar` : `${baseSlug}-en`,
-                    }));
-                  }
-                }}
+                onChange={(e) => handleTitleChange(e.target.value)}
                 required
                 placeholder="Enter the strategic plan title"
               />
@@ -143,67 +120,49 @@ export function CreateStrategicPlanDialog({
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="slug">Slug *</Label>
-                <label className="flex items-center gap-2 text-sm cursor-pointer">
-                  <input
-                    type="checkbox"
+                <Label htmlFor="sp-slug">Slug *</Label>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Switch
+                    id="sp-slug-auto"
                     checked={autoGenerateSlug}
-                    onChange={(e) => {
-                      setAutoGenerateSlug(e.target.checked);
-                      if (e.target.checked && formData.title) {
-                        const baseSlug = generateSlug(formData.title);
-                        const hasArabic = /[\u0600-\u06FF]/.test(
-                          formData.title,
-                        );
-                        setFormData((prev) => ({
-                          ...prev,
-                          slug: hasArabic ? `${baseSlug}-ar` : `${baseSlug}-en`,
-                        }));
-                      }
-                    }}
-                    className="w-4 h-4"
+                    onCheckedChange={handleAutoSlugToggle}
                   />
-                  <span>Auto-generate from title</span>
-                </label>
+                  <Label htmlFor="sp-slug-auto" className="cursor-pointer font-normal">
+                    Auto-generate
+                  </Label>
+                </div>
               </div>
               <Input
-                id="slug"
-                value={autoGenerateSlug ? generatedSlug : formData.slug}
-                onChange={(e) =>
-                  setFormData({ ...formData, slug: e.target.value })
-                }
+                id="sp-slug"
+                value={formData.slug}
+                onChange={(e) => updateField('slug', e.target.value)}
                 disabled={autoGenerateSlug}
                 required
                 placeholder="url-friendly-slug"
                 pattern="^[a-z0-9-]+$"
               />
               <p className="text-xs text-gray-500">
-                URL-friendly identifier (lowercase letters, numbers, and hyphens
-                only)
+                Lowercase letters, numbers, and hyphens only.
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="excerpt">Excerpt</Label>
+              <Label htmlFor="sp-excerpt">Excerpt</Label>
               <Input
-                id="excerpt"
+                id="sp-excerpt"
                 value={formData.excerpt || ''}
-                onChange={(e) =>
-                  setFormData({ ...formData, excerpt: e.target.value || null })
-                }
+                onChange={(e) => updateField('excerpt', e.target.value || null)}
                 placeholder="Short description or caption"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="content">Content *</Label>
+              <Label htmlFor="sp-content">Content (English) *</Label>
               <Textarea
-                id="content"
+                id="sp-content"
                 value={formData.content}
-                onChange={(e) =>
-                  setFormData({ ...formData, content: e.target.value })
-                }
-                rows={12}
+                onChange={(e) => updateField('content', e.target.value)}
+                rows={8}
                 required
                 placeholder="Enter the full strategic plan content"
               />
@@ -211,54 +170,27 @@ export function CreateStrategicPlanDialog({
           </div>
 
           {/* Metadata */}
-          <div className="space-y-4 pt-4 border-t">
-            <h3 className="font-semibold text-lg">Metadata</h3>
+          <div className="space-y-4">
+            <h3 className="font-semibold text-base text-gray-900 border-b pb-2">Metadata</h3>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="sp-category">Category</Label>
                 <Input
-                  id="category"
+                  id="sp-category"
                   value={formData.category || ''}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      category: e.target.value || null,
-                    })
-                  }
+                  onChange={(e) => updateField('category', e.target.value || null)}
                   placeholder="e.g., Annual, 5-Year"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="priority">Priority</Label>
-                <Select
-                  value={formData.priority}
-                  onValueChange={(value: PlanPriority) =>
-                    setFormData({ ...formData, priority: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="LOW">Low</SelectItem>
-                    <SelectItem value="MEDIUM">Medium</SelectItem>
-                    <SelectItem value="HIGH">High</SelectItem>
-                    <SelectItem value="CRITICAL">Critical</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="sp-status">Status</Label>
                 <Select
                   value={formData.status}
-                  onValueChange={(value: PlanStatus) =>
-                    setFormData({ ...formData, status: value })
-                  }
+                  onValueChange={(value: PlanStatus) => updateField('status', value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="sp-status">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -270,33 +202,26 @@ export function CreateStrategicPlanDialog({
                   </SelectContent>
                 </Select>
               </div>
+            </div>
 
-              <div className="space-y-2 flex items-center pt-6">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.isActive}
-                    onChange={(e) =>
-                      setFormData({ ...formData, isActive: e.target.checked })
-                    }
-                    className="w-4 h-4"
-                  />
-                  <span>Active</span>
-                </label>
-              </div>
+            <div className="flex items-center gap-3 pt-1">
+              <Switch
+                id="sp-active"
+                checked={formData.isActive}
+                onCheckedChange={(checked) => updateField('isActive', checked)}
+              />
+              <Label htmlFor="sp-active" className="cursor-pointer">
+                Active
+              </Label>
             </div>
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? 'Creating...' : 'Create'}
+              {mutation.isPending ? 'Creating…' : 'Create Plan'}
             </Button>
           </DialogFooter>
         </form>

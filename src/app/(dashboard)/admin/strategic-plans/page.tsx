@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useLocale } from 'next-intl';
 import { isValidDate } from '@/lib/utils';
 import {
   useGetAllStrategicPlans,
@@ -27,7 +28,7 @@ import { type StrategicPlanItem } from '@/components/strategic-plan';
 
 const StrategicPlansPage = () => {
   const router = useRouter();
-  const locale = 'en';
+  const locale = useLocale();
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -113,7 +114,6 @@ const StrategicPlansPage = () => {
               <TableHead>Slug</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Priority</TableHead>
               <TableHead>Active</TableHead>
               <TableHead>Created</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -123,7 +123,7 @@ const StrategicPlansPage = () => {
             {plans.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={7}
                   className="text-center py-8 text-gray-500"
                 >
                   No strategic plans found
@@ -153,24 +153,13 @@ const StrategicPlansPage = () => {
                           : plan.status === 'DRAFT'
                             ? 'secondary'
                             : plan.status === 'APPROVED'
-                              ? 'default'
-                              : 'outline'
+                              ? 'outline'
+                              : plan.status === 'ARCHIVED'
+                                ? 'destructive'
+                                : 'secondary'
                       }
                     >
                       {plan.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        plan.priority === 'HIGH' || plan.priority === 'CRITICAL'
-                          ? 'destructive'
-                          : plan.priority === 'MEDIUM'
-                            ? 'default'
-                            : 'secondary'
-                      }
-                    >
-                      {plan.priority}
                     </Badge>
                   </TableCell>
                   <TableCell>
