@@ -14,30 +14,116 @@ export const step1Schema = (t: (key: string) => string) =>
         z.string().transform((value) => (value === '' ? undefined : value)),
       ])
       .optional(),
-    name: z.string().min(1, { message: t('RequiredField') }),
-    phoneNumber: z
+    name: z
       .string()
       .min(1, { message: t('RequiredField') })
+      .optional(),
+    phoneNumber: z
+      .string()
+      .optional()
+      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
       .refine(
-        (phone) => typeof phone === 'string' && /^\+[\d\s-]{6,15}$/.test(phone),
+        (phone) => !phone || /^\+[\d\s-]{6,15}$/.test(phone),
         { message: t('InvalidPhoneNumber') },
       ),
     email: z
       .string()
-      .min(1, { message: t('RequiredField') })
-      .email({
+      .optional()
+      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
+      .refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
         message: t('InvalidEmail'),
       }),
-    country: z.string().min(1, { message: t('RequiredField') }),
+    country: z
+      .string()
+      .min(1, { message: t('RequiredField') })
+      .optional(),
     city: z
       .string()
-      .min(1, { message: t('RequiredField') })
-      .max(100, { message: t('CityTooLong') }),
+      .optional()
+      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
+      .refine((val) => !val || val.length <= 100, { message: t('CityTooLong') }),
     specialization: z
       .string()
-      .min(1, { message: t('RequiredField') })
-      .max(200, { message: t('SpecializationTooLong') }),
+      .optional()
+      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
+      .refine((val) => !val || val.length <= 200, {
+        message: t('SpecializationTooLong'),
+      }),
   });
+
+/**
+ * Server-side schema for innovators (without translation functions)
+ * Uses strict validation with defaults for required fields
+ */
+export const innovatorServerSchema = z.object({
+  image: z
+    .union([
+      z.instanceof(File),
+      z.string().transform((value) => (value === '' ? undefined : value)),
+    ])
+    .optional(),
+  name: z.string().min(1, { message: 'RequiredField' }).default(''),
+  phoneNumber: z
+    .string()
+    .min(1, { message: 'RequiredField' })
+    .refine(
+      (phone) => typeof phone === 'string' && /^\+[\d\s-]{6,15}$/.test(phone),
+      { message: 'InvalidPhoneNumber' },
+    )
+    .default(''),
+  email: z
+    .string()
+    .min(1, { message: 'RequiredField' })
+    .email({ message: 'InvalidEmail' })
+    .default(''),
+  country: z.string().min(1, { message: 'RequiredField' }).default(''),
+  city: z
+    .string()
+    .min(1, { message: 'RequiredField' })
+    .max(100, { message: 'CityTooLong' })
+    .default(''),
+  specialization: z
+    .string()
+    .min(1, { message: 'RequiredField' })
+    .max(200, { message: 'SpecializationTooLong' })
+    .default(''),
+
+  // Step 2
+  projectTitle: z.string().min(1, { message: 'RequiredField' }).default(''),
+  projectDescription: z
+    .string()
+    .min(1, { message: 'RequiredField' })
+    .max(1000, { message: 'MaximumFieldSize' })
+    .default(''),
+  objective: z.string().optional(),
+
+  // Step 3
+  stageDevelopment: z.nativeEnum(StageDevelopment).optional(),
+  projectFiles: z
+    .array(z.instanceof(File))
+    .max(10, { message: 'MaximumFiles' })
+    .optional()
+    .refine(
+      (files) => {
+        if (!files || files.length === 0) return true;
+        return files.every((file) => mediaTypes.includes(file.type));
+      },
+      { message: 'InvalidFileType' },
+    )
+    .refine(
+      (files) => {
+        if (!files || files.length === 0) return true;
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        return files.every((file) => file.size <= maxSize);
+      },
+      { message: 'FileTooLarge' },
+    ),
+
+  // Step 4
+  TermsOfUse: z
+    .boolean()
+    .refine((value) => value === true, { message: 'TermsOfUse' }),
+});
 
 /**
  * Step 2: Project Overview
@@ -45,11 +131,17 @@ export const step1Schema = (t: (key: string) => string) =>
  */
 export const step2Schema = (t: (key: string) => string) =>
   z.object({
-    projectTitle: z.string().min(1, { message: t('RequiredField') }),
-    projectDescription: z
+    projectTitle: z
       .string()
       .min(1, { message: t('RequiredField') })
-      .max(1000, { message: t('MaximumFieldSize') + ' 1000' }),
+      .optional(),
+    projectDescription: z
+      .string()
+      .optional()
+      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
+      .refine((val) => !val || val.length <= 1000, {
+        message: t('MaximumFieldSize') + ' 1000',
+      }),
     objective: z.string().optional(),
   });
 

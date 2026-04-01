@@ -7,7 +7,7 @@ import { zValidator } from '@hono/zod-validator';
 import { auth } from '@/auth';
 import { checkPermission, RESOURCES, ACTIONS } from '@/lib/rbac';
 import { statusUpdateSchema } from '../schemas/step-schemas';
-import { completeRegistrationSchema } from '../schemas/step-schemas';
+import { innovatorServerSchema } from '../schemas/step-schemas';
 
 import { cache } from '@/lib/cache';
 import { db } from '@/lib/db';
@@ -98,7 +98,7 @@ const app = new Hono()
     '/',
     zValidator(
       'form',
-      completeRegistrationSchema((key: string) => key),
+      innovatorServerSchema,
     ),
     async (c) => {
       const {

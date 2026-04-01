@@ -7,7 +7,10 @@ import { mediaTypes } from '@/constants';
  */
 export const step1Schema = (t: (key: string) => string) => {
   return z.object({
-    companyName: z.string().min(1, { message: t('RequiredField') }),
+    companyName: z
+      .string()
+      .min(1, { message: t('RequiredField') })
+      .optional(),
     image: z
       .union([
         z.instanceof(File),
@@ -16,9 +19,10 @@ export const step1Schema = (t: (key: string) => string) => {
       .optional(),
     primaryPhoneNumber: z
       .string()
-      .min(1, { message: t('RequiredField') })
+      .optional()
+      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
       .refine(
-        (phone) => typeof phone === 'string' && /^\+[\d\s-]{6,15}$/.test(phone),
+        (phone) => !phone || /^\+[\d\s-]{6,15}$/.test(phone),
         { message: t('InvalidPhoneNumber') },
       ),
     optionalPhoneNumber: z
@@ -29,8 +33,11 @@ export const step1Schema = (t: (key: string) => string) => {
       }),
     email: z
       .string()
-      .min(1, { message: t('RequiredField') })
-      .email({ message: t('InvalidEmail') }),
+      .optional()
+      .refine((val) => !val || val.length >= 1, { message: t('RequiredField') })
+      .refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+        message: t('InvalidEmail'),
+      }),
     location: z.string().optional(),
     site: z
       .string()
@@ -54,7 +61,10 @@ export const step2Schema = (t: (key: string) => string) => {
     industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
       message: t('RequiredField'),
     }),
-    specialization: z.string().min(1, { message: t('RequiredField') }),
+    specialization: z
+      .string()
+      .min(1, { message: t('RequiredField') })
+      .optional(),
   });
 };
 
@@ -137,7 +147,7 @@ export const completeCollaboratorRegistrationSchema = (
 
 export const completeCollaboratorRegistrationSchemaServer = z.object({
   // Step 1
-  companyName: z.string().min(1, { message: 'RequiredField' }),
+  companyName: z.string().min(1, { message: 'RequiredField' }).default(''),
   image: z
     .union([
       z.instanceof(File),
@@ -150,7 +160,8 @@ export const completeCollaboratorRegistrationSchemaServer = z.object({
     .refine(
       (phone) => typeof phone === 'string' && /^\+[\d\s-]{6,15}$/.test(phone),
       { message: 'InvalidPhoneNumber' },
-    ),
+    )
+    .default(''),
   optionalPhoneNumber: z
     .string()
     .optional()
@@ -159,7 +170,7 @@ export const completeCollaboratorRegistrationSchemaServer = z.object({
     }),
   email: z.string().min(1, { message: 'RequiredField' }).email({
     message: 'InvalidEmail',
-  }),
+  }).default(''),
   location: z.string().optional(),
   site: z
     .string()
@@ -177,7 +188,10 @@ export const completeCollaboratorRegistrationSchemaServer = z.object({
   industrialSector: z.nativeEnum(ListOfIndustrialSectors, {
     message: 'RequiredField',
   }),
-  specialization: z.string().min(1, 'RequiredField'),
+  specialization: z
+    .string()
+    .min(1, 'RequiredField')
+    .optional(),
 
   // Step 3
   experienceProvided: z.string().optional(),
