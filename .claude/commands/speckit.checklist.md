@@ -94,7 +94,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - File handling behavior:
      - If file does NOT exist: Create new file and number items starting from CHK001
      - If file exists: Append new items to existing file, continuing from the last CHK ID (e.g., if last item is CHK015, start new items at CHK016)
-   - Never delete or replace existing checklist content - always preserve and append
+   - Append-only during automated command execution; manual cleanup via PRs or a separate maintenance command outside command scope.
 
    **CORE PRINCIPLE - Test the Requirements, Not the Implementation**:
    Every checklist item MUST evaluate the REQUIREMENTS THEMSELVES for:
@@ -204,7 +204,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - ✅ "Are [edge cases/scenarios] addressed in requirements?"
    - ✅ "Does the spec define [missing aspect]?"
 
-6. **Structure Reference**: Generate the checklist following the canonical template in `.specify/templates/checklist-template.md` for title, meta section, category headings, and ID formatting. Try to load and use it unconditionally. If the template is physically missing, fallback to: H1 title, purpose/created meta lines, `##` category sections containing `- [ ] CHK### <requirement item>` lines with globally incrementing IDs starting at CHK001.
+6. **Structure Reference**: Generate the checklist following the canonical template in `.specify/templates/checklist-template.md` for title, meta section, category headings, and ID formatting. Try to load and use it unconditionally. If the template is physically missing, unreadable, empty (zero-length), or fails structure validation, explicitly trigger the programmatic fallback path: generate an H1 title, purpose/created meta lines, `##` category sections containing `- [ ] CHK### <requirement item>` lines with globally incrementing IDs starting at CHK001.
 
 7. **Report**: Output full path to checklist file, item count, and summarize whether the run created a new file or appended to an existing one. Summarize:
    - Focus areas selected
@@ -218,7 +218,7 @@ You **MUST** consider the user input before proceeding (if not empty).
 - Simple, memorable filenames that indicate checklist purpose
 - Easy identification and navigation in the `checklists/` folder
 
-To avoid clutter, use descriptive types and clean up obsolete checklists when done.
+To avoid clutter, use descriptive types. Append-only during automated command execution; manual cleanup via PRs or a separate maintenance command outside command scope.
 
 ## Example Checklist Types & Sample Items
 

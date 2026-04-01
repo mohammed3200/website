@@ -58,14 +58,11 @@ You **MUST** consider the user input before proceeding (if not empty).
 
 2. **Load context**: Read FEATURE_SPEC and `.specify/memory/constitution.md`. Load IMPL_PLAN template (already copied).
 
-3. **Execute plan workflow**: Follow the structure in IMPL_PLAN template to:
-   - Fill Technical Context (mark unknowns as "NEEDS CLARIFICATION")
-   - Fill Constitution Check section from constitution
-   - Evaluate gates (ERROR if violations unjustified)
-   - Phase 0: Generate research.md (resolve all NEEDS CLARIFICATION)
-   - Phase 1: Generate data-model.md, contracts/, quickstart.md
-   - Phase 1: Update agent context by running the agent script
-   - Re-evaluate Constitution Check post-design
+3. **Execute plan workflow**: Follow the structure in IMPL_PLAN template, mapping execution phases to template sections:
+   - **Phase 0 (Research)**: resolves all NEEDS CLARIFICATION and populates "## Technical Context".
+   - **Phase 1 (Design)**: generates data-model.md, contracts/, quickstart.md, and maps to "## Summary" and "## Constitution Check".
+   - **Phase 2 (Execution Planning)**: maps to the `tasks-template.md` phase names ("## Phase 1: Setup", "## Phase 2: Foundational").
+   - Throughout, evaluate "## Constitution Check" gates (ERROR if violations unjustified).
 
 4. **Stop and report**: Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generated artifacts.
 
@@ -139,8 +136,8 @@ You **MUST** consider the user input before proceeding (if not empty).
    - Skip if project is purely internal (build scripts, one-off tools, etc.)
 
 3. **Agent context update**:
-   - Run `.specify/integrations/claude/scripts/update-context.ps1 -AgentType claude`
-   - These scripts detect which AI agent is in use
+   - Run `.specify/integrations/claude/scripts/update-context.ps1`
+   - These scripts auto-detect which AI agent is in use.
    - Update the appropriate agent-specific context file
    - Add only new technology from current plan
    - Preserve manual additions between markers
