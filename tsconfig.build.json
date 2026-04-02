@@ -1,10 +1,12 @@
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "noEmit": true
-    },
-    "exclude": [
-        "node_modules",
-        "scripts"
-    ]
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "node_modules",
+    "scripts",
+    "tests",
+    "jest.setup.ts",
+    "prisma.config.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
 }
