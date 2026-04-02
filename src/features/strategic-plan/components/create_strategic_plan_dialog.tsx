@@ -28,6 +28,14 @@ import {
 } from '@/features/strategic-plan/schemas/strategic-plan-schema';
 import { generateSlug } from '@/features/strategic-plan/utils/slug';
 
+// Helper to convert ISO/UTC string to local datetime-local input format
+function toDateTimeLocalValue(dateIso?: string | null): string {
+  if (!dateIso) return '';
+  const d = new Date(dateIso);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 interface CreateStrategicPlanDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -242,7 +250,7 @@ export function CreateStrategicPlanDialog({ open, onOpenChange }: CreateStrategi
                 <Input
                   type="datetime-local"
                   id="sp-published-at"
-                  value={formData.publishedAt ? new Date(formData.publishedAt).toISOString().slice(0, 16) : ''}
+                  value={toDateTimeLocalValue(formData.publishedAt)}
                   onChange={(e) => updateField('publishedAt', e.target.value ? new Date(e.target.value).toISOString() : null)}
                 />
               </div>
@@ -251,7 +259,7 @@ export function CreateStrategicPlanDialog({ open, onOpenChange }: CreateStrategi
                 <Input
                   type="datetime-local"
                   id="sp-start-date"
-                  value={formData.startDate ? new Date(formData.startDate).toISOString().slice(0, 16) : ''}
+                  value={toDateTimeLocalValue(formData.startDate)}
                   onChange={(e) => updateField('startDate', e.target.value ? new Date(e.target.value).toISOString() : null)}
                 />
               </div>
@@ -260,7 +268,7 @@ export function CreateStrategicPlanDialog({ open, onOpenChange }: CreateStrategi
                 <Input
                   type="datetime-local"
                   id="sp-end-date"
-                  value={formData.endDate ? new Date(formData.endDate).toISOString().slice(0, 16) : ''}
+                  value={toDateTimeLocalValue(formData.endDate)}
                   onChange={(e) => updateField('endDate', e.target.value ? new Date(e.target.value).toISOString() : null)}
                 />
               </div>

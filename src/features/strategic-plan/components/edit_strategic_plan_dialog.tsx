@@ -25,6 +25,14 @@ import { usePatchStrategicPlan } from '@/features/strategic-plan/api';
 import { UpdateStrategicPlanInput, PlanStatus } from '@/features/strategic-plan/schemas/strategic-plan-schema';
 import { type StrategicPlanItem } from '@/components/strategic-plan';
 
+// Helper to convert ISO/UTC string to local datetime-local input format
+function toDateTimeLocalValue(dateIso?: string | null): string {
+  if (!dateIso) return '';
+  const d = new Date(dateIso);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 interface EditStrategicPlanDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -63,7 +71,7 @@ export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrate
   ) => setFormData((prev) => ({ ...prev, [key]: value }));
 
   useEffect(() => {
-    if (plan) {
+    if (open && plan) {
       setFormData({
         title: plan.title || '',
         titleAr: plan.titleAr || '',
@@ -86,7 +94,7 @@ export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrate
         phaseAr: plan.phaseAr || null,
       });
     }
-  }, [plan]);
+  }, [open, plan]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -250,7 +258,7 @@ export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrate
                 <Input
                   type="datetime-local"
                   id="edit-sp-published-at"
-                  value={formData.publishedAt ? new Date(formData.publishedAt).toISOString().slice(0, 16) : ''}
+                  value={toDateTimeLocalValue(formData.publishedAt)}
                   onChange={(e) => updateField('publishedAt', e.target.value ? new Date(e.target.value).toISOString() : null)}
                 />
               </div>
@@ -259,7 +267,7 @@ export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrate
                 <Input
                   type="datetime-local"
                   id="edit-sp-start-date"
-                  value={formData.startDate ? new Date(formData.startDate).toISOString().slice(0, 16) : ''}
+                  value={toDateTimeLocalValue(formData.startDate)}
                   onChange={(e) => updateField('startDate', e.target.value ? new Date(e.target.value).toISOString() : null)}
                 />
               </div>
@@ -268,7 +276,7 @@ export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrate
                 <Input
                   type="datetime-local"
                   id="edit-sp-end-date"
-                  value={formData.endDate ? new Date(formData.endDate).toISOString().slice(0, 16) : ''}
+                  value={toDateTimeLocalValue(formData.endDate)}
                   onChange={(e) => updateField('endDate', e.target.value ? new Date(e.target.value).toISOString() : null)}
                 />
               </div>
