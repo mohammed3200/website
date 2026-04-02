@@ -261,20 +261,7 @@ export const StrategicPlan = () => {
                 </div>
 
                 {/* Footer Action */}
-                <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className={cn(
-                      "w-2 h-2 rounded-full animate-pulse",
-                      strategic.status === 'ACTIVE' ? "bg-green-500" :
-                        strategic.status === 'COMPLETED' ? "bg-blue-500" : "bg-amber-500"
-                    )} />
-                    <span className="text-sm font-medium text-gray-500">
-                      {strategic.status === 'ACTIVE' ? t('statusActive') :
-                        strategic.status === 'COMPLETED' ? t('statusCompleted') :
-                          t('statusInProgress')}
-                    </span>
-                  </div>
-
+                <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-end">
                   <motion.button
                     onClick={(e) => {
                       e.stopPropagation();
