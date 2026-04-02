@@ -247,37 +247,31 @@ model News {
 }
 
 model StrategicPlan {
-  id              String       @id @default(cuid())
+  id              String    @id @default(cuid())
   title           String // title in English
   titleAr         String? // title in Arabic
-  slug            String       @unique
-  content         String       @db.Text // content in English
-  contentAr       String?      @db.Text // content in Arabic
-  excerpt         String?      @db.Text
-  excerptAr       String?      @db.Text
+  slug            String    @unique
+  content         String    @db.Text // content in English
+  contentAr       String?   @db.Text // content in Arabic
+  excerpt         String?   @db.Text
+  excerptAr       String?   @db.Text
   category        String?
   categoryAr      String?
-  priority        PlanPriority @default(MEDIUM)
-  status          PlanStatus   @default(DRAFT)
-  isActive        Boolean      @default(true)
-  progress        Int          @default(0) // 0-100
-  phase           String? // phase in English (e.g., "Execution")
-  phaseAr         String? // phase in Arabic
+  isActive        Boolean   @default(true)
   publishedAt     DateTime?
   startDate       DateTime?
   endDate         DateTime?
   imageId         String?
   metaTitle       String?
   metaDescription String?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   createdById     String?
   updatedById     String?
-  image           Image?       @relation(fields: [imageId], references: [id])
+  image           Image?    @relation(fields: [imageId], references: [id])
 
   @@index([slug])
   @@index([isActive, publishedAt])
-  @@index([status])
   @@index([category])
   @@index([imageId], map: "StrategicPlan_imageId_fkey")
 }
@@ -606,21 +600,6 @@ enum RecordStatus {
   REJECTED
   ARCHIVED
   UNDER_REVIEW
-}
-
-enum PlanPriority {
-  LOW
-  MEDIUM
-  HIGH
-  CRITICAL
-}
-
-enum PlanStatus {
-  DRAFT
-  UNDER_REVIEW
-  APPROVED
-  PUBLISHED
-  ARCHIVED
 }
 
 enum NotificationPriority {

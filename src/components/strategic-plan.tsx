@@ -30,13 +30,10 @@ export interface StrategicPlanItem {
   excerptAr?: string | null;
   category: string | null;
   categoryAr?: string | null;
-  priority: string;
-  status: string;
   isActive: boolean;
   publishedAt: string | null;
   createdAt?: string;
   updatedAt?: string;
-  progress?: number;
   entityType?: 'CENTER' | 'COLLEGE';
   image: {
     id: string;

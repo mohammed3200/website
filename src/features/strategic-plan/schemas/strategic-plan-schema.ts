@@ -1,10 +1,5 @@
 import { z } from "zod";
 
-// PlanPriority enum values
-export const PlanPriorityEnum = z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]);
-
-// PlanStatus enum values
-export const PlanStatusEnum = z.enum(["DRAFT", "UNDER_REVIEW", "APPROVED", "PUBLISHED", "ARCHIVED"]);
 
 // Schema for creating a strategic plan (single language record)
 export const createStrategicPlanSchema = z.object({
@@ -17,12 +12,7 @@ export const createStrategicPlanSchema = z.object({
   excerptAr: z.string().optional().nullable(),
   category: z.string().optional().nullable(),
   categoryAr: z.string().optional().nullable(),
-  priority: PlanPriorityEnum.default("MEDIUM"),
-  status: PlanStatusEnum.default("DRAFT"),
   isActive: z.boolean().default(true),
-  progress: z.number().min(0).max(100).default(0),
-  phase: z.string().optional().nullable(),
-  phaseAr: z.string().optional().nullable(),
   publishedAt: z.string().datetime().optional().nullable(),
   startDate: z.string().datetime().optional().nullable(),
   endDate: z.string().datetime().optional().nullable(),
@@ -42,12 +32,7 @@ export const updateStrategicPlanSchema = z.object({
   excerptAr: z.string().optional().nullable(),
   category: z.string().optional().nullable(),
   categoryAr: z.string().optional().nullable(),
-  priority: PlanPriorityEnum.optional(),
-  status: PlanStatusEnum.optional(),
   isActive: z.boolean().optional(),
-  progress: z.number().min(0).max(100).optional(),
-  phase: z.string().optional().nullable(),
-  phaseAr: z.string().optional().nullable(),
   publishedAt: z.string().datetime().optional().nullable(),
   startDate: z.string().datetime().optional().nullable(),
   endDate: z.string().datetime().optional().nullable(),
@@ -63,5 +48,3 @@ export const updateStrategicPlanSchemaServer = updateStrategicPlanSchema;
 // Type exports
 export type CreateStrategicPlanInput = z.infer<typeof createStrategicPlanSchema>;
 export type UpdateStrategicPlanInput = z.infer<typeof updateStrategicPlanSchema>;
-export type PlanPriority = z.infer<typeof PlanPriorityEnum>;
-export type PlanStatus = z.infer<typeof PlanStatusEnum>;

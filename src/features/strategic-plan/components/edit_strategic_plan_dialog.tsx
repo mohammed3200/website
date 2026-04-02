@@ -13,15 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { usePatchStrategicPlan } from '@/features/strategic-plan/api';
-import { UpdateStrategicPlanInput, PlanPriority, PlanStatus } from '@/features/strategic-plan/schemas/strategic-plan-schema';
+import { UpdateStrategicPlanInput } from '@/features/strategic-plan/schemas/strategic-plan-schema';
 
 interface EditStrategicPlanDialogProps {
   open: boolean;
@@ -40,8 +33,6 @@ export function EditStrategicPlanDialog({
     content: '',
     excerpt: null,
     category: null,
-    priority: 'MEDIUM',
-    status: 'DRAFT',
     isActive: true,
     publishedAt: null,
     startDate: null,
@@ -61,8 +52,6 @@ export function EditStrategicPlanDialog({
         content: plan.content || '',
         excerpt: plan.excerpt || null,
         category: plan.category || null,
-        priority: plan.priority || 'MEDIUM',
-        status: plan.status || 'DRAFT',
         isActive: plan.isActive ?? true,
         publishedAt: plan.publishedAt ? new Date(plan.publishedAt).toISOString() : null,
         startDate: plan.startDate ? new Date(plan.startDate).toISOString() : null,
@@ -105,7 +94,7 @@ export function EditStrategicPlanDialog({
           {/* Basic Information */}
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Basic Information</h3>
-            
+
             <div className="space-y-2">
               <Label htmlFor="edit-title">Title *</Label>
               <Input
@@ -158,7 +147,7 @@ export function EditStrategicPlanDialog({
           {/* Metadata */}
           <div className="space-y-4 pt-4 border-t">
             <h3 className="font-semibold text-lg">Metadata</h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="edit-category">Category</Label>
@@ -170,42 +159,6 @@ export function EditStrategicPlanDialog({
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="edit-priority">Priority</Label>
-                <Select
-                  value={formData.priority}
-                  onValueChange={(value: PlanPriority) => setFormData({ ...formData, priority: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="LOW">Low</SelectItem>
-                    <SelectItem value="MEDIUM">Medium</SelectItem>
-                    <SelectItem value="HIGH">High</SelectItem>
-                    <SelectItem value="CRITICAL">Critical</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="edit-status">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value: PlanStatus) => setFormData({ ...formData, status: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="DRAFT">Draft</SelectItem>
-                    <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
-                    <SelectItem value="APPROVED">Approved</SelectItem>
-                    <SelectItem value="PUBLISHED">Published</SelectItem>
-                    <SelectItem value="ARCHIVED">Archived</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
               <div className="space-y-2 flex items-center pt-6">
                 <label className="flex items-center gap-2 cursor-pointer">

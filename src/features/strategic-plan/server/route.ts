@@ -16,7 +16,6 @@ const app = new Hono()
       const strategicPlans = await db.strategicPlan.findMany({
         where: {
           isActive: true,
-          status: 'PUBLISHED',
         },
         include: {
           image: true,
@@ -39,12 +38,7 @@ const app = new Hono()
           excerptAr: plan.excerptAr,
           category: plan.category,
           categoryAr: plan.categoryAr,
-          priority: plan.priority,
-          status: plan.status,
           isActive: plan.isActive,
-          progress: plan.progress,
-          phase: plan.phase,
-          phaseAr: plan.phaseAr,
           publishedAt: plan.publishedAt,
           image: plan.image
             ? {
@@ -103,12 +97,7 @@ const app = new Hono()
             excerptAr: strategicPlan.excerptAr,
             category: strategicPlan.category,
             categoryAr: strategicPlan.categoryAr,
-            priority: strategicPlan.priority,
-            status: strategicPlan.status,
             isActive: strategicPlan.isActive,
-            progress: strategicPlan.progress,
-            phase: strategicPlan.phase,
-            phaseAr: strategicPlan.phaseAr,
             publishedAt: strategicPlan.publishedAt,
             startDate: strategicPlan.startDate,
             endDate: strategicPlan.endDate,
@@ -179,12 +168,7 @@ const app = new Hono()
           excerptAr: plan.excerptAr,
           category: plan.category,
           categoryAr: plan.categoryAr,
-          priority: plan.priority,
-          status: plan.status,
           isActive: plan.isActive,
-          progress: plan.progress,
-          phase: plan.phase,
-          phaseAr: plan.phaseAr,
           publishedAt: plan.publishedAt,
           startDate: plan.startDate,
           endDate: plan.endDate,
@@ -263,12 +247,7 @@ const app = new Hono()
             excerptAr: validatedData.excerptAr || null,
             category: validatedData.category || null,
             categoryAr: validatedData.categoryAr || null,
-            priority: validatedData.priority,
-            status: validatedData.status,
             isActive: validatedData.isActive,
-            progress: validatedData.progress,
-            phase: validatedData.phase || null,
-            phaseAr: validatedData.phaseAr || null,
             publishedAt: validatedData.publishedAt ? new Date(validatedData.publishedAt) : null,
             startDate: validatedData.startDate ? new Date(validatedData.startDate) : null,
             endDate: validatedData.endDate ? new Date(validatedData.endDate) : null,
@@ -375,23 +354,8 @@ const app = new Hono()
         if (validatedData.categoryAr !== undefined) {
           updateData.categoryAr = validatedData.categoryAr;
         }
-        if (validatedData.priority !== undefined) {
-          updateData.priority = validatedData.priority;
-        }
-        if (validatedData.status !== undefined) {
-          updateData.status = validatedData.status;
-        }
         if (validatedData.isActive !== undefined) {
           updateData.isActive = validatedData.isActive;
-        }
-        if (validatedData.progress !== undefined) {
-          updateData.progress = validatedData.progress;
-        }
-        if (validatedData.phase !== undefined) {
-          updateData.phase = validatedData.phase;
-        }
-        if (validatedData.phaseAr !== undefined) {
-          updateData.phaseAr = validatedData.phaseAr;
         }
         if (validatedData.publishedAt !== undefined) {
           updateData.publishedAt = validatedData.publishedAt ? new Date(validatedData.publishedAt) : null;
