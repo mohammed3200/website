@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { Target, Download, Share2 } from 'lucide-react';
+import { Target, Printer, Share2 } from 'lucide-react';
 
 import useLanguage from '@/hooks/use-language';
 import { Back } from '@/components/buttons';
@@ -72,12 +72,8 @@ const PageStrategicPlan = () => {
     }
   };
 
-  const handleDownload = () => {
-    if ((StrategicPlan as any).pdfUrl) {
-      window.open((StrategicPlan as any).pdfUrl, '_blank');
-    } else {
-      window.print();
-    }
+  const handlePrint = () => {
+    window.print();
   };
 
   // Animation Variants
@@ -131,11 +127,11 @@ const PageStrategicPlan = () => {
               <span>{isArabic ? 'مشاركة' : 'Share'}</span>
             </button>
             <button
-              onClick={handleDownload}
+              onClick={handlePrint}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-foreground text-background font-bold hover:bg-primary hover:text-white transition-all shadow-md group"
             >
-              <Download className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
-              <span>{isArabic ? 'تحميل التقرير' : 'Download PDF'}</span>
+              <Printer className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
+              <span>{isArabic ? 'طباعة التقرير' : 'Print'}</span>
             </button>
           </div>
         </motion.div>
