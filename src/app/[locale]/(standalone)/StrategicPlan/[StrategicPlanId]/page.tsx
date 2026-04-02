@@ -30,33 +30,69 @@ const itemVariants: Variants = {
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status, isArabic }: { status: string; isArabic: boolean }) {
-  const isPublished = status === 'PUBLISHED';
+  // Map all PlanStatus enum values to localized labels
+  const statusMapping: Record<string, { en: string; ar: string; color: string; animate: boolean }> = {
+    DRAFT: {
+      en: 'Draft',
+      ar: 'مسودة',
+      color: 'bg-gray-400',
+      animate: false
+    },
+    UNDER_REVIEW: {
+      en: 'Under Review',
+      ar: 'تحت المراجعة',
+      color: 'bg-amber-400',
+      animate: false
+    },
+    APPROVED: {
+      en: 'Approved',
+      ar: 'موافق عليه',
+      color: 'bg-blue-400',
+      animate: false
+    },
+    PUBLISHED: {
+      en: 'Active & In Progress',
+      ar: 'نشط وجاري العمل',
+      color: 'bg-emerald-400',
+      animate: true
+    },
+    ARCHIVED: {
+      en: 'Archived',
+      ar: 'مؤرشف',
+      color: 'bg-slate-400',
+      animate: false
+    },
+  };
+
+  const statusConfig = statusMapping[status] || statusMapping.DRAFT;
+  const label = isArabic ? statusConfig.ar : statusConfig.en;
+  const baseColor = statusConfig.color;
+  const shouldAnimate = statusConfig.animate;
+
   return (
     <div className="flex items-center gap-2.5">
       <span
         className={cn(
           'relative flex h-2.5 w-2.5',
-          isPublished && '[&>span:first-child]:animate-ping',
+          shouldAnimate && '[&>span:first-child]:animate-ping',
         )}
         aria-hidden="true"
       >
         <span
           className={cn(
             'absolute inline-flex h-full w-full rounded-full opacity-75',
-            isPublished ? 'bg-emerald-400' : 'bg-amber-400',
+            baseColor,
           )}
         />
         <span
           className={cn(
             'relative inline-flex rounded-full h-2.5 w-2.5',
-            isPublished ? 'bg-emerald-500' : 'bg-amber-500',
+            baseColor.replace('400', '500'),
           )}
         />
       </span>
       <span className="font-semibold text-foreground text-sm">
-        {isPublished
-          ? isArabic ? 'نشط وجاري العمل' : 'Active & In Progress'
-          : isArabic ? 'تحت المراجعة' : 'Under Review'}
+        {label}
       </span>
     </div>
   );
@@ -200,8 +236,40 @@ const PageStrategicPlan = () => {
     );
   }
 
-  // ── Error / Not Found ──
-  if (error || !data?.data) {
+  // ── Error ──
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center">
+            <svg
+              className="w-6 h-6 text-red-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </div>
+          <p className="text-gray-500 text-lg font-medium">
+            {isArabic ? 'حدث خطأ في تحميل الخطة' : 'Error loading plan'}
+          </p>
+          <p className="text-gray-400 text-sm">
+            {isArabic ? 'يرجى المحاولة مرة أخرى لاحقاً' : 'Please try again later'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Not Found ──
+  if (!data?.data) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="text-center space-y-3">
@@ -336,7 +404,7 @@ const PageStrategicPlan = () => {
               <PhaseCard phase={phase} isArabic={isArabic} />
 
               {/* Share / Download — repeated in sidebar for desktop convenience */}
-              <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+              <div className="hidden md:block bg-gray-50 rounded-2xl p-5 border border-gray-100">
                 <h2 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
                   {isArabic ? 'إجراءات سريعة' : 'Quick Actions'}
                 </h2>

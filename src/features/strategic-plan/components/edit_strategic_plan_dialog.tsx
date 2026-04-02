@@ -90,19 +90,31 @@ export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrate
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Only PATCH the fields that are actively managed in this dialog
-    // to prevent overwriting missing/unloaded data with nulls.
+
+    // Include all bilingual fields, phase/date fields, and metadata properties
+    // that are supported by UpdateStrategicPlanInput and used by the create dialog
     const payload: Partial<UpdateStrategicPlanInput> = {
       title: formData.title,
+      titleAr: formData.titleAr,
       slug: formData.slug,
       excerpt: formData.excerpt,
+      excerptAr: formData.excerptAr,
       content: formData.content,
+      contentAr: formData.contentAr,
       category: formData.category,
+      categoryAr: formData.categoryAr,
       status: formData.status,
       isActive: formData.isActive,
+      phase: formData.phase,
+      phaseAr: formData.phaseAr,
+      publishedAt: formData.publishedAt,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      imageId: formData.imageId,
+      metaTitle: formData.metaTitle,
+      metaDescription: formData.metaDescription,
     };
-    
+
     mutation.mutate(
       { param: { id: plan.id }, json: payload as UpdateStrategicPlanInput },
       { onSuccess: () => onOpenChange(false) },
@@ -171,9 +183,130 @@ export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrate
             </div>
           </div>
 
+          {/* Arabic Information */}
+          <div className="space-y-4 pt-4 border-t">
+            <h3 className="font-semibold text-base text-gray-900 pb-2">Arabic Content</h3>
+            <div className="space-y-2">
+              <Label htmlFor="edit-sp-title-ar">Title (Arabic)</Label>
+              <Input
+                id="edit-sp-title-ar"
+                value={formData.titleAr || ''}
+                onChange={(e) => updateField('titleAr', e.target.value)}
+                placeholder="Enter title in Arabic"
+                dir="rtl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-sp-excerpt-ar">Excerpt (Arabic)</Label>
+              <Input
+                id="edit-sp-excerpt-ar"
+                value={formData.excerptAr || ''}
+                onChange={(e) => updateField('excerptAr', e.target.value)}
+                placeholder="Short description in Arabic"
+                dir="rtl"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-sp-content-ar">Content (Arabic)</Label>
+              <Textarea
+                id="edit-sp-content-ar"
+                value={formData.contentAr || ''}
+                onChange={(e) => updateField('contentAr', e.target.value)}
+                rows={4}
+                placeholder="Enter full content in Arabic"
+                dir="rtl"
+              />
+            </div>
+          </div>
+
+          {/* Dates & Meta */}
+          <div className="space-y-4 pt-4 border-t">
+            <h3 className="font-semibold text-base text-gray-900 pb-2">Dates & Extra</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-sp-phase">Phase</Label>
+                <Input
+                  id="edit-sp-phase"
+                  value={formData.phase || ''}
+                  onChange={(e) => updateField('phase', e.target.value)}
+                  placeholder="e.g., Execution"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-sp-phase-ar">Phase (Arabic)</Label>
+                <Input
+                  id="edit-sp-phase-ar"
+                  value={formData.phaseAr || ''}
+                  onChange={(e) => updateField('phaseAr', e.target.value)}
+                  placeholder="e.g., قيد التنفيذ"
+                  dir="rtl"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-sp-published-at">Published At</Label>
+                <Input
+                  type="datetime-local"
+                  id="edit-sp-published-at"
+                  value={formData.publishedAt ? new Date(formData.publishedAt).toISOString().slice(0, 16) : ''}
+                  onChange={(e) => updateField('publishedAt', e.target.value ? new Date(e.target.value).toISOString() : null)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-sp-start-date">Start Date</Label>
+                <Input
+                  type="datetime-local"
+                  id="edit-sp-start-date"
+                  value={formData.startDate ? new Date(formData.startDate).toISOString().slice(0, 16) : ''}
+                  onChange={(e) => updateField('startDate', e.target.value ? new Date(e.target.value).toISOString() : null)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-sp-end-date">End Date</Label>
+                <Input
+                  type="datetime-local"
+                  id="edit-sp-end-date"
+                  value={formData.endDate ? new Date(formData.endDate).toISOString().slice(0, 16) : ''}
+                  onChange={(e) => updateField('endDate', e.target.value ? new Date(e.target.value).toISOString() : null)}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-sp-meta-title">Meta Title</Label>
+                <Input
+                  id="edit-sp-meta-title"
+                  value={formData.metaTitle || ''}
+                  onChange={(e) => updateField('metaTitle', e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-sp-meta-desc">Meta Description</Label>
+                <Input
+                  id="edit-sp-meta-desc"
+                  value={formData.metaDescription || ''}
+                  onChange={(e) => updateField('metaDescription', e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-sp-image-id">Image ID / URL</Label>
+              <Input
+                id="edit-sp-image-id"
+                value={formData.imageId || ''}
+                onChange={(e) => updateField('imageId', e.target.value)}
+                placeholder="Image URL or ID"
+              />
+            </div>
+          </div>
+
           {/* Metadata */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-base text-gray-900 border-b pb-2">Metadata</h3>
+          <div className="space-y-4 pt-4 border-t">
+            <h3 className="font-semibold text-base text-gray-900 pb-2">Status & Category</h3>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -187,6 +320,17 @@ export function EditStrategicPlanDialog({ open, onOpenChange, plan }: EditStrate
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="edit-sp-category-ar">Category (Arabic)</Label>
+                <Input
+                  id="edit-sp-category-ar"
+                  value={formData.categoryAr || ''}
+                  onChange={(e) => updateField('categoryAr', e.target.value || null)}
+                  placeholder="e.g., سنوي"
+                  dir="rtl"
+                />
+              </div>
+
+              <div className="col-span-2 space-y-2 pt-2">
                 <Label htmlFor="edit-sp-status">Status</Label>
                 <Select
                   value={formData.status}

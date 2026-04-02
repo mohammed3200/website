@@ -242,8 +242,8 @@ export function CreateStrategicPlanDialog({ open, onOpenChange }: CreateStrategi
                 <Input
                   type="datetime-local"
                   id="sp-published-at"
-                  value={formData.publishedAt || ''}
-                  onChange={(e) => updateField('publishedAt', e.target.value || null)}
+                  value={formData.publishedAt ? new Date(formData.publishedAt).toISOString().slice(0, 16) : ''}
+                  onChange={(e) => updateField('publishedAt', e.target.value ? new Date(e.target.value).toISOString() : null)}
                 />
               </div>
               <div className="space-y-2">
@@ -251,8 +251,8 @@ export function CreateStrategicPlanDialog({ open, onOpenChange }: CreateStrategi
                 <Input
                   type="datetime-local"
                   id="sp-start-date"
-                  value={formData.startDate || ''}
-                  onChange={(e) => updateField('startDate', e.target.value || null)}
+                  value={formData.startDate ? new Date(formData.startDate).toISOString().slice(0, 16) : ''}
+                  onChange={(e) => updateField('startDate', e.target.value ? new Date(e.target.value).toISOString() : null)}
                 />
               </div>
               <div className="space-y-2">
@@ -260,8 +260,8 @@ export function CreateStrategicPlanDialog({ open, onOpenChange }: CreateStrategi
                 <Input
                   type="datetime-local"
                   id="sp-end-date"
-                  value={formData.endDate || ''}
-                  onChange={(e) => updateField('endDate', e.target.value || null)}
+                  value={formData.endDate ? new Date(formData.endDate).toISOString().slice(0, 16) : ''}
+                  onChange={(e) => updateField('endDate', e.target.value ? new Date(e.target.value).toISOString() : null)}
                 />
               </div>
             </div>
