@@ -14,6 +14,7 @@
     "seed": "tsx prisma/seed.ts",
     "seed:rbac": "tsx prisma/seed-rbac.ts",
     "seed:templates": "tsx prisma/seed-templates.ts",
+    "seed:news": "tsx prisma/seed-news-latc.ts",
     "rbac:verify": "tsx scripts/verify-rbac.ts",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",

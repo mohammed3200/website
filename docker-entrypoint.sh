@@ -21,6 +21,7 @@ if [ "$RUN_SEEDS" = "true" ]; then
   bun run prisma/seed-rbac.ts
   bun run prisma/seed-templates.ts
   bun run prisma/seed.ts
+  bun run prisma/seed-news-latc.ts
   echo "✅ Seeds complete!"
 fi
 
