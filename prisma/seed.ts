@@ -705,7 +705,13 @@ async function seedStrategicPlans(prisma: PrismaClient) {
     const slug = `strategic-plan-${plan.id}`;
 
     const existing = await prisma.strategicPlan.findFirst({
-      where: { slug },
+      where: {
+        OR: [
+          { slug },
+          { slug: { endsWith: `-ar-${plan.id}` } },
+          { slug: { endsWith: `-en-${plan.id}` } },
+        ],
+      },
     });
 
     if (!existing) {
