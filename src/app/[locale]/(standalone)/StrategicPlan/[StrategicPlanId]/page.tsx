@@ -49,15 +49,6 @@ const PageStrategicPlan = () => {
     ? StrategicPlan.excerptAr || StrategicPlan.excerpt
     : StrategicPlan.excerpt;
 
-  if (!StrategicPlan) {
-    return (
-      <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-500 text-lg">Content not available</p>
-        </div>
-      </div>
-    );
-  }
 
   const handleShare = async () => {
     try {
@@ -75,7 +66,10 @@ const PageStrategicPlan = () => {
             : 'Strategic plan link copied to clipboard',
         });
       }
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        return;
+      }
       console.warn('Error sharing', err);
       toast({
         title: isArabic ? 'خطأ في المشاركة' : 'Error sharing',
