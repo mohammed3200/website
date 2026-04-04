@@ -114,46 +114,75 @@ describe('Database Seed Functions', () => {
     });
   });
 
-  describe('Strategic Plans Seeding', () => {
-    it('should create strategic plans with proper slugs', async () => {
+  describe('Strategic Plans Seeding (Bilingual Model)', () => {
+    it('should create ONE unified bilingual row per plan, not two language rows', async () => {
+      (bcrypt.hash as any).mockResolvedValue('hashed');
+      mockPrisma.role.findUnique.mockResolvedValue({ id: 'role-1' });
+      mockPrisma.user.upsert.mockResolvedValue({ id: 'user-1', email: 'admin@test.com', roleId: 'role-1' });
       mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
-      mockPrisma.strategicPlan.create.mockResolvedValue({
-        id: 'plan-1',
-        slug: 'test-plan-ar-1',
-      });
+      mockPrisma.strategicPlan.create.mockResolvedValue({ id: 'plan-1' });
+      mockPrisma.pageContent.upsert.mockResolvedValue({ id: 'content-1' });
 
-      const planData = {
-        id: '1',
-        arabic: {
-          caption: 'Test Caption',
-          title: 'Test Title',
-          text: 'Test content',
-        },
-        english: {
-          caption: 'Test Caption EN',
-          title: 'Test Title EN',
-          text: 'Test content EN',
-        },
-      };
+      await main();
 
-      // Test slug generation logic
-      const arabicSlug = planData.arabic.caption
-        .toLowerCase()
-        .replace(/\s+/g, '-')
-        .replace(/[^\p{L}\p{N}-]/gu, '')
-        .substring(0, 70);
+      // Should create exactly 2 plans (for 2 entries in STRATEGIC_PLANS_DATA), not 4
+      const createCalls = mockPrisma.strategicPlan.create.mock.calls;
+      expect(createCalls.length).toBe(2);
+    });
 
-      expect(arabicSlug).toBe('test-caption');
+    it('should use language-neutral slugs without -ar/-en suffixes', async () => {
+      (bcrypt.hash as any).mockResolvedValue('hashed');
+      mockPrisma.role.findUnique.mockResolvedValue({ id: 'role-1' });
+      mockPrisma.user.upsert.mockResolvedValue({ id: 'user-1', email: 'admin@test.com', roleId: 'role-1' });
+      mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
+      mockPrisma.strategicPlan.create.mockResolvedValue({ id: 'plan-1' });
+      mockPrisma.pageContent.upsert.mockResolvedValue({ id: 'content-1' });
+
+      await main();
+
+      const createCalls = mockPrisma.strategicPlan.create.mock.calls;
+      for (const call of createCalls) {
+        const data = call[0].data;
+        expect(data.slug).not.toMatch(/-ar-/);
+        expect(data.slug).not.toMatch(/-en-/);
+        expect(data.slug).toMatch(/^strategic-plan-\d+$/);
+      }
+    });
+
+    it('should populate both English AND Arabic fields in the same row', async () => {
+      (bcrypt.hash as any).mockResolvedValue('hashed');
+      mockPrisma.role.findUnique.mockResolvedValue({ id: 'role-1' });
+      mockPrisma.user.upsert.mockResolvedValue({ id: 'user-1', email: 'admin@test.com', roleId: 'role-1' });
+      mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
+      mockPrisma.strategicPlan.create.mockResolvedValue({ id: 'plan-1' });
+      mockPrisma.pageContent.upsert.mockResolvedValue({ id: 'content-1' });
+
+      await main();
+
+      const createCalls = mockPrisma.strategicPlan.create.mock.calls;
+      for (const call of createCalls) {
+        const data = call[0].data;
+        // English columns must be populated
+        expect(data.title).toBeTruthy();
+        expect(data.content).toBeTruthy();
+        expect(data.excerpt).toBeTruthy();
+        // Arabic columns must be populated in the SAME row
+        expect(data.titleAr).toBeTruthy();
+        expect(data.contentAr).toBeTruthy();
+        expect(data.excerptAr).toBeTruthy();
+        // Category bilingual
+        expect(data.category).toBe('Strategic Plan');
+        expect(data.categoryAr).toBe('خطة استراتيجية');
+      }
     });
 
     it('should skip existing strategic plans', async () => {
       mockPrisma.strategicPlan.findFirst.mockResolvedValue({
         id: 'existing-plan',
-        slug: 'test-plan-ar-1',
+        slug: 'strategic-plan-1',
       });
 
       // Should not create if plan already exists
-      // The actual seed function checks this
       expect(mockPrisma.strategicPlan.findFirst).toBeDefined();
     });
 
@@ -179,6 +208,7 @@ describe('Database Seed Functions', () => {
 
       // Should use caption as fallback for empty text
       expect(planData.arabic.text || planData.arabic.caption).toBeTruthy();
+      expect(planData.english.text || planData.english.caption).toBeTruthy();
     });
   });
 
@@ -357,13 +387,17 @@ describe('Database Seed Functions', () => {
       expect(userData.isActive).toBe(true);
     });
 
-    it('should create strategic plans with published status', async () => {
+    it('should create strategic plans with bilingual content and published status', async () => {
       const planData = {
         title: 'Test Plan',
-        slug: 'test-plan-en-1',
+        titleAr: 'خطة اختبار',
+        slug: 'strategic-plan-1',
         content: 'Content',
+        contentAr: 'محتوى',
         excerpt: 'Excerpt',
+        excerptAr: 'مقتطف',
         category: 'Strategic Plan',
+        categoryAr: 'خطة استراتيجية',
         isActive: true,
         publishedAt: new Date(),
       };
@@ -373,7 +407,15 @@ describe('Database Seed Functions', () => {
         ...planData,
       });
 
+      // Both EN and AR fields should be populated
+      expect(planData.title).toBeTruthy();
+      expect(planData.titleAr).toBeTruthy();
+      expect(planData.content).toBeTruthy();
+      expect(planData.contentAr).toBeTruthy();
       expect(planData.isActive).toBe(true);
+      // Slug should not have language suffix
+      expect(planData.slug).not.toMatch(/-ar$/);
+      expect(planData.slug).not.toMatch(/-en$/);
     });
   });
 });
