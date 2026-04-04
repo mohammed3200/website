@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { motion, Variants } from 'framer-motion';
-import { Target, CheckCircle2, Layers, BarChart3 } from 'lucide-react';
+import { Target, Printer, Share2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 import useLanguage from '@/hooks/use-language';
 import { Back } from '@/components/buttons';
@@ -13,6 +14,7 @@ import { DetailPageSkeleton } from '@/components/skeletons';
 const PageStrategicPlan = () => {
   const StrategicPlanId = useStrategicPlanId();
   const { isArabic } = useLanguage();
+  const { toast } = useToast();
 
   const { data, isLoading, error } = useGetStrategicPlan(StrategicPlanId);
 
@@ -46,20 +48,42 @@ const PageStrategicPlan = () => {
   const excerpt = isArabic
     ? StrategicPlan.excerptAr || StrategicPlan.excerpt
     : StrategicPlan.excerpt;
-  const phase = isArabic
-    ? StrategicPlan.phaseAr || StrategicPlan.phase
-    : StrategicPlan.phase;
-  const progress = StrategicPlan.progress || 0;
 
-  if (!StrategicPlan) {
-    return (
-      <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-500 text-lg">Content not available</p>
-        </div>
-      </div>
-    );
-  }
+
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: title || 'Strategic Plan',
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: isArabic ? 'تم نسخ الرابط' : 'Link copied',
+          description: isArabic
+            ? 'تم نسخ رابط الخطة الاستراتيجية إلى الحافظة'
+            : 'Strategic plan link copied to clipboard',
+        });
+      }
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        return;
+      }
+      console.warn('Error sharing', err);
+      toast({
+        title: isArabic ? 'خطأ في المشاركة' : 'Error sharing',
+        description: isArabic
+          ? 'حدث خطأ أثناء محاولة مشاركة الرابط'
+          : 'An error occurred while trying to share the link',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   // Animation Variants
   const containerVariants: Variants = {
@@ -98,9 +122,27 @@ const PageStrategicPlan = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex justify-between items-center mb-12"
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12"
         >
           <Back />
+          
+          {/* Action Bar */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-bold hover:border-primary hover:text-primary transition-all shadow-sm group"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>{isArabic ? 'مشاركة' : 'Share'}</span>
+            </button>
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-foreground text-background font-bold hover:bg-primary hover:text-white transition-all shadow-md group"
+            >
+              <Printer className="w-4 h-4 opacity-70 group-hover:opacity-100 transition-opacity" />
+              <span>{isArabic ? 'طباعة التقرير' : 'Print'}</span>
+            </button>
+          </div>
         </motion.div>
 
         <motion.div
@@ -144,21 +186,20 @@ const PageStrategicPlan = () => {
           {/* Main Content Card */}
           <motion.div
             variants={itemVariants}
-            className="grid md:grid-cols-[2fr_1fr] gap-8 mt-12"
+            className="mt-12"
           >
-            {/* Left Column: Text Content */}
-            <div className="bg-card border border-gray-100 shadow-xl shadow-gray-200/40 rounded-3xl p-8 md:p-10 relative overflow-hidden group">
+            <div className="bg-card border border-gray-100 shadow-xl shadow-gray-200/40 rounded-3xl p-8 md:p-12 relative overflow-hidden group w-full">
               {/* Decorative gradient blob */}
               <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors duration-700" />
 
-              <div className="prose prose-lg prose-gray max-w-none font-almarai relative z-10">
+              <div className="prose prose-lg prose-gray max-w-none font-almarai relative z-10 leading-loose">
                 {content ? (
                   content
                     .split('\n\n')
                     .map((paragraph: string, idx: number) => (
                       <p
                         key={idx}
-                        className="text-gray-600 leading-relaxed mb-6 last:mb-0 whitespace-pre-line"
+                        className="text-gray-600 leading-relaxed mb-6 last:mb-0 whitespace-pre-line text-justify"
                       >
                         {paragraph}
                       </p>
@@ -171,79 +212,6 @@ const PageStrategicPlan = () => {
                   </p>
                 )}
               </div>
-            </div>
-
-            {/* Right Column: Key Metrics / Summary */}
-            <div className="space-y-6">
-              {/* Status Card */}
-              <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
-                <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">
-                  {isArabic ? 'حالة المشروع' : 'Project Status'}
-                </h3>
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                  </div>
-                  <span className="font-bold text-foreground">
-                    {StrategicPlan.status === 'PUBLISHED'
-                      ? isArabic
-                        ? 'نشط وجاري العمل'
-                        : 'Active & In Progress'
-                      : isArabic
-                        ? 'تحت المراجعة'
-                        : 'Under Review'}
-                  </span>
-                </div>
-                <div className="w-full bg-gray-100 rounded-full h-2 mt-2">
-                  <div
-                    className="bg-primary h-2 rounded-full transition-all duration-1000"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <p className="text-xs text-right text-gray-400 mt-1">
-                  {progress}%
-                </p>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="grid grid-cols-1 gap-4">
-                <div className="bg-gray-50 rounded-2xl p-5 flex items-center gap-4 hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
-                  <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
-                    <Layers className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 font-bold uppercase">
-                      {isArabic ? 'المرحلة' : 'Phase'}
-                    </p>
-                    <p className="font-bold text-foreground">
-                      {phase || (isArabic ? 'قيد التنفيذ' : 'Execution')}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="bg-gray-50 rounded-2xl p-5 flex items-center gap-4 hover:bg-white hover:shadow-md transition-all border border-transparent hover:border-gray-100">
-                  <div className="p-3 bg-purple-100 text-purple-600 rounded-xl">
-                    <BarChart3 className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-500 font-bold uppercase">
-                      {isArabic ? 'الأولوية' : 'Priority'}
-                    </p>
-                    <p className="font-bold text-foreground">
-                      {StrategicPlan.priority}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Button */}
-              <button className="w-full py-4 rounded-xl bg-foreground text-background font-bold hover:bg-primary hover:text-white transition-all duration-300 shadow-lg shadow-gray-200 flex items-center justify-center gap-2 group">
-                <span>
-                  {isArabic ? 'تحميل التقرير الكامل' : 'Download Full Report'}
-                </span>
-                <CheckCircle2 className="w-4 h-4 opacity-50 group-hover:opacity-100" />
-              </button>
             </div>
           </motion.div>
         </motion.div>

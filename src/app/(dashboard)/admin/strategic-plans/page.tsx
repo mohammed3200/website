@@ -112,8 +112,6 @@ const StrategicPlansPage = () => {
               <TableHead>Title</TableHead>
               <TableHead>Slug</TableHead>
               <TableHead>Category</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Priority</TableHead>
               <TableHead>Active</TableHead>
               <TableHead>Created</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -123,7 +121,7 @@ const StrategicPlansPage = () => {
             {plans.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={8}
+                  colSpan={6}
                   className="text-center py-8 text-gray-500"
                 >
                   No strategic plans found
@@ -144,34 +142,6 @@ const StrategicPlansPage = () => {
                     ) : (
                       <span className="text-gray-400">-</span>
                     )}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        plan.status === 'PUBLISHED'
-                          ? 'default'
-                          : plan.status === 'DRAFT'
-                            ? 'secondary'
-                            : plan.status === 'APPROVED'
-                              ? 'default'
-                              : 'outline'
-                      }
-                    >
-                      {plan.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        plan.priority === 'HIGH' || plan.priority === 'CRITICAL'
-                          ? 'destructive'
-                          : plan.priority === 'MEDIUM'
-                            ? 'default'
-                            : 'secondary'
-                      }
-                    >
-                      {plan.priority}
-                    </Badge>
                   </TableCell>
                   <TableCell>
                     <Badge variant={plan.isActive ? 'default' : 'secondary'}>

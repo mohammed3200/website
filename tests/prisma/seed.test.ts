@@ -364,8 +364,6 @@ describe('Database Seed Functions', () => {
         content: 'Content',
         excerpt: 'Excerpt',
         category: 'Strategic Plan',
-        priority: 'HIGH',
-        status: 'PUBLISHED',
         isActive: true,
         publishedAt: new Date(),
       };
@@ -375,7 +373,6 @@ describe('Database Seed Functions', () => {
         ...planData,
       });
 
-      expect(planData.status).toBe('PUBLISHED');
       expect(planData.isActive).toBe(true);
     });
   });

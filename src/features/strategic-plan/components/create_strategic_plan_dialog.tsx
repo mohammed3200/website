@@ -13,19 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { usePostStrategicPlan } from '@/features/strategic-plan/api';
-import {
-  CreateStrategicPlanInput,
-  PlanPriority,
-  PlanStatus,
-} from '@/features/strategic-plan/schemas/strategic-plan-schema';
+import { CreateStrategicPlanInput } from '@/features/strategic-plan/schemas/strategic-plan-schema';
 import { generateSlug } from '@/features/strategic-plan/utils/slug';
 
 interface CreateStrategicPlanDialogProps {
@@ -43,10 +32,7 @@ export function CreateStrategicPlanDialog({
     content: '',
     excerpt: '',
     category: '',
-    priority: 'MEDIUM',
-    status: 'DRAFT',
     isActive: true,
-    progress: 0,
     publishedAt: null,
     startDate: null,
     endDate: null,
@@ -87,10 +73,7 @@ export function CreateStrategicPlanDialog({
             content: '',
             excerpt: '',
             category: '',
-            priority: 'MEDIUM',
-            status: 'DRAFT',
             isActive: true,
-            progress: 0,
             publishedAt: null,
             startDate: null,
             endDate: null,
@@ -230,46 +213,6 @@ export function CreateStrategicPlanDialog({
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="priority">Priority</Label>
-                <Select
-                  value={formData.priority}
-                  onValueChange={(value: PlanPriority) =>
-                    setFormData({ ...formData, priority: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="LOW">Low</SelectItem>
-                    <SelectItem value="MEDIUM">Medium</SelectItem>
-                    <SelectItem value="HIGH">High</SelectItem>
-                    <SelectItem value="CRITICAL">Critical</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value: PlanStatus) =>
-                    setFormData({ ...formData, status: value })
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="DRAFT">Draft</SelectItem>
-                    <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
-                    <SelectItem value="APPROVED">Approved</SelectItem>
-                    <SelectItem value="PUBLISHED">Published</SelectItem>
-                    <SelectItem value="ARCHIVED">Archived</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
               <div className="space-y-2 flex items-center pt-6">
                 <label className="flex items-center gap-2 cursor-pointer">
