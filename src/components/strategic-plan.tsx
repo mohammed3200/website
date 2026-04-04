@@ -74,11 +74,9 @@ export const StrategicPlan = () => {
   }
 
   const allPlans = (data?.data || []) as StrategicPlanItem[];
-  const strategics = allPlans.filter((plan) =>
-    lang === 'ar'
-      ? plan.slug.endsWith('-ar-1') || plan.slug.endsWith('-ar-2')
-      : plan.slug.endsWith('-en-1') || plan.slug.endsWith('-en-2'),
-  );
+  // All plans are bilingual (EN+AR in single row) — show all active plans.
+  // Language-specific display is handled by column selection below (titleAr vs title, etc.)
+  const strategics = allPlans;
 
   // Animation variants
   const containerVariants = {
