@@ -37,19 +37,33 @@ SET
   en_row.excerptAr  = COALESCE(ar_row.excerptAr, ar_row.excerpt),
   en_row.categoryAr = COALESCE(ar_row.categoryAr, ar_row.category, 'خطة استراتيجية');
 
--- Step 2: Rename English row slugs to language-neutral format
-UPDATE StrategicPlan
-SET slug = CONCAT('strategic-plan-', SUBSTRING_INDEX(slug, '-en-', -1))
-WHERE slug LIKE '%-en-%';
+-- Step 2: Pre-flight safety check
+-- Ensures every Arabic row has a corresponding English counterpart before deletion runs.
+-- If this query returns ANY rows, investigate and resolve anomalies BEFORE proceeding.
+SELECT
+  ar_row.id AS orphaned_ar_id,
+  ar_row.slug AS orphaned_ar_slug
+FROM StrategicPlan ar_row
+LEFT JOIN StrategicPlan en_row
+  ON SUBSTRING_INDEX(en_row.slug, '-en-', -1) = SUBSTRING_INDEX(ar_row.slug, '-ar-', -1)
+  AND en_row.slug LIKE '%-en-%'
+WHERE ar_row.slug LIKE '%-ar-%'
+  AND en_row.id IS NULL;
 
 -- Step 3: Delete only the Arabic-only rows that successfully merged with an English counterpart
+-- (Running this BEFORE Step 4 because renaming the English slug will break the JOIN condition)
 DELETE ar_row FROM StrategicPlan ar_row
 INNER JOIN StrategicPlan en_row
   ON SUBSTRING_INDEX(en_row.slug, '-en-', -1) = SUBSTRING_INDEX(ar_row.slug, '-ar-', -1)
   AND en_row.slug LIKE '%-en-%'
 WHERE ar_row.slug LIKE '%-ar-%';
 
--- Step 4: Verify — each plan should now have both EN and AR data
+-- Step 4: Rename English row slugs to language-neutral format
+UPDATE StrategicPlan
+SET slug = CONCAT('strategic-plan-', SUBSTRING_INDEX(slug, '-en-', -1))
+WHERE slug LIKE '%-en-%';
+
+-- Step 5: Verify — each plan should now have both EN and AR data
 SELECT
   id,
   slug,
