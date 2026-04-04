@@ -701,71 +701,42 @@ async function seedStrategicPlans(prisma: PrismaClient) {
   console.log('Seeding strategic plans...');
 
   for (const plan of STRATEGIC_PLANS_DATA) {
-    // Create Arabic version
-    const arabicBaseSlug = (plan.arabic.caption || plan.arabic.title)
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\p{L}\p{N}-]/gu, '')
-      .substring(0, 70);
-    const arabicSlug = `${arabicBaseSlug}-ar-${plan.id}`;
+    // Create ONE unified bilingual row per strategic plan
+    const slug = `strategic-plan-${plan.id}`;
 
-    const existingArabic = await prisma.strategicPlan.findFirst({
-      where: { slug: arabicSlug },
+    const existing = await prisma.strategicPlan.findFirst({
+      where: {
+        OR: [
+          { slug },
+          { slug: { endsWith: `-ar-${plan.id}` } },
+          { slug: { endsWith: `-en-${plan.id}` } },
+        ],
+      },
     });
 
-    if (!existingArabic) {
-      await prisma.strategicPlan.create({
-        data: {
-          title: plan.arabic.title,
-          slug: arabicSlug,
-          content: plan.arabic.text || plan.arabic.caption,
-          excerpt: plan.arabic.caption,
-          category: 'Strategic Plan',
-          isActive: true,
-          publishedAt: new Date(),
-          imageId: null,
-        },
-      });
-      console.log(
-        `✅ Created Arabic strategic plan: ${plan.arabic.title} (slug: ${arabicSlug})`,
-      );
-    } else {
-      console.log(
-        `⏭️  Arabic strategic plan already exists: ${plan.arabic.title} (slug: ${arabicSlug})`,
-      );
-    }
-
-    // Create English version
-    const englishBaseSlug = (plan.english.caption || plan.english.title)
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^\p{L}\p{N}-]/gu, '')
-      .substring(0, 70);
-    const englishSlug = `${englishBaseSlug}-en-${plan.id}`;
-
-    const existingEnglish = await prisma.strategicPlan.findFirst({
-      where: { slug: englishSlug },
-    });
-
-    if (!existingEnglish) {
+    if (!existing) {
       await prisma.strategicPlan.create({
         data: {
           title: plan.english.title,
-          slug: englishSlug,
+          titleAr: plan.arabic.title,
+          slug,
           content: plan.english.text || plan.english.caption,
+          contentAr: plan.arabic.text || plan.arabic.caption,
           excerpt: plan.english.caption,
+          excerptAr: plan.arabic.caption,
           category: 'Strategic Plan',
+          categoryAr: 'خطة استراتيجية',
           isActive: true,
           publishedAt: new Date(),
           imageId: null,
         },
       });
       console.log(
-        `✅ Created English strategic plan: ${plan.english.title} (slug: ${englishSlug})`,
+        `✅ Created bilingual strategic plan: ${plan.english.title} / ${plan.arabic.title} (slug: ${slug})`,
       );
     } else {
       console.log(
-        `⏭️  English strategic plan already exists: ${plan.english.title} (slug: ${englishSlug})`,
+        `⏭️  Strategic plan already exists: ${plan.english.title} (slug: ${slug})`,
       );
     }
   }

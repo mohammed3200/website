@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 
-// Schema for creating a strategic plan (single language record)
+// Schema for creating a strategic plan (bilingual: EN + AR in one row)
 export const createStrategicPlanSchema = z.object({
   title: z.string().min(1, "Title is required"),
   titleAr: z.string().optional().nullable(),
