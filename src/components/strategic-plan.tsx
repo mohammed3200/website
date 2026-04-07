@@ -151,6 +151,7 @@ export const StrategicPlan = () => {
           }
 
           const isCenter = strategic.slug === 'ebic';
+          const LogoSrc = isCenter ? '/assets/icons/logo.svg' : '/assets/icons/college.png';
           const IconComponent = isCenter ? Sparkles : Building2;
 
           // Date logic (UTC)

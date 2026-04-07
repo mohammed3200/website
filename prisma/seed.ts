@@ -733,8 +733,8 @@ async function seedStrategicPlans(prisma: PrismaClient) {
           categoryAr: 'خطة استراتيجية',
           isActive: true,
           publishedAt: new Date(),
-          startDate: (plan as any).startDate,
-          endDate: (plan as any).endDate,
+          startDate: plan.startDate,
+          endDate: plan.endDate,
           imageId: null,
         },
       });
@@ -747,8 +747,8 @@ async function seedStrategicPlans(prisma: PrismaClient) {
         where: { id: existing.id },
         data: { 
           slug,
-          startDate: (plan as any).startDate,
-          endDate: (plan as any).endDate,
+          startDate: plan.startDate,
+          endDate: plan.endDate,
         },
       });
       console.log(

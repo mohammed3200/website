@@ -45,6 +45,7 @@ describe('Database Seed Functions', () => {
       strategicPlan: {
         findFirst: jest.fn(),
         create: jest.fn(),
+        update: jest.fn(),
       },
       pageContent: {
         upsert: jest.fn(),
