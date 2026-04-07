@@ -14,6 +14,7 @@ if (!process.env.DATABASE_URL) {
 const STRATEGIC_PLANS_DATA = [
   {
     id: '1',
+    slug: 'cit',
     arabic: {
       caption: 'كلية التقنية الصناعية - مصراتة',
       title: 'الخطة الإسترتيجية 2023 - 2027',
@@ -524,6 +525,7 @@ const STRATEGIC_PLANS_DATA = [
   },
   {
     id: '2',
+    slug: 'ebic',
     arabic: {
       caption: 'مركز الريادة وحاضنات الاعمال',
       title: 'الخطة الإسترتيجية 2023 - 2027',
@@ -706,18 +708,25 @@ async function seedStrategicPlans(prisma: PrismaClient) {
 
   for (const plan of STRATEGIC_PLANS_DATA) {
     // Create ONE unified bilingual row per strategic plan
-    const slug = plan.id === '1' ? 'cit' : 'ebic';
+    const slug = plan.slug;
 
-    const existing = await prisma.strategicPlan.findFirst({
-      where: {
-        OR: [
-          { slug },
-          { slug: `strategic-plan-${plan.id}` },
-          { slug: { endsWith: `-ar-${plan.id}` } },
-          { slug: { endsWith: `-en-${plan.id}` } },
-        ],
-      },
+    // Find the record by the exact target slug first
+    let existing = await prisma.strategicPlan.findUnique({
+      where: { slug }
     });
+
+    // If not found, look for legacy patterns
+    if (!existing) {
+      existing = await prisma.strategicPlan.findFirst({
+        where: {
+          OR: [
+            { slug: `strategic-plan-${plan.id}` },
+            { slug: { endsWith: `-ar-${plan.id}` } },
+            { slug: { endsWith: `-en-${plan.id}` } },
+          ],
+        },
+      });
+    }
 
     if (!existing) {
       await prisma.strategicPlan.create({
