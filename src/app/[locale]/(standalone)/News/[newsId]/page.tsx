@@ -11,6 +11,7 @@ import { useGetNewsById } from '@/features/news/api/use-get-new';
 import { DetailPageSkeleton } from '@/components/skeletons';
 import DOMPurify from 'isomorphic-dompurify';
 import { getRelativeTime } from '@/lib/relative-time';
+import { useToast } from '@/hooks/use-toast';
 
 import { Back } from '@/components/buttons';
 
@@ -18,9 +19,10 @@ const NewsIdPage = () => {
   const newsId = useNewsId();
   const { isArabic, isEnglish } = useLanguage();
   const t = useTranslations('News');
-  const { data: news, isLoading } = useGetNewsById(newsId);
+  const { toast } = useToast();
+  const { data: news, isLoading, isPending } = useGetNewsById(newsId);
 
-  if (isLoading) {
+  if (isLoading || isPending) {
     return (
       <div className="min-h-screen bg-gray-50/50 py-12 px-4">
         <DetailPageSkeleton />
@@ -63,6 +65,37 @@ const NewsIdPage = () => {
     tags = [];
   }
 
+  const handleShare = async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: title || 'News',
+          url: window.location.href,
+        });
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: isArabic ? 'تم نسخ الرابط' : 'Link copied',
+          description: isArabic
+            ? 'تم نسخ رابط الخبر إلى الحافظة'
+            : 'News link copied to clipboard',
+        });
+      }
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        return;
+      }
+      console.warn('Error sharing', err);
+      toast({
+        title: isArabic ? 'خطأ في المشاركة' : 'Error sharing',
+        description: isArabic
+          ? 'حدث خطأ أثناء محاولة مشاركة الرابط'
+          : 'An error occurred while trying to share the link',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div
       className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8"
@@ -79,6 +112,7 @@ const NewsIdPage = () => {
           <Back />
           <div className="flex gap-2">
             <button
+              onClick={handleShare}
               className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
               aria-label="Share"
             >

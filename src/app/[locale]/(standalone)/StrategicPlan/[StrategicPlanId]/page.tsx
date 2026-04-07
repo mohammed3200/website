@@ -16,9 +16,9 @@ const PageStrategicPlan = () => {
   const { isArabic } = useLanguage();
   const { toast } = useToast();
 
-  const { data, isLoading, error } = useGetStrategicPlan(StrategicPlanId);
+  const { data, isLoading, isPending, error } = useGetStrategicPlan(StrategicPlanId);
 
-  if (isLoading) {
+  if (isLoading || isPending) {
     return (
       <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
         <DetailPageSkeleton />
