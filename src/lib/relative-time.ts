@@ -4,6 +4,11 @@ import { ar, enUS } from 'date-fns/locale';
 export function getRelativeTime(date: Date | string, locale: 'ar' | 'en'): string {
   const d = new Date(date);
   
+  if (isNaN(d.getTime())) {
+    console.warn(`Invalid date passed to getRelativeTime: ${date}`);
+    return typeof date === 'string' ? date : '';
+  }
+
   try {
     return formatDistanceToNow(d, {
       addSuffix: true,

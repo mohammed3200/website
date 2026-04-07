@@ -519,6 +519,8 @@ const STRATEGIC_PLANS_DATA = [
   7 Dr. Abdul Ali Muhammad Qalisa Linguistic Review
   `,
     },
+    startDate: new Date('2023-01-01'),
+    endDate: new Date('2027-12-31'),
   },
   {
     id: '2',
@@ -532,6 +534,8 @@ const STRATEGIC_PLANS_DATA = [
       title: 'Strategic Plan 2023 - 2027',
       text: '',
     },
+    startDate: new Date('2023-01-01'),
+    endDate: new Date('2027-12-31'),
   },
 ];
 
@@ -708,6 +712,7 @@ async function seedStrategicPlans(prisma: PrismaClient) {
       where: {
         OR: [
           { slug },
+          { slug: `strategic-plan-${plan.id}` },
           { slug: { endsWith: `-ar-${plan.id}` } },
           { slug: { endsWith: `-en-${plan.id}` } },
         ],
@@ -728,6 +733,8 @@ async function seedStrategicPlans(prisma: PrismaClient) {
           categoryAr: 'خطة استراتيجية',
           isActive: true,
           publishedAt: new Date(),
+          startDate: (plan as any).startDate,
+          endDate: (plan as any).endDate,
           imageId: null,
         },
       });
@@ -738,7 +745,11 @@ async function seedStrategicPlans(prisma: PrismaClient) {
       // Allow overriding existing slug for update
       await prisma.strategicPlan.update({
         where: { id: existing.id },
-        data: { slug }
+        data: { 
+          slug,
+          startDate: (plan as any).startDate,
+          endDate: (plan as any).endDate,
+        },
       });
       console.log(
         `⏭️  Strategic plan updated/exists: ${plan.english.title} (slug: ${slug})`,

@@ -145,7 +145,7 @@ describe('Database Seed Functions', () => {
         const data = call[0].data;
         expect(data.slug).not.toMatch(/-ar-/);
         expect(data.slug).not.toMatch(/-en-/);
-        expect(data.slug).toMatch(/^strategic-plan-\d+$/);
+        expect(data.slug).toMatch(/^(cit|ebic)$/);
       }
     });
 

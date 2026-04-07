@@ -138,32 +138,36 @@ export const StrategicPlan = () => {
           const displayTitle = isArabic ? (strategic.titleAr ?? strategic.title) : strategic.title;
           const displayExcerpt = isArabic ? (strategic.excerptAr ?? strategic.excerpt) : strategic.excerpt;
 
-          // Determine entity type based on clean slug
-          const isCenter = strategic.slug === 'ebic';
-          
-          const entityName = isCenter 
-            ? (isArabic ? 'مركز ريادة الأعمال' : 'Entrepreneurship Center')
-            : (isArabic ? 'كلية التقنية الصناعية' : 'College of Industrial Technology');
+          // Explicit Slug Mapping for Branding
+          let entityName = '';
+          if (strategic.slug === 'ebic') {
+            entityName = isArabic ? 'مركز ريادة الأعمال وحاضنات الأعمال' : 'Entrepreneurship and Business Incubators Center';
+          } else if (strategic.slug === 'cit') {
+            entityName = isArabic ? 'كلية التقنية الصناعية - مصراتة' : 'College of Industrial Technology - Misurata';
+          } else {
+            entityName = isArabic 
+              ? (strategic.categoryAr ?? strategic.category ?? t('defaultCategory')) 
+              : (strategic.category ?? t('defaultCategory'));
+          }
 
-          const LogoSrc = isCenter ? '/assets/icons/logo.svg' : '/assets/icons/college.png';
-          // Use string paths for logos to avoid TSC errors with relative public imports
+          const isCenter = strategic.slug === 'ebic';
           const IconComponent = isCenter ? Sparkles : Building2;
 
-          // Date logic
-          const startDate = strategic.startDate ? new Date(strategic.startDate).getFullYear() : null;
-          const endDate = strategic.endDate ? new Date(strategic.endDate).getFullYear() : null;
+          // Date logic (UTC)
+          const startDate = strategic.startDate ? new Date(strategic.startDate).getUTCFullYear() : null;
+          const endDate = strategic.endDate ? new Date(strategic.endDate).getUTCFullYear() : null;
           
           let displayDate = '';
           if (startDate && endDate) {
             displayDate = t('dateRange', { start: startDate, end: endDate });
-          } else {
-            const publishedDate = strategic.publishedAt ? new Date(strategic.publishedAt) : null;
-            const isValidDate = publishedDate && !isNaN(publishedDate.getTime());
-            displayDate = isValidDate
-              ? publishedDate.toLocaleDateString(isArabic ? 'ar-LY' : 'en-US', {
-                year: 'numeric'
-              })
-              : new Date().getFullYear().toString();
+          } else if (strategic.publishedAt) {
+            const publishedDate = new Date(strategic.publishedAt);
+            if (!isNaN(publishedDate.getTime())) {
+              displayDate = publishedDate.toLocaleDateString(isArabic ? 'ar-LY' : 'en-US', { 
+                year: 'numeric', 
+                timeZone: 'UTC' 
+              });
+            }
           }
 
           return (
