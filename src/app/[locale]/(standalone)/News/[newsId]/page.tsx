@@ -12,6 +12,7 @@ import { DetailPageSkeleton } from '@/components/skeletons';
 import DOMPurify from 'isomorphic-dompurify';
 import { getRelativeTime } from '@/lib/relative-time';
 import { useToast } from '@/hooks/use-toast';
+import { useShareLink } from '@/hooks/use-share-link';
 
 import { Back } from '@/components/buttons';
 
@@ -65,36 +66,11 @@ const NewsIdPage = () => {
     tags = [];
   }
 
-  const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: title || 'News',
-          url: window.location.href,
-        });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast({
-          title: isArabic ? 'تم نسخ الرابط' : 'Link copied',
-          description: isArabic
-            ? 'تم نسخ رابط الخبر إلى الحافظة'
-            : 'News link copied to clipboard',
-        });
-      }
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        return;
-      }
-      console.warn('Error sharing', err);
-      toast({
-        title: isArabic ? 'خطأ في المشاركة' : 'Error sharing',
-        description: isArabic
-          ? 'حدث خطأ أثناء محاولة مشاركة الرابط'
-          : 'An error occurred while trying to share the link',
-        variant: 'destructive',
-      });
-    }
-  };
+  const { share: handleShare } = useShareLink({
+    title: title || 'News',
+    isArabic,
+    toast,
+  });
 
   return (
     <div
@@ -159,7 +135,7 @@ const NewsIdPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 p-6 md:p-10">
             {/* Article Content - Takes up 8 columns */}
             <div className="lg:col-span-8 space-y-6">
-              <div 
+              <div
                 className="prose prose-lg prose-gray max-w-none text-gray-600 font-outfit"
                 dir={contentDir}
                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}

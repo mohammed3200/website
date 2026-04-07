@@ -2,11 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 import { isBuildPhase } from './env-utils';
 
-declare global {
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
-}
-
 const connectionString =
   process.env.DATABASE_URL ||
   (isBuildPhase ? 'mysql://localhost:3306/placeholder' : '');
@@ -28,6 +23,10 @@ declare global {
   var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
-export const db = globalThis.prismaGlobal ?? prismaClientSingleton();
+export const db =
+  globalThis.prismaGlobal ?? ((globalThis as any).prisma as ReturnType<typeof prismaClientSingleton>) ?? prismaClientSingleton();
 
-if (process.env.NODE_ENV !== 'production') globalThis.prismaGlobal = db;
+if (process.env.NODE_ENV !== 'production') {
+  globalThis.prismaGlobal = db;
+  (globalThis as any).prisma = db;
+}

@@ -4,6 +4,7 @@ import React from 'react';
 import { motion, Variants } from 'framer-motion';
 import { Target, Printer, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useShareLink } from '@/hooks/use-share-link';
 
 import useLanguage from '@/hooks/use-language';
 import { Back } from '@/components/buttons';
@@ -50,36 +51,11 @@ const PageStrategicPlan = () => {
     : StrategicPlan.excerpt;
 
 
-  const handleShare = async () => {
-    try {
-      if (navigator.share) {
-        await navigator.share({
-          title: title || 'Strategic Plan',
-          url: window.location.href,
-        });
-      } else {
-        await navigator.clipboard.writeText(window.location.href);
-        toast({
-          title: isArabic ? 'تم نسخ الرابط' : 'Link copied',
-          description: isArabic
-            ? 'تم نسخ رابط الخطة الاستراتيجية إلى الحافظة'
-            : 'Strategic plan link copied to clipboard',
-        });
-      }
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
-        return;
-      }
-      console.warn('Error sharing', err);
-      toast({
-        title: isArabic ? 'خطأ في المشاركة' : 'Error sharing',
-        description: isArabic
-          ? 'حدث خطأ أثناء محاولة مشاركة الرابط'
-          : 'An error occurred while trying to share the link',
-        variant: 'destructive',
-      });
-    }
-  };
+  const { share: handleShare } = useShareLink({
+    title: title || 'Strategic Plan',
+    isArabic,
+    toast,
+  });
 
   const handlePrint = () => {
     window.print();
