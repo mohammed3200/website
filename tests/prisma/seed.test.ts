@@ -44,13 +44,16 @@ describe('Database Seed Functions', () => {
       },
       strategicPlan: {
         findUnique: jest.fn(),
+        findMany: jest.fn(),
         findFirst: jest.fn(),
         create: jest.fn(),
         update: jest.fn(),
+        deleteMany: jest.fn(),
       },
       pageContent: {
         upsert: jest.fn(),
       },
+      $transaction: jest.fn().mockImplementation((p: any) => Promise.all(p)),
       $disconnect: jest.fn(),
     };
 
@@ -85,7 +88,7 @@ describe('Database Seed Functions', () => {
       mockPrisma.user.upsert.mockResolvedValue(mockUser);
 
       // Mock downstream calls from seedStrategicPlans and seedPageContent
-      mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
+      mockPrisma.strategicPlan.findMany.mockResolvedValue([]);
       mockPrisma.strategicPlan.create.mockResolvedValue({ id: 'plan-1' });
       mockPrisma.pageContent.upsert.mockResolvedValue({ id: 'content-1' });
 
@@ -121,7 +124,7 @@ describe('Database Seed Functions', () => {
       (bcrypt.hash as any).mockResolvedValue('hashed');
       mockPrisma.role.findUnique.mockResolvedValue({ id: 'role-1' });
       mockPrisma.user.upsert.mockResolvedValue({ id: 'user-1', email: 'admin@test.com', roleId: 'role-1' });
-      mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
+      mockPrisma.strategicPlan.findMany.mockResolvedValue([]);
       mockPrisma.strategicPlan.create.mockResolvedValue({ id: 'plan-1' });
       mockPrisma.pageContent.upsert.mockResolvedValue({ id: 'content-1' });
 
@@ -136,7 +139,7 @@ describe('Database Seed Functions', () => {
       (bcrypt.hash as any).mockResolvedValue('hashed');
       mockPrisma.role.findUnique.mockResolvedValue({ id: 'role-1' });
       mockPrisma.user.upsert.mockResolvedValue({ id: 'user-1', email: 'admin@test.com', roleId: 'role-1' });
-      mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
+      mockPrisma.strategicPlan.findMany.mockResolvedValue([]);
       mockPrisma.strategicPlan.create.mockResolvedValue({ id: 'plan-1' });
       mockPrisma.pageContent.upsert.mockResolvedValue({ id: 'content-1' });
 
@@ -155,7 +158,7 @@ describe('Database Seed Functions', () => {
       (bcrypt.hash as any).mockResolvedValue('hashed');
       mockPrisma.role.findUnique.mockResolvedValue({ id: 'role-1' });
       mockPrisma.user.upsert.mockResolvedValue({ id: 'user-1', email: 'admin@test.com', roleId: 'role-1' });
-      mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
+      mockPrisma.strategicPlan.findMany.mockResolvedValue([]);
       mockPrisma.strategicPlan.create.mockResolvedValue({ id: 'plan-1' });
       mockPrisma.pageContent.upsert.mockResolvedValue({ id: 'content-1' });
 
@@ -178,18 +181,38 @@ describe('Database Seed Functions', () => {
       }
     });
 
-    it('should skip existing strategic plans', async () => {
-      mockPrisma.strategicPlan.findFirst.mockResolvedValue({
-        id: 'existing-plan',
-        slug: 'strategic-plan-1',
-      });
+    it('should consolidate existing strategic plan siblings into a single row', async () => {
+      (bcrypt.hash as any).mockResolvedValue('hashed');
+      mockPrisma.role.findUnique.mockResolvedValue({ id: 'role-1' });
+      mockPrisma.user.upsert.mockResolvedValue({ id: 'user-1', email: 'admin@test.com', roleId: 'role-1' });
 
-      // Should not create if plan already exists
-      expect(mockPrisma.strategicPlan.findFirst).toBeDefined();
+      const mockSiblings = [
+        { id: 'sibling-1', slug: 'cit', publishedAt: new Date('2023-01-01') },
+        { id: 'sibling-2', slug: 'strategic-plan-1', publishedAt: new Date('2022-01-01') },
+      ];
+      mockPrisma.strategicPlan.findMany.mockResolvedValue(mockSiblings);
+      mockPrisma.strategicPlan.update.mockResolvedValue({ id: 'sibling-1' });
+      mockPrisma.strategicPlan.deleteMany.mockResolvedValue({ count: 1 });
+
+      await main();
+
+      // Should pick sibling-1 (correct slug) as survivor
+      expect(mockPrisma.strategicPlan.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'sibling-1' },
+          data: expect.objectContaining({ slug: 'cit' })
+        })
+      );
+      // Should delete sibling-2
+      expect(mockPrisma.strategicPlan.deleteMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: { in: ['sibling-2'] } }
+        })
+      );
     });
 
     it('should handle plans with empty content gracefully', async () => {
-      mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
+      mockPrisma.strategicPlan.findMany.mockResolvedValue([]);
       mockPrisma.strategicPlan.create.mockResolvedValue({
         id: 'plan-2',
       });
@@ -345,7 +368,7 @@ describe('Database Seed Functions', () => {
     });
 
     it('should handle errors during strategic plan creation', async () => {
-      mockPrisma.strategicPlan.findFirst.mockResolvedValue(null);
+      mockPrisma.strategicPlan.findMany.mockResolvedValue([]);
       mockPrisma.strategicPlan.create.mockRejectedValue(
         new Error('Failed to create plan'),
       );

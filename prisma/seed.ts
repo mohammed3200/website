@@ -710,25 +710,19 @@ async function seedStrategicPlans(prisma: PrismaClient) {
     // Create ONE unified bilingual row per strategic plan
     const slug = plan.slug;
 
-    // Find the record by the exact target slug first
-    let existing = await prisma.strategicPlan.findUnique({
-      where: { slug }
+    // Find all matching records (exact slug or legacy patterns)
+    const matches = await prisma.strategicPlan.findMany({
+      where: {
+        OR: [
+          { slug },
+          { slug: `strategic-plan-${plan.id}` },
+          { slug: { endsWith: `-ar-${plan.id}` } },
+          { slug: { endsWith: `-en-${plan.id}` } },
+        ],
+      },
     });
 
-    // If not found, look for legacy patterns
-    if (!existing) {
-      existing = await prisma.strategicPlan.findFirst({
-        where: {
-          OR: [
-            { slug: `strategic-plan-${plan.id}` },
-            { slug: { endsWith: `-ar-${plan.id}` } },
-            { slug: { endsWith: `-en-${plan.id}` } },
-          ],
-        },
-      });
-    }
-
-    if (!existing) {
+    if (matches.length === 0) {
       await prisma.strategicPlan.create({
         data: {
           title: plan.english.title,
@@ -748,20 +742,43 @@ async function seedStrategicPlans(prisma: PrismaClient) {
         },
       });
       console.log(
-        `✅ Created bilingual strategic plan: ${plan.english.title} / ${plan.arabic.title} (slug: ${slug})`,
+        `✅ Created new bilingual strategic plan: ${plan.english.title} (slug: ${slug})`,
       );
     } else {
-      // Allow overriding existing slug for update
-      await prisma.strategicPlan.update({
-        where: { id: existing.id },
-        data: { 
-          slug,
-          startDate: plan.startDate,
-          endDate: plan.endDate,
-        },
-      });
+      // Pick the best survivor: prefer exact slug match, then latest publishedAt
+      const survivor = matches.find(m => m.slug === slug) || 
+                       [...matches].sort((a, b) => 
+                         new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime()
+                       )[0];
+      
+      const siblingIds = matches.filter(m => m.id !== survivor.id).map(m => m.id);
+
+      await prisma.$transaction([
+        prisma.strategicPlan.update({
+          where: { id: survivor.id },
+          data: {
+            title: plan.english.title,
+            titleAr: plan.arabic.title,
+            slug,
+            content: plan.english.text || plan.english.caption,
+            contentAr: plan.arabic.text || plan.arabic.caption,
+            excerpt: plan.english.caption,
+            excerptAr: plan.arabic.caption,
+            category: 'Strategic Plan',
+            categoryAr: 'خطة استراتيجية',
+            isActive: true, // Ensure it's active after consolidation
+            startDate: plan.startDate,
+            endDate: plan.endDate,
+          },
+        }),
+        // Retiring siblings to ensure one unified row
+        prisma.strategicPlan.deleteMany({
+          where: { id: { in: siblingIds } },
+        }),
+      ]);
+
       console.log(
-        `⏭️  Strategic plan updated/exists: ${plan.english.title} (slug: ${slug})`,
+        `⏭️  Consolidated ${matches.length} record(s) into: ${plan.english.title} (slug: ${slug})`,
       );
     }
   }
