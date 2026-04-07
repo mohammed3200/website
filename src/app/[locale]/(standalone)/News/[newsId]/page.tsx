@@ -11,6 +11,8 @@ import { useGetNewsById } from '@/features/news/api/use-get-new';
 import { DetailPageSkeleton } from '@/components/skeletons';
 import DOMPurify from 'isomorphic-dompurify';
 import { getRelativeTime } from '@/lib/relative-time';
+import { useToast } from '@/hooks/use-toast';
+import { useShareLink } from '@/hooks/use-share-link';
 
 import { Back } from '@/components/buttons';
 
@@ -18,9 +20,10 @@ const NewsIdPage = () => {
   const newsId = useNewsId();
   const { isArabic, isEnglish } = useLanguage();
   const t = useTranslations('News');
-  const { data: news, isLoading } = useGetNewsById(newsId);
+  const { toast } = useToast();
+  const { data: news, isLoading, isPending } = useGetNewsById(newsId);
 
-  if (isLoading) {
+  if (isLoading || isPending) {
     return (
       <div className="min-h-screen bg-gray-50/50 py-12 px-4">
         <DetailPageSkeleton />
@@ -63,6 +66,12 @@ const NewsIdPage = () => {
     tags = [];
   }
 
+  const { share: handleShare } = useShareLink({
+    title: title || 'News',
+    isArabic,
+    toast,
+  });
+
   return (
     <div
       className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8"
@@ -79,6 +88,7 @@ const NewsIdPage = () => {
           <Back />
           <div className="flex gap-2">
             <button
+              onClick={handleShare}
               className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
               aria-label="Share"
             >
@@ -125,7 +135,7 @@ const NewsIdPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 p-6 md:p-10">
             {/* Article Content - Takes up 8 columns */}
             <div className="lg:col-span-8 space-y-6">
-              <div 
+              <div
                 className="prose prose-lg prose-gray max-w-none text-gray-600 font-outfit"
                 dir={contentDir}
                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
