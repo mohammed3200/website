@@ -32,9 +32,10 @@ export interface StrategicPlanItem {
   categoryAr?: string | null;
   isActive: boolean;
   publishedAt: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
   createdAt?: string;
   updatedAt?: string;
-  entityType?: 'CENTER' | 'COLLEGE';
   image: {
     id: string;
     url: string;
@@ -45,7 +46,7 @@ export interface StrategicPlanItem {
 export const StrategicPlan = () => {
   const router = useRouter();
   const t = useTranslations('StrategicPlan');
-  const tUi = useTranslations('ui');
+
   const { isArabic, lang } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -135,34 +136,40 @@ export const StrategicPlan = () => {
 
           // Localized content selection
           const displayTitle = isArabic ? (strategic.titleAr ?? strategic.title) : strategic.title;
-          const displayCategory = isArabic ? (strategic.categoryAr ?? strategic.category) : strategic.category;
           const displayExcerpt = isArabic ? (strategic.excerptAr ?? strategic.excerpt) : strategic.excerpt;
 
-          // Determine entity type - improved with entityType override and slug fallback
-          const isCenter = strategic.entityType === 'CENTER' ||
-            (!strategic.entityType && (
-              strategic.slug.includes('-center-') ||
-              strategic.slug.includes('-ebic-') ||
-              strategic.slug.includes('مركز') ||
-              strategic.slug.includes('incubator')
-            ));
+          // Explicit Slug Mapping for Branding
+          let entityName = '';
+          if (strategic.slug === 'ebic') {
+            entityName = isArabic ? 'مركز ريادة الأعمال وحاضنات الأعمال' : 'Entrepreneurship and Business Incubators Center';
+          } else if (strategic.slug === 'cit') {
+            entityName = isArabic ? 'كلية التقنية الصناعية - مصراتة' : 'College of Industrial Technology - Misurata';
+          } else {
+            entityName = isArabic 
+              ? (strategic.categoryAr ?? strategic.category ?? t('defaultCategory')) 
+              : (strategic.category ?? t('defaultCategory'));
+          }
 
-
-          // Use string paths for logos to avoid TSC errors with relative public imports
+          const isCenter = strategic.slug === 'ebic';
           const LogoSrc = isCenter ? '/assets/icons/logo.svg' : '/assets/icons/college.png';
           const IconComponent = isCenter ? Sparkles : Building2;
 
-
-
-          // Date validation and formatting
-          const publishedDate = strategic.publishedAt ? new Date(strategic.publishedAt) : null;
-          const isValidDate = publishedDate && !isNaN(publishedDate.getTime());
-          const displayDate = isValidDate
-            ? publishedDate.toLocaleDateString(isArabic ? 'ar-LY' : 'en-US', {
-              year: 'numeric',
-              month: 'short'
-            })
-            : new Date().getFullYear().toString();
+          // Date logic (UTC)
+          const startDate = strategic.startDate ? new Date(strategic.startDate).getUTCFullYear() : null;
+          const endDate = strategic.endDate ? new Date(strategic.endDate).getUTCFullYear() : null;
+          
+          let displayDate = '';
+          if (startDate && endDate) {
+            displayDate = t('dateRange', { start: startDate, end: endDate });
+          } else if (strategic.publishedAt) {
+            const publishedDate = new Date(strategic.publishedAt);
+            if (!isNaN(publishedDate.getTime())) {
+              displayDate = publishedDate.toLocaleDateString(isArabic ? 'ar-LY' : 'en-US', { 
+                year: 'numeric', 
+                timeZone: 'UTC' 
+              });
+            }
+          }
 
           return (
             <motion.div
@@ -229,10 +236,10 @@ export const StrategicPlan = () => {
                     <div>
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider">
                         <IconComponent className="w-3 h-3" />
-                        {displayCategory || t('defaultCategory')}
+                        {entityName}
                       </span>
                       <p className="text-xs text-gray-400 mt-2 font-medium">
-                        {t('published')} {displayDate}
+                        {displayDate}
                       </p>
                     </div>
                   </div>
@@ -270,7 +277,7 @@ export const StrategicPlan = () => {
                       "hover:shadow-xl hover:shadow-orange-500/40 hover:from-orange-500 hover:to-orange-700"
                     )}
                   >
-                    <span>{tUi('readMore')}</span>
+                    <span>{t('viewPlan')}</span>
                     {isArabic ? (
                       <ArrowUpLeft className="w-4 h-4" />
                     ) : (

@@ -10,6 +10,7 @@ import { useGetLatestNews } from '@/features/news/api/use-get-latest-news';
 import Image from 'next/image';
 import { ReadMore } from '@/components/buttons/read-more';
 import { HomeNewsSkeleton } from '@/components/skeletons';
+import { getRelativeTime } from '@/lib/relative-time';
 
 const truncateString = (str: string, num: number) =>
   str.length > num ? str.slice(0, num) + '...' : str;
@@ -63,9 +64,7 @@ export const News = () => {
   const cleanDescription = description.replace(/<[^>]*>?/gm, '');
   const image =
     currentItem.image?.url || '/images/placeholders/news-placeholder.jpg';
-  const updatedTime = new Date(currentItem.updatedAt).toLocaleDateString(
-    isArabic ? 'ar-EG' : 'en-US',
-  );
+  const updatedTime = getRelativeTime(currentItem.updatedAt, isArabic ? 'ar' : 'en');
 
   const variants = {
     enter: (direction: number) => ({
@@ -141,7 +140,6 @@ export const News = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:hidden" />
 
                   {/* updatedTime Badge (Mobile) */}
-                  {/* updatedTime Badge (Mobile) */}
                   <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-primary md:hidden">
                     {updatedTime}
                   </div>
@@ -149,7 +147,6 @@ export const News = () => {
 
                 {/* Content Section */}
                 <div className="w-full md:w-1/2 p-6 md:p-10 flex flex-col justify-center relative">
-                  {/* updatedTime Badge (Desktop) */}
                   {/* updatedTime Badge (Desktop) */}
                   <div className="hidden md:inline-flex self-start mb-4 px-3 py-1 bg-primary/5 text-primary text-sm font-bold rounded-full border border-primary/10">
                     {updatedTime}

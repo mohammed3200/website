@@ -14,6 +14,7 @@ if (!process.env.DATABASE_URL) {
 const STRATEGIC_PLANS_DATA = [
   {
     id: '1',
+    slug: 'cit',
     arabic: {
       caption: 'كلية التقنية الصناعية - مصراتة',
       title: 'الخطة الإسترتيجية 2023 - 2027',
@@ -519,9 +520,12 @@ const STRATEGIC_PLANS_DATA = [
   7 Dr. Abdul Ali Muhammad Qalisa Linguistic Review
   `,
     },
+    startDate: new Date('2023-01-01'),
+    endDate: new Date('2027-12-31'),
   },
   {
     id: '2',
+    slug: 'ebic',
     arabic: {
       caption: 'مركز الريادة وحاضنات الاعمال',
       title: 'الخطة الإسترتيجية 2023 - 2027',
@@ -532,6 +536,8 @@ const STRATEGIC_PLANS_DATA = [
       title: 'Strategic Plan 2023 - 2027',
       text: '',
     },
+    startDate: new Date('2023-01-01'),
+    endDate: new Date('2027-12-31'),
   },
 ];
 
@@ -702,19 +708,21 @@ async function seedStrategicPlans(prisma: PrismaClient) {
 
   for (const plan of STRATEGIC_PLANS_DATA) {
     // Create ONE unified bilingual row per strategic plan
-    const slug = `strategic-plan-${plan.id}`;
+    const slug = plan.slug;
 
-    const existing = await prisma.strategicPlan.findFirst({
+    // Find all matching records (exact slug or legacy patterns)
+    const matches = await prisma.strategicPlan.findMany({
       where: {
         OR: [
           { slug },
+          { slug: `strategic-plan-${plan.id}` },
           { slug: { endsWith: `-ar-${plan.id}` } },
           { slug: { endsWith: `-en-${plan.id}` } },
         ],
       },
     });
 
-    if (!existing) {
+    if (matches.length === 0) {
       await prisma.strategicPlan.create({
         data: {
           title: plan.english.title,
@@ -728,15 +736,49 @@ async function seedStrategicPlans(prisma: PrismaClient) {
           categoryAr: 'خطة استراتيجية',
           isActive: true,
           publishedAt: new Date(),
+          startDate: plan.startDate,
+          endDate: plan.endDate,
           imageId: null,
         },
       });
       console.log(
-        `✅ Created bilingual strategic plan: ${plan.english.title} / ${plan.arabic.title} (slug: ${slug})`,
+        `✅ Created new bilingual strategic plan: ${plan.english.title} (slug: ${slug})`,
       );
     } else {
+      // Pick the best survivor: prefer exact slug match, then latest publishedAt
+      const survivor = matches.find(m => m.slug === slug) || 
+                       [...matches].sort((a, b) => 
+                         new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime()
+                       )[0];
+      
+      const siblingIds = matches.filter(m => m.id !== survivor.id).map(m => m.id);
+
+      await prisma.$transaction([
+        prisma.strategicPlan.update({
+          where: { id: survivor.id },
+          data: {
+            title: plan.english.title,
+            titleAr: plan.arabic.title,
+            slug,
+            content: plan.english.text || plan.english.caption,
+            contentAr: plan.arabic.text || plan.arabic.caption,
+            excerpt: plan.english.caption,
+            excerptAr: plan.arabic.caption,
+            category: 'Strategic Plan',
+            categoryAr: 'خطة استراتيجية',
+            isActive: true, // Ensure it's active after consolidation
+            startDate: plan.startDate,
+            endDate: plan.endDate,
+          },
+        }),
+        // Retiring siblings to ensure one unified row
+        prisma.strategicPlan.deleteMany({
+          where: { id: { in: siblingIds } },
+        }),
+      ]);
+
       console.log(
-        `⏭️  Strategic plan already exists: ${plan.english.title} (slug: ${slug})`,
+        `⏭️  Consolidated ${matches.length} record(s) into: ${plan.english.title} (slug: ${slug})`,
       );
     }
   }

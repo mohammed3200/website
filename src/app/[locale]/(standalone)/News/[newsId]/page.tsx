@@ -9,6 +9,8 @@ import useLanguage from '@/hooks/use-language';
 import { useNewsId } from '@/features/news/hooks/use-news-id';
 import { useGetNewsById } from '@/features/news/api/use-get-new';
 import { DetailPageSkeleton } from '@/components/skeletons';
+import DOMPurify from 'isomorphic-dompurify';
+import { getRelativeTime } from '@/lib/relative-time';
 
 import { Back } from '@/components/buttons';
 
@@ -40,9 +42,7 @@ const NewsIdPage = () => {
   const description = isEnglish
     ? (news.contentEn ?? news.content)
     : news.content;
-  const date = new Date(news.updatedAt).toLocaleDateString(
-    isArabic ? 'ar-EG' : 'en-US',
-  );
+  const date = getRelativeTime(news.updatedAt, isArabic ? 'ar' : 'en');
   const image = news.image?.url || '/images/placeholders/news-placeholder.jpg';
 
   // Determine actual content direction based on what's being displayed
@@ -125,14 +125,11 @@ const NewsIdPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 p-6 md:p-10">
             {/* Article Content - Takes up 8 columns */}
             <div className="lg:col-span-8 space-y-6">
-              <div className="prose prose-lg prose-gray max-w-none">
-                <p
-                  className="text-lg md:text-xl text-gray-600 leading-relaxed font-outfit whitespace-pre-line"
-                  dir={contentDir}
-                >
-                  {description}
-                </p>
-              </div>
+              <div 
+                className="prose prose-lg prose-gray max-w-none text-gray-600 font-outfit"
+                dir={contentDir}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
+              />
             </div>
 
             {/* Sidebar / Gallery - Takes up 4 columns */}
