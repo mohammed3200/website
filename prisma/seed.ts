@@ -702,7 +702,7 @@ async function seedStrategicPlans(prisma: PrismaClient) {
 
   for (const plan of STRATEGIC_PLANS_DATA) {
     // Create ONE unified bilingual row per strategic plan
-    const slug = `strategic-plan-${plan.id}`;
+    const slug = plan.id === '1' ? 'cit' : 'ebic';
 
     const existing = await prisma.strategicPlan.findFirst({
       where: {
@@ -735,8 +735,13 @@ async function seedStrategicPlans(prisma: PrismaClient) {
         `✅ Created bilingual strategic plan: ${plan.english.title} / ${plan.arabic.title} (slug: ${slug})`,
       );
     } else {
+      // Allow overriding existing slug for update
+      await prisma.strategicPlan.update({
+        where: { id: existing.id },
+        data: { slug }
+      });
       console.log(
-        `⏭️  Strategic plan already exists: ${plan.english.title} (slug: ${slug})`,
+        `⏭️  Strategic plan updated/exists: ${plan.english.title} (slug: ${slug})`,
       );
     }
   }

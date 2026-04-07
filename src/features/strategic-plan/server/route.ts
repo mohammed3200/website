@@ -40,6 +40,8 @@ const app = new Hono()
           categoryAr: plan.categoryAr,
           isActive: plan.isActive,
           publishedAt: plan.publishedAt,
+          startDate: plan.startDate,
+          endDate: plan.endDate,
           image: plan.image
             ? {
               id: plan.image.id,
