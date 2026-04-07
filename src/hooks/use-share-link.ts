@@ -1,9 +1,14 @@
 'use client';
+import type { toast } from '@/hooks/use-toast';
 
 export interface UseShareLinkOptions {
   title?: string;
   isArabic: boolean;
-  toast: any; // Using any or specific toast type if imported
+  toast: typeof toast;
+}
+
+function isAbortError(e: unknown): e is { name: string } {
+  return typeof e === 'object' && e !== null && 'name' in e;
 }
 
 export function useShareLink({ title, isArabic, toast }: UseShareLinkOptions) {
@@ -23,11 +28,14 @@ export function useShareLink({ title, isArabic, toast }: UseShareLinkOptions) {
             : 'Link copied to clipboard',
         });
       }
-    } catch (err: any) {
-      if (err.name === 'AbortError') {
+    } catch (err: unknown) {
+      if (isAbortError(err) && err.name === 'AbortError') {
         return;
       }
-      console.warn('Error sharing', err);
+      
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      console.warn('Error sharing:', errorMessage);
+      
       toast({
         title: isArabic ? 'خطأ في المشاركة' : 'Error sharing',
         description: isArabic
