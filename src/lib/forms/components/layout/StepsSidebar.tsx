@@ -45,8 +45,8 @@ export function StepsSidebar({
                         <div className="w-5 h-5 bg-white rounded-full" />
                     </div>
                     <div>
-                        <h1 className="font-bold text-gray-900 text-lg">Incubator</h1>
-                        <p className="text-xs text-gray-500">{isRtl ? 'مركز ريادة الأعمال' : 'Entrepreneurship Center'}</p>
+                        <h1 className="font-bold text-gray-900 text-lg">{t('incubator')}</h1>
+                        <p className="text-xs text-gray-500">{t('entrepreneurshipCenter')}</p>
                     </div>
                 </div>
 

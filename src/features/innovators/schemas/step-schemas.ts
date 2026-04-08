@@ -96,13 +96,14 @@ export const innovatorServerSchema = z.object({
   // Step 3
   stageDevelopment: z.nativeEnum(StageDevelopment).optional(),
   projectFiles: z
-    .array(z.instanceof(File))
-    .max(10, { message: 'MaximumFiles' })
+    .custom<File | File[]>()
     .optional()
+    .default([])
+    .transform((files) => (Array.isArray(files) ? files : [files]))
     .refine(
       (files) => {
         if (!files || files.length === 0) return true;
-        return files.every((file) => mediaTypes.includes(file.type));
+        return files.every((file) => file instanceof File && mediaTypes.includes(file.type));
       },
       { message: 'InvalidFileType' },
     )
@@ -110,14 +111,17 @@ export const innovatorServerSchema = z.object({
       (files) => {
         if (!files || files.length === 0) return true;
         const maxSize = 10 * 1024 * 1024; // 10MB
-        return files.every((file) => file.size <= maxSize);
+        return files.every((file) => file instanceof File && file.size <= maxSize);
       },
       { message: 'FileTooLarge' },
     ),
 
   // Step 4
   TermsOfUse: z
-    .boolean()
+    .preprocess(
+      (val) => val === 'true' || val === true,
+      z.boolean()
+    )
     .refine((value) => value === true, { message: 'TermsOfUse' }),
 });
 

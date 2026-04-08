@@ -1,0 +1,92 @@
+[
+  {
+    "id": "TC001",
+    "title": "collaborator_public_list",
+    "description": "Verify that GET /api/collaborator/public returns only approved and visible collaborators with correct response structure and caching."
+  },
+  {
+    "id": "TC002",
+    "title": "collaborator_registration_happy_path",
+    "description": "Test POST /api/collaborator with valid FormData containing all required fields (companyName, email, primaryPhoneNumber, industrialSector, specialization). Expect 201 response with success message."
+  },
+  {
+    "id": "TC003",
+    "title": "collaborator_registration_duplicate_email",
+    "description": "Register a collaborator, then attempt to register again with the same email. Expect 400 with code 'EMAIL_EXISTS'."
+  },
+  {
+    "id": "TC004",
+    "title": "collaborator_registration_duplicate_phone",
+    "description": "Register a collaborator, then attempt to register again with the same phone number. Expect 400 with code 'PHONE_EXISTS'."
+  },
+  {
+    "id": "TC005",
+    "title": "collaborator_registration_validation_missing_fields",
+    "description": "Send POST /api/collaborator with empty FormData (no required fields). Expect 400 validation error response."
+  },
+  {
+    "id": "TC006",
+    "title": "collaborator_registration_invalid_email",
+    "description": "Send POST /api/collaborator with invalid email format (e.g., 'not-an-email'). Expect 400 validation error."
+  },
+  {
+    "id": "TC007",
+    "title": "collaborator_registration_invalid_phone",
+    "description": "Send POST /api/collaborator with invalid phone format (missing + prefix). Expect 400 validation error."
+  },
+  {
+    "id": "TC008",
+    "title": "innovator_public_list",
+    "description": "Verify that GET /api/innovators/public returns only approved and visible innovators with correct response structure."
+  },
+  {
+    "id": "TC009",
+    "title": "innovator_registration_happy_path",
+    "description": "Test POST /api/innovators with valid FormData for all required fields (name, email, phoneNumber, country, city, specialization, projectTitle, projectDescription). Expect 201."
+  },
+  {
+    "id": "TC010",
+    "title": "innovator_registration_duplicate_email",
+    "description": "Register an innovator, then attempt to register again with the same email. Expect 400 with code 'EMAIL_EXISTS'."
+  },
+  {
+    "id": "TC011",
+    "title": "innovator_registration_duplicate_phone",
+    "description": "Register an innovator, then attempt to register with the same phone. Expect 400 with code 'PHONE_EXISTS'."
+  },
+  {
+    "id": "TC012",
+    "title": "innovator_registration_validation_missing_fields",
+    "description": "Send POST /api/innovators with empty FormData. Expect 400 validation error."
+  },
+  {
+    "id": "TC013",
+    "title": "innovator_registration_max_length_violations",
+    "description": "Send POST /api/innovators with city > 100 chars and specialization > 200 chars. Expect 400 validation error."
+  },
+  {
+    "id": "TC014",
+    "title": "innovator_registration_project_description_too_long",
+    "description": "Send POST /api/innovators with projectDescription > 1000 chars. Expect 400 validation error."
+  },
+  {
+    "id": "TC015",
+    "title": "innovator_registration_invalid_stage_development",
+    "description": "Send POST /api/innovators with an invalid stageDevelopment value. Expect 400 validation error."
+  },
+  {
+    "id": "TC016",
+    "title": "collaborator_registration_xss_injection",
+    "description": "Send POST /api/collaborator with XSS payload '<script>alert(1)</script>' in companyName field. Verify the value is stored or rejected, but does NOT execute."
+  },
+  {
+    "id": "TC017",
+    "title": "innovator_registration_sql_injection",
+    "description": "Send POST /api/innovators with SQL injection payload in name field. Verify Prisma parameterized queries prevent any injection."
+  },
+  {
+    "id": "TC018",
+    "title": "collaborator_registration_arabic_unicode",
+    "description": "Send POST /api/collaborator with Arabic text (الشركة العربية) in companyName and location fields. Expect 201 successful creation with correct Unicode storage."
+  }
+]
