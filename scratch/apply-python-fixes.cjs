@@ -4,10 +4,19 @@ const path = require('path');
 const dir = path.join(__dirname, '../testsprite_tests/registration');
 
 function fixRunAtImport(filename) {
-    let content = fs.readFileSync(path.join(dir, filename), 'utf8');
-    if (content.match(/^run\(\)\s*$/m)) {
-        content = content.replace(/^run\(\)\s*$/m, 'if __name__ == "__main__":\n    run()\n');
-        fs.writeFileSync(path.join(dir, filename), content);
+    const filePath = path.join(dir, filename);
+    if (!fs.existsSync(filePath)) {
+        console.debug(`Skipping missing file: ${filename}`);
+        return;
+    }
+    try {
+        let content = fs.readFileSync(filePath, 'utf8');
+        if (content.match(/^run\(\)\s*$/m)) {
+            content = content.replace(/^run\(\)\s*$/m, 'if __name__ == "__main__":\n    run()\n');
+            fs.writeFileSync(filePath, content);
+        }
+    } catch (err) {
+        console.error(`Error processing ${filename}:`, err);
     }
 }
 

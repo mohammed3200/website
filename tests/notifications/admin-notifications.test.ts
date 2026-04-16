@@ -46,7 +46,7 @@ describe('Admin Notifications', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.resetAllMocks();
   });
 
   describe('notifyAdmins', () => {

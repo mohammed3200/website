@@ -43,6 +43,7 @@ export function InnovatorFormWizard() {
   const stepIdFromUrl = params.step as string;
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (stepIdFromUrl) {
       const stepIndex = config.steps.findIndex((s) => s.id === stepIdFromUrl);
       if (stepIndex !== -1 && stepIndex !== currentStepIndex) {

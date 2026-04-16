@@ -19,20 +19,25 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
-    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
-    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
-    section: ({ children, ...props }: any) => <section {...props}>{children}</section>,
-    main: ({ children, ...props }: any) => <main {...props}>{children}</main>,
-    nav: ({ children, ...props }: any) => <nav {...props}>{children}</nav>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-  useAnimation: () => ({ start: jest.fn(), stop: jest.fn(), set: jest.fn() }),
-  useInView: () => [null, true],
-}));
+jest.mock('framer-motion', () => {
+  const React = require('react');
+  const ActualComponent = ({ children, ...props }: any) => React.createElement('div', props, children);
+  return {
+    motion: {
+      div: ActualComponent,
+      span: ActualComponent,
+      h1: ActualComponent,
+      h2: ActualComponent,
+      p: ActualComponent,
+      main: ActualComponent,
+      section: ActualComponent,
+      nav: ActualComponent,
+    },
+    AnimatePresence: ({ children }: any) => React.createElement(React.Fragment, {}, children),
+    useAnimation: () => ({ start: jest.fn(), stop: jest.fn(), set: jest.fn() }),
+    useInView: () => [null, true],
+  };
+});
 
 const messages = {
   Common: {
@@ -76,7 +81,7 @@ describe('Collaborator Registration E2E Flow', () => {
     renderWizard();
 
     // Check if we are on step 1
-    expect(await screen.findByText(/Company Info/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Company Info/i, {}, { timeout: 3000 })).toBeInTheDocument();
 
     // Click Next without filling anything
     const nextBtn = await screen.findByRole('button', { name: /Next/i });

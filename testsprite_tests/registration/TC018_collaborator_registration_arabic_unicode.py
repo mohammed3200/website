@@ -5,12 +5,13 @@ BASE_URL = "http://localhost:3000/api/collaborator"
 TIMEOUT = 30
 
 def test_collaborator_registration_arabic_unicode():
-    unique = uuid.uuid4().hex[:8]
+    unique_digits = str(uuid.uuid4().int)[:8]
+    unique_hex = uuid.uuid4().hex[:8]
 
     form_data = {
-        "companyName": f"الشركة العربية {unique}",
-        "email": f"arabic-{unique}@example.com",
-        "primaryPhoneNumber": f"+9665{unique[:6]}",
+        "companyName": f"الشركة العربية {unique_hex}",
+        "email": f"arabic-{unique_hex}@example.com",
+        "primaryPhoneNumber": f"+9665{unique_digits[:6]}",
         "industrialSector": "Technology",
         "specialization": "برمجة",
         "location": "الرياض، المملكة العربية السعودية",
@@ -36,4 +37,5 @@ def test_collaborator_registration_arabic_unicode():
 def run():
     test_collaborator_registration_arabic_unicode()
 
-run()
+if __name__ == "__main__":
+    run()

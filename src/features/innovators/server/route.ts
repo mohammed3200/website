@@ -210,17 +210,33 @@ const app = new Hono()
             }
           };
 
+          const sanitizedName = sanitizeHtml(name);
+          const sanitizedProjectTitle = sanitizeHtml(projectTitle);
+          const sanitizedProjectDescription = sanitizeHtml(projectDescription);
+          const sanitizedObjective = objective ? sanitizeHtml(objective) : null;
+
+          // Validate post-sanitization
+          if (!sanitizedName || sanitizedName.trim() === '') {
+            return c.json({ code: 'INVALID_INPUT', message: 'Name is required post-sanitization' }, 400);
+          }
+          if (!sanitizedProjectTitle || sanitizedProjectTitle.trim() === '') {
+            return c.json({ code: 'INVALID_INPUT', message: 'Project Title is required post-sanitization' }, 400);
+          }
+          if (!sanitizedProjectDescription || sanitizedProjectDescription.trim() === '') {
+            return c.json({ code: 'INVALID_INPUT', message: 'Project Description is required post-sanitization' }, 400);
+          }
+
           const data = {
             id: uuidv4(),
-            name: sanitizeHtml(name),
+            name: sanitizedName,
             email,
             phone: phoneNumber,
             country,
             city,
             fieldOfStudy: specialization, // Use fieldOfStudy to match Prisma schema
-            projectTitle: sanitizeHtml(projectTitle),
-            projectDescription: sanitizeHtml(projectDescription),
-            objective: objective ? sanitizeHtml(objective) : null,
+            projectTitle: sanitizedProjectTitle,
+            projectDescription: sanitizedProjectDescription,
+            objective: sanitizedObjective && sanitizedObjective.trim() !== '' ? sanitizedObjective : null,
             stageDevelopment: mapStageDevelopment(stageDevelopment as string),
           };
 

@@ -185,5 +185,42 @@ describe('Innovator Step Schemas', () => {
       });
       expect(result.success).toBe(false);
     });
+
+    it('should pass when TermsOfUse is string "true" (coercion)', () => {
+      const result = schema.safeParse({
+        name: 'John',
+        phoneNumber: '+1234567890',
+        email: 'john@example.com',
+        country: 'USA',
+        city: 'NY',
+        specialization: 'IT',
+        projectTitle: 'Project A',
+        projectDescription: 'Desc',
+        stageDevelopment: StageDevelopment.TESTING,
+        TermsOfUse: 'true',
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it('should fail when projectFiles exceeds 10 entries', () => {
+      const mockFiles = Array(11).fill(new File([''], 'test.pdf', { type: 'application/pdf' }));
+      const result = schema.safeParse({
+        name: 'John',
+        phoneNumber: '+1234567890',
+        email: 'john@example.com',
+        country: 'USA',
+        city: 'NY',
+        specialization: 'IT',
+        projectTitle: 'Project A',
+        projectDescription: 'Desc',
+        stageDevelopment: StageDevelopment.TESTING,
+        TermsOfUse: true,
+        projectFiles: mockFiles,
+      });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues.some((i) => i.path.includes('projectFiles'))).toBe(true);
+      }
+    });
   });
 });

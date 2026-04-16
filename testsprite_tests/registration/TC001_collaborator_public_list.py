@@ -9,7 +9,7 @@ def test_collaborator_public_list():
         response = requests.get(url, timeout=TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise AssertionError(f"Request to GET /public failed: {e}"
+        raise AssertionError(f"Request to GET /public failed: {e}")
 
     # Validate status code
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
@@ -17,8 +17,8 @@ def test_collaborator_public_list():
     # Validate response structure
     try:
         body = response.json()
-    except Exception as e:
-        raise AssertionError(f"Response is not valid JSON: {e}"
+    except ValueError as e:
+        raise AssertionError(f"Response is not valid JSON: {e}")
 
     assert "data" in body, "Expected 'data' key in response"
     data = body["data"]
@@ -34,4 +34,5 @@ def test_collaborator_public_list():
 def run():
     test_collaborator_public_list()
 
-run()
+if __name__ == "__main__":
+    run()

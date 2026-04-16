@@ -324,6 +324,8 @@ const app = new Hono()
               id: collaborator.id,
               email: collaborator.email,
               companyName: collaborator.companyName,
+              specialization: collaborator.specialization || '',
+              location: collaborator.location || '',
             },
           },
           201,

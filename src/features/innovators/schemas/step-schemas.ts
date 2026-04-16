@@ -20,6 +20,7 @@ export const step1Schema = (t: (key: string) => string) =>
       .optional(),
     name: z
       .string({ error: t('nameRequired') })
+      .trim()
       .min(1, { message: t('nameRequired') }),
     phoneNumber: z
       .string({ error: t('phoneRequired') })
@@ -36,13 +37,16 @@ export const step1Schema = (t: (key: string) => string) =>
       }),
     country: z
       .string({ error: t('countryRequired') })
+      .trim()
       .min(1, { message: t('countryRequired') }),
     city: z
       .string({ error: t('cityRequired') })
+      .trim()
       .min(1, { message: t('cityRequired') })
       .max(100, { message: t('CityTooLong') }),
     specialization: z
       .string({ error: t('specializationRequired') })
+      .trim()
       .min(1, { message: t('specializationRequired') })
       .max(200, { message: t('SpecializationTooLong') }),
   });
@@ -58,7 +62,7 @@ export const innovatorServerSchema = z.object({
       z.string().transform((value) => (value === '' ? undefined : value)),
     ])
     .optional(),
-  name: z.string().min(1, { message: 'RequiredField' }).default('').refine(val => val.length > 0, 'RequiredField'),
+  name: z.string().trim().min(1, { message: 'RequiredField' }).default('').refine(val => val.trim().length > 0, 'RequiredField'),
   phoneNumber: z
     .string()
     .min(1, { message: 'RequiredField' })
@@ -74,28 +78,31 @@ export const innovatorServerSchema = z.object({
     .email({ message: 'InvalidEmail' })
     .default('')
     .refine(val => val.length > 0, 'RequiredField'),
-  country: z.string().min(1, { message: 'RequiredField' }).default('').refine(val => val.length > 0, 'RequiredField'),
+  country: z.string().trim().min(1, { message: 'RequiredField' }).default('').refine(val => val.trim().length > 0, 'RequiredField'),
   city: z
     .string()
+    .trim()
     .min(1, { message: 'RequiredField' })
     .max(100, { message: 'CityTooLong' })
     .default('')
-    .refine(val => val.length > 0, 'RequiredField'),
+    .refine(val => val.trim().length > 0, 'RequiredField'),
   specialization: z
     .string()
+    .trim()
     .min(1, { message: 'RequiredField' })
     .max(200, { message: 'SpecializationTooLong' })
     .default('')
-    .refine(val => val.length > 0, 'RequiredField'),
+    .refine(val => val.trim().length > 0, 'RequiredField'),
 
   // Step 2
-  projectTitle: z.string().min(1, { message: 'RequiredField' }).default('').refine(val => val.length > 0, 'RequiredField'),
+  projectTitle: z.string().trim().min(1, { message: 'RequiredField' }).default('').refine(val => val.trim().length > 0, 'RequiredField'),
   projectDescription: z
     .string()
+    .trim()
     .min(1, { message: 'RequiredField' })
     .max(1000, { message: 'MaximumFieldSize' })
     .default('')
-    .refine(val => val.length > 0, 'RequiredField'),
+    .refine(val => val.trim().length > 0, 'RequiredField'),
   objective: z.string().optional(),
 
   // Step 3
@@ -139,9 +146,11 @@ export const step2Schema = (t: (key: string) => string) =>
   z.object({
     projectTitle: z
       .string({ error: t('projectTitleRequired') })
+      .trim()
       .min(1, { message: t('projectTitleRequired') }),
     projectDescription: z
       .string({ error: t('projectDescriptionRequired') })
+      .trim()
       .min(1, { message: t('projectDescriptionRequired') })
       .max(1000, { message: t('MaximumFieldSize') }),
     objective: z.string().optional(),

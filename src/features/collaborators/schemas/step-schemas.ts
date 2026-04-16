@@ -13,6 +13,7 @@ export const step1Schema = (t: (key: string) => string) => {
   return z.object({
     companyName: z
       .string({ error: t('companyNameRequired') })
+      .trim()
       .min(1, { message: t('companyNameRequired') }),
     image: z
       .union([
@@ -147,7 +148,7 @@ export const completeCollaboratorRegistrationSchema = (
 
 export const completeCollaboratorRegistrationSchemaServer = z.object({
   // Step 1
-  companyName: z.string().min(1, { message: 'RequiredField' }).default('').refine(val => val.length > 0, 'RequiredField'),
+  companyName: z.string().trim().min(1, { message: 'RequiredField' }).default('').refine(val => val.trim().length > 0, 'RequiredField'),
   image: z
     .union([
       z.instanceof(File),
