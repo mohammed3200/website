@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { InnovatorFormWizard } from '@/features/innovators/components/innovator-form-wizard';
 import { useInnovatorFormStore } from '@/features/innovators/store';
@@ -12,34 +12,28 @@ jest.mock('next/navigation', () => ({
     push: jest.fn(),
     replace: jest.fn(),
     prefetch: jest.fn(),
+    back: jest.fn(),
   }),
   useParams: () => ({
     locale: 'en',
+    step: '1',
   }),
+  usePathname: () => '/en/innovators/registration',
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 // Mock framer-motion
-jest.mock('framer-motion', () => {
-  const React = require('react');
-  const ActualComponent = ({ children, ...props }: any) =>
-    React.createElement('div', props, children);
-  return {
-    motion: {
-      div: ActualComponent,
-      span: ActualComponent,
-      h1: ActualComponent,
-      h2: ActualComponent,
-      p: ActualComponent,
-      main: ActualComponent,
-      section: ActualComponent,
-      nav: ActualComponent,
-    },
-    AnimatePresence: ({ children }: any) =>
-      React.createElement(React.Fragment, {}, children),
-    useAnimation: () => ({ start: jest.fn(), stop: jest.fn(), set: jest.fn() }),
-    useInView: () => [null, true],
-  };
-});
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
+    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
+    section: ({ children, ...props }: any) => <section {...props}>{children}</section>,
+    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
+  },
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
 
 const messages = {
   Common: {
@@ -128,27 +122,31 @@ describe('Innovator Registration E2E Flow', () => {
   it('should render the first step and block navigation if invalid', async () => {
     renderWizard();
 
+    const user = userEvent.setup();
+
     // Click Next without filling anything
     const nextBtn = await screen.findByRole('button', { name: /Next/i });
-    fireEvent.click(nextBtn);
+    await user.click(nextBtn);
 
-    await waitFor(() => {
-      const state = useInnovatorFormStore.getState();
-      expect(Object.keys(state.errors).length).toBeGreaterThan(0);
-      expect(state.currentStepIndex).toBe(0); // Should not advance
-    });
+    // Should show validation errors (would be handled by UI, so we check store)
+    await waitFor(
+      () => {
+        const state = useInnovatorFormStore.getState();
+        expect(state.isValidating).toBe(false);
+        expect(Object.keys(state.errors).length).toBeGreaterThan(0);
+        expect(state.currentStepIndex).toBe(0);
+      },
+      { timeout: 5000 },
+    );
   });
 
   it('preserves data during navigation', async () => {
-    const user = userEvent.setup();
     renderWizard();
 
-    // Fill required fields
-    const nameInput = await screen.findByLabelText(
-      /Full Name/i,
-      {},
-      { timeout: 3000 },
-    );
+    const user = userEvent.setup();
+
+    // Fill minimum required on Step 1
+    const nameInput = await screen.findByLabelText(/Full Name/i);
     await user.type(nameInput, 'John Doe');
     const phoneInput = await screen.findByLabelText(/Phone Number/i);
     await user.type(phoneInput, '+1234567890');
@@ -165,23 +163,27 @@ describe('Innovator Registration E2E Flow', () => {
 
     // Click Next
     const nextBtn = await screen.findByRole('button', { name: /Next/i });
-    fireEvent.click(nextBtn);
+    await user.click(nextBtn);
 
-    await waitFor(() => {
-      expect(useInnovatorFormStore.getState().currentStepIndex).toBe(1);
-    });
+    await waitFor(
+      () => {
+        expect(useInnovatorFormStore.getState().currentStepIndex).toBe(1);
+      },
+      { timeout: 5000 },
+    );
 
     // Go back
     const backBtn = await screen.findByRole('button', {
       name: /Previous|Back/i,
     });
-    fireEvent.click(backBtn);
+    await user.click(backBtn);
     await waitFor(
       () => {
-        expect(useInnovatorFormStore.getState().currentStepIndex).toBe(0);
-        expect(useInnovatorFormStore.getState().data.name).toBe('John Doe');
+        const state = useInnovatorFormStore.getState();
+        expect(state.currentStepIndex).toBe(0);
+        expect(state.data.name).toBe('John Doe');
       },
-      { timeout: 3000 },
+      { timeout: 5000 },
     );
   });
 });

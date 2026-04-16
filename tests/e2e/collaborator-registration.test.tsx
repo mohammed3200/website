@@ -12,32 +12,28 @@ jest.mock('next/navigation', () => ({
     push: jest.fn(),
     replace: jest.fn(),
     prefetch: jest.fn(),
+    back: jest.fn(),
   }),
   useParams: () => ({
     locale: 'en',
+    step: '1',
   }),
+  usePathname: () => '/en/collaborators/registration',
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 // Mock framer-motion
-jest.mock('framer-motion', () => {
-  const React = require('react');
-  const ActualComponent = ({ children, ...props }: any) => React.createElement('div', props, children);
-  return {
-    motion: {
-      div: ActualComponent,
-      span: ActualComponent,
-      h1: ActualComponent,
-      h2: ActualComponent,
-      p: ActualComponent,
-      main: ActualComponent,
-      section: ActualComponent,
-      nav: ActualComponent,
-    },
-    AnimatePresence: ({ children }: any) => React.createElement(React.Fragment, {}, children),
-    useAnimation: () => ({ start: jest.fn(), stop: jest.fn(), set: jest.fn() }),
-    useInView: () => [null, true],
-  };
-});
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
+    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
+    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
+    section: ({ children, ...props }: any) => <section {...props}>{children}</section>,
+    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
+  },
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+}));
 
 const messages = {
   Common: {
@@ -131,14 +127,18 @@ describe('Collaborator Registration E2E Flow', () => {
     // Check if we are on step 1
     expect(await screen.findByText(/Company Info/i, {}, { timeout: 3000 })).toBeInTheDocument();
 
+    const user = userEvent.setup();
+
     // Click Next without filling anything
     const nextBtn = await screen.findByRole('button', { name: /Next/i });
-    fireEvent.click(nextBtn);
+    await user.click(nextBtn);
 
     // Should show validation errors (would be handled by UI, so we check store)
     await waitFor(
       () => {
         const state = useCollaboratorFormStore.getState();
+        // Validation must be finished and errors should be present
+        expect(state.isValidating).toBe(false);
         expect(Object.keys(state.errors).length).toBeGreaterThan(0);
         expect(state.currentStepIndex).toBe(0);
       },
@@ -152,7 +152,7 @@ describe('Collaborator Registration E2E Flow', () => {
 
     // Fill minimum required on Step 1
     const companyInput = await screen.findByLabelText(/Company Name/i);
-    await user.type(companyInput, 'Acme Corp');
+    await user.type(companyInput, 'Tech Corp');
     const phoneInput = await screen.findByLabelText(/Primary phone/i);
     await user.type(phoneInput, '+1234567890');
     const emailInput = await screen.findByLabelText(/Email Address/i);
@@ -160,30 +160,35 @@ describe('Collaborator Registration E2E Flow', () => {
 
     // Store should update
     expect(useCollaboratorFormStore.getState().data.companyName).toBe(
-      'Acme Corp',
+      'Tech Corp',
     );
 
     // Click Next to navigate forward
     const nextBtn = await screen.findByRole('button', { name: /Next/i });
-    fireEvent.click(nextBtn);
+    await user.click(nextBtn);
 
-    // Wait for step 2 (Industry Information)
-    await waitFor(() => {
-      expect(useCollaboratorFormStore.getState().currentStepIndex).toBe(1);
-    });
+    await waitFor(
+      () => {
+        const state = useCollaboratorFormStore.getState();
+        expect(state.currentStepIndex).toBe(1);
+      },
+      { timeout: 5000 },
+    );
 
     // Click Back to navigate backward
     const backBtn = await screen.findByRole('button', {
       name: /Previous|Back/i,
     });
-    fireEvent.click(backBtn);
+    await user.click(backBtn);
 
     // Data should still be there
-    await waitFor(() => {
-      expect(useCollaboratorFormStore.getState().data.companyName).toBe(
-        'Acme Corp',
-      );
-      expect(useCollaboratorFormStore.getState().currentStepIndex).toBe(0);
-    });
+    await waitFor(
+      () => {
+        const state = useCollaboratorFormStore.getState();
+        expect(state.currentStepIndex).toBe(0);
+        expect(state.data.companyName).toBe('Tech Corp');
+      },
+      { timeout: 5000 },
+    );
   });
 });
