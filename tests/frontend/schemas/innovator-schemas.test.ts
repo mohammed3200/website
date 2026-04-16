@@ -138,33 +138,27 @@ describe('Innovator Step Schemas', () => {
   describe('innovatorServerSchema', () => {
     const schema = innovatorServerSchema;
 
+    const validPayload = {
+      name: 'John',
+      phoneNumber: '+1234567890',
+      email: 'john@example.com',
+      country: 'USA',
+      city: 'NY',
+      specialization: 'IT',
+      projectTitle: 'Project A',
+      projectDescription: 'Desc',
+      stageDevelopment: StageDevelopment.TESTING,
+      TermsOfUse: true,
+    };
+
     it('should validate complete valid submission', () => {
-      const result = schema.safeParse({
-        name: 'John',
-        phoneNumber: '+1234567890',
-        email: 'john@example.com',
-        country: 'USA',
-        city: 'NY',
-        specialization: 'IT',
-        projectTitle: 'Project A',
-        projectDescription: 'Desc',
-        stageDevelopment: StageDevelopment.TESTING,
-        TermsOfUse: true,
-      });
+      const result = schema.safeParse(validPayload);
       expect(result.success).toBe(true);
     });
 
     it('should fail when email is omitted', () => {
-      const result = schema.safeParse({
-        name: 'John',
-        phoneNumber: '+1234567890',
-        country: 'USA',
-        city: 'NY',
-        specialization: 'IT',
-        projectTitle: 'Project A',
-        projectDescription: 'Desc',
-        TermsOfUse: true,
-      });
+      const { email, ...invalidPayload } = validPayload;
+      const result = schema.safeParse(invalidPayload);
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.issues.some((i) => i.path.includes('email'))).toBe(true);
@@ -173,30 +167,15 @@ describe('Innovator Step Schemas', () => {
 
     it('should fail if email is provided but invalid', () => {
       const result = schema.safeParse({
-        name: 'John',
-        phoneNumber: '+1234567890',
+        ...validPayload,
         email: 'not-an-email',
-        country: 'USA',
-        city: 'NY',
-        specialization: 'IT',
-        projectTitle: 'Project A',
-        projectDescription: 'Desc',
-        TermsOfUse: true,
       });
       expect(result.success).toBe(false);
     });
 
     it('should pass when TermsOfUse is string "true" (coercion)', () => {
       const result = schema.safeParse({
-        name: 'John',
-        phoneNumber: '+1234567890',
-        email: 'john@example.com',
-        country: 'USA',
-        city: 'NY',
-        specialization: 'IT',
-        projectTitle: 'Project A',
-        projectDescription: 'Desc',
-        stageDevelopment: StageDevelopment.TESTING,
+        ...validPayload,
         TermsOfUse: 'true',
       });
       expect(result.success).toBe(true);
@@ -205,16 +184,7 @@ describe('Innovator Step Schemas', () => {
     it('should fail when projectFiles exceeds 10 entries', () => {
       const mockFiles = Array(11).fill(new File([''], 'test.pdf', { type: 'application/pdf' }));
       const result = schema.safeParse({
-        name: 'John',
-        phoneNumber: '+1234567890',
-        email: 'john@example.com',
-        country: 'USA',
-        city: 'NY',
-        specialization: 'IT',
-        projectTitle: 'Project A',
-        projectDescription: 'Desc',
-        stageDevelopment: StageDevelopment.TESTING,
-        TermsOfUse: true,
+        ...validPayload,
         projectFiles: mockFiles,
       });
       expect(result.success).toBe(false);

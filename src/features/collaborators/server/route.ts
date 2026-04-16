@@ -239,11 +239,23 @@ const app = new Hono()
           );
         };
 
+        // Validate company name post-sanitization
+        const sanitizedCompanyName = sanitizeHtml(companyName);
+        if (!sanitizedCompanyName || sanitizedCompanyName.trim() === '') {
+          return c.json(
+            {
+              code: 'INVALID_INPUT',
+              message: 'Company name is required post-sanitization',
+            },
+            400,
+          );
+        }
+
         // FIRST: Create the collaborator
         const collaborator = await db.collaborator.create({
           data: {
             id: collaboratorId,
-            companyName: sanitizeHtml(companyName),
+            companyName: sanitizedCompanyName,
             primaryPhoneNumber,
             optionalPhoneNumber: optionalPhoneNumber || null,
             email,

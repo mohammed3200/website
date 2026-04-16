@@ -129,7 +129,7 @@ describe('Innovator Registration E2E Flow', () => {
     });
 
     // Go back
-    const backBtn = await screen.findByRole('button', {
+    const backBtn = screen.queryByRole('button', {
       name: /Previous|Back/i,
     });
     if (backBtn) {

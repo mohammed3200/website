@@ -30,7 +30,7 @@ function fixExceptions(files) {
     for (const file of files) {
         if (!fs.existsSync(path.join(dir, file))) continue;
         let content = fs.readFileSync(path.join(dir, file), 'utf8');
-        content = content.replace(/assert False,\s*(["f].*?["'])/g, 'raise AssertionError($1)');
+        content = content.replace(/assert False,\s*((?:[fruFRU]{0,3})?(?:'([^'\\]|\\.)*'|"([^"\\]|\\.)*"))/g, 'raise AssertionError($1)');
         
         // TC008 specifics
         if (file === 'TC008_innovator_public_list.py') {
