@@ -33,9 +33,10 @@ jest.mock('@react-email/render', () => ({
   render: jest.fn().mockResolvedValue('<html>mock email</html>'),
 }));
 
-jest.mock('@/lib/email/email-service', () => ({
+jest.mock('@/lib/email/service', () => ({
   emailService: {
     sendEmail: jest.fn().mockResolvedValue({ success: true }),
+    sendSubmissionConfirmation: jest.fn().mockResolvedValue({ success: true }),
   },
 }));
 
@@ -52,7 +53,7 @@ jest.mock('@/lib/storage/s3-service', () => ({
   s3Service: {
     uploadFile: jest.fn().mockResolvedValue({
       url: 'https://s3.example.com/file.png',
-      key: 'file.png',
+      s3Key: 'file.png',
       bucket: 'bucket',
     }),
     deleteFile: jest.fn().mockResolvedValue(true),

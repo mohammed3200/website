@@ -30,7 +30,7 @@ jest.mock('@react-email/render', () => ({
   render: jest.fn().mockResolvedValue('<html>mock email</html>'),
 }));
 
-jest.mock('@/lib/email/email-service', () => ({
+jest.mock('@/lib/email/service', () => ({
   emailService: {
     sendEmail: jest.fn().mockResolvedValue({ success: true }),
   },
@@ -49,8 +49,8 @@ jest.mock('@/lib/storage/s3-service', () => ({
   s3Service: {
     uploadFile: jest.fn().mockResolvedValue({
       url: 'https://s3.example.com/file.pdf',
-      key: 'file.pdf',
-      bucket: 'bucket',
+      s3Key: 'file.pdf',
+      s3Bucket: 'bucket',
     }),
     deleteFile: jest.fn().mockResolvedValue(true),
     generateKey: jest.fn((prefix, filename, uuid) => `${prefix}/${uuid}-${filename}`),
@@ -148,6 +148,7 @@ describe('Innovators API Endpoints', () => {
 
       expect(res.status).toBe(201);
       expect(s3Service.uploadFile).toHaveBeenCalled();
+      expect(db.$transaction).toHaveBeenCalled();
       expect(db.media.create).toHaveBeenCalled();
       expect(db.innovatorProjectFile.create).toHaveBeenCalled();
     });

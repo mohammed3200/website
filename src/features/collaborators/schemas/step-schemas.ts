@@ -147,7 +147,7 @@ export const completeCollaboratorRegistrationSchema = (
 
 export const completeCollaboratorRegistrationSchemaServer = z.object({
   // Step 1
-  companyName: z.string().min(1, { message: 'RequiredField' }).default(''),
+  companyName: z.string().min(1, { message: 'RequiredField' }).default('').refine(val => val.length > 0, 'RequiredField'),
   image: z
     .union([
       z.instanceof(File),
@@ -161,16 +161,20 @@ export const completeCollaboratorRegistrationSchemaServer = z.object({
       (phone) => typeof phone === 'string' && /^\+[\d\s-]{6,15}$/.test(phone),
       { message: 'InvalidPhoneNumber' },
     )
-    .default(''),
+    .default('')
+    .refine(val => val.length > 0, 'RequiredField'),
   optionalPhoneNumber: z
     .string()
     .optional()
     .refine((phone) => !phone || /^\+[\d\s-]{6,15}$/.test(phone), {
       message: 'InvalidPhoneNumber',
     }),
-  email: z.string().min(1, { message: 'RequiredField' }).email({
-    message: 'InvalidEmail',
-  }).default(''),
+  email: z
+    .string()
+    .min(1, { message: 'RequiredField' })
+    .email({ message: 'InvalidEmail' })
+    .default('')
+    .refine(val => val.length > 0, 'RequiredField'),
   location: z.string().optional(),
   site: z
     .string()

@@ -21,8 +21,17 @@ def test_collaborator_registration_arabic_unicode():
         f"Expected 201 Created for Arabic text, got {resp.status_code}. Body: {resp.text}"
     )
 
-    body = resp.json()
-    assert "message" in body or body.get("success"), f"Expected success indication in response, got: {body}"
+    result_data = resp.json().get("data", {})
+    
+    # Verify Unicode preservation
+    for field in ["companyName", "specialization", "location"]:
+        expected = form_data[field]
+        actual = result_data.get(field)
+        assert expected == actual, (
+            f"Unicode data mismatch for field '{field}': Expected '{expected}', got '{actual}'"
+        )
+    
+    print("Arabic Unicode integrity verified.")
 
 def run():
     test_collaborator_registration_arabic_unicode()

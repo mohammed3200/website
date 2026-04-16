@@ -1,13 +1,14 @@
 import { createFormStore } from '@/lib/forms/create-form-store';
 
 describe('createFormStore', () => {
+  let useTestStore: ReturnType<typeof createFormStore<{ name: string; age?: number }>>;
+
   beforeEach(() => {
     sessionStorage.clear();
-  });
-
-  const useTestStore = createFormStore<{ name: string; age?: number }>({
-    storageKey: 'test-form-storage',
-    version: 1,
+    useTestStore = createFormStore<{ name: string; age?: number }>({
+      storageKey: 'test-form-storage',
+      version: 1,
+    });
   });
 
   it('should initialize with default state', () => {

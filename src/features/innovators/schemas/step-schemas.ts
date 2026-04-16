@@ -58,7 +58,7 @@ export const innovatorServerSchema = z.object({
       z.string().transform((value) => (value === '' ? undefined : value)),
     ])
     .optional(),
-  name: z.string().min(1, { message: 'RequiredField' }).default(''),
+  name: z.string().min(1, { message: 'RequiredField' }).default('').refine(val => val.length > 0, 'RequiredField'),
   phoneNumber: z
     .string()
     .min(1, { message: 'RequiredField' })
@@ -66,31 +66,36 @@ export const innovatorServerSchema = z.object({
       (phone) => typeof phone === 'string' && /^\+[\d\s-]{6,15}$/.test(phone),
       { message: 'InvalidPhoneNumber' },
     )
-    .default(''),
+    .default('')
+    .refine(val => val.length > 0, 'RequiredField'),
   email: z
     .string()
     .min(1, { message: 'RequiredField' })
     .email({ message: 'InvalidEmail' })
-    .default(''),
-  country: z.string().min(1, { message: 'RequiredField' }).default(''),
+    .default('')
+    .refine(val => val.length > 0, 'RequiredField'),
+  country: z.string().min(1, { message: 'RequiredField' }).default('').refine(val => val.length > 0, 'RequiredField'),
   city: z
     .string()
     .min(1, { message: 'RequiredField' })
     .max(100, { message: 'CityTooLong' })
-    .default(''),
+    .default('')
+    .refine(val => val.length > 0, 'RequiredField'),
   specialization: z
     .string()
     .min(1, { message: 'RequiredField' })
     .max(200, { message: 'SpecializationTooLong' })
-    .default(''),
+    .default('')
+    .refine(val => val.length > 0, 'RequiredField'),
 
   // Step 2
-  projectTitle: z.string().min(1, { message: 'RequiredField' }).default(''),
+  projectTitle: z.string().min(1, { message: 'RequiredField' }).default('').refine(val => val.length > 0, 'RequiredField'),
   projectDescription: z
     .string()
     .min(1, { message: 'RequiredField' })
     .max(1000, { message: 'MaximumFieldSize' })
-    .default(''),
+    .default('')
+    .refine(val => val.length > 0, 'RequiredField'),
   objective: z.string().optional(),
 
   // Step 3
@@ -100,6 +105,7 @@ export const innovatorServerSchema = z.object({
     .optional()
     .default([])
     .transform((files) => (Array.isArray(files) ? files : [files]))
+    .refine((files) => files.length <= 10, { message: 'TooManyFiles' })
     .refine(
       (files) => {
         if (!files || files.length === 0) return true;

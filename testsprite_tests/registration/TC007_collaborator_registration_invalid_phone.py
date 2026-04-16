@@ -20,4 +20,5 @@ def test_collaborator_registration_invalid_phone():
 def run():
     test_collaborator_registration_invalid_phone()
 
-run()
+if __name__ == "__main__":
+    run()

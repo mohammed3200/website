@@ -23,7 +23,7 @@ def test_innovator_registration_happy_path():
     try:
         response = requests.post(BASE_URL, data=form_data, timeout=TIMEOUT)
     except requests.RequestException as e:
-        assert False, f"Request to POST /api/innovators failed: {e}"
+        raise AssertionError(f"Request to POST /api/innovators failed: {e}"
 
     assert response.status_code == 201, (
         f"Expected 201 Created, got {response.status_code}. Body: {response.text}"
@@ -35,4 +35,5 @@ def test_innovator_registration_happy_path():
 def run():
     test_innovator_registration_happy_path()
 
-run()
+if __name__ == "__main__":
+    run()

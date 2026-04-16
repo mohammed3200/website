@@ -5,7 +5,8 @@ BASE_URL = "http://localhost:3000/api/innovators"
 TIMEOUT = 30
 
 def test_innovator_registration_max_length_violations():
-    unique = uuid.uuid4().hex[:8]
+    unique = uuid.uuid4().hex
+    unique_phone = str(uuid.uuid4().int)[:10][:8]
 
     # Create strings that exceed limits
     city_too_long = "C" * 101 # Max is 100
@@ -14,7 +15,7 @@ def test_innovator_registration_max_length_violations():
     form_data = {
         "name": f"Max Length Violator {unique}",
         "email": f"maxlen-{unique}@example.com",
-        "phoneNumber": f"+1234{unique[:6]}",
+        "phoneNumber": f"+1234{unique_phone[:6]}",
         "country": "USA",
         "city": city_too_long,
         "specialization": specialization_too_long,

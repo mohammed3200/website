@@ -154,9 +154,7 @@ describe('Innovator Step Schemas', () => {
       expect(result.success).toBe(true);
     });
 
-    it('should allow omitting email because .default("") bypasses inner validators in Zod v4 (documented risk F8)', () => {
-      // IMPORTANT: .default('') in Zod v4 treats the default value as pre-validated.
-      // When email is omitted, '' is injected WITHOUT running min(1)/email() checks.
+    it('should fail when email is omitted', () => {
       const result = schema.safeParse({
         name: 'John',
         phoneNumber: '+1234567890',
@@ -167,9 +165,9 @@ describe('Innovator Step Schemas', () => {
         projectDescription: 'Desc',
         TermsOfUse: true,
       });
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data.email).toBe('');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.issues.some((i) => i.path.includes('email'))).toBe(true);
       }
     });
 

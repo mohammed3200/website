@@ -16,6 +16,7 @@ import { notifyNewInnovator } from '@/lib/notifications/admin-notifications';
 import { emailService } from '@/lib/email/service';
 import { notifyAdmins } from '@/lib/notifications/admin-notifications';
 import { mediaTypes } from '@/constants';
+import { sanitizeHtml } from '@/lib/sanitizer';
 
 const app = new Hono()
   // Public endpoint - only approved and visible innovators
@@ -211,15 +212,15 @@ const app = new Hono()
 
           const data = {
             id: uuidv4(),
-            name,
+            name: sanitizeHtml(name),
             email,
             phone: phoneNumber,
             country,
             city,
             fieldOfStudy: specialization, // Use fieldOfStudy to match Prisma schema
-            projectTitle,
-            projectDescription,
-            objective,
+            projectTitle: sanitizeHtml(projectTitle),
+            projectDescription: sanitizeHtml(projectDescription),
+            objective: objective ? sanitizeHtml(objective) : null,
             stageDevelopment: mapStageDevelopment(stageDevelopment as string),
           };
 
@@ -343,6 +344,11 @@ const app = new Hono()
           return c.json(
             {
               message: 'The innovator has been successfully created',
+              data: {
+                id: result.id,
+                email: result.email,
+                name: result.name,
+              },
             },
             201,
           );

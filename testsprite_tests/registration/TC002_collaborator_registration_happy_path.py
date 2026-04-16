@@ -5,13 +5,14 @@ BASE_URL = "http://localhost:3000/api/collaborator"
 TIMEOUT = 30
 
 def test_collaborator_registration_happy_path():
-    unique = uuid.uuid4().hex[:8]
+    unique = uuid.uuid4().hex
+    unique_phone = str(uuid.uuid4().int)[:10][:8]
 
     # Build multipart form data
     form_data = {
         "companyName": f"Test Company {unique}",
         "email": f"test-{unique}@example.com",
-        "primaryPhoneNumber": f"+1234{unique[:6]}",
+        "primaryPhoneNumber": f"+1234{unique_phone[:6]}",
         "industrialSector": "Technology",
         "specialization": "Software Development",
         "location": "Riyadh, Saudi Arabia",
@@ -21,7 +22,7 @@ def test_collaborator_registration_happy_path():
     try:
         response = requests.post(BASE_URL, data=form_data, timeout=TIMEOUT)
     except requests.RequestException as e:
-        assert False, f"Request to POST /api/collaborator failed: {e}"
+        raise AssertionError(f"Request to POST /api/collaborator failed: {e}"
 
     assert response.status_code == 201, (
         f"Expected 201 Created, got {response.status_code}. Body: {response.text}"

@@ -1,4 +1,5 @@
 import React from 'react';
+import '@testing-library/jest-dom';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CollaboratorFormWizard } from '@/features/collaborators/components/collaborator-form-wizard';
@@ -14,50 +15,78 @@ jest.mock('next/navigation', () => ({
   }),
   useParams: () => ({
     locale: 'en',
-    step: 'company-info',
   }),
 }));
 
+// Mock framer-motion
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    span: ({ children, ...props }: any) => <span {...props}>{children}</span>,
+    h1: ({ children, ...props }: any) => <h1 {...props}>{children}</h1>,
+    p: ({ children, ...props }: any) => <p {...props}>{children}</p>,
+    section: ({ children, ...props }: any) => <section {...props}>{children}</section>,
+    main: ({ children, ...props }: any) => <main {...props}>{children}</main>,
+    nav: ({ children, ...props }: any) => <nav {...props}>{children}</nav>,
+  },
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+  useAnimation: () => ({ start: jest.fn(), stop: jest.fn(), set: jest.fn() }),
+  useInView: () => [null, true],
+}));
+
 const messages = {
-  Collaborators: {
-    form: {
-      CompanyInfoTitle: 'Company Information',
-      NextButton: 'Next',
-      SubmitButton: 'Submit',
-    }
+  Common: {
+    next: 'Next',
+    back: 'Back',
+    submit: 'Submit Application',
+    navigation: 'Navigation',
   },
   Validation: {
-    RequiredField: 'Required field',
-  }
+    RequiredField: 'This field is required',
+    validationError: 'Validation Error',
+    pleaseFixErrors: 'Please fix the errors below before continuing.',
+  },
+  Collaborators: {
+    form: {
+      companyName: 'Company Name (Organization)',
+      primaryPhoneNumber: 'Primary phone number',
+      email: 'Email Address',
+      site: 'Your website link (optional)',
+      location: 'Location',
+    },
+  },
 };
 
 const renderWizard = () => {
   return render(
     <NextIntlClientProvider locale="en" messages={messages}>
       <CollaboratorFormWizard />
-    </NextIntlClientProvider>
+    </NextIntlClientProvider>,
   );
 };
 
 describe('Collaborator Registration E2E Flow', () => {
   beforeEach(() => {
+    sessionStorage.clear();
     useCollaboratorFormStore.getState().reset();
+    useCollaboratorFormStore.setState({ hasHydrated: true });
   });
 
   it('renders first step and prevents proceeding with invalid data', async () => {
     renderWizard();
-    
+
     // Check if we are on step 1
-    expect(screen.getByText(/Company Info/i)).toBeInTheDocument();
-    
+    expect(await screen.findByText(/Company Info/i)).toBeInTheDocument();
+
     // Click Next without filling anything
-    const nextBtn = screen.getByRole('button', { name: /Next/i });
+    const nextBtn = await screen.findByRole('button', { name: /Next/i });
     fireEvent.click(nextBtn);
-    
+
     // Should show validation errors (would be handled by UI, so we check store)
     await waitFor(() => {
       const state = useCollaboratorFormStore.getState();
       expect(Object.keys(state.errors).length).toBeGreaterThan(0);
+      expect(state.currentStepIndex).toBe(0);
     });
   });
 
@@ -66,19 +95,37 @@ describe('Collaborator Registration E2E Flow', () => {
     renderWizard();
 
     // Fill minimum required on Step 1
-    const companyInput = screen.getByLabelText(/Company Name/i);
+    const companyInput = await screen.findByLabelText(/Company Name/i);
     await user.type(companyInput, 'Acme Corp');
+    const phoneInput = await screen.findByLabelText(/Primary phone/i);
+    await user.type(phoneInput, '+1234567890');
+    const emailInput = await screen.findByLabelText(/Email Address/i);
+    await user.type(emailInput, 'test@acme.com');
 
     // Store should update
-    expect(useCollaboratorFormStore.getState().data.companyName).toBe('Acme Corp');
+    expect(useCollaboratorFormStore.getState().data.companyName).toBe(
+      'Acme Corp',
+    );
 
-    // Simulate jumping to step 2 programmatically to bypass Zod requirements for this test
-    useCollaboratorFormStore.getState().setStep(1); 
-    
-    // Then go back
-    useCollaboratorFormStore.getState().setStep(0);
-    
+    // Click Next to navigate forward
+    const nextBtn = await screen.findByRole('button', { name: /Next/i });
+    fireEvent.click(nextBtn);
+
+    // Wait for step 2 (Industry Information)
+    await waitFor(() => {
+      expect(useCollaboratorFormStore.getState().currentStepIndex).toBe(1);
+    });
+
+    // Click Back to navigate backward
+    const backBtn = await screen.findByRole('button', { name: /Previous|Back/i }); // Assuming there's a back button
+    fireEvent.click(backBtn);
+
     // Data should still be there
-    expect(useCollaboratorFormStore.getState().data.companyName).toBe('Acme Corp');
+    await waitFor(() => {
+      expect(useCollaboratorFormStore.getState().data.companyName).toBe(
+        'Acme Corp',
+      );
+      expect(useCollaboratorFormStore.getState().currentStepIndex).toBe(0);
+    });
   });
 });

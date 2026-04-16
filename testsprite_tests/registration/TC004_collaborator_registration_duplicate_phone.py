@@ -5,8 +5,9 @@ BASE_URL = "http://localhost:3000/api/collaborator"
 TIMEOUT = 30
 
 def test_collaborator_registration_duplicate_phone():
-    unique = uuid.uuid4().hex[:8]
-    shared_phone = f"+9999{unique[:6]}"
+    unique = uuid.uuid4().hex
+    unique_phone = str(uuid.uuid4().int)[:10][:8]
+    shared_phone = f"+9999{unique_phone[:6]}"
 
     form_data_1 = {
         "companyName": f"PhoneCo A {unique}",

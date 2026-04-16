@@ -12,15 +12,17 @@ def test_innovator_registration_validation_missing_fields():
         f"Expected 400 for empty form, got {resp.status_code}. Body: {resp.text}"
     )
 
-    # Missing multiple required fields (e.g. projectTitle, TermsOfUse)
+    # Missing required text field (projectTitle) but providing TermsOfUse
     partial = {
-        "name": "Missing Fields Inno",
-        "email": "missing@example.com",
+        "name": "Missing Project Title",
+        "email": "missing-title@example.com",
         "phoneNumber": "+1234567890",
+        "TermsOfUse": "true", # Correctly provided
+        # projectTitle is omitted -> should still fail 400
     }
     resp2 = requests.post(BASE_URL, data=partial, timeout=TIMEOUT)
     assert resp2.status_code == 400, (
-        f"Expected 400 for missing fields, got {resp2.status_code}. Body: {resp2.text}"
+        f"Expected 400 for missing projectTitle, got {resp2.status_code}. Body: {resp2.text}"
     )
 
 def run():

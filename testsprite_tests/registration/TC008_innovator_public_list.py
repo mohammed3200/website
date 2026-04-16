@@ -9,7 +9,7 @@ def test_innovator_public_list():
         response = requests.get(url, timeout=TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        assert False, f"Request to GET /public failed: {e}"
+        raise AssertionError(f"Request to GET /public failed: {e}"
 
     # Validate status code
     assert response.status_code == 200, f"Expected 200, got {response.status_code}"
@@ -17,8 +17,8 @@ def test_innovator_public_list():
     # Validate response structure
     try:
         body = response.json()
-    except Exception as e:
-        assert False, f"Response is not valid JSON: {e}"
+    except ValueError as e:
+        raise AssertionError(f"Response is not valid JSON: {e}"
 
     assert "data" in body, "Expected 'data' key in response"
     data = body["data"]

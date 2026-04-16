@@ -30,4 +30,5 @@ def test_innovator_registration_project_description_too_long():
 def run():
     test_innovator_registration_project_description_too_long()
 
-run()
+if __name__ == "__main__":
+    run()

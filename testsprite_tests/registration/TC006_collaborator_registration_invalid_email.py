@@ -20,4 +20,5 @@ def test_collaborator_registration_invalid_email():
 def run():
     test_collaborator_registration_invalid_email()
 
-run()
+if __name__ == "__main__":
+    run()

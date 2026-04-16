@@ -5,13 +5,14 @@ BASE_URL = "http://localhost:3000/api/collaborator"
 TIMEOUT = 30
 
 def test_collaborator_registration_duplicate_email():
-    unique = uuid.uuid4().hex[:8]
+    unique = uuid.uuid4().hex
+    unique_phone = str(uuid.uuid4().int)[:10][:8]
     shared_email = f"dup-{unique}@example.com"
 
     form_data_1 = {
         "companyName": f"Company A {unique}",
         "email": shared_email,
-        "primaryPhoneNumber": f"+1111{unique[:6]}",
+        "primaryPhoneNumber": f"+1111{unique_phone[:6]}",
         "industrialSector": "Technology",
         "specialization": "AI",
     }
@@ -26,7 +27,7 @@ def test_collaborator_registration_duplicate_email():
     form_data_2 = {
         "companyName": f"Company B {unique}",
         "email": shared_email,
-        "primaryPhoneNumber": f"+2222{unique[:6]}",
+        "primaryPhoneNumber": f"+2222{unique_phone[:6]}",
         "industrialSector": "Technology",
         "specialization": "ML",
     }

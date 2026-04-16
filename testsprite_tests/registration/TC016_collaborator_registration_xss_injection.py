@@ -19,11 +19,22 @@ def test_collaborator_registration_xss_injection():
     }
 
     resp = requests.post(BASE_URL, data=form_data, timeout=TIMEOUT)
-    # The application should either sanitize it on input (returning 201 with sanitized data)
-    # or reject it via validation (returning 400). It should NOT crash.
-    assert resp.status_code in (201, 400), (
-        f"Expected 201 (sanitized) or 400 (rejected) for XSS payload, got {resp.status_code}. Body: {resp.text}"
+    # The application should sanitize it on input and return 201 with sanitized data
+    assert resp.status_code == 201, (
+        f"Expected 201 (sanitized) for XSS payload, got {resp.status_code}. Body: {resp.text}"
     )
+
+    result_data = resp.json().get("data", {})
+    sanitized_name = result_data.get("companyName", "")
+
+    # Check for raw script tags or common XSS tokens
+    forbidden_tokens = ["<script>", "alert(", "onload="]
+    for token in forbidden_tokens:
+        assert token not in sanitized_name, (
+            f"XSS Injection Token '{token}' found in sanitized output: {sanitized_name}"
+        )
+    
+    print(f"Sanitization verified for: {sanitized_name}")
 
 def run():
     test_collaborator_registration_xss_injection()

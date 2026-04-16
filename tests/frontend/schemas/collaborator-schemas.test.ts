@@ -164,25 +164,24 @@ describe('Collaborator Step Schemas', () => {
         specialization: 'Software',
       });
       
+      expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.experienceProvidedMedia).toEqual([]);
         expect(result.data.machineryAndEquipmentMedia).toEqual([]);
       }
     });
 
-    it('should allow omitting email because .default("") bypasses inner validators in Zod v4 (documented risk F8)', () => {
-      // IMPORTANT: .default('') in Zod v4 treats the default value as pre-validated.
-      // When email is omitted, '' is injected WITHOUT running min(1)/email() checks.
-      // This is a known schema design risk (F8 in our analysis).
+    it('should fail when email is omitted', () => {
       const result = schema.safeParse({
         companyName: 'Acme Corp',
         primaryPhoneNumber: '+1234567890',
         industrialSector: ListOfIndustrialSectors.Technology,
         specialization: 'Software',
       });
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data.email).toBe('');
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const issues = result.error.issues;
+        expect(issues.some((i) => i.path.includes('email'))).toBe(true);
       }
     });
 
