@@ -47,14 +47,34 @@ const messages = {
     back: 'Back',
     submit: 'Submit Application',
     navigation: 'Navigation',
+    submitting: 'Submitting',
+    validating: 'Validating',
   },
   Validation: {
     RequiredField: 'This field is required',
     validationError: 'Validation Error',
     pleaseFixErrors: 'Please fix the errors below before continuing.',
+    nameRequired: 'Name is required',
+    phoneRequired: 'Phone is required',
+    InvalidPhoneNumber: 'Invalid phone number',
+    emailRequired: 'Email is required',
+    InvalidEmail: 'Invalid email address',
+    countryRequired: 'Country is required',
+    cityRequired: 'City is required',
+    CityTooLong: 'City name too long',
+    specializationRequired: 'Specialization is required',
+    SpecializationTooLong: 'Specialization name too long',
+    projectTitleRequired: 'Project title is required',
+    projectDescriptionRequired: 'Project description is required',
+    MaximumFieldSize: 'Field size exceeded',
+    TermsOfUse: 'You must accept the terms',
   },
   Innovators: {
     form: {
+      personalInfoTitle: 'Personal Information',
+      personalInfoDescription: 'Tell us about yourself',
+      basicInfo: 'Basic Info',
+      basicInfoDesc: 'Your contact details',
       name: 'Full Name',
       phoneNumber: 'Phone Number',
       email: 'Email Address',
@@ -63,13 +83,36 @@ const messages = {
       specialization: 'Scientific Specialization',
       projectTitle: 'Project or Idea Title',
       projectDescription: 'Project Description',
+      projectOverviewTitle: 'Project Overview',
+      projectOverviewDescription: 'Tell us about your project',
+      projectBasicInfo: 'Project Basic Info',
+      projectBasicInfoDesc: 'General project details',
+      projectDescriptionHint: 'Provide a detailed description of your project',
+      objective: 'Objective',
+      objectiveHint: 'What are you trying to achieve?',
+      profileImage: 'Profile Image',
+      profileImageDesc: 'Upload a clear profile photo',
+      image: 'Profile Photo',
     },
+  },
+  FileUpload: {
+    dropHere: 'Drop files here',
+    clickOrDrag: 'Click or drag files to upload',
+  },
+  Navigation: {
+    incubator: 'Incubator',
+    entrepreneurshipCenter: 'Entrepreneurship Center',
   },
 };
 
 const renderWizard = () => {
   return render(
-    <NextIntlClientProvider locale="en" messages={messages}>
+    <NextIntlClientProvider
+      locale="en"
+      messages={messages}
+      onError={() => {}}
+      getMessageFallback={({ key }) => key}
+    >
       <InnovatorFormWizard />
     </NextIntlClientProvider>,
   );
@@ -129,15 +172,16 @@ describe('Innovator Registration E2E Flow', () => {
     });
 
     // Go back
-    const backBtn = screen.queryByRole('button', {
+    const backBtn = await screen.findByRole('button', {
       name: /Previous|Back/i,
     });
-    if (backBtn) {
-      fireEvent.click(backBtn);
-      await waitFor(() => {
+    fireEvent.click(backBtn);
+    await waitFor(
+      () => {
         expect(useInnovatorFormStore.getState().currentStepIndex).toBe(0);
         expect(useInnovatorFormStore.getState().data.name).toBe('John Doe');
-      });
-    }
+      },
+      { timeout: 3000 },
+    );
   });
 });

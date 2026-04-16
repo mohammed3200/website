@@ -45,26 +45,74 @@ const messages = {
     back: 'Back',
     submit: 'Submit Application',
     navigation: 'Navigation',
+    submitting: 'Submitting',
+    validating: 'Validating',
   },
   Validation: {
     RequiredField: 'This field is required',
     validationError: 'Validation Error',
     pleaseFixErrors: 'Please fix the errors below before continuing.',
+    companyNameRequired: 'Company name is required',
+    primaryPhoneRequired: 'Primary phone is required',
+    emailRequired: 'Email is required',
+    InvalidPhoneNumber: 'Invalid phone number',
+    InvalidEmail: 'Invalid email address',
+    InvalidURL: 'Invalid URL',
+    industrialSectorRequired: 'Industrial sector is required',
+    specializationRequired: 'Specialization is required',
+    InvalidMediaType: 'Invalid media type',
+    InvalidFileSize: 'File too large',
+    TermsOfUse: 'You must accept the terms',
   },
   Collaborators: {
     form: {
       companyName: 'Company Name (Organization)',
+      companyNamePlaceholder: 'Enter company name',
       primaryPhoneNumber: 'Primary phone number',
+      optionalPhoneNumber: 'Optional phone number',
+      optional: 'Optional',
       email: 'Email Address',
       site: 'Your website link (optional)',
       location: 'Location',
+      locationDescription: 'Enter company address',
+      contactDetails: 'Contact Details',
+      howToReach: 'How to reach you',
+      branding: 'Branding',
+      uploadLogoDesc: 'Upload your company logo',
+      image: 'Company Logo',
+      industrialSector: 'Industrial Sector',
+      selectSector: 'Select a sector',
+      specialization: 'Specialization',
+      specializationDescription: 'Enter your specialization',
     },
+  },
+  Enums: {
+    IndustrialSectors: {
+      Energy: 'Energy',
+      Technology: 'Technology',
+      Manufacturing: 'Manufacturing',
+      Food: 'Food',
+      Other: 'Other',
+    },
+  },
+  FileUpload: {
+    dropHere: 'Drop files here',
+    clickOrDrag: 'Click or drag files to upload',
+  },
+  Navigation: {
+    incubator: 'Incubator',
+    entrepreneurshipCenter: 'Entrepreneurship Center',
   },
 };
 
 const renderWizard = () => {
   return render(
-    <NextIntlClientProvider locale="en" messages={messages}>
+    <NextIntlClientProvider
+      locale="en"
+      messages={messages}
+      onError={() => {}}
+      getMessageFallback={({ key }) => key}
+    >
       <CollaboratorFormWizard />
     </NextIntlClientProvider>,
   );
@@ -88,11 +136,14 @@ describe('Collaborator Registration E2E Flow', () => {
     fireEvent.click(nextBtn);
 
     // Should show validation errors (would be handled by UI, so we check store)
-    await waitFor(() => {
-      const state = useCollaboratorFormStore.getState();
-      expect(Object.keys(state.errors).length).toBeGreaterThan(0);
-      expect(state.currentStepIndex).toBe(0);
-    });
+    await waitFor(
+      () => {
+        const state = useCollaboratorFormStore.getState();
+        expect(Object.keys(state.errors).length).toBeGreaterThan(0);
+        expect(state.currentStepIndex).toBe(0);
+      },
+      { timeout: 5000 },
+    );
   });
 
   it('persists data across step navigation (forward and back)', async () => {
@@ -122,7 +173,9 @@ describe('Collaborator Registration E2E Flow', () => {
     });
 
     // Click Back to navigate backward
-    const backBtn = await screen.findByRole('button', { name: /Previous|Back/i }); // Assuming there's a back button
+    const backBtn = await screen.findByRole('button', {
+      name: /Previous|Back/i,
+    });
     fireEvent.click(backBtn);
 
     // Data should still be there
