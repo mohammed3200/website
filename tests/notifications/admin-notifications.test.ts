@@ -1,4 +1,3 @@
-// tests/notifications/admin-notifications.test.ts
 import {
   describe,
   it,
@@ -6,7 +5,8 @@ import {
   beforeEach,
   afterEach,
   jest,
-} from '@jest/globals';
+  mock,
+} from 'bun:test';
 import {
   notifyAdmins,
   notifyNewCollaborator,
@@ -19,7 +19,7 @@ import { db } from '@/lib/db';
 import { NotificationPriority } from '@prisma/client';
 
 // Mock the database
-jest.mock('@/lib/db', () => ({
+mock.module('@/lib/db', () => ({
   db: {
     user: {
       findMany: jest.fn(),
@@ -31,7 +31,7 @@ jest.mock('@/lib/db', () => ({
 }));
 
 // Mock the email service
-jest.mock('@/lib/email/service', () => ({
+mock.module('@/lib/email/service', () => ({
   EmailService: jest.fn().mockImplementation(() => ({
     sendEmail: (jest.fn() as any).mockResolvedValue({
       success: true,

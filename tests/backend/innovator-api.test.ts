@@ -3,8 +3,9 @@ import innovatorApp from '@/features/innovators/server/route';
 import { db } from '@/lib/db';
 import { s3Service } from '@/lib/storage/s3-service';
 import { StageDevelopment } from '@/features/innovators/types/types';
+import { mock, Mock, jest, describe, it, expect, beforeEach } from 'bun:test';
 
-jest.mock('@/lib/db', () => ({
+mock.module('@/lib/db', () => ({
   db: {
     innovator: {
       findFirst: jest.fn(),
@@ -26,26 +27,26 @@ jest.mock('@/lib/db', () => ({
   },
 }));
 
-jest.mock('@react-email/render', () => ({
+mock.module('@react-email/render', () => ({
   render: jest.fn().mockResolvedValue('<html>mock email</html>'),
 }));
 
-jest.mock('@/lib/email/service', () => ({
+mock.module('@/lib/email/service', () => ({
   emailService: {
     sendEmail: jest.fn().mockResolvedValue({ success: true }),
   },
 }));
 
-jest.mock('@/lib/notifications/admin-notifications', () => ({
+mock.module('@/lib/notifications/admin-notifications', () => ({
   notifyNewCollaborator: jest.fn().mockResolvedValue(true),
   notifyNewInnovator: jest.fn().mockResolvedValue(true),
 }));
 
-jest.mock('@/auth', () => ({
+mock.module('@/auth', () => ({
   auth: jest.fn().mockResolvedValue({ user: { id: 'admin-id' } }),
 }));
 
-jest.mock('@/lib/storage/s3-service', () => ({
+mock.module('@/lib/storage/s3-service', () => ({
   s3Service: {
     uploadFile: jest.fn().mockResolvedValue({
       url: 'https://s3.example.com/file.pdf',
@@ -67,8 +68,8 @@ describe('Innovators API Endpoints', () => {
 
   describe('POST /api/innovators', () => {
     it('should create an innovator successfully', async () => {
-      (db.innovator.findFirst as jest.Mock).mockResolvedValue(null);
-      (db.innovator.create as jest.Mock).mockResolvedValue({
+      (db.innovator.findFirst as Mock<any>).mockResolvedValue(null);
+      (db.innovator.create as Mock<any>).mockResolvedValue({
         id: 'innovator-1',
       });
 
@@ -96,7 +97,7 @@ describe('Innovators API Endpoints', () => {
     });
 
     it('should reject if email already exists', async () => {
-      (db.innovator.findFirst as jest.Mock).mockResolvedValue({
+      (db.innovator.findFirst as Mock<any>).mockResolvedValue({
         id: 'existing-1',
         email: 'john@example.com',
       });
@@ -123,9 +124,9 @@ describe('Innovators API Endpoints', () => {
     });
 
     it('should accept project files and upload to S3', async () => {
-      (db.innovator.findFirst as jest.Mock).mockResolvedValue(null);
-      (db.innovator.create as jest.Mock).mockResolvedValue({ id: 'inno-1' });
-      (db.media.create as jest.Mock).mockResolvedValue({ id: 'media-1' });
+      (db.innovator.findFirst as Mock<any>).mockResolvedValue(null);
+      (db.innovator.create as Mock<any>).mockResolvedValue({ id: 'inno-1' });
+      (db.media.create as Mock<any>).mockResolvedValue({ id: 'media-1' });
 
       const formData = new FormData();
       formData.append('name', 'John');

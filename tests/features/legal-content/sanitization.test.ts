@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'bun:test';
 import { sanitizeHtml } from '@/lib/sanitizer';
 
 describe('Legal Content Sanitization (Semantic Assertions)', () => {

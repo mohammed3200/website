@@ -2,15 +2,15 @@
  * @jest-environment node
  */
 
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, jest, mock } from 'bun:test';
 import { Hono } from 'hono';
 
 // Mock dependencies
-jest.mock('@/auth', () => ({
+mock.module('@/auth', () => ({
   auth: jest.fn(),
 }));
 
-jest.mock('@/lib/db', () => ({
+mock.module('@/lib/db', () => ({
   db: {
     pageContent: {
       findMany: jest.fn(),
@@ -56,7 +56,7 @@ describe('Page Content API Routes', () => {
         orderBy: [{ section: 'asc' }, { order: 'asc' }],
       });
 
-      expect(result).toEqual(mockContent);
+      expect(result).toEqual(mockContent as any);
       expect(db.pageContent.findMany).toHaveBeenCalledWith({
         where: { page: 'entrepreneurship', isActive: true },
         orderBy: [{ section: 'asc' }, { order: 'asc' }],
@@ -83,7 +83,7 @@ describe('Page Content API Routes', () => {
         orderBy: [{ section: 'asc' }, { order: 'asc' }],
       });
 
-      expect(result).toEqual(mockContent);
+      expect(result).toEqual(mockContent as any);
     });
 
     it('should return empty array when no content found', async () => {
@@ -177,7 +177,7 @@ describe('Page Content API Routes', () => {
       });
 
       expect(result).toHaveLength(2);
-      expect(result).toEqual(mockContent);
+      expect(result).toEqual(mockContent as any);
     });
   });
 
@@ -476,6 +476,7 @@ describe('Page Content API Routes', () => {
       });
 
       expect(result).toHaveLength(3);
+      expect(result).toEqual(mockContent as any);
       expect(result[0].order).toBe(0);
       expect(result[1].order).toBe(1);
     });

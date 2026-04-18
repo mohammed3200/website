@@ -5,9 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { InnovatorFormWizard } from '@/features/innovators/components/innovator-form-wizard';
 import { useInnovatorFormStore } from '@/features/innovators/store';
 import { NextIntlClientProvider } from 'next-intl';
+import { mock, jest, describe, it, expect, beforeEach } from 'bun:test';
 
 // Mock next/navigation
-jest.mock('next/navigation', () => ({
+mock.module('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
     replace: jest.fn(),
@@ -23,7 +24,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+mock.module('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
     button: ({ children, ...props }: any) => <button {...props}>{children}</button>,

@@ -2,9 +2,10 @@ import { Hono } from 'hono';
 import collaboratorApp from '@/features/collaborators/server/route';
 import { db } from '@/lib/db';
 import { s3Service } from '@/lib/storage/s3-service';
+import { mock, Mock, jest, describe, it, expect, beforeEach } from 'bun:test';
 
 // Mock dependencies
-jest.mock('@/lib/db', () => ({
+mock.module('@/lib/db', () => ({
   db: {
     collaborator: {
       findFirst: jest.fn(),
@@ -29,27 +30,27 @@ jest.mock('@/lib/db', () => ({
   },
 }));
 
-jest.mock('@react-email/render', () => ({
+mock.module('@react-email/render', () => ({
   render: jest.fn().mockResolvedValue('<html>mock email</html>'),
 }));
 
-jest.mock('@/lib/email/service', () => ({
+mock.module('@/lib/email/service', () => ({
   emailService: {
     sendEmail: jest.fn().mockResolvedValue({ success: true }),
     sendSubmissionConfirmation: jest.fn().mockResolvedValue({ success: true }),
   },
 }));
 
-jest.mock('@/lib/notifications/admin-notifications', () => ({
+mock.module('@/lib/notifications/admin-notifications', () => ({
   notifyNewCollaborator: jest.fn().mockResolvedValue(true),
   notifyNewInnovator: jest.fn().mockResolvedValue(true),
 }));
 
-jest.mock('@/auth', () => ({
+mock.module('@/auth', () => ({
   auth: jest.fn().mockResolvedValue({ user: { id: 'admin-id' } }),
 }));
 
-jest.mock('@/lib/storage/s3-service', () => ({
+mock.module('@/lib/storage/s3-service', () => ({
   s3Service: {
     uploadFile: jest.fn().mockResolvedValue({
       url: 'https://s3.example.com/file.png',
@@ -73,8 +74,8 @@ describe('Collaborator API Endpoints', () => {
   describe('POST /api/collaborator', () => {
     it('should create a collaborator on valid data', async () => {
       // Setup mock returns
-      (db.collaborator.findFirst as jest.Mock).mockResolvedValue(null);
-      (db.collaborator.create as jest.Mock).mockResolvedValue({
+      (db.collaborator.findFirst as Mock<any>).mockResolvedValue(null);
+      (db.collaborator.create as Mock<any>).mockResolvedValue({
         id: 'collab-1',
         email: 'test@example.com',
       });
@@ -99,7 +100,7 @@ describe('Collaborator API Endpoints', () => {
     });
 
     it('should return 400 if email already exists', async () => {
-      (db.collaborator.findFirst as jest.Mock).mockResolvedValue({
+      (db.collaborator.findFirst as Mock<any>).mockResolvedValue({
         id: 'existing-1',
         email: 'test@example.com',
       });
@@ -122,8 +123,8 @@ describe('Collaborator API Endpoints', () => {
     });
 
     it('should handle file uploads correctly', async () => {
-      (db.collaborator.findFirst as jest.Mock).mockResolvedValue(null);
-      (db.collaborator.create as jest.Mock).mockResolvedValue({ id: 'collab-1' });
+      (db.collaborator.findFirst as Mock<any>).mockResolvedValue(null);
+      (db.collaborator.create as Mock<any>).mockResolvedValue({ id: 'collab-1' });
 
       const formData = new FormData();
       formData.append('companyName', 'Test Company');

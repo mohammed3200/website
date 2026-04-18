@@ -1,4 +1,3 @@
-// tests/lib/rbac.test.ts
 import {
     describe,
     it,
@@ -6,7 +5,8 @@ import {
     beforeEach,
     afterEach,
     jest,
-} from '@jest/globals';
+    mock,
+} from 'bun:test';
 import {
     hasPermission,
     getUserPermissions,
@@ -18,7 +18,7 @@ import { RESOURCES, ACTIONS } from '@/lib/rbac-base';
 import { db } from '@/lib/db';
 
 // Mock the database
-jest.mock('@/lib/db', () => ({
+mock.module('@/lib/db', () => ({
     db: {
         user: {
             findUnique: jest.fn(),

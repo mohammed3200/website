@@ -1,11 +1,11 @@
-import { describe, it, expect, jest, beforeEach } from '@jest/globals';
+import { describe, it, jest, beforeEach, mock } from 'bun:test';
 import '@testing-library/jest-dom/jest-globals';
 import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom/jest-globals';
 import Sidebar from '@/features/admin/components/sidebar';
 
 // Mock next/link
-jest.mock('next/link', () => {
+mock.module('next/link', () => {
   return ({ children, href, className }: any) => (
     <a href={href} className={className}>
       {children}
@@ -14,12 +14,12 @@ jest.mock('next/link', () => {
 });
 
 // Mock next/navigation
-jest.mock('next/navigation', () => ({
+mock.module('next/navigation', () => ({
   usePathname: jest.fn(),
 }));
 
 // Mock lib/utils
-jest.mock('@/lib/utils', () => ({
+mock.module('@/lib/utils', () => ({
   cn: (...args: any[]) => args.filter(Boolean).join(' '),
 }));
 
