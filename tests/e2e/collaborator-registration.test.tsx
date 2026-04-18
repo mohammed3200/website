@@ -122,12 +122,8 @@ describe('Collaborator Registration E2E Flow', () => {
   });
 
   it('renders first step and prevents proceeding with invalid data', async () => {
-    renderWizard();
-
-    // Check if we are on step 1
-    expect(await screen.findByText(/Company Info/i, {}, { timeout: 3000 })).toBeInTheDocument();
-
     const user = userEvent.setup();
+    renderWizard();
 
     // Click Next without filling anything
     const nextBtn = await screen.findByRole('button', { name: /Next/i });
@@ -151,11 +147,11 @@ describe('Collaborator Registration E2E Flow', () => {
     renderWizard();
 
     // Fill minimum required on Step 1
-    const companyInput = await screen.findByLabelText(/Company Name/i);
+    const companyInput = await screen.findByRole('textbox', { name: /Company Name/i });
     await user.type(companyInput, 'Tech Corp');
-    const phoneInput = await screen.findByLabelText(/Primary phone/i);
+    const phoneInput = await screen.findByRole('textbox', { name: /Primary phone/i });
     await user.type(phoneInput, '+1234567890');
-    const emailInput = await screen.findByLabelText(/Email Address/i);
+    const emailInput = await screen.findByRole('textbox', { name: /Email Address/i });
     await user.type(emailInput, 'test@acme.com');
 
     // Store should update

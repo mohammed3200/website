@@ -120,9 +120,8 @@ describe('Innovator Registration E2E Flow', () => {
   });
 
   it('should render the first step and block navigation if invalid', async () => {
-    renderWizard();
-
     const user = userEvent.setup();
+    renderWizard();
 
     // Click Next without filling anything
     const nextBtn = await screen.findByRole('button', { name: /Next/i });
@@ -141,22 +140,21 @@ describe('Innovator Registration E2E Flow', () => {
   });
 
   it('preserves data during navigation', async () => {
+    const user = userEvent.setup();
     renderWizard();
 
-    const user = userEvent.setup();
-
     // Fill minimum required on Step 1
-    const nameInput = await screen.findByLabelText(/Full Name/i);
+    const nameInput = await screen.findByRole('textbox', { name: /Full Name/i });
     await user.type(nameInput, 'John Doe');
-    const phoneInput = await screen.findByLabelText(/Phone Number/i);
+    const phoneInput = await screen.findByRole('textbox', { name: /Phone Number/i });
     await user.type(phoneInput, '+1234567890');
-    const emailInput = await screen.findByLabelText(/Email Address/i);
+    const emailInput = await screen.findByRole('textbox', { name: /Email Address/i });
     await user.type(emailInput, 'john@example.com');
-    const countryInput = await screen.findByLabelText(/Country/i);
+    const countryInput = await screen.findByRole('textbox', { name: /^Country$/i }); // Exact match to avoid PhoneInput ambiguity
     await user.type(countryInput, 'Libya');
-    const cityInput = await screen.findByLabelText(/City \/ Address/i);
+    const cityInput = await screen.findByRole('textbox', { name: /City \/ Address/i });
     await user.type(cityInput, 'Tripoli');
-    const specInput = await screen.findByLabelText(/Specialization/i);
+    const specInput = await screen.findByRole('textbox', { name: /Scientific Specialization/i });
     await user.type(specInput, 'AI Engineering');
 
     expect(useInnovatorFormStore.getState().data.name).toBe('John Doe');
@@ -167,7 +165,8 @@ describe('Innovator Registration E2E Flow', () => {
 
     await waitFor(
       () => {
-        expect(useInnovatorFormStore.getState().currentStepIndex).toBe(1);
+        const state = useInnovatorFormStore.getState();
+        expect(state.currentStepIndex).toBe(1);
       },
       { timeout: 5000 },
     );
