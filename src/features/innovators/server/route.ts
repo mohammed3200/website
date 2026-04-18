@@ -16,6 +16,7 @@ import { notifyNewInnovator } from '@/lib/notifications/admin-notifications';
 import { emailService } from '@/lib/email/service';
 import { notifyAdmins } from '@/lib/notifications/admin-notifications';
 import { mediaTypes } from '@/constants';
+import { sanitizeHtml } from '@/lib/sanitizer';
 
 const app = new Hono()
   // Public endpoint - only approved and visible innovators
@@ -209,17 +210,33 @@ const app = new Hono()
             }
           };
 
+          const sanitizedName = sanitizeHtml(name);
+          const sanitizedProjectTitle = sanitizeHtml(projectTitle);
+          const sanitizedProjectDescription = sanitizeHtml(projectDescription);
+          const sanitizedObjective = objective ? sanitizeHtml(objective) : null;
+
+          // Validate post-sanitization
+          if (!sanitizedName || sanitizedName.trim() === '') {
+            return c.json({ code: 'INVALID_INPUT', message: 'Name is required post-sanitization' }, 400);
+          }
+          if (!sanitizedProjectTitle || sanitizedProjectTitle.trim() === '') {
+            return c.json({ code: 'INVALID_INPUT', message: 'Project Title is required post-sanitization' }, 400);
+          }
+          if (!sanitizedProjectDescription || sanitizedProjectDescription.trim() === '') {
+            return c.json({ code: 'INVALID_INPUT', message: 'Project Description is required post-sanitization' }, 400);
+          }
+
           const data = {
             id: uuidv4(),
-            name,
+            name: sanitizedName,
             email,
             phone: phoneNumber,
             country,
             city,
             fieldOfStudy: specialization, // Use fieldOfStudy to match Prisma schema
-            projectTitle,
-            projectDescription,
-            objective,
+            projectTitle: sanitizedProjectTitle,
+            projectDescription: sanitizedProjectDescription,
+            objective: sanitizedObjective && sanitizedObjective.trim() !== '' ? sanitizedObjective : null,
             stageDevelopment: mapStageDevelopment(stageDevelopment as string),
           };
 
@@ -343,6 +360,11 @@ const app = new Hono()
           return c.json(
             {
               message: 'The innovator has been successfully created',
+              data: {
+                id: result.id,
+                email: result.email,
+                name: result.name,
+              },
             },
             201,
           );

@@ -79,6 +79,10 @@ export interface FormState<T> {
   isSubmitting: boolean;
   isValidating: boolean;
   /**
+   * Tracks whether Zustand has restored the session state from storage
+   */
+  hasHydrated: boolean;
+  /**
    * Metadata like timestamp, version
    */
   metadata: {
@@ -94,6 +98,7 @@ export interface FormActions<T> {
   setErrors: (errors: Record<string, string>) => void;
   setSubmitting: (isSubmitting: boolean) => void;
   setValidating: (isValidating: boolean) => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
   reset: () => void;
 }
 

@@ -20,6 +20,7 @@ export const step1Schema = (t: (key: string) => string) =>
       .optional(),
     name: z
       .string({ error: t('nameRequired') })
+      .trim()
       .min(1, { message: t('nameRequired') }),
     phoneNumber: z
       .string({ error: t('phoneRequired') })
@@ -36,13 +37,16 @@ export const step1Schema = (t: (key: string) => string) =>
       }),
     country: z
       .string({ error: t('countryRequired') })
+      .trim()
       .min(1, { message: t('countryRequired') }),
     city: z
       .string({ error: t('cityRequired') })
+      .trim()
       .min(1, { message: t('cityRequired') })
       .max(100, { message: t('CityTooLong') }),
     specialization: z
       .string({ error: t('specializationRequired') })
+      .trim()
       .min(1, { message: t('specializationRequired') })
       .max(200, { message: t('SpecializationTooLong') }),
   });
@@ -58,7 +62,7 @@ export const innovatorServerSchema = z.object({
       z.string().transform((value) => (value === '' ? undefined : value)),
     ])
     .optional(),
-  name: z.string().min(1, { message: 'RequiredField' }).default(''),
+  name: z.string().trim().min(1, { message: 'RequiredField' }).default('').refine(val => val.trim().length > 0, 'RequiredField'),
   phoneNumber: z
     .string()
     .min(1, { message: 'RequiredField' })
@@ -66,43 +70,53 @@ export const innovatorServerSchema = z.object({
       (phone) => typeof phone === 'string' && /^\+[\d\s-]{6,15}$/.test(phone),
       { message: 'InvalidPhoneNumber' },
     )
-    .default(''),
+    .default('')
+    .refine(val => val.length > 0, 'RequiredField'),
   email: z
     .string()
     .min(1, { message: 'RequiredField' })
     .email({ message: 'InvalidEmail' })
-    .default(''),
-  country: z.string().min(1, { message: 'RequiredField' }).default(''),
+    .default('')
+    .refine(val => val.length > 0, 'RequiredField'),
+  country: z.string().trim().min(1, { message: 'RequiredField' }).default('').refine(val => val.trim().length > 0, 'RequiredField'),
   city: z
     .string()
+    .trim()
     .min(1, { message: 'RequiredField' })
     .max(100, { message: 'CityTooLong' })
-    .default(''),
+    .default('')
+    .refine(val => val.trim().length > 0, 'RequiredField'),
   specialization: z
     .string()
+    .trim()
     .min(1, { message: 'RequiredField' })
     .max(200, { message: 'SpecializationTooLong' })
-    .default(''),
+    .default('')
+    .refine(val => val.trim().length > 0, 'RequiredField'),
 
   // Step 2
-  projectTitle: z.string().min(1, { message: 'RequiredField' }).default(''),
+  projectTitle: z.string().trim().min(1, { message: 'RequiredField' }).default('').refine(val => val.trim().length > 0, 'RequiredField'),
   projectDescription: z
     .string()
+    .trim()
     .min(1, { message: 'RequiredField' })
     .max(1000, { message: 'MaximumFieldSize' })
-    .default(''),
+    .default('')
+    .refine(val => val.trim().length > 0, 'RequiredField'),
   objective: z.string().optional(),
 
   // Step 3
   stageDevelopment: z.nativeEnum(StageDevelopment).optional(),
   projectFiles: z
-    .array(z.instanceof(File))
-    .max(10, { message: 'MaximumFiles' })
+    .custom<File | File[]>()
     .optional()
+    .default([])
+    .transform((files) => (Array.isArray(files) ? files : [files]))
+    .refine((files) => files.length <= 10, { message: 'TooManyFiles' })
     .refine(
       (files) => {
         if (!files || files.length === 0) return true;
-        return files.every((file) => mediaTypes.includes(file.type));
+        return files.every((file) => file instanceof File && mediaTypes.includes(file.type));
       },
       { message: 'InvalidFileType' },
     )
@@ -110,14 +124,17 @@ export const innovatorServerSchema = z.object({
       (files) => {
         if (!files || files.length === 0) return true;
         const maxSize = 10 * 1024 * 1024; // 10MB
-        return files.every((file) => file.size <= maxSize);
+        return files.every((file) => file instanceof File && file.size <= maxSize);
       },
       { message: 'FileTooLarge' },
     ),
 
   // Step 4
   TermsOfUse: z
-    .boolean()
+    .preprocess(
+      (val) => val === 'true' || val === true,
+      z.boolean()
+    )
     .refine((value) => value === true, { message: 'TermsOfUse' }),
 });
 
@@ -129,9 +146,11 @@ export const step2Schema = (t: (key: string) => string) =>
   z.object({
     projectTitle: z
       .string({ error: t('projectTitleRequired') })
+      .trim()
       .min(1, { message: t('projectTitleRequired') }),
     projectDescription: z
       .string({ error: t('projectDescriptionRequired') })
+      .trim()
       .min(1, { message: t('projectDescriptionRequired') })
       .max(1000, { message: t('MaximumFieldSize') }),
     objective: z.string().optional(),

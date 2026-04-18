@@ -21,6 +21,7 @@ import {
 import { NotificationPriority } from '@prisma/client';
 import { checkPermission, RESOURCES, ACTIONS } from '@/lib/rbac';
 import { cache } from '@/lib/cache';
+import { sanitizeHtml } from '@/lib/sanitizer';
 
 const app = new Hono()
   // Public endpoint - only approved and visible collaborators
@@ -238,11 +239,23 @@ const app = new Hono()
           );
         };
 
+        // Validate company name post-sanitization
+        const sanitizedCompanyName = sanitizeHtml(companyName);
+        if (!sanitizedCompanyName || sanitizedCompanyName.trim() === '') {
+          return c.json(
+            {
+              code: 'INVALID_INPUT',
+              message: 'Company name is required post-sanitization',
+            },
+            400,
+          );
+        }
+
         // FIRST: Create the collaborator
         const collaborator = await db.collaborator.create({
           data: {
             id: collaboratorId,
-            companyName,
+            companyName: sanitizedCompanyName,
             primaryPhoneNumber,
             optionalPhoneNumber: optionalPhoneNumber || null,
             email,
@@ -316,7 +329,19 @@ const app = new Hono()
           console.error('Failed to send confirmation email:', emailError);
         }
 
-        return c.json({ message: 'Collaborator created successfully' }, 201);
+        return c.json(
+          {
+            message: 'Collaborator created successfully',
+            data: {
+              id: collaborator.id,
+              email: collaborator.email,
+              companyName: collaborator.companyName,
+              specialization: collaborator.specialization || '',
+              location: collaborator.location || '',
+            },
+          },
+          201,
+        );
       } catch (error) {
         console.error('Error creating collaborator:', error);
         return c.json(

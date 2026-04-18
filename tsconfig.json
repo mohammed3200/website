@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    // "types": [
-    //   "jest",
-    //   "@testing-library/jest-dom"
-    // ],
+    "types": [
+      "bun",
+      "bun-types/test-globals",
+      "@testing-library/jest-dom"
+    ],
     "target": "ES2017",
     "lib": [
       "dom",

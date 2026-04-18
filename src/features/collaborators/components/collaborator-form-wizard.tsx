@@ -10,6 +10,7 @@ import { getCollaboratorFormConfig } from '../form-config';
 import { useCollaboratorFormStore } from '../store';
 import { useFormController } from '@/lib/forms/use-form-controller';
 import { RegistrationLayout } from '@/lib/forms/components/layout/RegistrationLayout';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function CollaboratorFormWizard() {
     const t = useTranslations('Collaborators.form');
@@ -38,12 +39,14 @@ export function CollaboratorFormWizard() {
     } = useFormController(useCollaboratorFormStore, config);
 
     const errors = useCollaboratorFormStore(state => state.errors);
+    const hasHydrated = useCollaboratorFormStore(state => state.hasHydrated);
     const isValid = Object.keys(errors).length === 0;
 
     // Sync URL step with store
     const stepIdFromUrl = params.step as string;
 
     useEffect(() => {
+        if (!hasHydrated) return;
         if (stepIdFromUrl) {
             const stepIndex = config.steps.findIndex(s => s.id === stepIdFromUrl);
             if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
@@ -59,7 +62,19 @@ export function CollaboratorFormWizard() {
                 }
             }
         }
-    }, [stepIdFromUrl, config.steps, currentStepIndex, router, params.locale]);
+    }, [stepIdFromUrl, config.steps, currentStepIndex, router, params.locale, hasHydrated]);
+
+    if (!hasHydrated) {
+        return (
+            <RegistrationLayout
+                steps={config.steps}
+                currentStepIndex={currentStepIndex}
+                onStepClick={() => {}}
+            >
+                <Skeleton className="w-full h-[600px] rounded-2xl bg-card border border-border" />
+            </RegistrationLayout>
+        );
+    }
 
     if (!currentStep) return null;
 

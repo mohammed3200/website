@@ -1,19 +1,14 @@
-/**
- * @jest-environment node
- */
-
-import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { describe, it, expect, beforeEach, jest, mock } from 'bun:test';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { main } from '../../prisma/seed';
 
 // Mock dependencies
-// Mock dependencies
 const mockPrismaClient = jest.fn();
-jest.mock('@prisma/client', () => ({
+mock.module('@prisma/client', () => ({
   PrismaClient: jest.fn(() => mockPrismaClient),
 }));
-jest.mock('bcryptjs', () => {
+mock.module('bcryptjs', () => {
   const mockBcrypt = {
     hash: jest.fn(),
     compare: jest.fn(),
@@ -24,7 +19,7 @@ jest.mock('bcryptjs', () => {
     __esModule: true,
   };
 });
-jest.mock('@prisma/adapter-mariadb', () => ({
+mock.module('@prisma/adapter-mariadb', () => ({
   PrismaMariaDb: jest.fn().mockImplementation(() => ({})),
 }));
 

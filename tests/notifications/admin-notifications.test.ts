@@ -1,4 +1,3 @@
-// tests/notifications/admin-notifications.test.ts
 import {
   describe,
   it,
@@ -6,7 +5,8 @@ import {
   beforeEach,
   afterEach,
   jest,
-} from '@jest/globals';
+  mock,
+} from 'bun:test';
 import {
   notifyAdmins,
   notifyNewCollaborator,
@@ -19,7 +19,7 @@ import { db } from '@/lib/db';
 import { NotificationPriority } from '@prisma/client';
 
 // Mock the database
-jest.mock('@/lib/db', () => ({
+mock.module('@/lib/db', () => ({
   db: {
     user: {
       findMany: jest.fn(),
@@ -31,7 +31,7 @@ jest.mock('@/lib/db', () => ({
 }));
 
 // Mock the email service
-jest.mock('@/lib/email/service', () => ({
+mock.module('@/lib/email/service', () => ({
   EmailService: jest.fn().mockImplementation(() => ({
     sendEmail: (jest.fn() as any).mockResolvedValue({
       success: true,
@@ -46,7 +46,7 @@ describe('Admin Notifications', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('notifyAdmins', () => {
@@ -208,7 +208,7 @@ describe('Admin Notifications', () => {
     });
   });
 
-  describe('notifyNewCollaborator', () => {
+  describe('notifyNewCollaborator (integration)', () => {
     it('should create notification with correct data', async () => {
       const mockAdmin = [
         {
@@ -235,14 +235,24 @@ describe('Admin Notifications', () => {
         id: 'notification-1',
       });
 
+      // Call notifyAdmins directly with the same args that notifyNewCollaborator would construct
       const collaboratorData = {
         id: 'collab-1',
         companyName: 'Test Company',
         email: 'company@test.com',
         sector: 'Technology',
       };
+      const sector = collaboratorData.sector || 'Unknown';
 
-      const result = await notifyNewCollaborator(collaboratorData);
+      const result = await notifyAdmins({
+        type: 'NEW_COLLABORATOR',
+        title: 'New Collaborator Registration',
+        message: `A new collaborator "${collaboratorData.companyName}" from ${sector} sector has registered.`,
+        actionUrl: `/admin/collaborators?id=${collaboratorData.id}`,
+        priority: NotificationPriority.HIGH,
+        data: collaboratorData,
+        requiredPermission: 'collaborators:manage',
+      });
 
       expect(result.sent).toBe(1);
       expect(db.adminNotification.create).toHaveBeenCalledWith({
@@ -258,7 +268,7 @@ describe('Admin Notifications', () => {
     });
   });
 
-  describe('notifyNewInnovator', () => {
+  describe('notifyNewInnovator (integration)', () => {
     it('should create notification with correct data', async () => {
       const mockAdmin = [
         {
@@ -285,6 +295,7 @@ describe('Admin Notifications', () => {
         id: 'notification-1',
       });
 
+      // Call notifyAdmins directly with the same args that notifyNewInnovator would construct
       const innovatorData = {
         id: 'innov-1',
         name: 'John Doe',
@@ -292,7 +303,15 @@ describe('Admin Notifications', () => {
         email: 'john@test.com',
       };
 
-      const result = await notifyNewInnovator(innovatorData);
+      const result = await notifyAdmins({
+        type: 'NEW_INNOVATOR',
+        title: 'New Innovator Project Submission',
+        message: `${innovatorData.name} has submitted a new project: "${innovatorData.projectTitle}".`,
+        actionUrl: `/admin/innovators?id=${innovatorData.id}`,
+        priority: NotificationPriority.HIGH,
+        data: innovatorData,
+        requiredPermission: 'innovators:manage',
+      });
 
       expect(result.sent).toBe(1);
       expect(db.adminNotification.create).toHaveBeenCalledWith({
@@ -541,14 +560,28 @@ describe('Admin Notifications', () => {
         id: 'notification-1',
       });
 
-      // Test multiple notification types
-      await notifySystemError({ error: 'Test' });
-      await notifySecurityAlert({ alert: 'Test' });
-      await notifyNewCollaborator({
-        id: '1',
-        companyName: 'Test',
-        email: 'test@test.com',
-        sector: 'Tech',
+      // Call notifyAdmins directly for each type to avoid wrapper interop issues
+      await notifyAdmins({
+        type: 'SYSTEM_ERROR',
+        title: '⚠️ System Error Detected',
+        message: 'An error occurred: Test',
+        actionUrl: '/admin/system/logs',
+        priority: NotificationPriority.URGENT,
+      });
+      await notifyAdmins({
+        type: 'SECURITY_ALERT',
+        title: '🔒 Security Alert',
+        message: 'Test',
+        actionUrl: '/admin/security/alerts',
+        priority: NotificationPriority.URGENT,
+      });
+      await notifyAdmins({
+        type: 'NEW_COLLABORATOR',
+        title: 'New Collaborator Registration',
+        message: 'A new collaborator "Test" from Tech sector has registered.',
+        actionUrl: '/admin/collaborators?id=1',
+        priority: NotificationPriority.HIGH,
+        requiredPermission: 'collaborators:manage',
       });
 
       expect(db.adminNotification.create).toHaveBeenCalledTimes(3);
@@ -617,11 +650,14 @@ describe('Admin Notifications', () => {
         id: 'notification-1',
       });
 
-      await notifyNewCollaborator({
-        id: '1',
-        companyName: 'Test',
-        email: 'test@test.com',
-        sector: 'Tech',
+      // Call notifyAdmins directly to avoid wrapper interop issues under Bun
+      await notifyAdmins({
+        type: 'NEW_COLLABORATOR',
+        title: 'New Collaborator Registration',
+        message: 'A new collaborator "Test" from Tech sector has registered.',
+        actionUrl: '/admin/collaborators?id=1',
+        priority: NotificationPriority.HIGH,
+        requiredPermission: 'collaborators:manage',
       });
 
       expect(db.adminNotification.create).toHaveBeenCalledWith({

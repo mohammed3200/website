@@ -265,12 +265,14 @@ export async function notifyNewCollaborator(data: {
   id: string;
   companyName: string;
   email: string;
-  sector: string;
+  sector?: string;
+  industrialSector?: string;
 }) {
+  const sector = data.sector || data.industrialSector || 'Unknown';
   return notifyAdmins({
     type: 'NEW_COLLABORATOR',
     title: 'New Collaborator Registration',
-    message: `A new collaborator "${data.companyName}" from ${data.sector} sector has registered.`,
+    message: `A new collaborator "${data.companyName}" from ${sector} sector has registered.`,
     actionUrl: `/admin/collaborators?id=${data.id}`,
     priority: NotificationPriority.HIGH,
     data,

@@ -18,6 +18,7 @@ const createInitialState = <T>(version: number = 1): FormState<T> => ({
   errors: {},
   isSubmitting: false,
   isValidating: false,
+  hasHydrated: false,
   metadata: {
     startedAt: Date.now(),
     lastUpdatedAt: Date.now(),
@@ -64,6 +65,8 @@ export const createFormStore = <T>(config: {
 
         setValidating: (isValidating) => set({ isValidating }),
 
+        setHasHydrated: (hasHydrated) => set({ hasHydrated }),
+
         reset: () => set(createInitialState<T>(config.version)),
       }),
       {
@@ -85,8 +88,20 @@ export const createFormStore = <T>(config: {
                  ...state,
                  data: cleanData,
                  isSubmitting: false, // Don't persist loading states
-                 isValidating: false
+                 isValidating: false,
+                 hasHydrated: false // Don't persist this, let it be explicitly reset on reload
              };
+        },
+        onRehydrateStorage: (state) => {
+          // This fires when the storage is loaded. Return a listener function.
+          return (state, error) => {
+            if (error) {
+              console.error('An error happened during hydration', error);
+            }
+            if (state) {
+              state.setHasHydrated(true);
+            }
+          };
         },
         version: config.version || 1,
       }

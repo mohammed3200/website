@@ -8,6 +8,7 @@ import { useFormController } from '@/lib/forms/use-form-controller';
 import { getInnovatorFormConfig } from '../form-config';
 import { useInnovatorFormStore } from '../store';
 import { RegistrationLayout } from '@/lib/forms/components/layout/RegistrationLayout';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function InnovatorFormWizard() {
   const t = useTranslations('Innovators.form');
@@ -35,12 +36,14 @@ export function InnovatorFormWizard() {
   } = useFormController(useInnovatorFormStore, config);
 
   const errors = useInnovatorFormStore((state) => state.errors);
+  const hasHydrated = useInnovatorFormStore((state) => state.hasHydrated);
   const isValid = Object.keys(errors).length === 0;
   const router = useRouter();
 
   const stepIdFromUrl = params.step as string;
 
   useEffect(() => {
+    if (!hasHydrated) return;
     if (stepIdFromUrl) {
       const stepIndex = config.steps.findIndex((s) => s.id === stepIdFromUrl);
       if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
@@ -56,7 +59,19 @@ export function InnovatorFormWizard() {
         }
       }
     }
-  }, [stepIdFromUrl, config.steps, currentStepIndex, router, params.locale]);
+  }, [stepIdFromUrl, config.steps, currentStepIndex, router, params.locale, hasHydrated]);
+
+  if (!hasHydrated) {
+      return (
+          <RegistrationLayout
+              steps={config.steps}
+              currentStepIndex={currentStepIndex}
+              onStepClick={() => {}}
+          >
+              <Skeleton className="w-full h-[600px] rounded-2xl bg-card border border-border" />
+          </RegistrationLayout>
+      );
+  }
 
   if (!currentStep) return null;
 

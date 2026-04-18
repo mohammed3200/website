@@ -1,17 +1,17 @@
-import { describe, it, expect, jest } from '@jest/globals';
+import { describe, it, expect, jest, mock } from 'bun:test';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/jest-globals';
 import IncubatorsClient from '@/app/[locale]/incubators/components/incubators-client';
 
 // Mock framer-motion
-jest.mock('framer-motion', () => ({
+mock.module('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   },
 }));
 
 // Mock next-intl
-jest.mock('next-intl', () => ({
+mock.module('next-intl', () => ({
   useTranslations: () => (key: string) => {
     const translations: Record<string, string> = {
       title: 'Business Incubation Program',
