@@ -1,4 +1,4 @@
-import { describe, it, jest, beforeEach, mock } from 'bun:test';
+import { describe, it, expect, jest, beforeEach, mock } from 'bun:test';
 import '@testing-library/jest-dom/jest-globals';
 import { render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom/jest-globals';
