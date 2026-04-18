@@ -146,12 +146,15 @@ describe('Collaborator Registration E2E Flow', () => {
     const user = userEvent.setup();
     renderWizard();
 
-    // Fill minimum required on Step 1
-    const companyInput = await screen.findByRole('textbox', { name: /Company Name/i });
+    // Fill minimum required on Step 1 — use IDs to avoid cross-test selector issues
+    await waitFor(() => {
+      expect(document.getElementById('companyName')).not.toBeNull();
+    }, { timeout: 5000 });
+    const companyInput = document.getElementById('companyName') as HTMLInputElement;
     await user.type(companyInput, 'Tech Corp');
-    const phoneInput = await screen.findByRole('textbox', { name: /Primary phone/i });
+    const phoneInput = document.getElementById('primaryPhoneNumber') as HTMLInputElement;
     await user.type(phoneInput, '+1234567890');
-    const emailInput = await screen.findByRole('textbox', { name: /Email Address/i });
+    const emailInput = document.getElementById('email') as HTMLInputElement;
     await user.type(emailInput, 'test@acme.com');
 
     // Store should update

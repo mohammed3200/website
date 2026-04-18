@@ -144,17 +144,22 @@ describe('Innovator Registration E2E Flow', () => {
     renderWizard();
 
     // Fill minimum required on Step 1
-    const nameInput = await screen.findByRole('textbox', { name: /Full Name/i });
+    // Use input IDs directly to avoid selector ambiguity when running full suite
+    // Wait for the form to render first
+    await waitFor(() => {
+      expect(document.getElementById('name')).not.toBeNull();
+    }, { timeout: 5000 });
+    const nameInput = document.getElementById('name') as HTMLInputElement;
     await user.type(nameInput, 'John Doe');
-    const phoneInput = await screen.findByRole('textbox', { name: /Phone Number/i });
+    const phoneInput = document.getElementById('phoneNumber') as HTMLInputElement;
     await user.type(phoneInput, '+1234567890');
-    const emailInput = await screen.findByRole('textbox', { name: /Email Address/i });
+    const emailInput = document.getElementById('email') as HTMLInputElement;
     await user.type(emailInput, 'john@example.com');
-    const countryInput = await screen.findByRole('textbox', { name: /^Country$/i }); // Exact match to avoid PhoneInput ambiguity
+    const countryInput = document.getElementById('country') as HTMLInputElement;
     await user.type(countryInput, 'Libya');
-    const cityInput = await screen.findByRole('textbox', { name: /City \/ Address/i });
+    const cityInput = document.getElementById('city') as HTMLInputElement;
     await user.type(cityInput, 'Tripoli');
-    const specInput = await screen.findByRole('textbox', { name: /Scientific Specialization/i });
+    const specInput = document.getElementById('specialization') as HTMLInputElement;
     await user.type(specInput, 'AI Engineering');
 
     expect(useInnovatorFormStore.getState().data.name).toBe('John Doe');
