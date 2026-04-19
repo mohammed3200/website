@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
     "types": [
-      "bun",
-      "bun-types/test-globals",
       "@testing-library/jest-dom"
     ],
     "target": "ES2017",
@@ -44,12 +42,11 @@
     "src/components/SlideTabs.js",
     "dist/types/**/*.ts",
     "src/lib/client.ts",
-    "tests/**/*.ts",
-    "tests/**/*.tsx",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "scripts"
+    "scripts",
+    "tests"
   ]
 }

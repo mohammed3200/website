@@ -96,6 +96,8 @@ export function CollaboratorFormWizard() {
                     isSubmitting={isSubmitting}
                     onNext={nextStep}
                     onPrevious={prevStep}
+                    isFirstStep={isFirstStep}
+                    isLastStep={isLastStep}
                 />
             </AnimatePresence>
         </RegistrationLayout>

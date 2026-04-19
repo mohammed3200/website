@@ -5,7 +5,7 @@ const globalForRedis = global as unknown as { redis: Redis | undefined };
 
 let _redis: Redis | undefined;
 
-function createBuildPhaseRedisMock(): Redis {
+function createMockRedis(): Redis {
   const mock = {
     get: async () => null,
     set: async () => 'OK',
@@ -50,14 +50,14 @@ function getRedis(): Redis {
 
   if (!redisUrl) {
     if (process.env.NODE_ENV === 'production' && !isBuildPhase) {
-      throw new Error(
-        '❌ REDIS_URL is not defined. Redis is required for production caching and queues.',
+      console.warn(
+        '⚠️ REDIS_URL is not defined. Using in-memory mock Redis (features like Background Workers will not function properly).',
       );
     }
 
-    if (isBuildPhase) {
-      // Return a mock instance during Next.js static build to prevent ECONNREFUSED crashes
-      _redis = createBuildPhaseRedisMock();
+    if (isBuildPhase || process.env.NODE_ENV === 'production') {
+      // Return a mock instance during Next.js static build or in production without Redis
+      _redis = createMockRedis();
       return _redis;
     }
 
@@ -69,7 +69,7 @@ function getRedis(): Redis {
   } else {
     // We shouldn't eagerly connect during build phase even if URL is present
     if (isBuildPhase) {
-      _redis = createBuildPhaseRedisMock();
+      _redis = createMockRedis();
       return _redis;
     }
 

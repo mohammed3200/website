@@ -1,15 +1,26 @@
 import { redis } from '@/lib/redis';
+import { LRUCache } from 'lru-cache';
 
 const DEFAULT_TTL = 3600; // 1 hour in seconds
 
+// In-memory cache fallback
+const memoryCache = new LRUCache<string, any>({
+    max: 1000,  // Max 1000 items
+    ttl: DEFAULT_TTL * 1000,
+});
+
 /**
- * Generic cache utility using Redis
+ * Generic cache utility using Redis (with in-memory fallback)
  */
 export const cache = {
     /**
      * Get value from cache
      */
     async get<T>(key: string): Promise<T | null> {
+        if (!process.env.REDIS_URL) {
+            return (memoryCache.get(key) as T) ?? null;
+        }
+
         try {
             const data = await redis.get(key);
             if (!data) return null;
@@ -24,6 +35,11 @@ export const cache = {
      * Set value in cache
      */
     async set(key: string, value: any, ttl: number = DEFAULT_TTL): Promise<void> {
+        if (!process.env.REDIS_URL) {
+            memoryCache.set(key, value, { ttl: ttl * 1000 });
+            return;
+        }
+
         try {
             await redis.set(key, JSON.stringify(value), 'EX', ttl);
         } catch (error) {
@@ -35,6 +51,11 @@ export const cache = {
      * Delete value from cache
      */
     async del(key: string): Promise<void> {
+        if (!process.env.REDIS_URL) {
+            memoryCache.delete(key);
+            return;
+        }
+
         try {
             await redis.del(key);
         } catch (error) {

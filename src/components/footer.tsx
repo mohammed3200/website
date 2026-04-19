@@ -173,13 +173,13 @@ export const Footer = () => {
 
           <div className="flex items-center gap-6">
             <Link
-              href="#"
+              href={`/${lang}/terms`}
               className="text-sm text-gray-500 hover:text-primary transition-colors"
             >
               {t('termsOfUse')}
             </Link>
             <Link
-              href="#"
+              href={`/${lang}/privacy`}
               className="text-sm text-gray-500 hover:text-primary transition-colors"
             >
               {t('privacyPolicy')}

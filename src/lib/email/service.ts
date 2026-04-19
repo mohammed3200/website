@@ -133,10 +133,20 @@ export class EmailService {
   }
 
   /**
-   * Queue an email for background sending
+   * Queue an email for background sending (or send sync if no Redis)
    */
   async sendEmailAsync(options: EmailOptions): Promise<{ success: boolean; jobId: string }> {
     try {
+      if (!process.env.REDIS_URL) {
+        // Fallback to synchronous sending if no Redis
+        console.log('Sending email synchronously (Redis disabled)...');
+        const result = await this.sendEmail(options);
+        return {
+          success: result.success,
+          jobId: result.messageId || `sync-${Date.now()}`,
+        };
+      }
+
       const { emailQueue } = await import('@/lib/queue/email-queue');
       const job = await emailQueue.add('send-email', options);
       return {
@@ -145,11 +155,12 @@ export class EmailService {
       };
     } catch (error) {
       console.error('Failed to queue email:', error);
-      // Fallback to synchronous sending if queue fails?
-      // For now, just return failure so caller knows.
+      // Fallback to synchronous sending if queue fails
+      console.log('Falling back to synchronous email sending...');
+      const result = await this.sendEmail(options);
       return {
-        success: false,
-        jobId: '',
+        success: result.success,
+        jobId: result.messageId || `sync-fallback-${Date.now()}`,
       };
     }
   }

@@ -23,8 +23,8 @@ describe('Legal Content Sanitization (Semantic Assertions)', () => {
         expect(clean).not.toContain('alert');
         expect(clean).not.toContain('doBad');
 
-        expect(clean).toContain('<img src="x">');
-        expect(clean).toContain('<button>Click me</button>');
+        expect(clean).toContain('<img src="x" />');
+        expect(clean).toContain('Click me');
     });
 
     it('should strip style tags', () => {

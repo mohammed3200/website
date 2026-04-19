@@ -5,7 +5,9 @@ import { createMockQueue } from './queue-utils';
 
 export const EMAIL_QUEUE_NAME = 'email-sending';
 
-export const emailQueue = isBuildPhase
+const useMockQueue = isBuildPhase || !process.env.REDIS_URL;
+
+export const emailQueue = useMockQueue
     ? createMockQueue(EMAIL_QUEUE_NAME)
     : new Queue(EMAIL_QUEUE_NAME, {
         connection: redis,

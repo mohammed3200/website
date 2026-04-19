@@ -9,7 +9,7 @@ import useLanguage from '@/hooks/use-language';
 import { useNewsId } from '@/features/news/hooks/use-news-id';
 import { useGetNewsById } from '@/features/news/api/use-get-new';
 import { DetailPageSkeleton } from '@/components/skeletons';
-import DOMPurify from 'isomorphic-dompurify';
+import { sanitizeHtml } from '@/lib/sanitizer';
 import { getRelativeTime } from '@/lib/relative-time';
 import { useToast } from '@/hooks/use-toast';
 import { useShareLink } from '@/hooks/use-share-link';
@@ -138,7 +138,7 @@ const NewsIdPage = () => {
               <div
                 className="prose prose-lg prose-gray max-w-none text-gray-600 font-outfit"
                 dir={contentDir}
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
               />
             </div>
 
