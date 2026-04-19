@@ -49,8 +49,9 @@ ARG PRISMA_VERSION
 WORKDIR /app
 
 # openssl required by Prisma query engine.
+# wget required for healthcheck. nc (netcat) required for DB readiness check in entrypoint.
 # bun and prisma CLI required for entrypoint (migrations/seeds)
-RUN apk add --no-cache libc6-compat openssl
+RUN apk add --no-cache libc6-compat openssl wget
 RUN npm install -g bun@${BUN_VERSION} prisma@${PRISMA_VERSION}
 
 ENV NODE_ENV=production
@@ -77,6 +78,9 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=5 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
 CMD ["node", "server.js"]
