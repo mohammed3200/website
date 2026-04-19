@@ -509,6 +509,10 @@
       "profile": {
         "title": "Profile Settings",
         "description": "Manage your account and password"
+      },
+      "legalContent": {
+        "title": "Legal Content",
+        "description": "Manage terms of use and privacy policy"
       }
     },
     "Content": {

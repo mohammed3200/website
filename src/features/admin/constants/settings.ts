@@ -1,4 +1,4 @@
-import { Bell, User, type LucideIcon } from 'lucide-react';
+import { Bell, User, Scale, type LucideIcon } from 'lucide-react';
 
 type EnabledSetting = {
   id: string;
@@ -35,6 +35,14 @@ export const SETTINGS_OPTIONS = [
     descriptionKey: 'profile.description',
     href: '/admin/settings/profile',
     icon: User,
+    disabled: false,
+  },
+  {
+    id: 'legal-content',
+    titleKey: 'legalContent.title',
+    descriptionKey: 'legalContent.description',
+    href: '/admin/settings/legal-content',
+    icon: Scale,
     disabled: false,
   },
 ] as const satisfies readonly Setting[];

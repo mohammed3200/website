@@ -15,25 +15,25 @@ export const socials: Array<{
     id: '0',
     title: 'Facebook',
     icon: Facebook,
-    url: '#',
+    url: process.env.NEXT_PUBLIC_SOCIAL_FACEBOOK || '#',
   },
   {
     id: '1',
     title: 'Twitter',
     icon: Twitter,
-    url: '#',
+    url: process.env.NEXT_PUBLIC_SOCIAL_TWITTER || '#',
   },
   {
     id: '2',
     title: 'Linkedin',
     icon: Linkedin,
-    url: '#',
+    url: process.env.NEXT_PUBLIC_SOCIAL_LINKEDIN || '#',
   },
   {
     id: '3',
     title: 'Whatsapp',
-    icon: MessageCircle, // Using MessageCircle as WhatsApp icon alternative
-    url: '#',
+    icon: MessageCircle,
+    url: process.env.NEXT_PUBLIC_SOCIAL_WHATSAPP || '#',
   },
 ];
 
