@@ -6,7 +6,7 @@ ARG BUN_VERSION=1.3.10
 ARG PRISMA_VERSION=7.4.0
 
 # ------------------------------------------
-# Stage 1: Dependencies
+# Stage 1: All Dependencies (For Prisma Generation)
 # ------------------------------------------
 FROM node:20-alpine AS deps
 ARG BUN_VERSION
@@ -20,7 +20,19 @@ COPY prisma.config.ts ./
 RUN bun install --frozen-lockfile
 
 # ------------------------------------------
-# Stage 2: Builder (Prisma Generation)
+# Stage 2: Production Dependencies (Optimized)
+# ------------------------------------------
+FROM node:20-alpine AS prod-deps
+ARG BUN_VERSION
+RUN apk add --no-cache libc6-compat
+RUN npm install -g bun@${BUN_VERSION}
+WORKDIR /app
+
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile --production
+
+# ------------------------------------------
+# Stage 3: Builder (Prisma Generation)
 # ------------------------------------------
 FROM node:20-alpine AS builder
 ARG PRISMA_VERSION
@@ -31,7 +43,7 @@ COPY prisma.config.ts ./
 RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma@${PRISMA_VERSION} generate
 
 # ------------------------------------------
-# Stage 3: Runner
+# Stage 4: Runner
 # ------------------------------------------
 FROM node:20-alpine AS runner
 ARG BUN_VERSION
@@ -42,8 +54,8 @@ WORKDIR /app
 ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 worker
 
-# Copy only necessary runtime files
-COPY --from=deps --chown=worker:nodejs /app/node_modules ./node_modules
+# Copy only production dependencies and runtime files
+COPY --from=prod-deps --chown=worker:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=worker:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --chown=worker:nodejs package.json bun.lock tsconfig.json prisma.config.ts ./
 COPY --chown=worker:nodejs prisma ./prisma

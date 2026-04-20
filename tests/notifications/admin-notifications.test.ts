@@ -31,14 +31,18 @@ mock.module('@/lib/db', () => ({
 }));
 
 // Mock the email service
-mock.module('@/lib/email/service', () => ({
-  EmailService: jest.fn().mockImplementation(() => ({
+mock.module('@/lib/email/service', () => {
+  const mockEmailServiceInstance = {
     sendEmail: (jest.fn() as any).mockResolvedValue({
       success: true,
       messageId: 'test-message-id',
     }),
-  })),
-}));
+  };
+  return {
+    EmailService: jest.fn().mockImplementation(() => mockEmailServiceInstance),
+    emailService: mockEmailServiceInstance
+  };
+});
 
 describe('Admin Notifications', () => {
   beforeEach(() => {

@@ -4,6 +4,7 @@ import {
     expect,
     beforeEach,
     afterEach,
+    afterAll,
     jest,
     mock,
 } from 'bun:test';
@@ -50,7 +51,11 @@ describe('RBAC Library', () => {
     });
 
     afterEach(() => {
-        jest.restoreAllMocks();
+        jest.clearAllMocks(); // use clear instead of restore to avoid corrupting bun's mock state
+    });
+
+    afterAll(() => {
+        mock.restore();
     });
 
     describe('hasPermission', () => {

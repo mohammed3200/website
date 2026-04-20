@@ -1,4 +1,5 @@
 {
+  "ignorePatterns": ["ecosystem.config.js"],
   "extends": [
     "next/core-web-vitals",
     "next/typescript",

@@ -5,6 +5,16 @@ import Credentials from "next-auth/providers/credentials";
 import Github from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 
+// Runtime validation for NEXTAUTH_URL in production
+if (process.env.NODE_ENV === 'production') {
+  const url = process.env.NEXTAUTH_URL;
+  if (!url) {
+    console.warn("⚠️  CRITICAL: NEXTAUTH_URL is missing in production environment.");
+  } else if (url.includes('localhost') || url.includes('127.0.0.1')) {
+    console.warn(`⚠️  WARNING: NEXTAUTH_URL is set to a local address (${url}) in PRODUCTION. Authentication callbacks will fail.`);
+  }
+}
+
 import { db } from "@/lib/db";
 import { LoginSchema } from "@/features/auth/schemas"; // Use consistent import path
 import { getUserByEmail } from "@/data/user";

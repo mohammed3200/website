@@ -1,3 +1,4 @@
+/* eslint-disable */
 // PM2 Ecosystem Configuration for cPanel / VPS Deployment
 // Usage: pm2 start ecosystem.config.js
 // Docs: https://pm2.keymetrics.io/docs/usage/application-declaration/

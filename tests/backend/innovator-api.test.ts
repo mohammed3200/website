@@ -35,6 +35,9 @@ mock.module('@/lib/email/service', () => ({
   emailService: {
     sendEmail: jest.fn().mockResolvedValue({ success: true }),
   },
+  EmailService: class {
+    async sendEmail() { return { success: true }; }
+  }
 }));
 
 mock.module('@/lib/notifications/admin-notifications', () => ({
