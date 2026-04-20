@@ -68,7 +68,6 @@ next-env.d.ts
 /src/generated/
 
 # Ignore everything under migrations? No—keep them versioned!
-prisma/migrations/
 
 # sql files
 # If you want to commit SQL files, remove the line below.
