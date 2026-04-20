@@ -73,7 +73,7 @@ next-env.d.ts
 # If you want to commit SQL files, remove the line below.
 # If you want to keep them, you can specify which ones to ignore.
 # For example, to ignore all SQL files except for those in the prisma directory:
-# !prisma/**/*.sql
+!prisma/**/*.sql
 *.sql
 
 # Local SQLite DB  🗄️
