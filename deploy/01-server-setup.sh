@@ -182,6 +182,9 @@ info "Creating application directory..."
 mkdir -p /opt/ebic
 chown "${DEPLOY_USER}:${DEPLOY_USER}" /opt/ebic
 
+# Mark the directory as safe for git to prevent "dubious ownership" errors
+sudo git config --global --add safe.directory /opt/ebic
+
 # Create log directory
 mkdir -p /var/log/ebic
 chown "${DEPLOY_USER}:${DEPLOY_USER}" /var/log/ebic

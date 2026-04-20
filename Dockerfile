@@ -52,7 +52,7 @@ WORKDIR /app
 # wget required for healthcheck. nc (netcat) required for DB readiness check in entrypoint.
 # bun and prisma CLI required for entrypoint (migrations/seeds)
 RUN apk add --no-cache libc6-compat openssl wget
-RUN npm install -g bun@${BUN_VERSION} prisma@${PRISMA_VERSION}
+RUN npm install -g bun@${BUN_VERSION} prisma@${PRISMA_VERSION} @prisma/config@${PRISMA_VERSION} @prisma/driver-adapter-utils@${PRISMA_VERSION} tsx
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1

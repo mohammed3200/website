@@ -47,8 +47,9 @@ RUN DATABASE_URL=mysql://localhost:3306/dummy npx prisma@${PRISMA_VERSION} gener
 # ------------------------------------------
 FROM node:20-alpine AS runner
 ARG BUN_VERSION
+ARG PRISMA_VERSION
 RUN apk add --no-cache libc6-compat openssl
-RUN npm install -g bun@${BUN_VERSION}
+RUN npm install -g bun@${BUN_VERSION} prisma@${PRISMA_VERSION} @prisma/config@${PRISMA_VERSION} @prisma/driver-adapter-utils@${PRISMA_VERSION} tsx
 WORKDIR /app
 
 ENV NODE_ENV=production
