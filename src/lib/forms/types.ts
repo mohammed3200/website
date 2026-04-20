@@ -74,6 +74,7 @@ export interface FormConfig<T> {
  */
 export interface FormState<T> {
   currentStepIndex: number;
+  highestStepIndex: number;
   data: Partial<T>;
   errors: Record<string, string>;
   isSubmitting: boolean;

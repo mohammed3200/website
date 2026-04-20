@@ -1,48 +1,20 @@
-'use client';
-
 import { sanitizeHtml } from '@/lib/sanitizer';
 import type { LegalContentType, LegalContentLocale } from '../types/legal-content-type';
-import { useGetLegalContent } from '../api/use-get-legal-content';
-import { LEGAL_CONTENT_DEFAULTS, type LegalContentKey } from '../constants/legal-content-constants';
+import { getLegalContent } from '../server/route';
 
 interface LegalContentViewerProps {
     type: LegalContentType;
     locale: LegalContentLocale;
 }
 
-export function LegalContentViewer({ type, locale }: LegalContentViewerProps) {
-    const { data, isLoading, isError } = useGetLegalContent(type, locale);
+export async function LegalContentViewer({ type, locale }: LegalContentViewerProps) {
+    const data = await getLegalContent(type as any, locale as any);
 
-    if (isLoading) {
-        return (
-            <div className="container mx-auto py-20 px-4 max-w-4xl animate-pulse">
-                <div className="h-10 bg-gray-200 rounded w-1/3 mb-8" />
-                <div className="space-y-4">
-                    <div className="h-4 bg-gray-200 rounded w-full" />
-                    <div className="h-4 bg-gray-200 rounded w-5/6" />
-                    <div className="h-4 bg-gray-200 rounded w-4/6" />
-                </div>
-            </div>
-        );
-    }
-
-    const fallbackKey = `${type}:${locale}` as LegalContentKey;
-    const defaults = LEGAL_CONTENT_DEFAULTS[fallbackKey];
-
-    const title = data?.title ?? defaults?.title ?? type;
-    const rawContent = data?.content ?? defaults?.content ?? '';
+    const title = data?.title ?? type;
+    const rawContent = data?.content ?? '';
 
     // Sanitize HTML content safely on both server and client
     const sanitizedContent = sanitizeHtml(rawContent);
-
-    if (isError) {
-        return (
-            <div className="container mx-auto py-20 px-4 max-w-4xl">
-                <h1 className="text-4xl font-bold mb-8">{title}</h1>
-                <p className="text-red-500">Failed to load content. Please try again later.</p>
-            </div>
-        );
-    }
 
     return (
         <div className="container mx-auto py-20 px-4 max-w-4xl">

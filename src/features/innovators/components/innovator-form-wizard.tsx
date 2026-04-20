@@ -37,6 +37,7 @@ export function InnovatorFormWizard() {
 
   const errors = useInnovatorFormStore((state) => state.errors);
   const hasHydrated = useInnovatorFormStore((state) => state.hasHydrated);
+  const highestStepIndex = useInnovatorFormStore((state) => state.highestStepIndex);
   const isValid = Object.keys(errors).length === 0;
   const router = useRouter();
 
@@ -47,9 +48,8 @@ export function InnovatorFormWizard() {
     if (stepIdFromUrl) {
       const stepIndex = config.steps.findIndex((s) => s.id === stepIdFromUrl);
       if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
-        // Only allow backward navigation or same step via URL.
-        // Forward jumps via URL are blocked — user must use Next button.
-        if (stepIndex <= currentStepIndex) {
+        // Only allow backward navigation or forward navigation up to highestStepIndex.
+        if (stepIndex <= highestStepIndex) {
           useInnovatorFormStore.setState({ currentStepIndex: stepIndex });
         } else {
           // Redirect back to current valid step
@@ -59,7 +59,7 @@ export function InnovatorFormWizard() {
         }
       }
     }
-  }, [stepIdFromUrl, config.steps, currentStepIndex, router, params.locale, hasHydrated]);
+  }, [stepIdFromUrl, config.steps, currentStepIndex, highestStepIndex, router, params.locale, hasHydrated]);
 
   if (!hasHydrated) {
       return (

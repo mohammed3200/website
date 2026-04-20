@@ -14,6 +14,7 @@ const replacer = (key: string, value: any) => {
 // Initial state factory
 const createInitialState = <T>(version: number = 1): FormState<T> => ({
   currentStepIndex: 0,
+  highestStepIndex: 0,
   data: {},
   errors: {},
   isSubmitting: false,
@@ -42,6 +43,7 @@ export const createFormStore = <T>(config: {
         setStep: (index) =>
           set((state) => ({
             currentStepIndex: index,
+            highestStepIndex: Math.max(state.highestStepIndex, index),
             metadata: { ...state.metadata, lastUpdatedAt: Date.now() },
           })),
 

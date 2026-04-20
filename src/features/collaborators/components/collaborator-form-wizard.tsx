@@ -40,6 +40,7 @@ export function CollaboratorFormWizard() {
 
     const errors = useCollaboratorFormStore(state => state.errors);
     const hasHydrated = useCollaboratorFormStore(state => state.hasHydrated);
+    const highestStepIndex = useCollaboratorFormStore((state) => state.highestStepIndex);
     const isValid = Object.keys(errors).length === 0;
 
     // Sync URL step with store
@@ -50,9 +51,8 @@ export function CollaboratorFormWizard() {
         if (stepIdFromUrl) {
             const stepIndex = config.steps.findIndex(s => s.id === stepIdFromUrl);
             if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
-                // Only allow backward navigation or same step via URL.
-                // Forward jumps via URL are blocked — user must use Next button.
-                if (stepIndex <= currentStepIndex) {
+                // Only allow backward navigation or forward navigation up to highestStepIndex.
+                if (stepIndex <= highestStepIndex) {
                     useCollaboratorFormStore.setState({ currentStepIndex: stepIndex });
                 } else {
                     // Redirect back to current valid step
@@ -62,7 +62,7 @@ export function CollaboratorFormWizard() {
                 }
             }
         }
-    }, [stepIdFromUrl, config.steps, currentStepIndex, router, params.locale, hasHydrated]);
+    }, [stepIdFromUrl, config.steps, currentStepIndex, highestStepIndex, router, params.locale, hasHydrated]);
 
     if (!hasHydrated) {
         return (
