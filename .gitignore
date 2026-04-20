@@ -100,4 +100,4 @@ tests/outgoing/*.json
 !tests/outgoing/.gitkeep
 
 # Keep the .gitkeep file
-tests/outgoing/.gitkeep
+tests/outgoing/.gitkeeptest_output.log
