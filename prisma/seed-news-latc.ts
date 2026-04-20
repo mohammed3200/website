@@ -3,7 +3,6 @@
 // Based on News model from schema.prisma (lines 214-247)
 // Pattern follows prisma/seed.ts conventions (PrismaMariaDb adapter, upsert-by-slug)
 
-import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 

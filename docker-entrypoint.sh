@@ -48,18 +48,9 @@ wait_for_db() {
 # --- Run Database Migrations ---
 if [ "$RUN_MIGRATIONS" = "true" ]; then
   wait_for_db
-
-  echo "🔄 Ensuring Prisma engines are ready..."
-  prisma generate
-
   echo "🔄 Running Prisma migrations..."
-  if [ -d "prisma/migrations" ]; then
-    prisma migrate deploy || npx prisma migrate deploy
-  else
-    echo "⚠️  No migrations directory found. Running safe schema push..."
-    prisma db push || npx prisma db push
-  fi
-  echo "✅ Database schema sync complete!"
+  prisma migrate deploy || npx prisma migrate deploy
+  echo "✅ Migrations complete!"
 fi
 
 # --- Run Seeds ---
