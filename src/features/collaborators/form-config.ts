@@ -76,7 +76,7 @@ export const getCollaboratorFormConfig = (
               if (item instanceof File) {
                   formData.append(key, item); // Usually backend expects 'key' or 'key[]'
                   // If using Next.js server actions or standard upload, 'key' allows multiple files
-              } else {
+              } else if (item !== null && item !== undefined) {
                    formData.append(key, String(item));
               }
           });

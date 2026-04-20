@@ -74,7 +74,7 @@ export const getInnovatorFormConfig = (
           value.forEach((item) => {
               if (item instanceof File) {
                   formData.append(key, item);
-              } else {
+              } else if (item !== null && item !== undefined) {
                   formData.append(key, String(item));
               }
           });
