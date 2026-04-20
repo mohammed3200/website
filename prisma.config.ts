@@ -1,14 +1,7 @@
-import { defineConfig } from '@prisma/config';
-import dotenv from 'dotenv';
-import path from 'path';
-
-// Load environment variables from .env file explicitly
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
-
 /**
  * Prisma 7 Configuration
  */
-export default defineConfig({
+const config = {
   // Schema location
   schema: 'prisma/schema.prisma',
 
@@ -22,4 +15,6 @@ export default defineConfig({
   datasource: {
     url: process.env.DATABASE_URL,
   },
-});
+};
+
+export default config;
