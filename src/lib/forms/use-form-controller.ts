@@ -95,6 +95,26 @@ export const useFormController = <T>(
     return path;
   };
 
+  const handleSubmit = useCallback(async () => {
+    setSubmitting(true);
+    try {
+      await config.onComplete(data as T);
+      router.push(
+        config.successPath.startsWith(`/${locale}`)
+          ? config.successPath
+          : `/${locale}${config.successPath}`,
+      );
+      reset();
+    } catch (error) {
+      if (config.onError && error instanceof Error) {
+        config.onError(error);
+      }
+      console.error('Submission error:', error);
+    } finally {
+      setSubmitting(false);
+    }
+  }, [config, data, router, setSubmitting, reset, locale]);
+
   const nextStep = useCallback(async () => {
     const isValid = await validateStep();
     if (isValid) {
@@ -113,6 +133,7 @@ export const useFormController = <T>(
     router,
     setStep,
     validateStep,
+    handleSubmit,
     locale,
   ]);
 
@@ -135,26 +156,6 @@ export const useFormController = <T>(
     },
     [currentStepIndex, config, router, setStep, locale],
   );
-
-  const handleSubmit = useCallback(async () => {
-    setSubmitting(true);
-    try {
-      await config.onComplete(data as T);
-      router.push(
-        config.successPath.startsWith(`/${locale}`)
-          ? config.successPath
-          : `/${locale}${config.successPath}`,
-      );
-      reset();
-    } catch (error) {
-      if (config.onError && error instanceof Error) {
-        config.onError(error);
-      }
-      console.error('Submission error:', error);
-    } finally {
-      setSubmitting(false);
-    }
-  }, [config, data, router, setSubmitting, reset, locale]);
 
   return {
     currentStep,

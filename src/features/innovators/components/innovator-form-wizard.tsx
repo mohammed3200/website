@@ -47,19 +47,26 @@ export function InnovatorFormWizard() {
     if (!hasHydrated) return;
     if (stepIdFromUrl) {
       const stepIndex = config.steps.findIndex((s) => s.id === stepIdFromUrl);
-      if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
-        // Only allow backward navigation or forward navigation up to highestStepIndex.
-        if (stepIndex <= highestStepIndex) {
+      if (stepIndex === -1) return;
+
+      // Read current store state directly to avoid stale closure issues
+      const storeState = useInnovatorFormStore.getState();
+      const storeStepIndex = storeState.currentStepIndex;
+      const storeHighestStep = storeState.highestStepIndex;
+
+      // Only sync if URL step differs from store (user-initiated navigation)
+      if (stepIndex !== storeStepIndex) {
+        if (stepIndex <= storeHighestStep) {
           useInnovatorFormStore.setState({ currentStepIndex: stepIndex });
         } else {
-          // Redirect back to current valid step
+          // Redirect back to highest valid step
           router.replace(
-            `/${params.locale}/innovators/registration/${config.steps[currentStepIndex].id}`,
+            `/${params.locale}/innovators/registration/${config.steps[storeHighestStep].id}`,
           );
         }
       }
     }
-  }, [stepIdFromUrl, config.steps, currentStepIndex, highestStepIndex, router, params.locale, hasHydrated]);
+  }, [stepIdFromUrl, config.steps, router, params.locale, hasHydrated]);
 
   if (!hasHydrated) {
       return (

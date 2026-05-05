@@ -95,7 +95,7 @@ export function CompanyInfoStep({
                 name="primaryPhoneNumber"
                 label={t('primaryPhoneNumber')}
                 value={data.primaryPhoneNumber || ''}
-                onChange={(value) => updateData({ primaryPhoneNumber: value })}
+                onChange={(value) => updateData({ primaryPhoneNumber: value || '' })}
                 error={errors.primaryPhoneNumber}
                 required
                 placeholder="+218..."
@@ -106,7 +106,7 @@ export function CompanyInfoStep({
                 name="optionalPhoneNumber"
                 label={t('optionalPhoneNumber')}
                 value={data.optionalPhoneNumber || ''}
-                onChange={(value) => updateData({ optionalPhoneNumber: value })}
+                onChange={(value) => updateData({ optionalPhoneNumber: value || '' })}
                 error={errors.optionalPhoneNumber}
                 placeholder={t('optional')}
 

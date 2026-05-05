@@ -43,26 +43,33 @@ export function CollaboratorFormWizard() {
     const highestStepIndex = useCollaboratorFormStore((state) => state.highestStepIndex);
     const isValid = Object.keys(errors).length === 0;
 
-    // Sync URL step with store
+    // Sync URL step with store (only on URL-driven changes like browser back/forward)
     const stepIdFromUrl = params.step as string;
 
     useEffect(() => {
         if (!hasHydrated) return;
         if (stepIdFromUrl) {
             const stepIndex = config.steps.findIndex(s => s.id === stepIdFromUrl);
-            if (stepIndex !== -1 && stepIndex !== currentStepIndex) {
-                // Only allow backward navigation or forward navigation up to highestStepIndex.
-                if (stepIndex <= highestStepIndex) {
+            if (stepIndex === -1) return;
+
+            // Read current store state directly to avoid stale closure issues
+            const storeState = useCollaboratorFormStore.getState();
+            const storeStepIndex = storeState.currentStepIndex;
+            const storeHighestStep = storeState.highestStepIndex;
+
+            // Only sync if URL step differs from store (user-initiated navigation)
+            if (stepIndex !== storeStepIndex) {
+                if (stepIndex <= storeHighestStep) {
                     useCollaboratorFormStore.setState({ currentStepIndex: stepIndex });
                 } else {
-                    // Redirect back to current valid step
+                    // Redirect back to highest valid step
                     router.replace(
-                        `/${params.locale}/collaborators/registration/${config.steps[currentStepIndex].id}`,
+                        `/${params.locale}/collaborators/registration/${config.steps[storeHighestStep].id}`,
                     );
                 }
             }
         }
-    }, [stepIdFromUrl, config.steps, currentStepIndex, highestStepIndex, router, params.locale, hasHydrated]);
+    }, [stepIdFromUrl, config.steps, router, params.locale, hasHydrated]);
 
     if (!hasHydrated) {
         return (
