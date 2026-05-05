@@ -65,7 +65,7 @@ export function PersonalInfoStep({
                 name="phoneNumber"
                 label={t('phoneNumber')}
                 value={data.phoneNumber || ''}
-                onChange={(value) => updateData({ phoneNumber: value })}
+                onChange={(value) => updateData({ phoneNumber: value || '' })}
                 error={errors.phoneNumber}
                 required
                 placeholder="+218..."
