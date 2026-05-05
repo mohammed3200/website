@@ -10,6 +10,11 @@ export const getNavItems = (
     href: `/${locale}`,
   },
   {
+    id: 'strategic-plans',
+    label: t('strategicPlans'),
+    href: `/${locale}/#strategic-plan`,
+  },
+  {
     id: 'entrepreneurship-incubators',
     label: t('entrepreneurshipAndIncubators'),
     href: `/${locale}/entrepreneurship`,
@@ -64,5 +69,10 @@ export const getNavItems = (
     id: 'contact',
     label: t('contact'),
     href: `/${locale}/contact`,
+  },
+  {
+    id: 'about',
+    label: t('about'),
+    href: `/${locale}/about`,
   },
 ];
