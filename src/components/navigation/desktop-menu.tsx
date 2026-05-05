@@ -27,6 +27,7 @@ const DesktopMenu = () => {
   const handleMouseEnter = (id: string) => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
     setActiveDropdown(id);
   };
@@ -41,6 +42,7 @@ const DesktopMenu = () => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
     };
   }, []);
