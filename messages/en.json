@@ -60,7 +60,10 @@
     "innovatorsList": "Innovators List",
     "innovatorsListDesc": "Browse projects and ideas",
     "centerName": "Entrepreneurship & Business Incubators Center",
-    "collegeName": "College of Industrial Technology - Misrata"
+    "collegeName": "College of Industrial Technology - Misrata",
+    "about": "About Us",
+    "aboutDesc": "Learn about our center and mission",
+    "strategicPlans": "Strategic Plans"
   },
   "News": {
     "NoNews": "No news or announcements",
@@ -157,6 +160,17 @@
     "fundingLabel": "Total Funding Raised",
     "ctaTitle": "Ready to Start Your Journey?",
     "ctaDesc": "Join our incubator program and transform your innovative idea into a successful business"
+  },
+  "About": {
+    "badge": "About Center",
+    "title": "Entrepreneurship & Business Incubators Center",
+    "subtitle": "A leading national platform supporting innovators and building an integrated entrepreneurship ecosystem.",
+    "goalsTitle": "Our Strategic Goals",
+    "goalsSubtitle": "We seek to achieve an ambitious vision that contributes to building a sustainable knowledge economy.",
+    "platformTitle": "About Platform",
+    "platformSubtitle": "An integrated platform connecting academic institutions with industry to support innovation.",
+    "teamTitle": "Center Departments",
+    "cta": "Get in Touch"
   },
   "Home": {
     "titleLine1": "Empowering",

@@ -35,7 +35,7 @@ export const Hero = () => {
       image: item.image
         ? ({
             id: item.id,
-            url: item.image.data || '',
+            url: item.image.url || '',
             thumbnailUrl: null,
             createdAt: new Date(),
             updatedAt: new Date(),
