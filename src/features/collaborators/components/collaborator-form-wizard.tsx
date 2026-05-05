@@ -64,7 +64,7 @@ export function CollaboratorFormWizard() {
                 } else {
                     // Redirect back to highest valid step
                     router.replace(
-                        `/${params.locale}/collaborators/registration/${config.steps[storeStepIndex].id}`,
+                        `/${params.locale}/collaborators/registration/${config.steps[storeHighestStep].id}`,
                     );
                 }
             }

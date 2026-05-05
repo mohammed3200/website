@@ -61,7 +61,7 @@ export function InnovatorFormWizard() {
         } else {
           // Redirect back to highest valid step
           router.replace(
-            `/${params.locale}/innovators/registration/${config.steps[storeStepIndex].id}`,
+            `/${params.locale}/innovators/registration/${config.steps[storeHighestStep].id}`,
           );
         }
       }
