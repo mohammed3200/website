@@ -80,6 +80,10 @@ if [ "$MODE" = "first" ]; then
   step "Starting all services..."
   docker compose -f "$COMPOSE_FILE" up -d
 
+  # Cleanup build cache
+  step "Cleaning up build cache..."
+  docker builder prune -f
+
   # Wait for services to be healthy
   step "Waiting for services to become healthy..."
   sleep 10
@@ -145,6 +149,10 @@ elif [ "$MODE" = "update" ]; then
 
   step "Restarting services (zero-downtime)..."
   docker compose -f "$COMPOSE_FILE" up -d --remove-orphans
+
+  # Cleanup build cache to prevent disk bloat
+  step "Cleaning up build cache..."
+  docker builder prune -f --filter "until=24h"
 
   # Run migrations on update
   step "Running database migrations..."
