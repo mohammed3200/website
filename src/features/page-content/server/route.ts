@@ -14,7 +14,7 @@ import {
 
 // Helper function for Server Components (Separation of Concerns)
 export const getPageContent = async (
-  page: 'entrepreneurship' | 'incubators',
+  page: 'entrepreneurship' | 'incubators' | 'about',
 ) => {
   return db.pageContent.findMany({
     where: { page, isActive: true },
@@ -29,7 +29,7 @@ const app = new Hono()
     zValidator(
       'param',
       z.object({
-        page: z.enum(['entrepreneurship', 'incubators']),
+        page: z.enum(['entrepreneurship', 'incubators', 'about']),
       }),
     ),
     async (c) => {
@@ -114,7 +114,7 @@ const app = new Hono()
     zValidator(
       'param',
       z.object({
-        page: z.enum(['entrepreneurship', 'incubators']),
+        page: z.enum(['entrepreneurship', 'incubators', 'about']),
       }),
     ),
     async (c) => {
