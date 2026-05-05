@@ -17,3 +17,6 @@ export * from './footer';
 export * from './news';
 export * from './strategic-plan';
 export * from './faq';
+export * from './home-collaborators';
+export * from './home-stats';
+export * from './home-cta';

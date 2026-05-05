@@ -100,7 +100,7 @@ export const StrategicPlan = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto w-full px-4" dir={isArabic ? 'rtl' : 'ltr'}>
+    <section id="strategic-plan" className="max-w-7xl mx-auto w-full px-4" dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

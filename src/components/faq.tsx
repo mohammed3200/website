@@ -6,28 +6,17 @@ import useLanguage from '@/hooks/use-language';
 
 import { Faqs } from '@/features/faqs';
 
-import { MockFaqData } from '@/mock';
 import { HelpCircle } from 'lucide-react';
 import { useGetPublicFaqs } from '@/features/faqs/api/use-get-public-faqs';
-import { config } from '@/lib/config';
 
 import { HomeFaqSkeleton } from '@/components/skeletons';
 
 export const Faq = () => {
   const t = useTranslations('Faq');
   const { isArabic } = useLanguage();
-  const { data: realFaqs, isLoading } = useGetPublicFaqs();
+  const { data: faqs, isLoading } = useGetPublicFaqs();
 
-  // Hybrid data strategy:
-  // - In production: use real data only (show nothing if < threshold)
-  // - In development: use mock data as fallback if real data < threshold
-  const faqData = React.useMemo(() => {
-    if (isLoading) return [];
-    const realData = realFaqs || [];
-    if (realData.length >= config.thresholds.faq) return realData;
-    if (config.isProduction) return [];
-    return MockFaqData;
-  }, [realFaqs, isLoading]);
+  const faqData = faqs || [];
 
   if (isLoading) return <HomeFaqSkeleton />;
   if (faqData.length === 0) return null;
