@@ -10,6 +10,11 @@ import {
     TrendingUp,
     Lightbulb,
     ArrowRight,
+    Megaphone,
+    Brain,
+    GraduationCap,
+    Star,
+    FlaskConical
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { PageContent } from '@prisma/client';
@@ -39,11 +44,16 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
         Award,
         Lightbulb,
         ArrowRight,
+        Megaphone,
+        Brain,
+        GraduationCap,
+        Star,
+        FlaskConical,
     };
 
     // Get hero content or use fallback
     const heroContent = getSection('hero')[0];
-    const programsContent = getSection('programs');
+    const goalsContent = getSection('goals');
     const valuesContent = getSection('values');
     const missionContent = getSection('mission')[0];
     const ctaContent = getSection('cta')[0];
@@ -83,14 +93,14 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                     </p>
                 </motion.div>
 
-                {/* Programs Grid */}
-                {programsContent.length > 0 ? (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {programsContent.map((program, index) => {
-                            const Icon = (program.icon ? iconMap[program.icon] : null) ?? BookOpen;
+                {/* Goals Grid */}
+                {goalsContent.length > 0 ? (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {goalsContent.map((goal, index) => {
+                            const Icon = (goal.icon ? iconMap[goal.icon] : null) ?? BookOpen;
                             return (
                                 <motion.div
-                                    key={program.id}
+                                    key={goal.id}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
@@ -99,13 +109,13 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                                     <Icon className="w-12 h-12 text-orange-500 mb-4" />
                                     <h3 className="font-din-bold text-xl mb-2 text-gray-900 dark:text-white">
                                         {isArabic
-                                            ? program.titleAr || program.titleEn
-                                            : program.titleEn || program.titleAr}
+                                            ? goal.titleAr || goal.titleEn
+                                            : goal.titleEn || goal.titleAr}
                                     </h3>
                                     <p className="font-din-regular text-gray-600 dark:text-gray-300">
                                         {isArabic
-                                            ? program.contentAr || program.contentEn
-                                            : program.contentEn || program.contentAr}
+                                            ? goal.contentAr || goal.contentEn
+                                            : goal.contentEn || goal.contentAr}
                                     </p>
                                 </motion.div>
                             );

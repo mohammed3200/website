@@ -10,6 +10,11 @@ import {
     Target,
     Award,
     ArrowRight,
+    Building2,
+    MessageSquare,
+    DollarSign,
+    BarChart3,
+    Factory
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { PageContent } from '@prisma/client';
@@ -39,11 +44,16 @@ export default function IncubatorsClient({ locale, content }: Props) {
         Target,
         Award,
         ArrowRight,
+        Building2,
+        MessageSquare,
+        DollarSign,
+        BarChart3,
+        Factory,
     };
 
     // Get content sections
     const heroContent = getSection('hero')[0];
-    const phasesContent = getSection('phases');
+    const tasksContent = getSection('tasks');
     const resourcesContent = getSection('resources');
     const metricsContent = getSection('metrics');
     const ctaContent = getSection('cta')[0];
@@ -83,14 +93,14 @@ export default function IncubatorsClient({ locale, content }: Props) {
                     </p>
                 </motion.div>
 
-                {/* Incubation Phases */}
-                {phasesContent.length > 0 ? (
-                    <div className="grid md:grid-cols-3 gap-8">
-                        {phasesContent.map((phase, index) => {
-                            const Icon = (phase.icon ? iconMap[phase.icon] : null) ?? Lightbulb;
+                {/* Tasks Grid */}
+                {tasksContent.length > 0 ? (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {tasksContent.map((task, index) => {
+                            const Icon = (task.icon ? iconMap[task.icon] : null) ?? Lightbulb;
                             return (
                                 <motion.div
-                                    key={phase.id}
+                                    key={task.id}
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: index * 0.15 }}
@@ -101,13 +111,13 @@ export default function IncubatorsClient({ locale, content }: Props) {
                                     </div>
                                     <h3 className="font-din-bold text-2xl mb-3 mt-6 text-gray-900 dark:text-white">
                                         {isArabic
-                                            ? phase.titleAr || phase.titleEn
-                                            : phase.titleEn || phase.titleAr}
+                                            ? task.titleAr || task.titleEn
+                                            : task.titleEn || task.titleAr}
                                     </h3>
                                     <p className="font-din-regular text-gray-600 dark:text-gray-300">
                                         {isArabic
-                                            ? phase.contentAr || phase.contentEn
-                                            : phase.contentEn || phase.contentAr}
+                                            ? task.contentAr || task.contentEn
+                                            : task.contentEn || task.contentAr}
                                     </p>
                                 </motion.div>
                             );
