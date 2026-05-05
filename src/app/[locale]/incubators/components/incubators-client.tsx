@@ -38,11 +38,6 @@ export default function IncubatorsClient({ locale, content }: Props) {
         BarChart3,
         Factory,
         Lightbulb,
-        Users,
-        TrendingUp,
-        Rocket,
-        Target,
-        Award,
         ArrowRight,
     };
 
@@ -50,7 +45,7 @@ export default function IncubatorsClient({ locale, content }: Props) {
     const tasksContent = getSection('tasks');
     const heroContent = getSection('hero')[0];
     const emptyStateContent = getSection('emptyState')[0];
-    
+
     const defaultEmptyState = t('emptyState') || 'No content available.';
     const localizedEmptyState = emptyStateContent
         ? (isArabic
@@ -100,18 +95,18 @@ export default function IncubatorsClient({ locale, content }: Props) {
                                     className="group p-8 bg-white dark:bg-stone-800 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-blue-50 dark:border-blue-900/30 overflow-hidden relative"
                                 >
                                     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-bl-full -mr-12 -mt-12 group-hover:bg-blue-500/10 transition-colors" />
-                                    
+
                                     <div className="w-14 h-14 bg-blue-100 dark:bg-blue-950/40 rounded-2xl flex items-center justify-center mb-6 text-blue-600 dark:text-blue-400">
                                         <Icon className="w-7 h-7" />
                                     </div>
-                                    
+
                                     <h3 className="font-din-bold text-xl mb-3 text-gray-900 dark:text-white leading-tight">
                                         {isArabic
                                             ? task.titleAr || task.titleEn
                                             : task.titleEn || task.titleAr}
                                     </h3>
-                                    
-                                    { (task.contentAr || task.contentEn) && (
+
+                                    {(task.contentAr || task.contentEn) && (
                                         <p className="font-din-regular text-gray-600 dark:text-gray-300 leading-relaxed">
                                             {isArabic
                                                 ? task.contentAr || task.contentEn
