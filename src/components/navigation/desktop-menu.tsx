@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ChevronDown } from 'lucide-react';
@@ -18,10 +18,32 @@ import { getNavItems } from '@/components/navigation/constants';
 const DesktopMenu = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { lang: locale, isArabic } = useLanguage();
   const t = useTranslations('Navigation');
   const pathname = usePathname();
   const navItems = getNavItems(t, locale);
+
+  const handleMouseEnter = (id: string) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setActiveDropdown(id);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 200);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -106,8 +128,8 @@ const DesktopMenu = () => {
               <div
                 key={item.id}
                 className="relative"
-                onMouseEnter={() => setActiveDropdown(item.id)}
-                onMouseLeave={() => setActiveDropdown(null)}
+                onMouseEnter={() => handleMouseEnter(item.id)}
+                onMouseLeave={handleMouseLeave}
               >
                 <button
                   className={cn(
@@ -129,27 +151,29 @@ const DesktopMenu = () => {
                 {/* Dropdown Content */}
                 <div
                   className={cn(
-                    'absolute top-full mt-2 w-64 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-100 py-2 z-50 transition-all duration-200 origin-top',
+                    'absolute top-full pt-2 w-64 z-50 transition-all duration-200 origin-top',
                     activeDropdown === item.id
                       ? 'opacity-100 scale-100 translate-y-0'
                       : 'opacity-0 scale-95 translate-y-2 pointer-events-none',
                     isArabic ? 'right-0' : 'left-0',
                   )}
                 >
-                  {item.children?.map((child, index) => (
-                    <Link
-                      key={index}
-                      href={child.href}
-                      className="block px-4 py-3 hover:bg-orange-50 transition-colors group relative border-l-2 border-transparent hover:border-orange-500"
-                    >
-                      <div className="text-sm font-din-medium text-gray-900 group-hover:text-orange-600">
-                        {child.label}
-                      </div>
-                      <div className="text-xs text-gray-500 mt-1 font-din-regular line-clamp-1">
-                        {child.description}
-                      </div>
-                    </Link>
-                  ))}
+                  <div className="bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-100 py-2 w-full">
+                    {item.children?.map((child, index) => (
+                      <Link
+                        key={index}
+                        href={child.href}
+                        className="block px-4 py-3 hover:bg-orange-50 transition-colors group relative border-l-2 border-transparent hover:border-orange-500"
+                      >
+                        <div className="text-sm font-din-medium text-gray-900 group-hover:text-orange-600">
+                          {child.label}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1 font-din-regular line-clamp-1">
+                          {child.description}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
               </div>
             );
