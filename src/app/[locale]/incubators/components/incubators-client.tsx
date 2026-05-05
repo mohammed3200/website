@@ -3,6 +3,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
+    Building2,
+    MessageSquare,
+    DollarSign,
+    BarChart3,
+    Factory,
     Lightbulb,
     Users,
     TrendingUp,
@@ -10,11 +15,6 @@ import {
     Target,
     Award,
     ArrowRight,
-    Building2,
-    MessageSquare,
-    DollarSign,
-    BarChart3,
-    Factory
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { PageContent } from '@prisma/client';
@@ -35,8 +35,13 @@ export default function IncubatorsClient({ locale, content }: Props) {
             .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     };
 
-    // Fallback icon map
+    // Icon map
     const iconMap: Record<string, any> = {
+        Building2,
+        MessageSquare,
+        DollarSign,
+        BarChart3,
+        Factory,
         Lightbulb,
         Users,
         TrendingUp,
@@ -44,20 +49,13 @@ export default function IncubatorsClient({ locale, content }: Props) {
         Target,
         Award,
         ArrowRight,
-        Building2,
-        MessageSquare,
-        DollarSign,
-        BarChart3,
-        Factory,
     };
 
     // Get content sections
-    const heroContent = getSection('hero')[0];
     const tasksContent = getSection('tasks');
-    const resourcesContent = getSection('resources');
-    const metricsContent = getSection('metrics');
-    const ctaContent = getSection('cta')[0];
+    const heroContent = getSection('hero')[0];
     const emptyStateContent = getSection('emptyState')[0];
+    
     const defaultEmptyState = t('emptyState') || 'No content available.';
     const localizedEmptyState = emptyStateContent
         ? (isArabic
@@ -77,7 +75,7 @@ export default function IncubatorsClient({ locale, content }: Props) {
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center max-w-4xl mx-auto space-y-6"
                 >
-                    <h1 className="font-din-bold text-4xl md:text-5xl lg:text-6xl text-gray-900 dark:text-white">
+                    <h1 className="font-din-bold text-4xl md:text-5xl lg:text-6xl text-gray-900 dark:text-white leading-tight">
                         {heroContent
                             ? isArabic
                                 ? heroContent.titleAr || heroContent.titleEn
@@ -93,38 +91,43 @@ export default function IncubatorsClient({ locale, content }: Props) {
                     </p>
                 </motion.div>
 
-                {/* Tasks Grid */}
+                {/* Incubator Tasks / Services Grid */}
                 {tasksContent.length > 0 ? (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {tasksContent.map((task, index) => {
-                            const Icon = (task.icon ? iconMap[task.icon] : null) ?? Lightbulb;
+                            const Icon = (task.icon ? iconMap[task.icon] : null) ?? Building2;
                             return (
                                 <motion.div
                                     key={task.id}
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: index * 0.15 }}
-                                    className="relative p-8 bg-white dark:bg-stone-800 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border-2 border-blue-100 dark:border-blue-900"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                    className="group p-8 bg-white dark:bg-stone-800 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-300 border border-blue-50 dark:border-blue-900/30 overflow-hidden relative"
                                 >
-                                    <div className="absolute -top-6 left-8 bg-blue-600 dark:bg-blue-500 rounded-full p-4 shadow-lg">
-                                        {Icon && <Icon className="w-8 h-8 text-white" />}
+                                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-bl-full -mr-12 -mt-12 group-hover:bg-blue-500/10 transition-colors" />
+                                    
+                                    <div className="w-14 h-14 bg-blue-100 dark:bg-blue-950/40 rounded-2xl flex items-center justify-center mb-6 text-blue-600 dark:text-blue-400">
+                                        <Icon className="w-7 h-7" />
                                     </div>
-                                    <h3 className="font-din-bold text-2xl mb-3 mt-6 text-gray-900 dark:text-white">
+                                    
+                                    <h3 className="font-din-bold text-xl mb-3 text-gray-900 dark:text-white leading-tight">
                                         {isArabic
                                             ? task.titleAr || task.titleEn
                                             : task.titleEn || task.titleAr}
                                     </h3>
-                                    <p className="font-din-regular text-gray-600 dark:text-gray-300">
-                                        {isArabic
-                                            ? task.contentAr || task.contentEn
-                                            : task.contentEn || task.contentAr}
-                                    </p>
+                                    
+                                    { (task.contentAr || task.contentEn) && (
+                                        <p className="font-din-regular text-gray-600 dark:text-gray-300 leading-relaxed">
+                                            {isArabic
+                                                ? task.contentAr || task.contentEn
+                                                : task.contentEn || task.contentAr}
+                                        </p>
+                                    )}
                                 </motion.div>
                             );
                         })}
                     </div>
                 ) : (
-                    // Fallback phases
                     <div className="text-center py-12">
                         <p className="text-gray-400 dark:text-gray-500">
                             {localizedEmptyState}

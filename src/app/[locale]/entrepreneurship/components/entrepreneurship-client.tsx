@@ -3,18 +3,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-    Award,
-    BookOpen,
-    Users,
-    Target,
-    TrendingUp,
-    Lightbulb,
-    ArrowRight,
     Megaphone,
     Brain,
-    GraduationCap,
     Star,
-    FlaskConical
+    FlaskConical,
+    GraduationCap,
+    Target,
+    Lightbulb,
+    ArrowRight,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { PageContent } from '@prisma/client';
@@ -35,29 +31,22 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
             .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     };
 
-    // Fallback icon map
+    // Icon map
     const iconMap: Record<string, any> = {
-        BookOpen,
-        Users,
-        Target,
-        TrendingUp,
-        Award,
-        Lightbulb,
-        ArrowRight,
         Megaphone,
         Brain,
+        Lightbulb,
         GraduationCap,
         Star,
         FlaskConical,
+        ArrowRight,
     };
 
-    // Get hero content or use fallback
-    const heroContent = getSection('hero')[0];
+    // Get content sections
     const goalsContent = getSection('goals');
-    const valuesContent = getSection('values');
-    const missionContent = getSection('mission')[0];
-    const ctaContent = getSection('cta')[0];
+    const heroContent = getSection('hero')[0];
     const emptyStateContent = getSection('emptyState')[0];
+
     const defaultEmptyState = t('emptyState') || 'No content available.';
     const localizedEmptyState = emptyStateContent
         ? (isArabic
@@ -93,36 +82,39 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                     </p>
                 </motion.div>
 
-                {/* Goals Grid */}
+                {/* Goals Grid (The core content for this page) */}
                 {goalsContent.length > 0 ? (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {goalsContent.map((goal, index) => {
-                            const Icon = (goal.icon ? iconMap[goal.icon] : null) ?? BookOpen;
+                            const Icon = (goal.icon ? iconMap[goal.icon] : null) ?? Lightbulb;
                             return (
                                 <motion.div
                                     key={goal.id}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
-                                    className="p-6 bg-white dark:bg-stone-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-stone-200 dark:border-stone-700"
+                                    className="p-8 bg-white dark:bg-stone-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-stone-100 dark:border-stone-700 group"
                                 >
-                                    <Icon className="w-12 h-12 text-orange-500 mb-4" />
-                                    <h3 className="font-din-bold text-xl mb-2 text-gray-900 dark:text-white">
+                                    <div className="w-16 h-16 bg-orange-50 dark:bg-orange-950/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                        <Icon className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+                                    </div>
+                                    <h3 className="font-din-bold text-xl mb-3 text-gray-900 dark:text-white leading-tight">
                                         {isArabic
                                             ? goal.titleAr || goal.titleEn
                                             : goal.titleEn || goal.titleAr}
                                     </h3>
-                                    <p className="font-din-regular text-gray-600 dark:text-gray-300">
-                                        {isArabic
-                                            ? goal.contentAr || goal.contentEn
-                                            : goal.contentEn || goal.contentAr}
-                                    </p>
+                                    {(goal.contentAr || goal.contentEn) && (
+                                        <p className="font-din-regular text-gray-600 dark:text-gray-300 leading-relaxed">
+                                            {isArabic
+                                                ? goal.contentAr || goal.contentEn
+                                                : goal.contentEn || goal.contentAr}
+                                        </p>
+                                    )}
                                 </motion.div>
                             );
                         })}
                     </div>
                 ) : (
-                    // Fallback programs
                     <div className="text-center py-12">
                         <p className="text-gray-400 dark:text-gray-500">
                             {localizedEmptyState}
