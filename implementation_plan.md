@@ -33,8 +33,8 @@ After a thorough audit of the codebase, roadmap, schema, recent git history, and
 
 | File | Issue |
 |------|-------|
-| [proem.tsx](file:///home/glitch/Documents/Next.JS/website/src/features/innovators/components/proem.tsx) | Imports from `@/mock` |
-| [faq.tsx](file:///home/glitch/Documents/Next.JS/website/src/components/faq.tsx) | Imports from `@/mock` |
+| [proem.tsx](src/features/innovators/components/proem.tsx) | Imports from `@/mock` |
+| [faq.tsx](src/components/faq.tsx) | Imports from `@/mock` |
 
 **Action:** Replace mock imports with real API calls / `useQuery` hooks. Then **delete** `src/mock/index.ts` (25KB of dead weight).
 
@@ -175,11 +175,11 @@ graph TD
 > [!IMPORTANT]
 > 2. **Homepage Enrichment:** Do you want me to implement the full homepage with News + Stats + Collaborators sections, or keep it minimal for now?
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > 3. **WhatsApp Provider:** Have you decided on Twilio vs Meta Cloud API for WhatsApp Business? Do you have API credentials?
 
 > [!IMPORTANT]
-> 4. **Launch Timeline:** Is there a target launch date? This will help me prioritize Phase 2 vs Phase 3 work.
+> 4. **Launch Timeline:** Is there a target launch date? This will help me prioritize Phase 2 vs Phase 3 work?
 
 ---
 

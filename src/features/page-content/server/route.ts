@@ -14,7 +14,7 @@ import {
 
 // Helper function for Server Components (Separation of Concerns)
 export const getPageContent = async (
-  page: 'entrepreneurship' | 'incubators',
+  page: 'about' | 'entrepreneurship' | 'incubators',
 ) => {
   return db.pageContent.findMany({
     where: { page, isActive: true },
