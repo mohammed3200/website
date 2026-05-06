@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const createPageContentSchema = z.object({
-    page: z.enum(['entrepreneurship', 'incubators']),
+    page: z.enum(['entrepreneurship', 'incubators', 'about']),
     section: z.string().min(1, 'Section is required'),
     titleEn: z.string().optional().nullable(),
     titleAr: z.string().optional().nullable(),
@@ -15,7 +15,7 @@ export const createPageContentSchema = z.object({
 });
 
 export const updatePageContentSchema = z.object({
-    page: z.enum(['entrepreneurship', 'incubators']).optional(),
+    page: z.enum(['entrepreneurship', 'incubators', 'about']).optional(),
     section: z.string().min(1).optional(),
     titleEn: z.string().optional().nullable(),
     titleAr: z.string().optional().nullable(),
