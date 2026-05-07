@@ -11,15 +11,22 @@ import {
   createPageContentSchema,
   updatePageContentSchema,
 } from '../schemas/page-content-schema';
+import { cache } from '@/lib/cache';
 
 // Helper function for Server Components (Separation of Concerns)
 export const getPageContent = async (
-  page: 'entrepreneurship' | 'incubators',
+  page: 'entrepreneurship' | 'incubators' | 'about',
 ) => {
-  return db.pageContent.findMany({
-    where: { page, isActive: true },
-    orderBy: [{ section: 'asc' }, { order: 'asc' }],
-  });
+  return cache.getOrSet(
+    `page-content:${page}`,
+    async () => {
+      return db.pageContent.findMany({
+        where: { page, isActive: true },
+        orderBy: [{ section: 'asc' }, { order: 'asc' }],
+      });
+    },
+    3600 // Cache for 1 hour
+  );
 };
 
 const app = new Hono()
@@ -29,20 +36,26 @@ const app = new Hono()
     zValidator(
       'param',
       z.object({
-        page: z.enum(['entrepreneurship', 'incubators']),
+        page: z.enum(['entrepreneurship', 'incubators', 'about']),
       }),
     ),
     async (c) => {
       try {
         const { page } = c.req.valid('param');
 
-        const content = await db.pageContent.findMany({
-          where: {
-            page,
-            isActive: true,
+        const content = await cache.getOrSet(
+          `page-content:${page}`,
+          async () => {
+            return db.pageContent.findMany({
+              where: {
+                page,
+                isActive: true,
+              },
+              orderBy: [{ section: 'asc' }, { order: 'asc' }],
+            });
           },
-          orderBy: [{ section: 'asc' }, { order: 'asc' }],
-        });
+          3600 // Cache for 1 hour
+        );
 
         return c.json({ data: content });
       } catch (error) {
@@ -76,10 +89,16 @@ const app = new Hono()
           inactive: 0,
           sections: new Set<string>(),
         },
+        about: {
+          total: 0,
+          active: 0,
+          inactive: 0,
+          sections: new Set<string>(),
+        },
       };
 
       allContent.forEach((item) => {
-        const pageKey = item.page as 'entrepreneurship' | 'incubators';
+        const pageKey = item.page as 'entrepreneurship' | 'incubators' | 'about';
         if (stats[pageKey]) {
           stats[pageKey].total += 1;
           if (item.isActive) stats[pageKey].active += 1;
@@ -98,6 +117,10 @@ const app = new Hono()
             ...stats.incubators,
             sections: stats.incubators.sections.size,
           },
+          about: {
+            ...stats.about,
+            sections: stats.about.sections.size,
+          },
         },
       });
     } catch (error) {
@@ -114,7 +137,7 @@ const app = new Hono()
     zValidator(
       'param',
       z.object({
-        page: z.enum(['entrepreneurship', 'incubators']),
+        page: z.enum(['entrepreneurship', 'incubators', 'about']),
       }),
     ),
     async (c) => {
@@ -147,6 +170,8 @@ const app = new Hono()
             metadata: data.metadata ?? undefined,
           },
         });
+
+        await cache.del(`page-content:${content.page}`);
 
         return c.json({ data: content }, 201);
       } catch (error) {
@@ -181,6 +206,11 @@ const app = new Hono()
           },
         });
 
+        await cache.del(`page-content:${existing.page}`);
+        if (existing.page !== content.page) {
+          await cache.del(`page-content:${content.page}`);
+        }
+
         return c.json({ data: content });
       } catch (error) {
         console.error('Error updating page content:', error);
@@ -207,6 +237,8 @@ const app = new Hono()
         await db.pageContent.delete({
           where: { id },
         });
+
+        await cache.del(`page-content:${existing.page}`);
 
         return c.json({ success: true });
       } catch (error) {
