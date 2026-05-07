@@ -841,15 +841,5 @@
         "error": "Failed to save FAQ"
       }
     }
-  },
-  "About": {
-    "badge": "Entrepreneurship & Business Incubators Center",
-    "title": "About the Center",
-    "subtitle": "The Entrepreneurship and Business Incubators Center at the College of Industrial Technology - Misrata works to support innovation and develop entrepreneurial capabilities to build a sustainable knowledge economy.",
-    "goalsTitle": "Our Goals",
-    "goalsSubtitle": "Strategic objectives driving our mission to support entrepreneurs and innovators.",
-    "platformTitle": "Our Platform",
-    "platformSubtitle": "What we offer to entrepreneurs, innovators, and collaborating partners.",
-    "teamTitle": "Our Departments"
   }
 }
