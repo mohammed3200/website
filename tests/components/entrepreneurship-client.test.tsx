@@ -16,16 +16,7 @@ mock.module('next-intl', () => ({
     const translations: Record<string, string> = {
       title: 'Entrepreneurship Development',
       subtitle: 'Empowering the next generation',
-      workshops: 'Workshops & Training',
-      workshopsDesc: 'Intensive training programs',
-      mentorship: 'Mentorship Programs',
-      mentorshipDesc: 'One-on-one guidance',
-      strategic: 'Strategic Planning',
-      strategicDesc: 'Business strategy development',
       emptyState: 'No content available.',
-      excellence: 'Excellence',
-      innovation: 'Innovation',
-      collaboration: 'Collaboration',
     };
     return translations[key] || key;
   },
@@ -87,16 +78,16 @@ describe('EntrepreneurshipClient Component', () => {
       expect(screen.getByText('وصف مخصص')).toBeInTheDocument();
     });
 
-    it('should render programs from database', () => {
+    it('should render goals from database', () => {
       const mockContent = [
         {
           id: '2',
           page: 'entrepreneurship',
-          section: 'programs',
-          titleEn: 'Custom Program',
-          titleAr: 'برنامج مخصص',
-          contentEn: 'Program description',
-          contentAr: 'وصف البرنامج',
+          section: 'goals',
+          titleEn: 'Custom Goal',
+          titleAr: 'هدف مخصص',
+          contentEn: 'Goal description',
+          contentAr: 'وصف الهدف',
           icon: 'Rocket',
           order: 0,
           isActive: true,
@@ -109,19 +100,19 @@ describe('EntrepreneurshipClient Component', () => {
 
       render(<EntrepreneurshipClient locale="en" content={mockContent} />);
 
-      expect(screen.getByText('Custom Program')).toBeInTheDocument();
-      expect(screen.getByText('Program description')).toBeInTheDocument();
+      expect(screen.getByText('Custom Goal')).toBeInTheDocument();
+      expect(screen.getByText('Goal description')).toBeInTheDocument();
     });
 
-    it('should render multiple programs in correct order', () => {
+    it('should render multiple goals in correct order', () => {
       const mockContent = [
         {
           id: '1',
           page: 'entrepreneurship',
-          section: 'programs',
-          titleEn: 'Program One',
-          titleAr: 'البرنامج الأول',
-          contentEn: 'First program',
+          section: 'goals',
+          titleEn: 'Goal One',
+          titleAr: 'الهدف الأول',
+          contentEn: 'First goal',
           order: 0,
           isActive: true,
           createdAt: new Date(),
@@ -134,10 +125,10 @@ describe('EntrepreneurshipClient Component', () => {
         {
           id: '2',
           page: 'entrepreneurship',
-          section: 'programs',
-          titleEn: 'Program Two',
-          titleAr: 'البرنامج الثاني',
-          contentEn: 'Second program',
+          section: 'goals',
+          titleEn: 'Goal Two',
+          titleAr: 'الهدف الثاني',
+          contentEn: 'Second goal',
           order: 1,
           isActive: true,
           createdAt: new Date(),
@@ -151,33 +142,8 @@ describe('EntrepreneurshipClient Component', () => {
 
       render(<EntrepreneurshipClient locale="en" content={mockContent} />);
 
-      const programs = screen.getAllByText(/Program/);
-      expect(programs).toHaveLength(2);
-    });
-
-    it('should render values section from database', () => {
-      const mockContent = [
-        {
-          id: '3',
-          page: 'entrepreneurship',
-          section: 'values',
-          titleEn: 'Innovation First',
-          titleAr: 'الابتكار أولاً',
-          contentEn: null,
-          contentAr: null,
-          icon: 'Lightbulb',
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          color: null,
-          metadata: null,
-        },
-      ];
-
-      render(<EntrepreneurshipClient locale="en" content={mockContent} />);
-
-      expect(screen.getByText('Innovation First')).toBeInTheDocument();
+      const goals = screen.getAllByText(/Goal/);
+      expect(goals).toHaveLength(2);
     });
   });
 
@@ -189,12 +155,10 @@ describe('EntrepreneurshipClient Component', () => {
       expect(screen.getByText('Empowering the next generation')).toBeInTheDocument();
     });
 
-    it('should render empty state when programs and values are missing', () => {
+    it('should render empty state when goals are missing', () => {
       render(<EntrepreneurshipClient locale="en" content={mockEmptyContent} />);
 
-      const emptyStates = screen.getAllByText('No content available.');
-      // One for programs, one for values
-      expect(emptyStates).toHaveLength(2);
+      expect(screen.getByText('No content available.')).toBeInTheDocument();
     });
   });
 
@@ -270,73 +234,14 @@ describe('EntrepreneurshipClient Component', () => {
     });
   });
 
-  describe('Mission and CTA Sections', () => {
-    it('should render mission section when provided', () => {
-      const mockContent = [
-        {
-          id: '4',
-          page: 'entrepreneurship',
-          section: 'mission',
-          titleEn: 'Our Mission',
-          titleAr: 'مهمتنا',
-          contentEn: 'To empower entrepreneurs worldwide',
-          contentAr: 'لتمكين رواد الأعمال في جميع أنحاء العالم',
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          icon: null,
-          color: null,
-          metadata: null,
-        },
-      ];
-
-      render(<EntrepreneurshipClient locale="en" content={mockContent} />);
-
-      expect(screen.getByText('Our Mission')).toBeInTheDocument();
-      expect(screen.getByText('To empower entrepreneurs worldwide')).toBeInTheDocument();
-    });
-
-    it('should render CTA section when provided', () => {
-      const mockContent = [
-        {
-          id: '5',
-          page: 'entrepreneurship',
-          section: 'cta',
-          titleEn: 'Join Us Today',
-          titleAr: 'انضم إلينا اليوم',
-          contentEn: null,
-          contentAr: null,
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          icon: null,
-          color: null,
-          metadata: null,
-        },
-      ];
-
-      render(<EntrepreneurshipClient locale="en" content={mockContent} />);
-
-      expect(screen.getByText('Join Us Today')).toBeInTheDocument();
-    });
-
-    it('should not render mission section when not provided', () => {
-      render(<EntrepreneurshipClient locale="en" content={mockEmptyContent} />);
-
-      expect(screen.queryByText('Our Mission')).not.toBeInTheDocument();
-    });
-  });
-
   describe('Icon Handling', () => {
     it('should use default icon when icon field is null', () => {
       const mockContent = [
         {
           id: '2',
           page: 'entrepreneurship',
-          section: 'programs',
-          titleEn: 'Program Without Icon',
+          section: 'goals',
+          titleEn: 'Goal Without Icon',
           contentEn: 'Description',
           icon: null,
           order: 0,
@@ -398,8 +303,8 @@ describe('EntrepreneurshipClient Component', () => {
         {
           id: '1',
           page: 'entrepreneurship',
-          section: 'programs',
-          titleEn: 'Active Program',
+          section: 'goals',
+          titleEn: 'Active Goal',
           order: 0,
           isActive: true,
           createdAt: new Date(),
@@ -414,10 +319,10 @@ describe('EntrepreneurshipClient Component', () => {
         {
           id: '2',
           page: 'entrepreneurship',
-          section: 'programs',
-          titleEn: 'Inactive Program',
+          section: 'goals',
+          titleEn: 'Inactive Goal',
           order: 1,
-          isActive: false, // This should be filtered out by the page query
+          isActive: false, // In test scenario, components do not filter out inactive, it's done via API
           createdAt: new Date(),
           updatedAt: new Date(),
           titleAr: null,
@@ -431,7 +336,8 @@ describe('EntrepreneurshipClient Component', () => {
 
       render(<EntrepreneurshipClient locale="en" content={mockContent} />);
 
-      expect(screen.getByText('Active Program')).toBeInTheDocument();
+      // If component just renders whatever is passed, both might show up since API filters.
+      expect(screen.getByText('Active Goal')).toBeInTheDocument();
     });
   });
 

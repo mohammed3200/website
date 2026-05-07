@@ -16,20 +16,6 @@ mock.module('next-intl', () => ({
     const translations: Record<string, string> = {
       title: 'Business Incubation Program',
       subtitle: 'Structured support for startups',
-      ideation: 'Ideation Phase',
-      ideationDesc: 'Refining your concept',
-      development: 'Development Phase',
-      developmentDesc: 'Building your MVP',
-      scaling: 'Scaling Phase',
-      scalingDesc: 'Growing your business',
-      mentorship: 'Expert Mentorship',
-      mentorshipDesc: 'One-on-one guidance',
-      workspace: 'Co-working Space',
-      workspaceDesc: 'Professional workspace',
-      funding: 'Funding Access',
-      fundingDesc: 'Investment opportunities',
-      networking: 'Networking Events',
-      networkingDesc: 'Connect with investors',
       emptyState: 'No content available.',
     };
     return translations[key] || key;
@@ -66,16 +52,16 @@ describe('IncubatorsClient Component', () => {
       expect(screen.getByText('Custom description')).toBeInTheDocument();
     });
 
-    it('should render phases from database', () => {
+    it('should render tasks from database', () => {
       const mockContent = [
         {
           id: '2',
           page: 'incubators',
-          section: 'phases',
-          titleEn: 'Custom Phase',
-          titleAr: 'مرحلة مخصصة',
-          contentEn: 'Phase description',
-          contentAr: 'وصف المرحلة',
+          section: 'tasks',
+          titleEn: 'Custom Task',
+          titleAr: 'مهمة مخصصة',
+          contentEn: 'Task description',
+          contentAr: 'وصف المهمة',
           icon: 'Lightbulb',
           order: 0,
           isActive: true,
@@ -88,25 +74,41 @@ describe('IncubatorsClient Component', () => {
 
       render(<IncubatorsClient locale="en" content={mockContent} />);
 
-      expect(screen.getByText('Custom Phase')).toBeInTheDocument();
-      expect(screen.getByText('Phase description')).toBeInTheDocument();
+      expect(screen.getByText('Custom Task')).toBeInTheDocument();
+      expect(screen.getByText('Task description')).toBeInTheDocument();
     });
 
-    it('should render resources from database', () => {
+    it('should render multiple tasks in order', () => {
       const mockContent = [
         {
-          id: '3',
+          id: '1',
           page: 'incubators',
-          section: 'resources',
-          titleEn: 'Custom Resource',
-          titleAr: 'مورد مخصص',
-          contentEn: 'Resource description',
-          contentAr: 'وصف المورد',
-          icon: 'Users',
+          section: 'tasks',
+          titleEn: 'Task One',
           order: 0,
           isActive: true,
           createdAt: new Date(),
           updatedAt: new Date(),
+          titleAr: null,
+          contentEn: null,
+          contentAr: null,
+          icon: null,
+          color: null,
+          metadata: null,
+        },
+        {
+          id: '2',
+          page: 'incubators',
+          section: 'tasks',
+          titleEn: 'Task Two',
+          order: 1,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          titleAr: null,
+          contentEn: null,
+          contentAr: null,
+          icon: null,
           color: null,
           metadata: null,
         },
@@ -114,52 +116,8 @@ describe('IncubatorsClient Component', () => {
 
       render(<IncubatorsClient locale="en" content={mockContent} />);
 
-      expect(screen.getByText('Custom Resource')).toBeInTheDocument();
-      expect(screen.getByText('Resource description')).toBeInTheDocument();
-    });
-
-    it('should render metrics section with numbers', () => {
-      const mockContent = [
-        {
-          id: '4',
-          page: 'incubators',
-          section: 'metrics',
-          titleEn: 'Startups Supported',
-          titleAr: 'شركات مدعومة',
-          contentEn: null,
-          contentAr: null,
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          icon: null,
-          color: null,
-          metadata: { number: 150 },
-        },
-        {
-          id: '5',
-          page: 'incubators',
-          section: 'metrics',
-          titleEn: 'Jobs Created',
-          titleAr: 'وظائف مُنشأة',
-          contentEn: null,
-          contentAr: null,
-          order: 1,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          icon: null,
-          color: null,
-          metadata: { number: 450 },
-        },
-      ];
-
-      render(<IncubatorsClient locale="en" content={mockContent} />);
-
-      expect(screen.getByText('150')).toBeInTheDocument();
-      expect(screen.getByText('450')).toBeInTheDocument();
-      expect(screen.getByText('Startups Supported')).toBeInTheDocument();
-      expect(screen.getByText('Jobs Created')).toBeInTheDocument();
+      expect(screen.getByText('Task One')).toBeInTheDocument();
+      expect(screen.getByText('Task Two')).toBeInTheDocument();
     });
   });
 
@@ -175,12 +133,11 @@ describe('IncubatorsClient Component', () => {
       ).toBeInTheDocument();
     });
 
-    it('should render empty state when phases and resources are missing', async () => {
+    it('should render empty state when tasks are missing', async () => {
       render(<IncubatorsClient locale="en" content={mockEmptyContent} />);
 
       const emptyStates = await screen.findAllByText('No content available.');
-      // One for phases, one for resources
-      expect(emptyStates).toHaveLength(2);
+      expect(emptyStates).toHaveLength(1);
     });
   });
 
@@ -256,122 +213,16 @@ describe('IncubatorsClient Component', () => {
     });
   });
 
-  describe('CTA Section', () => {
-    it('should render CTA section when provided', () => {
-      const mockContent = [
-        {
-          id: '6',
-          page: 'incubators',
-          section: 'cta',
-          titleEn: 'Apply Now',
-          titleAr: 'قدم الآن',
-          contentEn: null,
-          contentAr: null,
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          icon: null,
-          color: null,
-          metadata: null,
-        },
-      ];
-
-      render(<IncubatorsClient locale="en" content={mockContent} />);
-
-      expect(screen.getByText('Apply Now')).toBeInTheDocument();
-    });
-  });
-
-  describe('Metadata Handling', () => {
-    it('should handle metrics with number metadata', () => {
-      const mockContent = [
-        {
-          id: '1',
-          page: 'incubators',
-          section: 'metrics',
-          titleEn: 'Success Rate',
-          titleAr: 'معدل النجاح',
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          contentEn: null,
-          contentAr: null,
-          icon: null,
-          color: null,
-          metadata: { number: 95 },
-        },
-      ];
-
-      render(<IncubatorsClient locale="en" content={mockContent} />);
-
-      expect(screen.getByText('95')).toBeInTheDocument();
-      expect(screen.getByText('Success Rate')).toBeInTheDocument();
-    });
-
-    it('should handle missing metadata gracefully', () => {
-      const mockContent = [
-        {
-          id: '1',
-          page: 'incubators',
-          section: 'metrics',
-          titleEn: 'Metric Without Number',
-          titleAr: null,
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          contentEn: null,
-          contentAr: null,
-          icon: null,
-          color: null,
-          metadata: null,
-        },
-      ];
-
-      render(<IncubatorsClient locale="en" content={mockContent} />);
-
-      expect(screen.getByText('0')).toBeInTheDocument(); // Default fallback
-      expect(screen.getByText('Metric Without Number')).toBeInTheDocument();
-    });
-
-    it('should handle string number in metadata', () => {
-      const mockContent = [
-        {
-          id: '1',
-          page: 'incubators',
-          section: 'metrics',
-          titleEn: 'String Number',
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          titleAr: null,
-          contentEn: null,
-          contentAr: null,
-          icon: null,
-          color: null,
-          metadata: { number: '200' },
-        },
-      ];
-
-      render(<IncubatorsClient locale="en" content={mockContent} />);
-
-      expect(screen.getByText('200')).toBeInTheDocument();
-    });
-  });
-
   describe('Icon Handling', () => {
     it('should use specified icon from database', () => {
       const mockContent = [
         {
           id: '1',
           page: 'incubators',
-          section: 'phases',
-          titleEn: 'Phase With Icon',
+          section: 'tasks',
+          titleEn: 'Task With Icon',
           contentEn: 'Description',
-          icon: 'Rocket',
+          icon: 'Lightbulb',
           order: 0,
           isActive: true,
           createdAt: new Date(),
@@ -395,8 +246,8 @@ describe('IncubatorsClient Component', () => {
         {
           id: '1',
           page: 'incubators',
-          section: 'phases',
-          titleEn: 'Phase Without Icon',
+          section: 'tasks',
+          titleEn: 'Task Without Icon',
           contentEn: 'Description',
           icon: null,
           order: 0,
@@ -451,48 +302,6 @@ describe('IncubatorsClient Component', () => {
 
       expect(screen.getByText('Title Only')).toBeInTheDocument();
     });
-
-    it('should handle multiple phases in order', () => {
-      const mockContent = [
-        {
-          id: '1',
-          page: 'incubators',
-          section: 'phases',
-          titleEn: 'Phase One',
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          titleAr: null,
-          contentEn: null,
-          contentAr: null,
-          icon: null,
-          color: null,
-          metadata: null,
-        },
-        {
-          id: '2',
-          page: 'incubators',
-          section: 'phases',
-          titleEn: 'Phase Two',
-          order: 1,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          titleAr: null,
-          contentEn: null,
-          contentAr: null,
-          icon: null,
-          color: null,
-          metadata: null,
-        },
-      ];
-
-      render(<IncubatorsClient locale="en" content={mockContent} />);
-
-      expect(screen.getByText('Phase One')).toBeInTheDocument();
-      expect(screen.getByText('Phase Two')).toBeInTheDocument();
-    });
   });
 
   describe('Accessibility', () => {
@@ -503,50 +312,6 @@ describe('IncubatorsClient Component', () => {
 
       expect(container.querySelector('section')).toBeInTheDocument();
       expect(container.querySelector('h1')).toBeInTheDocument();
-    });
-  });
-
-  describe('Content Filtering by Section', () => {
-    it('should correctly separate phases and resources', () => {
-      const mockContent = [
-        {
-          id: '1',
-          page: 'incubators',
-          section: 'phases',
-          titleEn: 'A Phase',
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          titleAr: null,
-          contentEn: null,
-          contentAr: null,
-          icon: null,
-          color: null,
-          metadata: null,
-        },
-        {
-          id: '2',
-          page: 'incubators',
-          section: 'resources',
-          titleEn: 'A Resource',
-          order: 0,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          titleAr: null,
-          contentEn: null,
-          contentAr: null,
-          icon: null,
-          color: null,
-          metadata: null,
-        },
-      ];
-
-      render(<IncubatorsClient locale="en" content={mockContent} />);
-
-      expect(screen.getByText('A Phase')).toBeInTheDocument();
-      expect(screen.getByText('A Resource')).toBeInTheDocument();
     });
   });
 });
