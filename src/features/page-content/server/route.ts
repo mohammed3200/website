@@ -15,7 +15,7 @@ import { cache } from '@/lib/cache';
 
 // Helper function for Server Components (Separation of Concerns)
 export const getPageContent = async (
-  page: 'entrepreneurship' | 'incubators' | 'about',
+  page: 'about' | 'entrepreneurship' | 'incubators',
 ) => {
   return cache.getOrSet(
     `page-content:${page}`,

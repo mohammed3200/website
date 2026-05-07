@@ -33,13 +33,11 @@ export const Hero = () => {
       reviewedAt: null,
       reviewedById: null,
       image: item.image
-        ? ({
-            id: item.id,
-            url: item.image.data || '',
-            thumbnailUrl: null,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          } as any)
+        ? {
+            data: item.image.url || '',
+            type: item.image.mimeType || '',
+            size: item.image.size || 0,
+          }
         : null,
       experienceProvidedMedia: [],
       machineryAndEquipmentMedia: [],

@@ -69,7 +69,12 @@ export type PublicCollaborator = Pick<
   | 'industrialSector'
   | 'specialization'
 > & {
-  image: Media | null;
+  image: {
+    url: string;
+    mimeType: string;
+    size: number;
+    alt: string | null;
+  } | null;
 };
 
 export enum RecordStatus {
