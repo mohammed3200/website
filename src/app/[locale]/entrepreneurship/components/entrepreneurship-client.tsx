@@ -3,11 +3,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import {
-    Award,
-    BookOpen,
-    Users,
-    Target,
-    TrendingUp,
+    Megaphone,
+    Brain,
+    Star,
+    FlaskConical,
+    GraduationCap,
     Lightbulb,
     ArrowRight,
 } from 'lucide-react';
@@ -30,24 +30,22 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
             .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     };
 
-    // Fallback icon map
+    // Icon map
     const iconMap: Record<string, any> = {
-        BookOpen,
-        Users,
-        Target,
-        TrendingUp,
-        Award,
+        Megaphone,
+        Brain,
         Lightbulb,
+        GraduationCap,
+        Star,
+        FlaskConical,
         ArrowRight,
     };
 
-    // Get hero content or use fallback
+    // Get content sections
+    const goalsContent = getSection('goals');
     const heroContent = getSection('hero')[0];
-    const programsContent = getSection('programs');
-    const valuesContent = getSection('values');
-    const missionContent = getSection('mission')[0];
-    const ctaContent = getSection('cta')[0];
     const emptyStateContent = getSection('emptyState')[0];
+
     const defaultEmptyState = t('emptyState') || 'No content available.';
     const localizedEmptyState = emptyStateContent
         ? (isArabic
@@ -83,36 +81,39 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                     </p>
                 </motion.div>
 
-                {/* Programs Grid */}
-                {programsContent.length > 0 ? (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {programsContent.map((program, index) => {
-                            const Icon = (program.icon ? iconMap[program.icon] : null) ?? BookOpen;
+                {/* Goals Grid (The core content for this page) */}
+                {goalsContent.length > 0 ? (
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {goalsContent.map((goal, index) => {
+                            const Icon = (goal.icon ? iconMap[goal.icon] : null) ?? Lightbulb;
                             return (
                                 <motion.div
-                                    key={program.id}
+                                    key={goal.id}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.1 }}
-                                    className="p-6 bg-white dark:bg-stone-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-stone-200 dark:border-stone-700"
+                                    className="p-8 bg-white dark:bg-stone-800 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-stone-100 dark:border-stone-700 group"
                                 >
-                                    <Icon className="w-12 h-12 text-orange-500 mb-4" />
-                                    <h3 className="font-din-bold text-xl mb-2 text-gray-900 dark:text-white">
+                                    <div className="w-16 h-16 bg-orange-50 dark:bg-orange-950/30 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                                        <Icon className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+                                    </div>
+                                    <h3 className="font-din-bold text-xl mb-3 text-gray-900 dark:text-white leading-tight">
                                         {isArabic
-                                            ? program.titleAr || program.titleEn
-                                            : program.titleEn || program.titleAr}
+                                            ? goal.titleAr || goal.titleEn
+                                            : goal.titleEn || goal.titleAr}
                                     </h3>
-                                    <p className="font-din-regular text-gray-600 dark:text-gray-300">
-                                        {isArabic
-                                            ? program.contentAr || program.contentEn
-                                            : program.contentEn || program.contentAr}
-                                    </p>
+                                    {(goal.contentAr || goal.contentEn) && (
+                                        <p className="font-din-regular text-gray-600 dark:text-gray-300 leading-relaxed">
+                                            {isArabic
+                                                ? goal.contentAr || goal.contentEn
+                                                : goal.contentEn || goal.contentAr}
+                                        </p>
+                                    )}
                                 </motion.div>
                             );
                         })}
                     </div>
                 ) : (
-                    // Fallback programs
                     <div className="text-center py-12">
                         <p className="text-gray-400 dark:text-gray-500">
                             {localizedEmptyState}
@@ -120,77 +121,6 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                     </div>
                 )}
 
-                {/* Core Values */}
-                {valuesContent.length > 0 ? (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="flex flex-wrap justify-center gap-6"
-                    >
-                        {valuesContent.map((value, index) => {
-                            const Icon = (value.icon ? iconMap[value.icon] : null) ?? Target;
-                            return (
-                                <div
-                                    key={value.id}
-                                    className="flex items-center gap-3 px-6 py-3 bg-orange-50 dark:bg-orange-900/20 rounded-full border-2 border-orange-200 dark:border-orange-800"
-                                >
-                                    <Icon className="w-6 h-6 text-orange-600 dark:text-orange-400" />
-                                    <span className="font-din-bold text-gray-900 dark:text-white">
-                                        {isArabic
-                                            ? value.titleAr || value.titleEn
-                                            : value.titleEn || value.titleAr}
-                                    </span>
-                                </div>
-                            );
-                        })}
-                    </motion.div>
-                ) : (
-                    // Fallback values
-                    <div className="text-center py-12">
-                        <p className="text-gray-400 dark:text-gray-500">
-                            {localizedEmptyState}
-                        </p>
-                    </div>
-                )}
-
-                {/* Mission Statement */}
-                {missionContent && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="max-w-3xl mx-auto text-center p-8 bg-gradient-to-br from-orange-50 to-white dark:from-orange-900/20 dark:to-stone-900 rounded-3xl shadow-xl"
-                    >
-                        <h2 className="font-din-bold text-3xl mb-4 text-gray-900 dark:text-white">
-                            {isArabic
-                                ? missionContent.titleAr || missionContent.titleEn
-                                : missionContent.titleEn || missionContent.titleAr}
-                        </h2>
-                        <p className="font-din-regular text-lg text-gray-700 dark:text-gray-300">
-                            {isArabic
-                                ? missionContent.contentAr || missionContent.contentEn
-                                : missionContent.contentEn || missionContent.contentAr}
-                        </p>
-                    </motion.div>
-                )}
-
-                {/* CTA Section */}
-                {ctaContent && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="text-center"
-                    >
-                        <a
-                            href={`/${locale}/registration`}
-                            className="inline-flex items-center gap-2 px-8 py-4 bg-orange-600 hover:bg-orange-700 text-white font-din-bold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl"
-                        >
-                            {isArabic
-                                ? ctaContent.titleAr || ctaContent.titleEn
-                                : ctaContent.titleEn || ctaContent.titleAr}
-                            <ArrowRight className={`w-5 h-5 ${isArabic ? 'rotate-180' : ''}`} />
-                        </a>
-                    </motion.div>
-                )}
             </div>
         </section>
     );
