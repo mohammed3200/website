@@ -17,17 +17,21 @@ export const cache = {
      * Get value from cache
      */
     async get<T>(key: string): Promise<T | null> {
+        // Primary Check: If Redis is explicitly disabled via env
         if (!process.env.REDIS_URL) {
             return (memoryCache.get(key) as T) ?? null;
         }
 
         try {
             const data = await redis.get(key);
-            if (!data) return null;
+            if (!data) {
+                // Secondary check: maybe it's in memory cache (e.g. if Redis just went down)
+                return (memoryCache.get(key) as T) ?? null;
+            }
             return JSON.parse(data) as T;
         } catch (error) {
-            console.error(`Cache GET error for key ${key}:`, error);
-            return null;
+            console.error(`Cache GET error for key ${key} (falling back to memory):`, error);
+            return (memoryCache.get(key) as T) ?? null;
         }
     },
 
@@ -35,8 +39,10 @@ export const cache = {
      * Set value in cache
      */
     async set(key: string, value: any, ttl: number = DEFAULT_TTL): Promise<void> {
+        // Always set in memory cache as a fast local fallback
+        memoryCache.set(key, value, { ttl: ttl * 1000 });
+
         if (!process.env.REDIS_URL) {
-            memoryCache.set(key, value, { ttl: ttl * 1000 });
             return;
         }
 
@@ -44,6 +50,7 @@ export const cache = {
             await redis.set(key, JSON.stringify(value), 'EX', ttl);
         } catch (error) {
             console.error(`Cache SET error for key ${key}:`, error);
+            // We already set it in memory above, so we're good
         }
     },
 
@@ -51,8 +58,9 @@ export const cache = {
      * Delete value from cache
      */
     async del(key: string): Promise<void> {
+        memoryCache.delete(key);
+
         if (!process.env.REDIS_URL) {
-            memoryCache.delete(key);
             return;
         }
 

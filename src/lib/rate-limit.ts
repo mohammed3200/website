@@ -8,6 +8,35 @@ const memoryRateLimiter = new LRUCache<string, { count: number; expiresAt: numbe
 });
 
 /**
+ * Internal helper for in-memory rate limiting fallback
+ */
+function memoryRateLimit(fullKey: string, limit: number, duration: number) {
+    const now = Date.now();
+    const record = memoryRateLimiter.get(fullKey);
+
+    if (record && record.count >= limit && record.expiresAt > now) {
+        return {
+            success: false,
+            limit,
+            remaining: 0,
+            reset: Math.ceil((record.expiresAt - now) / 1000)
+        };
+    }
+
+    const newCount = (record && record.expiresAt > now) ? record.count + 1 : 1;
+    const newExpiresAt = (record && record.expiresAt > now) ? record.expiresAt : now + duration * 1000;
+
+    memoryRateLimiter.set(fullKey, { count: newCount, expiresAt: newExpiresAt }, { ttl: duration * 1000 });
+
+    return {
+        success: true,
+        limit,
+        remaining: limit - newCount,
+        reset: duration
+    };
+}
+
+/**
  * Simple Redis-based rate limiter (with in-memory fallback)
  * @param key The unique key for the rate limit (e.g., ip, email)
  * @param limit Maximum number of attempts
@@ -23,31 +52,9 @@ export async function rateLimit(
 
     const isRedisDisabled = !process.env.REDIS_URL;
 
-    // In-memory fallback
+    // In-memory fallback if Redis is explicitly disabled
     if (isRedisDisabled) {
-        const now = Date.now();
-        const record = memoryRateLimiter.get(fullKey);
-
-        if (record && record.count >= limit && record.expiresAt > now) {
-            return {
-                success: false,
-                limit,
-                remaining: 0,
-                reset: Math.ceil((record.expiresAt - now) / 1000)
-            };
-        }
-
-        const newCount = (record && record.expiresAt > now) ? record.count + 1 : 1;
-        const newExpiresAt = (record && record.expiresAt > now) ? record.expiresAt : now + duration * 1000;
-
-        memoryRateLimiter.set(fullKey, { count: newCount, expiresAt: newExpiresAt }, { ttl: duration * 1000 });
-
-        return {
-            success: true,
-            limit,
-            remaining: limit - newCount,
-            reset: duration
-        };
+        return memoryRateLimit(fullKey, limit, duration);
     }
 
     try {
@@ -74,6 +81,12 @@ export async function rateLimit(
 
         await multi.exec();
 
+        // Also sync to memory cache for local fallback consistency
+        memoryRateLimiter.set(fullKey, { 
+            count: count + 1, 
+            expiresAt: Date.now() + duration * 1000 
+        }, { ttl: duration * 1000 });
+
         return {
             success: true,
             limit,
@@ -81,14 +94,9 @@ export async function rateLimit(
             reset: duration
         };
     } catch (error) {
-        console.error('Rate limit error:', error);
-        // Fail-safe: allow if Redis is down
-        return {
-            success: true,
-            limit,
-            remaining: 1,
-            reset: duration
-        };
+        console.error('Rate limit error (falling back to memory):', error);
+        // Secondary fallback: use memory rate limiter if Redis fails
+        return memoryRateLimit(fullKey, limit, duration);
     }
 }
 

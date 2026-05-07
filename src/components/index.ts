@@ -20,3 +20,6 @@ export * from './faq';
 export * from './home-collaborators';
 export * from './home-stats';
 export * from './home-cta';
+
+export * from '../features/collaborators/components/card-companies';
+export * from '../features/innovators/components/card-innovators';

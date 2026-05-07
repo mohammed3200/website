@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useLanguage } from '@/hooks/use-language';
+import useLanguage from '@/hooks/use-language';
 
 interface AboutHeroProps {
   title: string;
