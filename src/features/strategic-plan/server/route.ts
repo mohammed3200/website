@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { auth } from '@/auth';
 import { db } from '@/lib/db';
+import { cache } from '@/lib/cache';
 import {
   createStrategicPlanSchemaServer,
   updateStrategicPlanSchemaServer,
@@ -13,44 +14,50 @@ const app = new Hono()
   // Public endpoint - get all active strategic plans
   .get('/public', async (c) => {
     try {
-      const strategicPlans = await db.strategicPlan.findMany({
-        where: {
-          isActive: true,
-        },
-        include: {
-          image: true,
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      const transformedPlans = await cache.getOrSet(
+        'strategic-plans:public',
+        async () => {
+          const strategicPlans = await db.strategicPlan.findMany({
+            where: {
+              isActive: true,
+            },
+            include: {
+              image: true,
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          });
 
-      // Transform the data to match frontend expectations
-      const transformedPlans = strategicPlans.map((plan: any) => {
-        return {
-          id: plan.id,
-          slug: plan.slug,
-          title: plan.title,
-          titleAr: plan.titleAr,
-          content: plan.content,
-          contentAr: plan.contentAr,
-          excerpt: plan.excerpt,
-          excerptAr: plan.excerptAr,
-          category: plan.category,
-          categoryAr: plan.categoryAr,
-          isActive: plan.isActive,
-          publishedAt: plan.publishedAt,
-          startDate: plan.startDate,
-          endDate: plan.endDate,
-          image: plan.image
-            ? {
-              id: plan.image.id,
-              url: plan.image.url,
-              alt: plan.image.alt,
-            }
-            : null,
-        };
-      });
+          // Transform the data to match frontend expectations
+          return strategicPlans.map((plan: any) => {
+            return {
+              id: plan.id,
+              slug: plan.slug,
+              title: plan.title,
+              titleAr: plan.titleAr,
+              content: plan.content,
+              contentAr: plan.contentAr,
+              excerpt: plan.excerpt,
+              excerptAr: plan.excerptAr,
+              category: plan.category,
+              categoryAr: plan.categoryAr,
+              isActive: plan.isActive,
+              publishedAt: plan.publishedAt,
+              startDate: plan.startDate,
+              endDate: plan.endDate,
+              image: plan.image
+                ? {
+                  id: plan.image.id,
+                  url: plan.image.url,
+                  alt: plan.image.alt,
+                }
+                : null,
+            };
+          });
+        },
+        3600 // Cache for 1 hour
+      );
 
       return c.json({ data: transformedPlans }, 200);
     } catch (error) {
@@ -69,26 +76,27 @@ const app = new Hono()
     try {
       const { id } = c.req.param();
 
-      // Try to find by slug first, then by id
-      const strategicPlan = await db.strategicPlan.findFirst({
-        where: {
-          OR: [
-            { slug: id },
-            { id: id },
-          ],
-        },
-        include: {
-          image: true,
-        },
-      });
+      const transformedPlan = await cache.getOrSet(
+        `strategic-plans:public:${id}`,
+        async () => {
+          // Try to find by slug first, then by id
+          const strategicPlan = await db.strategicPlan.findFirst({
+            where: {
+              OR: [
+                { slug: id },
+                { id: id },
+              ],
+            },
+            include: {
+              image: true,
+            },
+          });
 
-      if (!strategicPlan) {
-        return c.json({ error: 'Strategic plan not found', message: 'Strategic plan not found' }, 404);
-      }
+          if (!strategicPlan) {
+            return null;
+          }
 
-      return c.json(
-        {
-          data: {
+          return {
             id: strategicPlan.id,
             slug: strategicPlan.slug,
             title: strategicPlan.title,
@@ -110,7 +118,18 @@ const app = new Hono()
                 alt: strategicPlan.image.alt,
               }
               : null,
-          },
+          };
+        },
+        3600 // Cache for 1 hour
+      );
+
+      if (!transformedPlan) {
+        return c.json({ error: 'Strategic plan not found', message: 'Strategic plan not found' }, 404);
+      }
+
+      return c.json(
+        {
+          data: transformedPlan,
         },
         200,
       );
@@ -261,6 +280,9 @@ const app = new Hono()
           },
         });
 
+        // Invalidate public cache
+        await cache.del('strategic-plans:public');
+
         return c.json({ data: strategicPlan, message: 'Strategic plan created successfully' }, 201);
       } catch (error) {
         console.error('Error creating strategic plan:', error);
@@ -383,6 +405,14 @@ const app = new Hono()
           data: updateData,
         });
 
+        // Invalidate public caches
+        await cache.del('strategic-plans:public');
+        await cache.del(`strategic-plans:public:${updatedPlan.id}`);
+        await cache.del(`strategic-plans:public:${updatedPlan.slug}`);
+        if (existingPlan.slug !== updatedPlan.slug) {
+          await cache.del(`strategic-plans:public:${existingPlan.slug}`);
+        }
+
         return c.json({ data: updatedPlan, message: 'Strategic plan updated successfully' }, 200);
       } catch (error) {
         console.error('Error updating strategic plan:', error);
@@ -434,6 +464,11 @@ const app = new Hono()
       await db.strategicPlan.delete({
         where: { id },
       });
+
+      // Invalidate public caches
+      await cache.del('strategic-plans:public');
+      await cache.del(`strategic-plans:public:${existingPlan.id}`);
+      await cache.del(`strategic-plans:public:${existingPlan.slug}`);
 
       return c.json({ message: 'Strategic plan deleted successfully' }, 200);
     } catch (error) {
