@@ -351,4 +351,78 @@ describe('EntrepreneurshipClient Component', () => {
       expect(container.querySelector('h1')).toBeInTheDocument();
     });
   });
+
+  describe('Source-of-Truth Section Whitelist', () => {
+    // The Entrepreneurship page only renders sections from the
+    // `أهداف_قسم_الريادة.docx` source document plus hero/cta wrappers.
+    // Any record with one of these dead sections must be ignored.
+    it.each(['programs', 'values', 'mission'])(
+      'should not render content for the invented section "%s"',
+      (deadSection) => {
+        const mockContent = [
+          {
+            id: '1',
+            page: 'entrepreneurship',
+            section: deadSection,
+            titleEn: 'Should-not-be-rendered Title',
+            titleAr: 'عنوان لا يجب أن يظهر',
+            order: 0,
+            isActive: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            contentEn: null,
+            contentAr: null,
+            icon: null,
+            color: null,
+            metadata: null,
+          },
+        ];
+
+        render(<EntrepreneurshipClient locale="en" content={mockContent} />);
+
+        expect(
+          screen.queryByText('Should-not-be-rendered Title'),
+        ).not.toBeInTheDocument();
+      },
+    );
+
+    it('should render exactly six goal cards when seeded with the D.3 fixture', () => {
+      // Mirrors prisma/seed-ebic-page-content.ts entrepreneurship/goals
+      const fixture = [
+        { titleEn: 'Spreading entrepreneurial awareness', icon: 'Megaphone' },
+        { titleEn: 'Developing entrepreneurial thinking', icon: 'Brain' },
+        { titleEn: 'Attracting entrepreneurial talent', icon: 'Lightbulb' },
+        { titleEn: 'Following up on graduate startups', icon: 'GraduationCap' },
+        {
+          titleEn: 'Encouraging a culture of creativity and excellence',
+          icon: 'Sparkles',
+        },
+        {
+          titleEn: 'Converting scientific research into products',
+          icon: 'FlaskConical',
+        },
+      ].map((g, i) => ({
+        id: `g-${i}`,
+        page: 'entrepreneurship',
+        section: 'goals',
+        order: i,
+        titleEn: g.titleEn,
+        titleAr: 'هدف',
+        contentEn: 'Description',
+        contentAr: 'وصف',
+        icon: g.icon,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        color: null,
+        metadata: null,
+      }));
+
+      render(<EntrepreneurshipClient locale="en" content={fixture} />);
+
+      for (const g of fixture) {
+        expect(screen.getByText(g.titleEn)).toBeInTheDocument();
+      }
+    });
+  });
 });

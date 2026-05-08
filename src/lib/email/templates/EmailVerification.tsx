@@ -31,8 +31,8 @@ export const EmailVerification = ({
 
       <Text style={{ ...text, textAlign }}>
         {isArabic
-          ? 'شكراً لتسجيلك في مركز ريادة الأعمال وحاضنات الأعمال - مصراتة!'
-          : 'Thank you for registering with the Entrepreneurship and Business Incubators Center - Misurata!'}
+          ? 'شكراً لتسجيلك في مركز الريادة والحاضنات والتطوير التقني - مصراتة!'
+          : 'Thank you for registering with the Entrepreneurship, Incubators & Technical Development Center - Misrata!'}
       </Text>
 
       {/* Verification Box */}
@@ -112,8 +112,8 @@ export const EmailVerification = ({
         <br />
         <strong>
           {isArabic
-            ? 'فريق مركز ريادة الأعمال وحاضنات الأعمال - مصراتة'
-            : 'Entrepreneurship and Business Incubators Center - Misurata Team'}
+            ? 'فريق مركز الريادة والحاضنات والتطوير التقني - مصراتة'
+            : 'Entrepreneurship, Incubators & Technical Development Center - Misrata Team'}
         </strong>
       </Text>
     </BaseLayout>

@@ -141,7 +141,7 @@ export const StrategicPlan = () => {
           // Explicit Slug Mapping for Branding
           let entityName = '';
           if (strategic.slug === 'ebic') {
-            entityName = isArabic ? 'مركز ريادة الأعمال وحاضنات الأعمال' : 'Entrepreneurship and Business Incubators Center';
+            entityName = isArabic ? 'مركز الريادة والحاضنات والتطوير التقني - مصراتة' : 'Entrepreneurship, Incubators & Technical Development Center - Misrata';
           } else if (strategic.slug === 'cit') {
             entityName = isArabic ? 'كلية التقنية الصناعية - مصراتة' : 'College of Industrial Technology - Misurata';
           } else {

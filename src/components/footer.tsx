@@ -36,7 +36,7 @@ export const Footer = () => {
               <div className="relative w-12 h-12 shrink-0">
                 <Image
                   src={MainLogo.Logo}
-                  alt="Entrepreneurship & Business Incubators Center"
+                  alt="Entrepreneurship, Incubators & Technical Development Center - Misrata"
                   fill
                   className="object-contain"
                 />

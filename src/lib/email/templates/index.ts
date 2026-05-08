@@ -175,8 +175,8 @@ export function getPasswordResetSubject(locale: 'ar' | 'en' = 'en'): string {
  */
 export function getWelcomeSubject(locale: 'ar' | 'en' = 'en'): string {
   return locale === 'ar'
-    ? '🎉 مرحباً بك في مركز ريادة الأعمال وحاضنات الأعمال - مصراتة'
-    : '🎉 Welcome to Entrepreneurship and Business Incubators Center - Misurata';
+    ? '🎉 مرحباً بك في مركز الريادة والحاضنات والتطوير التقني - مصراتة'
+    : '🎉 Welcome to Entrepreneurship, Incubators & Technical Development Center - Misrata';
 }
 
 /**

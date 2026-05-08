@@ -51,8 +51,8 @@ const BaseLayout = ({ children, locale = 'en' }: BaseLayoutProps) => {
 
             <Text style={headerTitle}>
               {isArabic
-                ? 'مركز ريادة الأعمال وحاضنات الأعمال - مصراتة'
-                : 'Entrepreneurship and Business Incubators Center - Misurata'}
+                ? 'مركز الريادة والحاضنات والتطوير التقني - مصراتة'
+                : 'Entrepreneurship, Incubators & Technical Development Center - Misrata'}
             </Text>
             <Text style={headerSubtitle}>
               {isArabic
@@ -70,8 +70,8 @@ const BaseLayout = ({ children, locale = 'en' }: BaseLayoutProps) => {
             <Text style={footerText}>
               © {new Date().getFullYear()}{' '}
               {isArabic
-                ? 'مركز ريادة الأعمال وحاضنات الأعمال - مصراتة. جميع الحقوق محفوظة.'
-                : 'Entrepreneurship and Business Incubators Center - Misurata. All rights reserved.'}
+                ? 'مركز الريادة والحاضنات والتطوير التقني - مصراتة. جميع الحقوق محفوظة.'
+                : 'Entrepreneurship, Incubators & Technical Development Center - Misrata. All rights reserved.'}
             </Text>
             <Text style={footerContact}>
               📧{' '}

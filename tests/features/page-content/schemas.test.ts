@@ -29,10 +29,10 @@ describe('Page Content Schemas', () => {
     it('should validate valid incubators page content', () => {
       const validData = {
         page: 'incubators' as const,
-        section: 'phases',
-        titleEn: 'Pre-Incubation',
-        titleAr: 'ما قبل الحضانة',
-        icon: 'Lightbulb',
+        section: 'tasks',
+        titleEn: 'Project incubation',
+        titleAr: 'احتضان المشاريع',
+        icon: 'Building2',
         order: 0,
       };
 
@@ -63,25 +63,25 @@ describe('Page Content Schemas', () => {
 
     it('should validate content with metadata', () => {
       const validData = {
-        page: 'incubators' as const,
-        section: 'metrics',
-        titleEn: 'Startups Supported',
-        titleAr: 'شركات مدعومة',
+        page: 'about' as const,
+        section: 'goals',
+        titleEn: 'Promoting a culture of entrepreneurship and innovation',
+        titleAr: 'تعزيز ثقافة الريادة والابتكار',
         order: 0,
-        metadata: { number: 150 },
+        metadata: { source: 'docs/source/أهداف_المركز.docx' },
       };
 
       const result = createPageContentSchema.safeParse(validData);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.metadata).toEqual({ number: 150 });
+        expect(result.data.metadata).toEqual({ source: 'docs/source/أهداف_المركز.docx' });
       }
     });
 
     it('should apply default values correctly', () => {
       const minimalData = {
         page: 'entrepreneurship' as const,
-        section: 'programs',
+        section: 'goals',
       };
 
       const result = createPageContentSchema.safeParse(minimalData);
@@ -122,7 +122,7 @@ describe('Page Content Schemas', () => {
     it('should validate color field when provided', () => {
       const validData = {
         page: 'entrepreneurship' as const,
-        section: 'programs',
+        section: 'goals',
         color: 'bg-gradient-to-r from-orange-500 to-red-500',
         order: 0,
       };
@@ -139,15 +139,15 @@ describe('Page Content Schemas', () => {
     it('should validate icon field when provided', () => {
       const validData = {
         page: 'incubators' as const,
-        section: 'resources',
-        icon: 'Users',
+        section: 'tasks',
+        icon: 'Building2',
         order: 0,
       };
 
       const result = createPageContentSchema.safeParse(validData);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.icon).toBe('Users');
+        expect(result.data.icon).toBe('Building2');
       }
     });
 
@@ -165,7 +165,7 @@ describe('Page Content Schemas', () => {
     it('should validate complex metadata structures', () => {
       const validData = {
         page: 'entrepreneurship' as const,
-        section: 'custom',
+        section: 'cta',
         metadata: {
           number: 100,
           label: 'Success Rate',

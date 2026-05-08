@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -36,11 +36,32 @@ import {
 } from '../schemas/page-content-schema';
 import type { PageContent } from '../types/page-content-type';
 
+type Page = 'entrepreneurship' | 'incubators' | 'about';
+
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  page: 'entrepreneurship' | 'incubators';
-  content?: PageContent | null; // null for create mode
+  page: Page;
+  content?: PageContent | null;
+};
+
+const SECTIONS_BY_PAGE: Record<Page, { value: string; label: string }[]> = {
+  entrepreneurship: [
+    { value: 'hero', label: 'Hero' },
+    { value: 'goals', label: 'Goals' },
+    { value: 'cta', label: 'CTA' },
+  ],
+  incubators: [
+    { value: 'hero', label: 'Hero' },
+    { value: 'tasks', label: 'Tasks' },
+    { value: 'cta', label: 'CTA' },
+  ],
+  about: [
+    { value: 'hero', label: 'Hero' },
+    { value: 'goals', label: 'Goals' },
+    { value: 'platform', label: 'Platform' },
+    { value: 'news', label: 'News' },
+  ],
 };
 
 export const ContentFormDialog = ({
@@ -75,7 +96,7 @@ export const ContentFormDialog = ({
   useEffect(() => {
     if (content) {
       form.reset({
-        page: content.page as any,
+        page: content.page as Page,
         section: content.section,
         titleEn: content.titleEn || '',
         titleAr: content.titleAr || '',
@@ -127,6 +148,7 @@ export const ContentFormDialog = ({
   };
 
   const isPending = isCreating || isUpdating;
+  const sectionOptions = SECTIONS_BY_PAGE[page] ?? [];
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -153,14 +175,11 @@ export const ContentFormDialog = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="hero">Hero</SelectItem>
-                        <SelectItem value="programs">Programs</SelectItem>
-                        <SelectItem value="values">Values</SelectItem>
-                        <SelectItem value="mission">Mission</SelectItem>
-                        <SelectItem value="phases">Phases</SelectItem>
-                        <SelectItem value="resources">Resources</SelectItem>
-                        <SelectItem value="metrics">Metrics</SelectItem>
-                        <SelectItem value="cta">CTA</SelectItem>
+                        {sectionOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -296,43 +315,23 @@ export const ContentFormDialog = ({
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="icon"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Icon (Lucide Component Name)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="e.g. Activity, Users, Target"
-                        {...field}
-                        value={field.value || ''}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="metadata.number"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Number (for metrics)</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="e.g. 500+, $1M"
-                        {...field}
-                        value={field.value || ''}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+            <FormField
+              control={form.control}
+              name="icon"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Icon (Lucide Component Name)</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g. Lightbulb, Users, Building2"
+                      {...field}
+                      value={field.value || ''}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="flex justify-end gap-2 pt-4">
               <Button

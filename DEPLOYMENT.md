@@ -217,6 +217,67 @@ docker compose restart app worker
 
 ---
 
+## Source-of-Truth Migration (One-Time)
+
+Run this on the **first** deployment that ships the source-of-truth cleanup
+contract (rename + dead-section removal). Skip on every subsequent deploy.
+
+### What changed
+
+1. **Center renamed** to add the city. The new official name is:
+
+   - **AR:** `مركز الريادة والحاضنات والتطوير التقني - مصراتة`
+   - **EN:** `Entrepreneurship, Incubators & Technical Development Center - Misrata`
+   - **Short EN:** `EBIC - Misrata`
+
+   Existing `PageContent` rows in production are migrated automatically by
+   re-running the seed (which upserts on `(page, section, order)`). The seed
+   is idempotent: running it again is a no-op. Any rows edited manually in
+   the admin will be overwritten by the seed — coordinate with content
+   owners before running.
+
+2. **Dead section keys removed.** The Entrepreneurship and Incubators pages
+   no longer recognize `programs / values / mission / phases / resources /
+   metrics`. After deploying, delete those rows from the production DB with
+   the one-shot statement below.
+
+### Run order on first deploy
+
+```bash
+# 1. Apply schema migrations (none added by this contract, but always run)
+bun run prisma migrate deploy
+
+# 2. Upsert page content from the four official .docx source documents
+bunx tsx prisma/seed-ebic-page-content.ts
+
+# 3. One-shot cleanup of orphaned rows from the previous content model
+mariadb -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" <<'SQL'
+DELETE FROM page_content
+ WHERE section IN ('programs','values','mission','phases','resources','metrics');
+SQL
+
+# 4. Reload PM2 (or restart Docker app/worker)
+pm2 reload ecosystem.config.cjs
+```
+
+### Verification after deploy
+
+```bash
+# Should show 19 rows: about/hero+platform+goals(5)+news(1) +
+# entrepreneurship/goals(6) + incubators/tasks(5)
+mariadb -u "$DB_USER" -p"$DB_PASSWORD" -e \
+  "SELECT page, section, COUNT(*) FROM page_content GROUP BY page, section ORDER BY page, section;" \
+  "$DB_NAME"
+
+# Should return zero rows
+mariadb -u "$DB_USER" -p"$DB_PASSWORD" -e \
+  "SELECT id, page, section FROM page_content
+    WHERE section IN ('programs','values','mission','phases','resources','metrics');" \
+  "$DB_NAME"
+```
+
+---
+
 ## Updating the Application
 
 After pushing code changes to the `main` branch:
