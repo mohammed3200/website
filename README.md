@@ -3,7 +3,7 @@
 **Center for Entrepreneurship & Business Incubators - Misurata**  
 **Affiliated with Misurata College of Industrial Technology**
 
-<p align="center">
+<p align="center" style="justify-content: space-around;">
   <img src="./public/assets/icons/college.svg" alt="Misurata College Logo" width="120" />
   <img src="./public/assets/icons/logo.svg" alt="EBIC Logo" width="120" />
 </p>
