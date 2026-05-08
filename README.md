@@ -4,7 +4,7 @@
 **Affiliated with Misurata College of Industrial Technology**
 
 <p align="center">
-  <img src="./public/assets/icons/college.png" alt="Misurata College Logo" width="120" />
+  <img src="./public/assets/icons/college.svg" alt="Misurata College Logo" width="120" />
   <img src="./public/assets/icons/logo.svg" alt="EBIC Logo" width="120" />
 </p>
 
@@ -572,8 +572,8 @@ Distributed under the MIT License. See `LICENSE` for details.
 Misurata College of Industrial Technology  
 Misurata, Libya
 
-- **Email:** ebic@cit.edu.ly
-- **Website:** https://ebic.cit.edu.ly
+- **Email:** <ebic@cit.edu.ly>
+- **Website:** <https://ebic.cit.edu.ly>
 
 ---
 
