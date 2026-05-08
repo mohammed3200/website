@@ -1,11 +1,11 @@
-# EBIC Website - Misurata Entrepreneurship Center
+# EIDC Website
 
-**Center for Entrepreneurship & Business Incubators - Misurata**  
+**Entrepreneurship, Incubators, and Technical Development Center - Misurata**  
 **Affiliated with Misurata College of Industrial Technology**
 
-<p align="center" style="justify-content: space-around;">
-  <img src="./public/assets/icons/college.svg" alt="Misurata College Logo" width="120" />
-  <img src="./public/assets/icons/logo.svg" alt="EBIC Logo" width="120" />
+<p align="center" style="display: flex; justify-content: space-evenly;">
+  <img src="./public/assets/icons/college.svg" alt="Misurata College Logo" width="300" />
+  <img src="./public/assets/icons/logo.svg" alt="EIDC Logo" width="300" />
 </p>
 
 <p align="center">
