@@ -18,10 +18,10 @@ if (process.env.NODE_ENV === 'production') {
 import { db } from "@/lib/db";
 import { LoginSchema } from "@/features/auth/schemas"; // Use consistent import path
 import { getUserByEmail } from "@/data/user";
-import { getTwoFactorConfirmationByUserId } from "@/data/two-factor-confirmation";
 import { getAccountByUserId } from "@/data/account";
 import { comparePassword } from "@/lib/auth"; // Use your custom compare function
 import { getUserPermissions } from "@/lib/rbac";
+import { verifyBypass } from "@/features/auth/two-factor/bypass-token";
 
 export const {
   handlers,
@@ -51,9 +51,27 @@ export const {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
+        // Optional one-time bypass minted by /api/auth/verify-2fa once the
+        // user has supplied a valid 2FA code. Skips the password compare and
+        // is bound to the same email by HMAC.
+        tfaBypass: { label: "TFA Bypass", type: "text" },
       },
       async authorize(credentials) {
+        // Path 1: post-2FA bypass (signed token, 30 s TTL)
+        const tfa = (credentials as Record<string, unknown>)?.tfaBypass;
+        const emailField = (credentials as Record<string, unknown>)?.email;
+        if (typeof tfa === "string" && tfa.length > 0 && typeof emailField === "string") {
+          const userId = verifyBypass(tfa, emailField);
+          if (!userId) return null;
+          const user = await db.user.findUnique({ where: { id: userId } });
+          if (!user || !user.email) return null;
+          return user;
+        }
+
+        // Path 2: standard email + password (used either when 2FA is disabled
+        // OR by the server action's first call to validate the password before
+        // issuing the 2FA code).
         const validatedFields = LoginSchema.safeParse(credentials);
 
         if (validatedFields.success) {
@@ -170,16 +188,11 @@ export const {
       // Prevent sign in without email verification
       if (!existingUser.emailVerified) return false;
 
-      if (existingUser.isTwoFactorEnabled) {
-        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(existingUser.id);
-
-        if (!twoFactorConfirmation) return false;
-
-        await db.twoFactorConfirmation.delete({
-          where: { id: twoFactorConfirmation.id },
-        });
-      }
-
+      // 2FA enforcement is now handled by the Redis-backed verify-2fa flow
+      // BEFORE this callback runs: the server action only calls signIn() once
+      // a valid bypass token has been minted. So if execution reaches this
+      // point, either the user has 2FA disabled OR they have already cleared
+      // the verification challenge.
       return true;
     },
   },

@@ -19,6 +19,7 @@ import { SubmissionTrendsChart } from '@/features/admin/components/dashboard/sub
 import { StatusBreakdownChart } from '@/features/admin/components/dashboard/status-breakdown-chart';
 import { RecentActivityFeed } from '@/features/admin/components/dashboard/recent-activity-feed';
 import { DashboardDateFilter } from '@/features/admin/components/dashboard/dashboard-date-filter';
+import { QueueHealthCard } from '@/features/admin/components/dashboard/queue-health-card';
 import { DashboardStatsGridSkeleton } from '@/components/skeletons';
 import { Button } from '@/components/ui/button';
 
@@ -164,7 +165,12 @@ const AdminDashboardPage = () => {
         <StatusBreakdownChart />
       </div>
 
-      {/* Row 2: Quick Actions & Activity */}
+      {/* Row 2a: Queue health (email + whatsapp BullMQ counts + last-24h log totals) */}
+      <div className="grid grid-cols-1 gap-6">
+        <QueueHealthCard />
+      </div>
+
+      {/* Row 2b: Quick Actions & Activity */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Quick Actions */}
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">

@@ -42,7 +42,8 @@
     "src/components/SlideTabs.js",
     "dist/types/**/*.ts",
     "src/lib/client.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    ".next/dev/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

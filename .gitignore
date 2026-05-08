@@ -100,3 +100,4 @@ tests/outgoing/*.json
 
 # Keep the .gitkeep file
 tests/outgoing/.gitkeeptest_output.log
+*.rdb

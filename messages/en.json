@@ -37,6 +37,25 @@
         "emailRequiredToResend": "Email is required to resend code",
         "failedToResend": "Failed to resend code"
       }
+    },
+    "verify": {
+      "title": "Two-step verification",
+      "subtitle": "Enter the 6-digit code we sent to {email}",
+      "codeInputLabel": "6-digit verification code",
+      "verifyAction": "Verify",
+      "verifying": "Verifying...",
+      "resend": "Resend code",
+      "resendIn": "Resend in",
+      "resendSent": "A new code has been sent to your email.",
+      "success": "Verified! Redirecting...",
+      "attemptsRemaining": "attempts remaining",
+      "errors": {
+        "invalid": "Invalid code",
+        "expired": "Code expired. Please sign in again.",
+        "locked": "Too many attempts. Account temporarily locked. Please try again in 15 minutes.",
+        "resendFailed": "Failed to resend the code.",
+        "sessionFailed": "Failed to start session. Please try again."
+      }
     }
   },
   "Navigation": {
