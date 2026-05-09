@@ -448,6 +448,18 @@ const app = new Hono<{ Variables: Variables }>()
     }
   })
 
+  // GET /api/admin/queues - Email + WhatsApp queue health (Task 13 widget)
+  .get('/queues', async (c) => {
+    try {
+      const { getEmailQueueHealth } = await import('@/features/admin/queries/queue-health');
+      const data = await getEmailQueueHealth();
+      return c.json(data);
+    } catch (error) {
+      console.error('Error fetching queue health:', error);
+      return c.json({ error: 'Failed to fetch queue health' }, 500);
+    }
+  })
+
   // --- Reports Section ---
 
   // GET /api/admin/reports - List generated reports

@@ -148,11 +148,15 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
     setSuccess('');
 
     startTransition(() => {
-      login(values, callbackUrl)
+      login(values, callbackUrl, locale === 'ar' ? 'ar' : 'en')
         .then((data) => {
-          if (data?.error) setError(data.error);
-          if (data?.success) setSuccess(data.success);
-          if (data?.twoFactor) setShowTwoFactor(true);
+          if ('error' in data) setError(data.error);
+          else if ('success' in data) setSuccess(data.success);
+          else if ('twoFactor' in data && data.twoFactor) {
+            // 2FA path: server set the eitdc_2fa_pending cookie. Hand off
+            // the rest of the flow to /auth/verify (gated by middleware).
+            router.push('/auth/verify');
+          }
         })
         .catch(() => setError(t('errors.somethingWentWrong')));
     });
@@ -162,17 +166,12 @@ export function LoginForm({ isGoogleEnabled = true, locale = 'en' }: LoginFormPr
     if (resendCooldown > 0) return;
     setError('');
     setSuccess('');
-    const email = form.getValues('email');
-    if (!email) {
-      setError(t('errors.emailRequiredToResend'));
-      return;
-    }
 
     startTransition(() => {
-      resendTwoFactor(email)
+      resendTwoFactor()
         .then((data) => {
-          if (data?.error) setError(data.error);
-          if (data?.success) {
+          if ('error' in data) setError(data.error);
+          else if ('success' in data) {
             setSuccess(data.success);
             setResendCooldown(60);
           }

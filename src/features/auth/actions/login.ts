@@ -4,32 +4,35 @@ import { z } from 'zod';
 import { signIn } from '@/features/auth/auth';
 import { LoginSchema } from '@/features/auth/schemas';
 import { getUserByEmail } from '@/data/user';
-import {
-  generateVerificationToken,
-  generateTwoFactorToken,
-} from '@/lib/tokens';
+import { generateVerificationToken } from '@/lib/tokens';
 import { emailService } from '@/lib/email/service';
-import { getTwoFactorTokenByEmail } from '@/data/two-factor-token';
-import { getTwoFactorConfirmationByUserId } from '@/data/two-factor-confirmation';
-import { db } from '@/lib/db';
+import { issueCode } from '@/features/auth/two-factor/issue';
+import { setPendingCookie } from '@/features/auth/two-factor/pending-cookie';
+import { comparePassword } from '@/lib/auth';
 import { AuthError } from 'next-auth';
 import { DEFAULT_LOGIN_REDIRECT } from '@/routes';
 import { rateLimit } from '@/lib/rate-limit';
 
+export type LoginActionResult =
+  | { success: string }
+  | { error: string }
+  | { twoFactor: true; cooldownSeconds: number };
+
 export const login = async (
   values: z.infer<typeof LoginSchema>,
   callbackUrl?: string | null,
-) => {
+  locale: 'ar' | 'en' = 'en',
+): Promise<LoginActionResult> => {
   const validatedFields = LoginSchema.safeParse(values);
 
   if (!validatedFields.success) {
     return { error: 'Invalid fields!' };
   }
 
-  const { email, password, code } = validatedFields.data;
+  const { email, password } = validatedFields.data;
 
-  // W-04: Basic rate limiting to prevent brute-force
-  const limiter = await rateLimit(`login:${email}`, 5, 900); // 5 attempts per 15 mins
+  // Brute-force throttle on the email itself (independent of 2FA's own counters)
+  const limiter = await rateLimit(`login:${email}`, 5, 900); // 5 attempts / 15 min
   if (!limiter.success) {
     return { error: 'Too many login attempts. Please try again in 15 minutes.' };
   }
@@ -41,23 +44,15 @@ export const login = async (
   }
 
   if (!existingUser.emailVerified) {
-    const verificationToken = await generateVerificationToken(
-      existingUser.email,
-    );
+    const verificationToken = await generateVerificationToken(existingUser.email);
 
-    // Send verification email using the new template
-    const baseUrl =
-      process.env.NEXT_PUBLIC_APP_URL || 'https://ebic.cit.edu.ly';
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ebic.cit.edu.ly';
     const verificationLink = `${baseUrl}/auth/new-verification?token=${verificationToken.token}`;
     const userName = existingUser.name || existingUser.email.split('@')[0];
 
     const result = await emailService.sendEmailVerification(
-      {
-        name: userName,
-        email: verificationToken.email,
-        verificationLink,
-      },
-      'en', // You can add locale detection here
+      { name: userName, email: verificationToken.email, verificationLink },
+      locale,
       '24 hours',
     );
 
@@ -68,73 +63,53 @@ export const login = async (
     return { success: 'Confirmation email sent!' };
   }
 
-  if (existingUser.isTwoFactorEnabled && existingUser.email) {
-    if (code) {
-      const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email);
-
-      if (!twoFactorToken) {
-        return { error: 'Invalid code!' };
-      }
-
-      if (twoFactorToken.token !== code) {
-        return { error: 'Invalid code!' };
-      }
-
-      const hasExpired = new Date(twoFactorToken.expires) < new Date();
-
-      if (hasExpired) {
-        return { error: 'Code expired!' };
-      }
-
-      await db.twoFactorToken.delete({
-        where: { id: twoFactorToken.id },
-      });
-
-      const existingConfirmation = await getTwoFactorConfirmationByUserId(
-        existingUser.id,
-      );
-
-      if (existingConfirmation) {
-        await db.twoFactorConfirmation.delete({
-          where: { id: existingConfirmation.id },
-        });
-      }
-
-      await db.twoFactorConfirmation.create({
-        data: {
-          userId: existingUser.id,
-        },
-      });
-    } else {
-      const twoFactorToken = await generateTwoFactorToken(existingUser.email);
-
-      // Send 2FA code using template
-      const userName = existingUser.name || existingUser.email.split('@')[0];
-
-      const result = await emailService.send2FA(
-        {
-          name: userName,
-          email: twoFactorToken.email,
-          code: twoFactorToken.token,
-        },
-        'en', // You can add locale detection here
-        '5 minutes',
-      );
-
-      if (!result.success) {
-        return { error: 'Failed to send 2FA code!' };
-      }
-
-      return { twoFactor: true };
-    }
+  // Validate the password BEFORE issuing the 2FA code so we never email a
+  // code to someone who can't authenticate. We do not call signIn() yet —
+  // that happens after /api/auth/verify-2fa accepts the code.
+  const passwordsMatch = await comparePassword(password, existingUser.password);
+  if (!passwordsMatch) {
+    return { error: 'Invalid credentials!' };
   }
 
+  if (existingUser.isActive === false) {
+    return { error: 'Your account has been deactivated. Please contact an administrator.' };
+  }
+
+  if (existingUser.isTwoFactorEnabled && existingUser.email) {
+    const issued = await issueCode(existingUser.id, existingUser.email, locale);
+    if (!issued.ok) {
+      switch (issued.reason) {
+        case 'locked':
+          return { error: 'Account temporarily locked. Please try again in 15 minutes.' };
+        case 'cooldown':
+          return { error: `Please wait ${issued.retryAfter}s before requesting another code.` };
+        case 'rate_limited':
+          return { error: 'Too many code requests. Please try again later.' };
+        case 'send_failed':
+          return { error: 'Failed to send the verification code. Please try again.' };
+        default:
+          return { error: 'Could not issue verification code.' };
+      }
+    }
+
+    await setPendingCookie({
+      userId: existingUser.id,
+      email: existingUser.email,
+      locale,
+    });
+
+    return { twoFactor: true, cooldownSeconds: issued.resendInSeconds };
+  }
+
+  // No 2FA configured for this user — issue the session directly.
   try {
     await signIn('credentials', {
       email,
       password,
       redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
     });
+    // signIn redirects, so this return is unreachable in practice.
+    return { success: 'Signed in.' };
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
