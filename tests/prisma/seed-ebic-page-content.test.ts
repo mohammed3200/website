@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, mock, jest } from 'bun:test';
+import { describe, it, expect, beforeEach, afterAll, mock, jest } from 'bun:test';
 
 // In-memory mock prisma client. We capture every findFirst / create / update
 // invocation so the seed's idempotency contract can be asserted directly.
@@ -66,6 +66,7 @@ mock.module('@prisma/adapter-mariadb', () => ({
 
 // Importing the seed module runs the top-of-file DATABASE_URL guard, so the
 // env var must be set before the dynamic import below.
+const originalEnv = { ...process.env };
 process.env.DATABASE_URL = 'mysql://test:test@localhost:3306/test';
 process.env.NODE_ENV = 'test';
 
@@ -73,6 +74,10 @@ process.env.NODE_ENV = 'test';
 const { seed } = await import('../../prisma/seed-ebic-page-content');
 
 describe('EBIC seed-ebic-page-content', () => {
+  afterAll(() => {
+    process.env = originalEnv;
+  });
+
   beforeEach(() => {
     store.length = 0;
     nextId = 1;

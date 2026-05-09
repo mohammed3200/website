@@ -95,9 +95,12 @@ export const ContentFormDialog = ({
 
   useEffect(() => {
     if (content) {
+      const allowedSections = SECTIONS_BY_PAGE[page]?.map((s) => s.value) ?? [];
+      const sectionValue = allowedSections.includes(content.section) ? content.section : '';
+
       form.reset({
         page: content.page as Page,
-        section: content.section,
+        section: sectionValue,
         titleEn: content.titleEn || '',
         titleAr: content.titleAr || '',
         contentEn: content.contentEn || '',

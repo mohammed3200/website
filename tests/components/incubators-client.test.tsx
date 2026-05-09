@@ -378,6 +378,9 @@ describe('IncubatorsClient Component', () => {
 
       render(<IncubatorsClient locale="en" content={fixture} />);
 
+      const items = screen.getAllByRole('listitem');
+      expect(items).toHaveLength(fixture.length);
+
       for (const t of fixture) {
         expect(screen.getByText(t.titleEn)).toBeInTheDocument();
       }

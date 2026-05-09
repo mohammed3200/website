@@ -1,11 +1,13 @@
 import { MainLogo } from '@/constants';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface HeaderProps {
   label?: string;
 }
 
 export const Header = ({ label }: HeaderProps) => {
+  const t = useTranslations('Common');
   return (
     <div className="w-full flex flex-col gap-y-2 items-center">
       <div className="w-full flex flex-row justify-between items-center">
@@ -23,7 +25,7 @@ export const Header = ({ label }: HeaderProps) => {
         />
       </div>
         <h1 className="text-xl font-semibold font-din-regular">
-          مركز الريادة والحاضنات والتطوير التقني - مصراتة
+          {t('centerName')}
         </h1>
       {label && <p className="text-muted-foreground text-sm">{label}</p> }
     </div>

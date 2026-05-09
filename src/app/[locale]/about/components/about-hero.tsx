@@ -17,8 +17,8 @@ export function AboutHero({ locale, item }: Props) {
 
   const title = item
     ? isArabic
-      ? item.titleAr ?? item.titleEn
-      : item.titleEn ?? item.titleAr
+      ? item.titleAr?.trim() || item.titleEn?.trim() || t('title')
+      : item.titleEn?.trim() || item.titleAr?.trim() || t('title')
     : t('title');
 
   const content = item

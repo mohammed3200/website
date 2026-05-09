@@ -420,6 +420,9 @@ describe('EntrepreneurshipClient Component', () => {
 
       render(<EntrepreneurshipClient locale="en" content={fixture} />);
 
+      const descriptions = screen.getAllByText('Description');
+      expect(descriptions).toHaveLength(fixture.length);
+
       for (const g of fixture) {
         expect(screen.getByText(g.titleEn)).toBeInTheDocument();
       }

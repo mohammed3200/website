@@ -72,7 +72,7 @@ export default function IncubatorsClient({ locale, content }: Props) {
 
                 {/* Tasks */}
                 {tasksContent.length > 0 ? (
-                    <ol className="space-y-6 max-w-4xl mx-auto" aria-label="Incubator Tasks">
+                    <ol className="space-y-6 max-w-4xl mx-auto" aria-label={t('incubatorTasks')}>
                         {tasksContent.map((task, index) => {
                             const Icon = (task.icon ? iconMap[task.icon] : null) ?? Building2;
                             return (

@@ -31,13 +31,14 @@ export default async function AboutPage({
   const { locale } = await params;
 
   const content = await getPageContent('about');
+  const activeContent = content.filter((c) => c.isActive);
 
-  const heroContent = content.find((c) => c.section === 'hero');
-  const platformContent = content.find((c) => c.section === 'platform');
-  const goals = content
+  const heroContent = activeContent.find((c) => c.section === 'hero');
+  const platformContent = activeContent.find((c) => c.section === 'platform');
+  const goals = activeContent
     .filter((c) => c.section === 'goals')
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  const newsContent = content.find((c) => c.section === 'news');
+  const newsContent = activeContent.find((c) => c.section === 'news');
 
   return (
     <div className="flex flex-col">

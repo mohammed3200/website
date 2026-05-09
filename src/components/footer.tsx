@@ -36,7 +36,7 @@ export const Footer = () => {
               <div className="relative w-12 h-12 shrink-0">
                 <Image
                   src={MainLogo.Logo}
-                  alt="Entrepreneurship, Incubators & Technical Development Center - Misrata"
+                  alt={tNav('centerName')}
                   fill
                   className="object-contain"
                 />

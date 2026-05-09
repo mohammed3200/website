@@ -253,11 +253,15 @@ bunx tsx prisma/seed-ebic-page-content.ts
 # 3. One-shot cleanup of orphaned rows from the previous content model
 mariadb -u "$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" <<'SQL'
 DELETE FROM page_content
- WHERE section IN ('programs','values','mission','phases','resources','metrics');
+ WHERE (page = 'entrepreneurship' AND section IN ('programs','values','mission'))
+    OR (page = 'incubators' AND section IN ('phases','resources','metrics'));
 SQL
 
-# 4. Reload PM2 (or restart Docker app/worker)
-pm2 reload ecosystem.config.cjs
+# 4. Restart Application (Primary Method: Docker)
+docker compose restart app worker
+
+# Optional Fallback: If your host uses PM2 instead of Docker for process management, use:
+# pm2 reload ecosystem.config.cjs
 ```
 
 ### Verification after deploy

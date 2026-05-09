@@ -46,6 +46,7 @@ export interface StrategicPlanItem {
 export const StrategicPlan = () => {
   const router = useRouter();
   const t = useTranslations('StrategicPlan');
+  const tCommon = useTranslations('Common');
 
   const { isArabic, lang } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
@@ -141,7 +142,7 @@ export const StrategicPlan = () => {
           // Explicit Slug Mapping for Branding
           let entityName = '';
           if (strategic.slug === 'ebic') {
-            entityName = isArabic ? 'مركز الريادة والحاضنات والتطوير التقني - مصراتة' : 'Entrepreneurship, Incubators & Technical Development Center - Misrata';
+            entityName = tCommon('centerName');
           } else if (strategic.slug === 'cit') {
             entityName = isArabic ? 'كلية التقنية الصناعية - مصراتة' : 'College of Industrial Technology - Misurata';
           } else {
