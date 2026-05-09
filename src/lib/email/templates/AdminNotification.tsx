@@ -122,8 +122,8 @@ export const AdminNotification = ({
         <br />
         <strong>
           {isArabic
-            ? 'نظام إدارة مركز ريادة الأعمال وحاضنات الأعمال - مصراتة'
-            : 'EBIC Management System - Misurata'}
+            ? 'نظام إدارة مركز الريادة والحاضنات والتطوير التقني - مصراتة'
+            : 'EBIC - Misrata Management System'}
         </strong>
       </Text>
     </BaseLayout>

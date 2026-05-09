@@ -5,7 +5,7 @@ import { AppProviders } from '@/components/providers/app-providers';
 import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
-  title: 'Entrepreneurship and Business Incubators Center - Misurata',
+  title: 'Entrepreneurship, Incubators & Technical Development Center - Misrata',
   description:
     'Entrepreneurship and incubation of projects and businesses for creators and innovators',
 };

@@ -7,6 +7,7 @@ import IncubatorsClient from '@/app/[locale]/incubators/components/incubators-cl
 mock.module('framer-motion', () => ({
   motion: {
     div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
   },
 }));
 
@@ -312,6 +313,74 @@ describe('IncubatorsClient Component', () => {
 
       expect(container.querySelector('section')).toBeInTheDocument();
       expect(container.querySelector('h1')).toBeInTheDocument();
+    });
+  });
+
+  describe('Source-of-Truth Section Whitelist', () => {
+    // The Incubators page only renders sections from the
+    // `أهداف_قسم_الحاضنات.docx` source document plus hero/cta wrappers.
+    it.each(['phases', 'resources', 'metrics'])(
+      'should not render content for the invented section "%s"',
+      (deadSection) => {
+        const mockContent = [
+          {
+            id: '1',
+            page: 'incubators',
+            section: deadSection,
+            titleEn: 'Should-not-be-rendered Title',
+            titleAr: 'عنوان لا يجب أن يظهر',
+            order: 0,
+            isActive: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            contentEn: null,
+            contentAr: null,
+            icon: null,
+            color: null,
+            metadata: null,
+          },
+        ];
+
+        render(<IncubatorsClient locale="en" content={mockContent} />);
+
+        expect(
+          screen.queryByText('Should-not-be-rendered Title'),
+        ).not.toBeInTheDocument();
+      },
+    );
+
+    it('should render exactly five task cards when seeded with the D.4 fixture', () => {
+      const fixture = [
+        { titleEn: 'Project incubation', icon: 'Building2' },
+        { titleEn: 'Guidance, training, and consulting services', icon: 'MessageSquare' },
+        {
+          titleEn: 'Implementing privileges, grants, and funding programs',
+          icon: 'DollarSign',
+        },
+        { titleEn: 'Preparing economic feasibility studies', icon: 'BarChart3' },
+        { titleEn: 'Developing existing factories', icon: 'Factory' },
+      ].map((t, i) => ({
+        id: `t-${i}`,
+        page: 'incubators',
+        section: 'tasks',
+        order: i,
+        titleEn: t.titleEn,
+        titleAr: 'مهمة',
+        contentEn: 'Description',
+        contentAr: 'وصف',
+        icon: t.icon,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        color: null,
+        metadata: null,
+      }));
+
+      render(<IncubatorsClient locale="en" content={fixture} />);
+
+      for (const t of fixture) {
+        expect(screen.getByText(t.titleEn)).toBeInTheDocument();
+      }
     });
   });
 });

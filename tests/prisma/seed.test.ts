@@ -1,7 +1,14 @@
 import { describe, it, expect, beforeEach, jest, mock } from 'bun:test';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { main } from '../../prisma/seed';
+
+// prisma/seed.ts validates DATABASE_URL at module load, so it must be set
+// before the dynamic import below or the entire test file fails to load.
+process.env.DATABASE_URL = process.env.DATABASE_URL || 'mysql://test:test@localhost:3306/test';
+process.env.INIT_ADMIN_EMAIL = process.env.INIT_ADMIN_EMAIL || 'admin@test.com';
+process.env.INIT_ADMIN_PASSWORD = process.env.INIT_ADMIN_PASSWORD || 'password123';
+
+const { main } = await import('../../prisma/seed');
 
 // Mock dependencies
 const mockPrismaClient = jest.fn();
@@ -278,11 +285,11 @@ describe('Database Seed Functions', () => {
     it('should handle page content with metadata', async () => {
       const contentItem = {
         page: 'incubators',
-        section: 'metrics',
+        section: 'tasks',
         order: 0,
-        titleEn: 'Startups Supported',
-        titleAr: 'شركات مدعومة',
-        metadata: { number: 150 },
+        titleEn: 'Project incubation',
+        titleAr: 'احتضان المشاريع',
+        metadata: { source: 'docs/source/أهداف_قسم_الحاضنات.docx' },
       };
 
       mockPrisma.pageContent.upsert.mockResolvedValue({
@@ -290,7 +297,7 @@ describe('Database Seed Functions', () => {
         ...contentItem,
       });
 
-      expect(contentItem.metadata).toEqual({ number: 150 });
+      expect(contentItem.metadata).toEqual({ source: 'docs/source/أهداف_قسم_الحاضنات.docx' });
     });
 
     it('should seed both entrepreneurship and incubators pages', async () => {

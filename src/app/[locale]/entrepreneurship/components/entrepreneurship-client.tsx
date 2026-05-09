@@ -5,12 +5,13 @@ import { motion } from 'framer-motion';
 import {
     Megaphone,
     Brain,
-    Star,
+    Sparkles,
     FlaskConical,
     GraduationCap,
     Lightbulb,
     ArrowRight,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import type { PageContent } from '@prisma/client';
 
@@ -23,35 +24,33 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
     const t = useTranslations('Entrepreneurship');
     const isArabic = locale === 'ar';
 
-    // Helper to get content by section
     const getSection = (section: string) => {
         return content
             .filter((item) => item.section === section)
             .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     };
 
-    // Icon map
     const iconMap: Record<string, any> = {
         Megaphone,
         Brain,
         Lightbulb,
         GraduationCap,
-        Star,
+        Sparkles,
         FlaskConical,
         ArrowRight,
     };
 
-    // Get content sections
-    const goalsContent = getSection('goals');
     const heroContent = getSection('hero')[0];
-    const emptyStateContent = getSection('emptyState')[0];
+    const goalsContent = getSection('goals');
+    const ctaContent = getSection('cta')[0];
 
-    const defaultEmptyState = t('emptyState') || 'No content available.';
-    const localizedEmptyState = emptyStateContent
-        ? (isArabic
-            ? emptyStateContent.contentAr || emptyStateContent.titleAr || defaultEmptyState
-            : emptyStateContent.contentEn || emptyStateContent.titleEn || defaultEmptyState)
-        : defaultEmptyState;
+    const localized = (item: PageContent | undefined, field: 'title' | 'content') => {
+        if (!item) return undefined;
+        if (field === 'title') {
+            return isArabic ? (item.titleAr ?? item.titleEn) : (item.titleEn ?? item.titleAr);
+        }
+        return isArabic ? (item.contentAr ?? item.contentEn) : (item.contentEn ?? item.contentAr);
+    };
 
     return (
         <section
@@ -59,29 +58,21 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
             dir={isArabic ? 'rtl' : 'ltr'}
         >
             <div className="container mx-auto px-4 space-y-16">
-                {/* Hero Header */}
+                {/* Hero */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center max-w-4xl mx-auto space-y-6"
                 >
                     <h1 className="font-din-bold text-4xl md:text-5xl lg:text-6xl text-gray-900 dark:text-white">
-                        {heroContent
-                            ? isArabic
-                                ? heroContent.titleAr || heroContent.titleEn
-                                : heroContent.titleEn || heroContent.titleAr
-                            : t('title')}
+                        {localized(heroContent, 'title') ?? t('title')}
                     </h1>
                     <p className="font-din-regular text-lg md:text-xl text-gray-600 dark:text-gray-300">
-                        {heroContent
-                            ? isArabic
-                                ? heroContent.contentAr || heroContent.contentEn
-                                : heroContent.contentEn || heroContent.contentAr
-                            : t('subtitle')}
+                        {localized(heroContent, 'content') ?? t('subtitle')}
                     </p>
                 </motion.div>
 
-                {/* Goals Grid (The core content for this page) */}
+                {/* Goals */}
                 {goalsContent.length > 0 ? (
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {goalsContent.map((goal, index) => {
@@ -98,15 +89,11 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                                         <Icon className="w-8 h-8 text-orange-600 dark:text-orange-400" />
                                     </div>
                                     <h3 className="font-din-bold text-xl mb-3 text-gray-900 dark:text-white leading-tight">
-                                        {isArabic
-                                            ? goal.titleAr || goal.titleEn
-                                            : goal.titleEn || goal.titleAr}
+                                        {localized(goal, 'title')}
                                     </h3>
                                     {(goal.contentAr || goal.contentEn) && (
                                         <p className="font-din-regular text-gray-600 dark:text-gray-300 leading-relaxed">
-                                            {isArabic
-                                                ? goal.contentAr || goal.contentEn
-                                                : goal.contentEn || goal.contentAr}
+                                            {localized(goal, 'content')}
                                         </p>
                                     )}
                                 </motion.div>
@@ -116,11 +103,36 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                 ) : (
                     <div className="text-center py-12">
                         <p className="text-gray-400 dark:text-gray-500">
-                            {localizedEmptyState}
+                            {t('emptyState')}
                         </p>
                     </div>
                 )}
 
+                {/* CTA */}
+                {ctaContent && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center max-w-2xl mx-auto space-y-6"
+                    >
+                        <h2 className="font-din-bold text-2xl md:text-3xl text-gray-900 dark:text-white">
+                            {localized(ctaContent, 'title')}
+                        </h2>
+                        {(ctaContent.contentAr || ctaContent.contentEn) && (
+                            <p className="font-din-regular text-lg text-gray-600 dark:text-gray-300">
+                                {localized(ctaContent, 'content')}
+                            </p>
+                        )}
+                        <Link
+                            href={`/${locale}/innovators`}
+                            className="inline-flex items-center gap-2 px-8 py-4 bg-orange-500 hover:bg-orange-600 text-white font-din-bold text-lg rounded-full transition-all duration-300 shadow-lg hover:shadow-xl"
+                        >
+                            {localized(ctaContent, 'title')}
+                            <ArrowRight className={`w-5 h-5 ${isArabic ? 'rotate-180' : ''}`} />
+                        </Link>
+                    </motion.div>
+                )}
             </div>
         </section>
     );

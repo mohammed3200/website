@@ -23,7 +23,7 @@ export const Header = ({ label }: HeaderProps) => {
         />
       </div>
         <h1 className="text-xl font-semibold font-din-regular">
-          مركز الريادة و الحضانات الأعمال
+          مركز الريادة والحاضنات والتطوير التقني - مصراتة
         </h1>
       {label && <p className="text-muted-foreground text-sm">{label}</p> }
     </div>

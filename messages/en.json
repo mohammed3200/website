@@ -59,7 +59,8 @@
     "registerInnovatorDesc": "Share your idea or project",
     "innovatorsList": "Innovators List",
     "innovatorsListDesc": "Browse projects and ideas",
-    "centerName": "Entrepreneurship & Business Incubators Center",
+    "centerName": "Entrepreneurship, Incubators & Technical Development Center - Misrata",
+    "centerShortName": "EBIC - Misrata",
     "collegeName": "College of Industrial Technology - Misrata",
     "about": "About Us",
     "aboutDesc": "Learn about our center and mission",
@@ -118,59 +119,50 @@
     "goBack": "Go Back"
   },
   "Entrepreneurship": {
-    "title": "Leadership & Entrepreneurship Development",
-    "subtitle": "Empowering the next generation of leaders and entrepreneurs through comprehensive programs and strategic guidance",
-    "workshops": "Professional Workshops",
-    "workshopsDesc": "Hands-on workshops covering business planning, financial management, and leadership skills",
-    "mentorship": "Expert Mentorship",
-    "mentorshipDesc": "One-on-one guidance from experienced entrepreneurs and industry professionals",
-    "strategic": "Strategic Planning",
-    "strategicDesc": "Comprehensive strategic planning and business consulting services",
-    "growth": "Business Growth",
-    "growthDesc": "Scaling strategies and market expansion support for growing enterprises",
-    "coreValues": "Our Core Values",
-    "excellence": "Excellence",
-    "innovation": "Innovation",
-    "collaboration": "Collaboration",
-    "mission": "Our Mission",
-    "missionDesc": "To contribute effectively to qualifying and developing efficient human resources for various institutions through distinguished educational and training programs, and providing consultations and research at local and international levels that contribute to serving society and the environment"
+    "title": "Entrepreneurship Department",
+    "subtitle": "Developing entrepreneurial thinking and supporting people with ideas to establish their own projects.",
+    "emptyState": "No content available.",
+    "goals": {
+      "badge": "Our Goals",
+      "title": "Entrepreneurship Department Goals",
+      "subtitle": "Six goals that guide the Entrepreneurship Department's work in supporting entrepreneurs and innovators."
+    }
   },
   "Incubators": {
-    "title": "Business Incubators Program",
-    "subtitle": "From idea to market: Complete support for startups at every stage of development",
-    "phasesTitle": "Incubation Journey",
-    "ideation": "Ideation",
-    "ideationDesc": "Transform your concept into a viable business model with expert guidance",
-    "incubation": "Incubation",
-    "incubationDesc": "Develop your MVP and validate your business model in a supportive environment",
-    "growth": "Growth",
-    "growthDesc": "Scale your operations with strategic partnerships and market expansion support",
-    "launch": "Launch",
-    "launchDesc": "Prepare for market entry with final preparations and investor connections",
-    "resourcesTitle": "Resources Available",
-    "mentorship": "Expert Mentorship",
-    "workspace": "Co-Working Space",
-    "fundingAccess": "Funding Access",
-    "training": "Training Programs",
-    "startups": "50+",
-    "startupsLabel": "Startups Incubated",
-    "success": "85%",
-    "successLabel": "Success Rate",
-    "fundingRaised": "2M+",
-    "fundingLabel": "Total Funding Raised",
-    "ctaTitle": "Ready to Start Your Journey?",
-    "ctaDesc": "Join our incubator program and transform your innovative idea into a successful business"
+    "title": "Incubators Department",
+    "subtitle": "Incubating projects and providing guidance, training, consulting, and funding services.",
+    "emptyState": "No content available.",
+    "tasks": {
+      "badge": "Our Tasks",
+      "title": "Incubators Department Tasks",
+      "subtitle": "Five tasks that frame the Incubators Department's work in incubating projects and developing existing factories."
+    }
   },
   "About": {
-    "badge": "About Center",
-    "title": "Entrepreneurship & Business Incubators Center",
-    "subtitle": "A leading national platform supporting innovators and building an integrated entrepreneurship ecosystem.",
-    "goalsTitle": "Our Strategic Goals",
-    "goalsSubtitle": "We seek to achieve an ambitious vision that contributes to building a sustainable knowledge economy.",
-    "platformTitle": "About Platform",
-    "platformSubtitle": "An integrated platform connecting academic institutions with industry to support innovation.",
-    "teamTitle": "Center Departments",
-    "cta": "Get in Touch"
+    "badge": "About the Center",
+    "title": "Entrepreneurship, Incubators & Technical Development Center - Misrata",
+    "subtitle": "A specialized center that supports innovation, entrepreneurship, and the development of technical solutions by providing an integrated incubation environment that turns ideas into successful projects.",
+    "cta": "Get in Touch",
+    "hero": {
+      "badge": "About the Center",
+      "title": "Entrepreneurship, Incubators & Technical Development Center - Misrata",
+      "subtitle": "A specialized center that supports innovation, entrepreneurship, and the development of technical solutions."
+    },
+    "goals": {
+      "badge": "Our Goals",
+      "title": "Center Goals",
+      "subtitle": "Five strategic goals that drive the center's mission to support entrepreneurs and innovators."
+    },
+    "platform": {
+      "badge": "The Platform",
+      "title": "About the Platform",
+      "subtitle": "An integrative platform connecting academic institutions with industry to support innovation."
+    },
+    "news": {
+      "badge": "News",
+      "title": "Inaugural Session"
+    },
+    "loadError": "Failed to load content"
   },
   "Home": {
     "titleLine1": "Empowering",
@@ -253,7 +245,7 @@
   },
   "CreatorsAndInnovators": {
     "title": "From Idea to Creativity: Unleash Your Potential",
-    "subtitle": "Join Us at the Entrepreneurship and Business Incubators Center to Transform Your Ideas into Successful Projects",
+    "subtitle": "Join Us at the Entrepreneurship, Incubators & Technical Development Center - Misrata to Transform Your Ideas into Successful Projects",
     "registration": "Innovate with us",
     "submit": "Submit an application",
     "previous": "Previous",
@@ -308,7 +300,7 @@
     "RemoveFile": "Remove file"
   },
   "Footer": {
-    "copyright": "© {year} Entrepreneurship & Business Incubators Center - Misrata. All rights reserved.",
+    "copyright": "© {year} Entrepreneurship, Incubators & Technical Development Center - Misrata. All rights reserved.",
     "privacyPolicy": "Privacy Policy",
     "termsOfUse": "Terms of Use",
     "quickLinks": "Quick Links",
@@ -427,6 +419,8 @@
     }
   },
   "Common": {
+    "centerName": "Entrepreneurship, Incubators & Technical Development Center - Misrata",
+    "centerShortName": "EBIC - Misrata",
     "previous": "Previous",
     "next": "Next",
     "submit": "Submit Application",

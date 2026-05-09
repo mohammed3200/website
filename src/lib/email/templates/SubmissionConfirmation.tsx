@@ -108,8 +108,8 @@ export const SubmissionConfirmation = ({
         <br />
         <strong>
           {isArabic
-            ? 'فريق مركز ريادة الأعمال وحاضنات الأعمال - مصراتة'
-            : 'Entrepreneurship and Business Incubators Center - Misurata Team'}
+            ? 'فريق مركز الريادة والحاضنات والتطوير التقني - مصراتة'
+            : 'Entrepreneurship, Incubators & Technical Development Center - Misrata Team'}
         </strong>
       </Text>
     </BaseLayout>

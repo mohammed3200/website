@@ -31,8 +31,8 @@ export const Welcome = ({
 
       <Text style={{ ...text, textAlign }}>
         {isArabic
-          ? 'يسعدنا انضمامك إلى مركز ريادة الأعمال وحاضنات الأعمال - مصراتة!'
-          : 'We are excited to have you join the Entrepreneurship and Business Incubators Center - Misurata!'}
+          ? 'يسعدنا انضمامك إلى مركز الريادة والحاضنات والتطوير التقني - مصراتة!'
+          : 'We are excited to have you join the Entrepreneurship, Incubators & Technical Development Center - Misrata!'}
       </Text>
 
       {/* Welcome Box */}
@@ -115,8 +115,8 @@ export const Welcome = ({
         <br />
         <strong>
           {isArabic
-            ? 'فريق مركز ريادة الأعمال وحاضنات الأعمال - مصراتة'
-            : 'Entrepreneurship and Business Incubators Center - Misurata Team'}
+            ? 'فريق مركز الريادة والحاضنات والتطوير التقني - مصراتة'
+            : 'Entrepreneurship, Incubators & Technical Development Center - Misrata Team'}
         </strong>
       </Text>
     </BaseLayout>

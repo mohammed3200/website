@@ -162,7 +162,7 @@ describe('Page Content API Routes', () => {
         {
           id: '2',
           page: 'entrepreneurship',
-          section: 'programs',
+          section: 'goals',
           isActive: false,
           order: 1,
         },
@@ -222,9 +222,9 @@ describe('Page Content API Routes', () => {
     it('should handle metadata in new content', async () => {
       const newContent = {
         page: 'incubators' as const,
-        section: 'metrics',
-        titleEn: 'Startups',
-        metadata: { number: 150 },
+        section: 'tasks',
+        titleEn: 'Project incubation',
+        metadata: { source: 'docs/source/أهداف_قسم_الحاضنات.docx' },
         order: 0,
       };
 
@@ -242,7 +242,7 @@ describe('Page Content API Routes', () => {
         data: newContent,
       });
 
-      expect(result.metadata).toEqual({ number: 150 });
+      expect(result.metadata).toEqual({ source: 'docs/source/أهداف_قسم_الحاضنات.docx' });
     });
 
     it('should require authentication for creation', async () => {
@@ -308,13 +308,13 @@ describe('Page Content API Routes', () => {
 
     it('should update metadata', async () => {
       const updateData = {
-        metadata: { number: 200, label: 'Updated' },
+        metadata: { source: 'docs/source/أهداف_قسم_الحاضنات.docx', revision: 2 },
       };
 
       const updatedContent = {
         id: 'content-1',
         page: 'incubators',
-        section: 'metrics',
+        section: 'tasks',
         ...updateData,
         order: 0,
       };
@@ -327,7 +327,7 @@ describe('Page Content API Routes', () => {
         data: updateData,
       });
 
-      expect(result.metadata).toEqual({ number: 200, label: 'Updated' });
+      expect(result.metadata).toEqual({ source: 'docs/source/أهداف_قسم_الحاضنات.docx', revision: 2 });
     });
 
     it('should handle update errors', async () => {
@@ -465,7 +465,7 @@ describe('Page Content API Routes', () => {
       const mockContent = [
         { id: '1', section: 'hero', order: 0 },
         { id: '2', section: 'hero', order: 1 },
-        { id: '3', section: 'programs', order: 0 },
+        { id: '3', section: 'goals', order: 0 },
       ];
 
       (db.pageContent.findMany as any).mockResolvedValue(mockContent);
