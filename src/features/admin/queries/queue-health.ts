@@ -55,7 +55,7 @@ interface QueueLike {
 
 async function safeCounts(
   q: QueueLike,
-): Promise<Pick<QueueHealthSnapshot, 'waiting' | 'active' | 'completed' | 'failed' | 'delayed'> | null> {
+): Promise<Pick<QueueHealthSnapshot, 'waiting' | 'active' | 'completed' | 'failed' | 'delayed' | 'timedOut'> | null> {
   // Race against a 2 s deadline so a wedged Redis can't block the dashboard.
   const timeout = new Promise<null>((res) => setTimeout(() => res(null), 2_000));
   try {
