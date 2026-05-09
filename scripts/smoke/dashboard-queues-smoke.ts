@@ -12,10 +12,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: resolve(__dirname, '../../.env.test') });
 
-import { getEmailQueueHealth } from '@/features/admin/queries/queue-health';
-import { redis } from '@/lib/redis';
+
 
 async function main() {
+  const { getEmailQueueHealth } = await import('../../src/features/admin/queries/queue-health');
+
   console.log('━━━ Task 13 — dashboard queue-health fetcher smoke ━━━');
   const t0 = Date.now();
   const data = await getEmailQueueHealth();
@@ -50,6 +51,7 @@ async function main() {
 
 main().catch(async (err) => {
   console.error('Unhandled:', err);
+  const { redis } = await import('../../src/lib/redis');
   await redis.quit?.();
   process.exit(1);
 });

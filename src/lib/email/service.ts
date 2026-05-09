@@ -45,8 +45,7 @@ export class EmailService {
 
   private initializeTransport() {
     // Check if SMTP credentials are available
-    const hasSmtpCredentials =
-      process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS;
+    const hasSmtpCredentials = !!process.env.SMTP_HOST;
 
     if (hasSmtpCredentials) {
       try {
@@ -517,7 +516,7 @@ export class EmailService {
    * Log email to database
    */
   private async logEmail(data: {
-    to: string;
+    to: string | string[];
     from: string;
     subject: string;
     status: EmailStatus;
@@ -528,9 +527,9 @@ export class EmailService {
     try {
       await db.emailLog.create({
         data: {
-          to: data.to,
-          from: data.from,
-          subject: data.subject,
+          to: Array.isArray(data.to) ? data.to.join(', ') : (data.to || 'unknown'),
+          from: data.from || 'unknown',
+          subject: data.subject || 'No Subject',
           template: data.template,
           status: data.status,
           messageId: data.messageId,

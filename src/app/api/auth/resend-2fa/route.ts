@@ -19,7 +19,8 @@ export async function POST() {
 
   const issued = await issueCode(pending.userId, pending.email, pending.locale);
   if (!issued.ok) {
-    const status = issued.reason === 'cooldown' ? 429 : 400;
+    const isThrottle = ['cooldown', 'rate_limited', 'locked'].includes(issued.reason as string);
+    const status = isThrottle ? 429 : 400;
     return NextResponse.json(
       { error: issued.reason, retryAfter: issued.retryAfter },
       { status },

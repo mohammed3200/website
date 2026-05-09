@@ -21,8 +21,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: resolve(__dirname, '../../.env.test') });
 
-import { emailQueue } from '@/lib/queue/email-queue';
-import { emailWorker } from '@/lib/queue/email-worker';
+let emailQueue: any;
+let emailWorker: any;
 
 const MAILPIT_API_URL =
   process.env.MAILPIT_API_URL || 'http://127.0.0.1:8025';
@@ -49,6 +49,11 @@ async function findInMailpitBySubject(
 }
 
 async function main() {
+  const qMod = await import('../../src/lib/queue/email-queue');
+  const wMod = await import('../../src/lib/queue/email-worker');
+  emailQueue = qMod.emailQueue;
+  emailWorker = wMod.emailWorker;
+
   const inbox = process.env.SMOKE_TEST_INBOX;
   if (!inbox) {
     console.error('❌ SMOKE_TEST_INBOX is required.');
@@ -72,7 +77,7 @@ async function main() {
   let completedAt = 0;
   let inboxAt = 0;
 
-  emailWorker.on('active', (job) => {
+  emailWorker.on('active', (job: any) => {
     if (job?.data?.subject === subject) {
       startedAt = Date.now();
       lifecycle.push({ stage: 'active', at: startedAt });
@@ -80,14 +85,14 @@ async function main() {
   });
 
   const completionPromise = new Promise<void>((res, rej) => {
-    emailWorker.on('completed', (job) => {
+    emailWorker.on('completed', (job: any) => {
       if (job?.data?.subject === subject) {
         completedAt = Date.now();
         lifecycle.push({ stage: 'completed', at: completedAt });
         res();
       }
     });
-    emailWorker.on('failed', (job, err) => {
+    emailWorker.on('failed', (job: any, err: any) => {
       if (job?.data?.subject === subject) {
         rej(new Error(`Job failed: ${err.message}`));
       }
@@ -151,15 +156,17 @@ async function main() {
   );
   console.log('Queue counts:', counts);
 
-  const failed = await emailQueue.getJobs(['failed'], 0, 10);
-  if (failed.length > 0) {
-    console.log('Recent failures:');
-    for (const f of failed)
+  const failed = await emailQueue.getJobs(['failed'], 0, -1);
+  const currentRunFailures = failed.filter((f: any) => f?.data?.subject === subject);
+
+  if (currentRunFailures.length > 0) {
+    console.log('Recent failures (current run):');
+    for (const f of currentRunFailures)
       console.log(
         `  - id=${f.id} reason=${(f as unknown as { failedReason: string }).failedReason || 'n/a'}`,
       );
   } else {
-    console.log('Recent failures: none');
+    console.log('Recent failures (current run): none');
   }
 
   // AC checks
@@ -168,7 +175,7 @@ async function main() {
     activeWithin10s: startedAt - enqueuedAt <= 10_000,
     completedWithin30s: completedAt - startedAt <= 30_000,
     inboxWithin60s: inboxAt - enqueuedAt <= 60_000,
-    noFailedJobs: counts.failed === 0,
+    noFailedJobs: currentRunFailures.length === 0,
   };
 
   for (const [k, v] of Object.entries(checks))
@@ -188,8 +195,8 @@ async function main() {
 }
 
 async function teardown() {
-  await emailWorker.close();
-  await emailQueue.close();
+  if (emailWorker) await emailWorker.close();
+  if (emailQueue) await emailQueue.close();
 }
 
 main().catch(async (err) => {

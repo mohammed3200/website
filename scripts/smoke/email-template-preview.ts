@@ -34,14 +34,14 @@ import {
   renderTwoFactorAuth,
   renderEmailVerification,
   renderAdminNotification,
-} from '@/lib/email/templates';
-import { createNodemailerTransport } from '@/lib/email/transports/nodemailer';
+} from '../../src/lib/email/templates';
+import { createNodemailerTransport } from '../../src/lib/email/transports/nodemailer';
 
 const PREVIEW_DIR = '/tmp/eitdc-email-preview';
 const CENTER_NAME_AR =
-  'مركز ريادة الأعمال وحاضنات الأعمال - مصراتة';
+  'مركز الريادة والحاضنات والتطوير التقني - مصراتة';
 const CENTER_NAME_EN =
-  'Entrepreneurship and Business Incubators Center - Misurata';
+  'Entrepreneurship, Incubators & Technical Development Center - Misrata';
 
 type Locale = 'ar' | 'en';
 
@@ -228,7 +228,14 @@ async function main() {
     for (const locale of ['ar', 'en'] as Locale[]) {
       const html = await tpl.render(locale);
       const htmlPath = `${PREVIEW_DIR}/${locale}/${tpl.name}.html`;
-      writeFileSync(htmlPath, html, 'utf8');
+      let finalHtmlPath = htmlPath;
+      try {
+        writeFileSync(htmlPath, html, 'utf8');
+      } catch (err: any) {
+        finalHtmlPath = `/tmp/email-preview-${locale}-${tpl.name}.html`;
+        writeFileSync(finalHtmlPath, html, 'utf8');
+        console.warn(`[WARN] Could not write to ${htmlPath}, wrote to ${finalHtmlPath} instead: ${err.message}`);
+      }
 
       const checks = {
         direction: checkDirection(html, locale),
@@ -256,7 +263,7 @@ async function main() {
       results.push({
         template: tpl.name,
         locale,
-        htmlPath,
+        htmlPath: finalHtmlPath,
         htmlBytes: html.length,
         checks,
         delivered,
@@ -286,8 +293,7 @@ async function main() {
     console.log(`    noUnsubstituted  ${r.checks.noUnsubstituted.ok ? '✓' : '✗'} ${r.checks.noUnsubstituted.detail}`);
     console.log(`    absoluteImages   ${r.checks.absoluteImages.ok ? '✓' : '✗'} ${r.checks.absoluteImages.detail}`);
     console.log(
-      `    delivered        ${r.delivered.ok ? '✓' : '✗'} ${
-        r.delivered.ok ? r.delivered.messageId : r.delivered.error
+      `    delivered        ${r.delivered.ok ? '✓' : '✗'} ${r.delivered.ok ? r.delivered.messageId : r.delivered.error
       }`,
     );
   }

@@ -1,7 +1,8 @@
+/// <reference types="@testing-library/jest-dom" />
 import { describe, it, expect, jest, mock } from 'bun:test';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/jest-globals';
-import EntrepreneurshipClient from '@/app/[locale]/entrepreneurship/components/entrepreneurship-client';
+import EntrepreneurshipClient from '../../src/app/[locale]/entrepreneurship/components/entrepreneurship-client';
 
 // Mock framer-motion
 mock.module('framer-motion', () => ({

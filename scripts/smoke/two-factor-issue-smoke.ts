@@ -11,7 +11,6 @@
  *
  * Run with:  set -a && source .env.test && set +a && bun run scripts/smoke/two-factor-issue-smoke.ts
  */
-import { setTimeout as sleep } from 'node:timers/promises';
 import dotenv from 'dotenv';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -20,11 +19,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: resolve(__dirname, '../../.env.test') });
 
-import { redis } from '@/lib/redis';
-import { issueCode } from '@/features/auth/two-factor/issue';
-import { emailWorker } from '@/lib/queue/email-worker';
-import { emailQueue } from '@/lib/queue/email-queue';
+import { setTimeout as sleep } from 'node:timers/promises';
+
 import { seedTwoFactorUser, TEST_USER_EMAIL } from './two-factor-seed';
+
+let redis: any;
+let issueCode: any;
+let emailWorker: any;
+let emailQueue: any;
 
 const MAILPIT_API_URL = process.env.MAILPIT_API_URL || 'http://127.0.0.1:8025';
 
@@ -64,6 +66,16 @@ async function clearRedisFor(userId: string) {
 }
 
 async function main() {
+  const rMod = await import('../../src/lib/redis');
+  const iMod = await import('../../src/features/auth/two-factor/issue');
+  const ewMod = await import('../../src/lib/queue/email-worker');
+  const eqMod = await import('../../src/lib/queue/email-queue');
+
+  redis = rMod.redis;
+  issueCode = iMod.issueCode;
+  emailWorker = ewMod.emailWorker;
+  emailQueue = eqMod.emailQueue;
+
   console.log('━━━ Task 6 — 2FA issuance smoke ━━━');
   await clearMailpit();
 
@@ -188,8 +200,8 @@ async function main() {
 
 main().catch(async (err) => {
   console.error('Unhandled error:', err);
-  await emailWorker.close().catch(() => {});
-  await emailQueue.close().catch(() => {});
-  await redis.quit?.();
+  if (emailWorker) await emailWorker.close().catch(() => { });
+  if (emailQueue) await emailQueue.close().catch(() => { });
+  if (redis) await redis.quit?.();
   process.exit(1);
 });

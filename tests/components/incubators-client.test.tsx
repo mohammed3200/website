@@ -1,7 +1,8 @@
+/// <reference types="@testing-library/jest-dom" />
 import { describe, it, expect, jest, mock } from 'bun:test';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/jest-globals';
-import IncubatorsClient from '@/app/[locale]/incubators/components/incubators-client';
+import IncubatorsClient from '../../src/app/[locale]/incubators/components/incubators-client';
 
 // Mock framer-motion
 mock.module('framer-motion', () => ({

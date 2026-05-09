@@ -21,6 +21,7 @@ export interface QueueHealthSnapshot {
   completed: number;
   failed: number;
   delayed: number;
+  timedOut: number;
   /** Total log rows over the last 24 h, broken down by status. */
   last24h: {
     sent: number;
@@ -59,7 +60,7 @@ async function safeCounts(
   const timeout = new Promise<null>((res) => setTimeout(() => res(null), 2_000));
   try {
     const result = await Promise.race([
-      q.getJobCounts('waiting', 'active', 'completed', 'failed', 'delayed'),
+      q.getJobCounts('waiting', 'active', 'completed', 'failed', 'delayed', 'timedOut'),
       timeout,
     ]);
     if (!result) return null;
@@ -70,6 +71,7 @@ async function safeCounts(
       completed: c.completed ?? 0,
       failed: c.failed ?? 0,
       delayed: c.delayed ?? 0,
+      timedOut: c.timedOut ?? 0,
     };
   } catch {
     return null;
@@ -77,7 +79,7 @@ async function safeCounts(
 }
 
 function mockCounts() {
-  return { waiting: 0, active: 0, completed: 0, failed: 0, delayed: 0 };
+  return { waiting: 0, active: 0, completed: 0, failed: 0, delayed: 0, timedOut: 0 };
 }
 
 export async function getEmailQueueHealth() {
@@ -85,8 +87,8 @@ export async function getEmailQueueHealth() {
   // The whole call is raced against a 5 s deadline so a wedged Redis cannot
   // block the dashboard request.
   const fallback = (): Awaited<ReturnType<typeof snapshotEmail>>[] => [
-    { queue: 'email', mock: true, waiting: 0, active: 0, completed: 0, failed: 0, delayed: 0, last24h: { sent: 0, failed: 0 } } as QueueHealthSnapshot,
-    { queue: 'whatsapp', mock: true, waiting: 0, active: 0, completed: 0, failed: 0, delayed: 0, last24h: { sent: 0, failed: 0 } } as QueueHealthSnapshot,
+    { queue: 'email', mock: true, waiting: 0, active: 0, completed: 0, failed: 0, delayed: 0, timedOut: 0, last24h: { sent: 0, failed: 0 } } as QueueHealthSnapshot,
+    { queue: 'whatsapp', mock: true, waiting: 0, active: 0, completed: 0, failed: 0, delayed: 0, timedOut: 0, last24h: { sent: 0, failed: 0 } } as QueueHealthSnapshot,
   ];
 
   const work = cache.getOrSet(

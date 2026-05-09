@@ -77,8 +77,12 @@ export function VerifyForm({
       }
 
       setSuccess(t('success'));
-      router.replace(signRes?.url || DEFAULT_LOGIN_REDIRECT);
-      router.refresh();
+      try {
+        router.replace(signRes?.url || DEFAULT_LOGIN_REDIRECT);
+        router.refresh();
+      } catch (e: any) {
+        setError(e.message || t('errors.sessionFailed'));
+      }
     } finally {
       setSubmitting(false);
     }

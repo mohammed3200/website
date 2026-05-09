@@ -15,7 +15,6 @@
  *
  * Idempotent: each run resets the queue and uses fresh job IDs.
  */
-import { setTimeout as sleep } from 'node:timers/promises';
 import dotenv from 'dotenv';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -24,9 +23,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: resolve(__dirname, '../../.env.test') });
 
-import { redis } from '@/lib/redis';
-import { whatsappQueue, enqueueWhatsApp, getWhatsAppQueueHealth } from '@/lib/queue/whatsapp-queue';
-import { whatsappWorker } from '@/lib/queue/whatsapp-worker';
+import { setTimeout as sleep } from 'node:timers/promises';
+
+let redis: any;
+let whatsappQueue: any;
+let enqueueWhatsApp: any;
+let getWhatsAppQueueHealth: any;
+let whatsappWorker: any;
 
 async function clearQueue() {
   await whatsappQueue.drain(true);
@@ -44,6 +47,16 @@ async function waitFor(predicate: () => Promise<boolean>, timeoutMs: number) {
 }
 
 async function main() {
+  const rMod = await import('../../src/lib/redis');
+  const wqMod = await import('../../src/lib/queue/whatsapp-queue');
+  const wwMod = await import('../../src/lib/queue/whatsapp-worker');
+
+  redis = rMod.redis;
+  whatsappQueue = wqMod.whatsappQueue;
+  enqueueWhatsApp = wqMod.enqueueWhatsApp;
+  getWhatsAppQueueHealth = wqMod.getWhatsAppQueueHealth;
+  whatsappWorker = wwMod.whatsappWorker;
+
   console.log('━━━ Task 11 — WhatsApp queue smoke ━━━');
   await clearQueue();
 
@@ -102,9 +115,9 @@ async function main() {
 }
 
 async function teardown() {
-  await whatsappWorker.close().catch(() => {});
-  await whatsappQueue.close().catch(() => {});
-  await redis.quit?.();
+  if (whatsappWorker) await whatsappWorker.close().catch(() => { });
+  if (whatsappQueue) await whatsappQueue.close().catch(() => { });
+  if (redis) await redis.quit?.();
 }
 
 main().catch(async (err) => {

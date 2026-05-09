@@ -29,7 +29,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: resolve(__dirname, '../../.env.test') });
 
-import { createNodemailerTransport } from '@/lib/email/transports/nodemailer';
+import { createNodemailerTransport } from '../../src/lib/email/transports/nodemailer';
 
 const MAILPIT_API_URL =
   process.env.MAILPIT_API_URL || 'http://127.0.0.1:8025';
@@ -80,17 +80,29 @@ async function findInMailpit(
   expectedMessageId: string,
 ): Promise<MailpitMessageSummary | null> {
   const trimmed = expectedMessageId.replace(/^<|>$/g, '');
-  const res = await fetch(`${MAILPIT_API_URL}/api/v1/messages?limit=50`);
-  if (!res.ok) return null;
-  const body = (await res.json()) as MailpitListResponse;
-  return (
-    body.messages.find(
-      (m) =>
-        m.MessageID === expectedMessageId ||
-        m.MessageID === trimmed ||
-        `<${m.MessageID}>` === expectedMessageId,
-    ) || null
-  );
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+  try {
+    const res = await fetch(`${MAILPIT_API_URL}/api/v1/messages?limit=50`, {
+      signal: controller.signal,
+    });
+    if (!res.ok) return null;
+    const body = (await res.json()) as MailpitListResponse;
+    return (
+      body.messages.find(
+        (m) =>
+          m.MessageID === expectedMessageId ||
+          m.MessageID === trimmed ||
+          `<${m.MessageID}>` === expectedMessageId,
+      ) || null
+    );
+  } catch (err: any) {
+    if (err.name === 'AbortError' || err.message?.includes('aborted')) return null;
+    return null;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 async function main() {

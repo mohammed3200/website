@@ -64,6 +64,11 @@ export async function POST(req: NextRequest) {
           },
           { status: 401 },
         );
+      default:
+        return NextResponse.json(
+          { error: 'An unexpected error occurred during verification.' },
+          { status: 500 },
+        );
     }
   }
 
