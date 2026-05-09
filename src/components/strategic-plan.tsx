@@ -152,8 +152,11 @@ export const StrategicPlan = () => {
           }
 
           const isCenter = strategic.slug === 'ebic';
-          const LogoSrc = isCenter ? '/assets/icons/logo.svg' : '/assets/icons/college.png';
+          const LogoSrc = isCenter ? '/assets/icons/logo.svg' : '/assets/icons/college.svg';
           const IconComponent = isCenter ? Sparkles : Building2;
+          
+          const displayImage = strategic.image?.url || LogoSrc;
+          const displayAlt = strategic.image?.alt || (isCenter ? 'Center Logo' : 'College Logo');
 
           // Date logic (UTC)
           const startDate = strategic.startDate ? new Date(strategic.startDate).getUTCFullYear() : null;
@@ -221,8 +224,8 @@ export const StrategicPlan = () => {
                       )}
                     >
                       <Image
-                        src={LogoSrc}
-                        alt={isCenter ? 'Center Logo' : 'College Logo'}
+                        src={displayImage}
+                        alt={displayAlt}
                         width={60}
                         height={60}
                         className="object-contain w-full h-full"
@@ -299,27 +302,6 @@ export const StrategicPlan = () => {
         })}
       </motion.div>
 
-      {/* Bottom CTA */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ delay: 0.4 }}
-        className="mt-12 text-center"
-      >
-        <p className="text-gray-500 mb-4">
-          {t('ctaQuestion')}
-        </p>
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => router.push(`/${lang}/about`)}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-gray-200 rounded-full text-gray-700 font-bold hover:border-orange-300 hover:text-primary transition-all"
-        >
-          {t('ctaButton')}
-          {isArabic ? <ArrowUpLeft className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
-        </motion.button>
-      </motion.div>
     </section>
   );
 };

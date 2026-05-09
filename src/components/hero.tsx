@@ -4,16 +4,13 @@ import {
   News, 
   Faq, 
   HomeHero,
-  HomeStats,
   HomeCollaborators,
-  HomeCTA 
 } from "@/components";
 
 export const Hero = () => {
   return (
     <>
       <HomeHero />
-      <HomeStats />
       
       <section className="py-10">
         <div className="container mx-auto space-y-16 sm:space-y-24">
@@ -29,8 +26,6 @@ export const Hero = () => {
           <Faq />
         </div>
       </section>
-
-      <HomeCTA />
     </>
   );
 };

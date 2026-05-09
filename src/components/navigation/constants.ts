@@ -10,20 +10,15 @@ export const getNavItems = (
       href: `/${locale}`,
     },
     {
-      id: 'about',
-      label: t('about'),
-      href: `/${locale}/about`,
-    },
-    {
-      id: 'strategic-plans',
-      label: t('strategicPlans'),
-      href: `/${locale}/#strategic-plan`,
-    },
-    {
-      id: 'entrepreneurship-incubators',
+      id: 'entrepreneurship-incubators-about',
       label: t('entrepreneurshipAndIncubators'),
       href: `/${locale}/entrepreneurship`,
       children: [
+        {
+          label: t('about'),
+          href: `/${locale}/about`,
+          description: t('aboutDesc'),
+        },
         {
           label: t('entrepreneurship'),
           href: `/${locale}/entrepreneurship`,
@@ -33,7 +28,7 @@ export const getNavItems = (
           label: t('incubators'),
           href: `/${locale}/incubators`,
           description: t('incubatorsDesc'),
-        },
+        }
       ],
     },
     {
