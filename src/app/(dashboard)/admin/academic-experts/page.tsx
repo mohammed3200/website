@@ -1,4 +1,10 @@
+import { Metadata } from 'next';
 import { AdminExpertList } from '@/features/academic-experts';
+
+export const metadata: Metadata = {
+  title: 'Academic Experts | Admin Dashboard',
+  description: 'Manage the academic experts showcased on the platform.',
+};
 
 export default function AcademicExpertsPage() {
   return (

@@ -6,7 +6,7 @@ import { useDeleteExpert } from '../api/use-delete-expert';
 import { useUpdateExpert } from '../api/use-update-expert';
 import { AcademicExpert } from '../types';
 import { AdminExpertForm } from './admin-expert-form';
-import { useTranslations } from 'next-intl';
+
 
 import {
   Table,
@@ -27,8 +27,8 @@ import { Skeleton } from '@/components/skeletons';
 import { Edit, Trash2, Plus, CheckCircle, XCircle } from 'lucide-react';
 
 export const AdminExpertList = () => {
-  const t = useTranslations('Admin');
-  const { data: experts, isLoading } = useGetExperts();
+
+  const { data: experts, isLoading, isError } = useGetExperts();
   const deleteExpert = useDeleteExpert();
   const [editingExpert, setEditingExpert] = useState<AcademicExpert | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -55,6 +55,14 @@ export const AdminExpertList = () => {
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-20 w-full" />
         <Skeleton className="h-20 w-full" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-red-500 py-8 text-center">
+        Failed to load experts
       </div>
     );
   }
@@ -115,6 +123,7 @@ export const AdminExpertList = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => handleEdit(expert)}
+                      aria-label={`Edit expert ${expert.fullName}`}
                     >
                       <Edit className="w-4 h-4 text-gray-500 hover:text-blue-600" />
                     </Button>
@@ -122,6 +131,7 @@ export const AdminExpertList = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDelete(expert.id)}
+                      aria-label={`Delete expert ${expert.fullName}`}
                     >
                       <Trash2 className="w-4 h-4 text-gray-500 hover:text-red-600" />
                     </Button>

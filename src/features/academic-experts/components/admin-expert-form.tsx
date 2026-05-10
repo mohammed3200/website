@@ -82,7 +82,7 @@ export const AdminExpertForm = ({
         isActive: initialData.isActive,
       });
     }
-  }, [initialData, form]);
+  }, [initialData]);
 
   const isLoading = createExpert.isPending || updateExpert.isPending;
 
@@ -264,7 +264,17 @@ export const AdminExpertForm = ({
               <FormItem>
                 <FormLabel>Order</FormLabel>
                 <FormControl>
-                  <Input {...field} disabled={isLoading} type="number" dir="ltr" />
+                  <Input 
+                    {...field} 
+                    value={field.value ?? ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      field.onChange(val === '' ? undefined : Number(val));
+                    }}
+                    disabled={isLoading} 
+                    type="number" 
+                    dir="ltr" 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -306,6 +316,7 @@ export const AdminExpertForm = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Full CV HTML (Arabic)</FormLabel>
+                <div className="text-xs text-amber-600 mb-2">⚠️ Note: Raw HTML will be displayed. Please ensure you only paste trusted formatting.</div>
                 <FormControl>
                   <Textarea {...field} disabled={isLoading} rows={6} dir="ltr" className="font-mono text-xs" />
                 </FormControl>
@@ -319,6 +330,7 @@ export const AdminExpertForm = ({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Full CV HTML (English)</FormLabel>
+                <div className="text-xs text-amber-600 mb-2">⚠️ Note: Raw HTML will be displayed. Please ensure you only paste trusted formatting.</div>
                 <FormControl>
                   <Textarea {...field} disabled={isLoading} rows={6} dir="ltr" className="font-mono text-xs" />
                 </FormControl>
@@ -355,7 +367,7 @@ export const AdminExpertForm = ({
               onClick={onCancel}
               disabled={isLoading}
             >
-              {t('StrategicPlans.actions.cancel')}
+              Cancel
             </Button>
           )}
           <Button type="submit" disabled={isLoading}>

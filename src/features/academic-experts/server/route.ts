@@ -34,7 +34,7 @@ const app = new Hono()
   .get('/', async (c) => {
     try {
       const session = await auth();
-      if (!session?.user) {
+      if (!session?.user || session.user.role !== 'admin') {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -53,7 +53,7 @@ const app = new Hono()
   .post('/', zValidator('json', expertSchema), async (c) => {
     try {
       const session = await auth();
-      if (!session?.user) {
+      if (!session?.user || session.user.role !== 'admin') {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -73,7 +73,7 @@ const app = new Hono()
   .patch('/:id', zValidator('json', expertSchema), async (c) => {
     try {
       const session = await auth();
-      if (!session?.user) {
+      if (!session?.user || session.user.role !== 'admin') {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 
@@ -95,7 +95,7 @@ const app = new Hono()
   .delete('/:id', async (c) => {
     try {
       const session = await auth();
-      if (!session?.user) {
+      if (!session?.user || session.user.role !== 'admin') {
         return c.json({ error: 'Unauthorized' }, 401);
       }
 

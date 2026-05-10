@@ -608,6 +608,7 @@ model AcademicExpert {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
+  @@unique([fullName])
   @@index([isActive, order])
 }
 
