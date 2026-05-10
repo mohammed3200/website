@@ -19,7 +19,12 @@ export const Faq = () => {
   const faqData = faqs || [];
 
   if (isLoading) return <HomeFaqSkeleton />;
-  if (faqData.length === 0) return null;
+  if (faqData.length === 0) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[FAQ] No FAQ data returned from API. Run `bun run seed:faqs` to populate.');
+    }
+    return null;
+  }
 
   return (
     <section dir={isArabic ? 'rtl' : 'ltr'} className="flex flex-col px-4">

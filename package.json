@@ -18,6 +18,7 @@
     "seed:ebic": "tsx prisma/seed-ebic-page-content.ts",
     "seed:faqs": "tsx prisma/seed-faqs.ts",
     "seed:legal": "tsx prisma/seed-legal-content.ts",
+    "seed:experts": "tsx prisma/seed-academic-experts.ts",
     "rbac:verify": "tsx scripts/verify-rbac.ts",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
