@@ -13,8 +13,10 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
-const db = new PrismaClient();
+const adapter = new PrismaMariaDb(process.env.DATABASE_URL!);
+const db = new PrismaClient({ adapter, log: ['error'] });
 
 interface FaqSeed {
   question: string;
