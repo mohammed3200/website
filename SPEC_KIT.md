@@ -70,7 +70,7 @@ Bridge academic excellence with industrial expertise by providing a structured p
 ## 3. Architecture
 
 ### Frontend ↔ Backend Communication
-```
+```text
 Browser → Next.js App Router
   ├── Server Components (direct DB access via Prisma)
   ├── Client Components → Hono.js API (/api/[[...route]])
@@ -92,7 +92,7 @@ Browser → Next.js App Router
 3. **Registration forms**: Zustand store (sessionStorage persistence) → FormData POST to Hono API → Prisma + S3 upload → BullMQ email queue
 
 ### Auth Flow
-```
+```text
 User visits /admin
   → proxy.ts middleware checks JWT token via getToken()
   → No token → redirect to /auth/login?callbackUrl=/admin
@@ -102,7 +102,7 @@ User visits /admin
 ```
 
 ### Registration Flow (Collaborator)
-```
+```text
 /[locale]/collaborators/registration/[step]
   → CollaboratorFormWizard (client component)
   → useFormController hook manages step navigation
@@ -114,7 +114,7 @@ User visits /admin
 ```
 
 ### Admin Dashboard Structure
-```
+```text
 /admin (dashboard page with stats, charts, activity feed)
 ├── /admin/submissions (review innovator/collaborator applications)
 ├── /admin/news (CRUD news articles)
@@ -275,7 +275,7 @@ Similar multi-step architecture with fields:
 - Terms: TermsOfUse
 
 ### Form Library Architecture
-```
+```text
 createFormStore<T>()      → Zustand store factory with persistence
 useFormController<T>()    → Hook that orchestrates validation, navigation, submission
 FormConfig<T>             → Steps array with schemas, components, handlers

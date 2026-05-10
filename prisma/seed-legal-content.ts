@@ -212,7 +212,17 @@ async function seedLegalContent() {
   let updated = 0;
 
   for (const item of legalContent) {
-    const result = await db.legalContent.upsert({
+    // Check if the record already exists to reliably count created vs updated
+    const existing = await db.legalContent.findUnique({
+      where: {
+        type_locale: {
+          type: item.type,
+          locale: item.locale,
+        },
+      },
+    });
+
+    await db.legalContent.upsert({
       where: {
         type_locale: {
           type: item.type,
@@ -226,10 +236,10 @@ async function seedLegalContent() {
       create: item,
     });
 
-    if (result.createdAt.getTime() === result.updatedAt.getTime()) {
-      created++;
-    } else {
+    if (existing) {
       updated++;
+    } else {
+      created++;
     }
   }
 
