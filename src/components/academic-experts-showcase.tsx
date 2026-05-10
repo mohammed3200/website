@@ -61,9 +61,17 @@ export const AcademicExpertsShowcase = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') {
-        isRtl ? nextSlide() : prevSlide();
+        if (isRtl) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
       } else if (e.key === 'ArrowRight') {
-        isRtl ? prevSlide() : nextSlide();
+        if (isRtl) {
+          prevSlide();
+        } else {
+          nextSlide();
+        }
       }
     };
 
