@@ -1,0 +1,22 @@
+export type AcademicExpert = {
+  id: string;
+  fullName: string;
+  fullNameEn: string | null;
+  title: string;
+  titleEn: string | null;
+  specialization: string;
+  specializationEn: string | null;
+  university: string;
+  universityEn: string | null;
+  bio: string;
+  bioEn: string | null;
+  cv: string | null;
+  cvEn: string | null;
+  profileImage: string | null;
+  email: string | null;
+  linkedin: string | null;
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};

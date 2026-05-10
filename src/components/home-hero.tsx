@@ -159,7 +159,7 @@ export const HomeHero = () => {
                   className={`flex items-start gap-6 group ${isArabic ? 'flex-row-reverse' : ''
                     }`}
                 >
-                  <div className="relative w-14 h-14 rounded-2xl bg-primary/5 border border-primary/20 flex items-center justify-center shrink-0">
+                  <div className="relative w-14 h-14 rounded-2xl bg-primary/5 border border-primary/20 flex items-center justify-center shrink-0 bg-white">
                     <div className="absolute inset-0 bg-primary/10 rounded-2xl animate-ping opacity-20" />
                     <Factory className="w-6 h-6 text-primary" />
                   </div>
