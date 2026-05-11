@@ -65,7 +65,6 @@ if [ "$RUN_SEEDS" = "true" ]; then
   bun run prisma/seed-faqs.ts
   bun run prisma/seed-legal-content.ts
   bun run prisma/seed-ebic-page-content.ts
-  bun run prisma/seed-academic-experts.ts
   echo "✅ Seeds complete!"
 fi
 

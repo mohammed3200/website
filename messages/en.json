@@ -127,7 +127,7 @@
     "viewCV": "View CV",
     "closeCV": "Close",
     "cvTitle": "Curriculum Vitae",
-    "noExperts": "No experts currently available"
+    "paginationLabel": "Experts pagination"
   },
   "Error": {
     "title": "Something went wrong",

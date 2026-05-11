@@ -95,13 +95,7 @@ export const AcademicExpertsShowcase = () => {
   }
 
   if (!experts || expertsLength === 0) {
-    return (
-      <section className="relative py-20 lg:py-32 overflow-hidden bg-slate-50">
-        <div className="container mx-auto px-4 text-center">
-          <p className="text-slate-500">{t('emptyState', { fallback: 'No experts available.' })}</p>
-        </div>
-      </section>
-    );
+    return null;
   }
 
   const expert = experts[currentIndex];
@@ -318,7 +312,7 @@ export const AcademicExpertsShowcase = () => {
           <div 
             className="flex justify-center gap-2 mt-12"
             role="tablist"
-            aria-label={t('paginationLabel', { fallback: 'Experts pagination' })}
+            aria-label={t('paginationLabel')}
           >
             {experts.map((_: unknown, idx: number) => (
               <button

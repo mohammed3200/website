@@ -240,7 +240,7 @@
     "viewCV": "عرض السيرة الذاتية",
     "closeCV": "إغلاق",
     "cvTitle": "السيرة الذاتية",
-    "noExperts": "لا يوجد خبراء حالياً"
+    "paginationLabel": "ترقيم الخبراء"
   },
   "collaboratingPartners": {
     "title": "شعارنا.",

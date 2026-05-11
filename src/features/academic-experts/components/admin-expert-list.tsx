@@ -93,7 +93,7 @@ export const AdminExpertList = () => {
             {experts?.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-8 text-gray-500">
-                  No experts found. Click "Add Expert" to create one.
+                  No data currently available. Click "Add Expert" to create one.
                 </TableCell>
               </TableRow>
             ) : (

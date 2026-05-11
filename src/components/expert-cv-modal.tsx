@@ -2,6 +2,7 @@
 
 import { useTranslations, useLocale } from 'next-intl';
 import sanitizeHtml from 'sanitize-html';
+import Image from 'next/image';
 import { AcademicExpert } from '@/features/academic-experts/types';
 import {
   Dialog,
@@ -43,12 +44,13 @@ export const ExpertCvModal = ({ expert, isOpen, onClose }: ExpertCvModalProps) =
 
         <div className="flex flex-col gap-6 mt-4">
           <div className="flex flex-col md:flex-row gap-6 items-start">
-            {expert.profileImage && (expert.profileImage.startsWith('http://') || expert.profileImage.startsWith('https://')) && (
-              <div className="w-32 h-32 rounded-full overflow-hidden shrink-0 border-4 border-primary/10">
-                <img
+            {expert.profileImage && (
+              <div className="w-32 h-32 rounded-full overflow-hidden shrink-0 border-4 border-primary/10 relative">
+                <Image
                   src={expert.profileImage}
                   alt={fullName}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               </div>
             )}
