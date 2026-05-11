@@ -18,6 +18,7 @@ export * from './news';
 export * from './strategic-plan';
 export * from './faq';
 export * from './home-collaborators';
+export * from './academic-experts-showcase';
 
 export * from '../features/collaborators/components/card-companies';
 export * from '../features/innovators/components/card-innovators';

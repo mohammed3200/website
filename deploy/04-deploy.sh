@@ -124,6 +124,7 @@ if [ "$MODE" = "first" ]; then
     docker compose exec app bun run prisma/seed-faqs.ts || true
     docker compose exec app bun run prisma/seed-legal-content.ts || true
     docker compose exec app bun run prisma/seed-ebic-page-content.ts || true
+    docker compose exec app bun run prisma/seed-academic-experts.ts || true
   }
 
   step "Verifying deployment..."

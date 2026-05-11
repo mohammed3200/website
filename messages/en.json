@@ -120,6 +120,15 @@
     "title": "Inquiry fosters understanding, it leads to valuable insights.",
     "subtitle": "You've got questions, we've got answers."
   },
+  "AcademicExperts": {
+    "badge": "Our Academic Experts",
+    "title": "Elite Academic Experts",
+    "subtitle": "The center features a distinguished group of academics and specialists to support entrepreneurship and innovation",
+    "viewCV": "View CV",
+    "closeCV": "Close",
+    "cvTitle": "Curriculum Vitae",
+    "paginationLabel": "Experts pagination"
+  },
   "Error": {
     "title": "Something went wrong",
     "message": "We encountered an unexpected error while processing your request. Please try again later.",
@@ -184,8 +193,8 @@
     "loadError": "Failed to load content"
   },
   "Home": {
-    "titleLine1": "Empowering",
-    "titleLine2": "Entrepreneurship & Innovation",
+    "titleLine1": "Connecting Academic Excellence",
+    "titleLine2": "To Industry's Future",
     "subtitle": "A collaborative platform bridging academic excellence from Misrata Industrial Technical College with industry expertise, fostering entrepreneurship, supporting inventions, and driving sustainable development for our community's future.",
     "startJourney": "Start Your Journey",
     "learnMore": "Discover More",

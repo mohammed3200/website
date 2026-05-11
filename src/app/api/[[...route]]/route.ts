@@ -12,6 +12,7 @@ import pageContent from '@/features/page-content/server/route';
 import faqs from '@/features/faqs/server/route';
 import users from '@/features/users/server/route';
 import legalContent from '@/features/legal-content/server/route';
+import academicExperts from '@/features/academic-experts/server/route';
 
 const app = new Hono().basePath('/api');
 
@@ -52,7 +53,8 @@ const routes = app
   .route('/pageContent', pageContent)
   .route('/faqs', faqs)
   .route('/users', users)
-  .route('/legal-content', legalContent);
+  .route('/legal-content', legalContent)
+  .route('/academic-experts', academicExperts);
 
 // Error handling
 app.onError((err, c) => {
