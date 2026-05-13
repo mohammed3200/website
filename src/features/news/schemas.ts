@@ -16,6 +16,8 @@ export const baseNewsSchema = z.object({
     contentEn: z.string().optional().nullable(),
     excerpt: z.string().optional().nullable(),
     excerptEn: z.string().optional().nullable(),
+    metaTitle: z.string().optional().nullable(),
+    metaDescription: z.string().optional().nullable(),
     tags: z.string().optional().nullable(), // Comma separated tags
     isActive: z.boolean().default(true),
     isFeatured: z.boolean().default(false),

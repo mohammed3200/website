@@ -1,5 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
-
+import type { Metadata } from 'next';
 import { ResponsiveNavbar } from "@/components/navigation";
 import { Footer } from "@/components";
 import { NextIntlClientProvider } from 'next-intl';
@@ -10,6 +10,25 @@ import { Almarai as AlmaraiGoogle } from 'next/font/google';
 import { AppProviders } from '@/components/providers/app-providers';
 import { QueryProvider } from '@/components';
 import '../globals.css';
+
+export const metadata: Metadata = {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+    title: {
+        default: 'EBIC Misrata',
+        template: '%s | EBIC Misrata',
+    },
+    description: 'An integrative platform supporting innovation, entrepreneurship, and technical development in Misrata.',
+    icons: { icon: '/favicon.ico', apple: '/apple-touch-icon.png' },
+    openGraph: {
+        type: 'website',
+        siteName: 'EBIC Misrata',
+        images: ['/images/og/default.jpg'],
+    },
+    twitter: { card: 'summary_large_image' },
+    robots: { index: true, follow: true },
+};
+
+
 
 const almarai = AlmaraiGoogle({
     subsets: ['arabic'],

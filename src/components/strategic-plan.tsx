@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import useLanguage from '@/hooks/use-language';
 import { useGetStrategicPlans } from '@/features/strategic-plan/api';
 import { HomeStrategicPlanSkeleton } from '@/components/skeletons';
+import { MainLogo } from '@/constants';
 
 export interface StrategicPlanItem {
   id: string;
@@ -152,7 +153,7 @@ export const StrategicPlan = () => {
           }
 
           const isCenter = strategic.slug === 'ebic';
-          const LogoSrc = isCenter ? '/assets/icons/logo.svg' : '/assets/icons/college.svg';
+          const LogoSrc = isCenter ? MainLogo.Logo : MainLogo.LogoCollege;
           const IconComponent = isCenter ? Sparkles : Building2;
           
           const displayImage = strategic.image?.url || LogoSrc;
@@ -210,48 +211,45 @@ export const StrategicPlan = () => {
               </div>
 
               <div className="relative p-8 md:p-10 h-full flex flex-col min-h-[400px]">
-                {/* Header with Logo */}
-                <div className="flex items-start justify-between gap-4 mb-6">
-                  <div className="flex items-center gap-4">
-                    {/* Logo Container */}
-                    <motion.div
-                      whileHover={{ scale: 1.05, rotate: 2 }}
-                      className={cn(
-                        "relative w-20 h-20 rounded-2xl flex items-center justify-center p-3 shadow-lg transition-shadow",
-                        isCenter
-                          ? "bg-gradient-to-br from-slate-50 to-slate-100 shadow-slate-200"
-                          : "bg-gradient-to-br from-orange-50 to-orange-100 shadow-orange-200"
-                      )}
-                    >
-                      <Image
-                        src={displayImage}
-                        alt={displayAlt}
-                        width={60}
-                        height={60}
-                        className="object-contain w-full h-full"
-                      />
+                {/* Header with Logo - Centered */}
+                <div className="flex flex-col items-center gap-6 mb-8">
+                  {/* Logo Container */}
+                  <motion.div
+                    whileHover={{ scale: 1.05, rotate: 2 }}
+                    className={cn(
+                      "relative w-24 h-24 rounded-3xl flex items-center justify-center p-4 shadow-xl transition-shadow",
+                      isCenter
+                        ? "bg-gradient-to-br from-slate-50 to-slate-100 shadow-slate-200"
+                        : "bg-gradient-to-br from-orange-50 to-orange-100 shadow-orange-200"
+                    )}
+                  >
+                    <Image
+                      src={displayImage}
+                      alt={displayAlt}
+                      width={80}
+                      height={80}
+                      className="object-contain w-full h-full"
+                    />
 
-                      {/* Decorative corner accent for center logo */}
-                      {isCenter && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-white rounded-full border-2 border-orange-200 shadow-sm" />
-                      )}
-                    </motion.div>
+                    {/* Decorative corner accent for center logo */}
+                    {isCenter && (
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full border-2 border-orange-200 shadow-md" />
+                    )}
+                  </motion.div>
 
-                    <div>
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider">
-                        <IconComponent className="w-3 h-3" />
-                        {entityName}
-                      </span>
-                      <p className="text-xs text-gray-400 mt-2 font-medium">
-                        {displayDate}
-                      </p>
-                    </div>
+                  <div className="text-center">
+                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-orange-100 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                      <IconComponent className="w-3.5 h-3.5" />
+                      {entityName}
+                    </span>
+                    <p className="text-sm text-gray-400 mt-3 font-medium">
+                      {displayDate}
+                    </p>
                   </div>
-
                 </div>
 
-                {/* Content */}
-                <div className="flex-1 flex flex-col justify-center space-y-4">
+                {/* Content - Centered */}
+                <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
                   <div>
                     <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-almarai leading-tight group-hover:text-primary transition-colors">
                       {displayTitle}
@@ -259,15 +257,14 @@ export const StrategicPlan = () => {
                   </div>
 
                   {displayExcerpt && (
-                    <p className="text-gray-600 leading-relaxed line-clamp-3 font-din-regular">
+                    <p className="text-gray-600 leading-relaxed line-clamp-3 font-din-regular max-w-lg">
                       {displayExcerpt}
                     </p>
                   )}
-
                 </div>
 
                 {/* Footer Action */}
-                <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-end">
+                <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-center">
                   <motion.button
                     onClick={(e) => {
                       e.stopPropagation();

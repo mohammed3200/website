@@ -1,0 +1,156 @@
+'use client';
+
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { Calendar, ImageIcon, Share2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+import useLanguage from '@/hooks/use-language';
+import { sanitizeHtml } from '@/lib/sanitizer';
+import { getRelativeTime } from '@/lib/relative-time';
+import { useToast } from '@/hooks/use-toast';
+import { useShareLink } from '@/hooks/use-share-link';
+import { Back } from '@/components/buttons';
+
+export const NewsClient = ({ news, locale }: { news: any, locale: string }) => {
+  const { isArabic, isEnglish } = useLanguage();
+  const t = useTranslations('News');
+  const { toast } = useToast();
+
+  const title = isEnglish ? (news.titleEn ?? news.title) : news.title;
+  const description = isEnglish
+    ? (news.contentEn ?? news.content)
+    : news.content;
+  const date = getRelativeTime(news.updatedAt, isArabic ? 'ar' : 'en');
+  const image = news.image?.url || '/images/placeholders/news-placeholder.jpg';
+
+  const titleDir =
+    isEnglish && news.titleEn ? 'ltr' : news.title ? 'rtl' : 'ltr';
+  const contentDir =
+    isEnglish && news.contentEn ? 'ltr' : news.content ? 'rtl' : 'ltr';
+
+  let tags: string[] = [];
+  if (news.tags) {
+    tags = news.tags
+      .split(',')
+      .map((tag: string) => tag.trim())
+      .filter(Boolean);
+  } else {
+    tags = [];
+  }
+
+  const { share: handleShare } = useShareLink({
+    title: title || 'News',
+    isArabic,
+    toast,
+  });
+
+  return (
+    <div
+      className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8"
+      dir={isArabic ? 'rtl' : 'ltr'}
+    >
+      <div className="max-w-7xl mx-auto space-y-8">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex items-center justify-between"
+        >
+          <Back />
+          <div className="flex gap-2">
+            <button
+              onClick={handleShare}
+              className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
+              aria-label="Share"
+            >
+              <Share2 className="w-5 h-5" />
+            </button>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="bg-white rounded-[2rem] shadow-xl shadow-gray-100 border border-gray-100 overflow-hidden"
+        >
+          <div className="relative h-[300px] md:h-[450px] w-full group overflow-hidden">
+            <Image
+              src={image}
+              alt={title || 'News Image'}
+              fill
+              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+
+            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-white">
+              <div className="flex items-center gap-4 text-sm md:text-base font-medium mb-3 opacity-90 flex-wrap">
+                <span className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+                  <Calendar className="w-4 h-4" />
+                  {date}
+                </span>
+              </div>
+              <h1
+                className="text-2xl md:text-4xl lg:text-5xl font-bold font-almarai leading-tight max-w-4xl shadow-sm"
+                dir={titleDir}
+              >
+                {title}
+              </h1>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 p-6 md:p-10">
+            <div className="lg:col-span-8 space-y-6">
+              <div
+                className="prose prose-lg prose-gray max-w-none text-gray-600 font-outfit"
+                dir={contentDir}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
+              />
+            </div>
+
+            <div className="lg:col-span-4 space-y-8">
+              {news.galleryIds && (
+                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                  <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold text-lg font-almarai">
+                    <ImageIcon className="w-5 h-5 text-primary" />
+                    <span>{t('photoGallery')}</span>
+                  </div>
+
+                  <div className="p-4 bg-gray-50 rounded-xl text-center">
+                    <p className="text-sm text-gray-500">
+                      {t('galleryPlaceholder')}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="p-6 border border-gray-100 rounded-2xl">
+                <h3 className="font-bold text-gray-900 mb-3 font-almarai">
+                  {t('tags')}
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {tags.length > 0 ? (
+                    tags.map((tag: string) => (
+                      <span
+                        key={tag}
+                        className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600 hover:border-primary hover:text-primary transition-colors cursor-pointer"
+                      >
+                        #{tag}
+                      </span>
+                    ))
+                  ) : (
+                    <p className="text-sm text-gray-400 italic">
+                      {t('noTags')}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};

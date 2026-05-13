@@ -1,194 +1,135 @@
-'use client';
+import type { Metadata } from 'next';
+import { db } from '@/lib/db';
+import { getTranslations } from 'next-intl/server';
+import { NewsClient } from './news-client';
+import { notFound } from 'next/navigation';
+import { sanitizeJsonForScript } from '@/lib/server-utils';
+import { cache } from 'react';
+import { getSiteUrl } from '@/lib/env-utils';
 
-import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Calendar, ImageIcon, Share2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+function stripHtml(html: string) {
+  return html
+    .replace(/<[^>]*>?/gm, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
-import useLanguage from '@/hooks/use-language';
-import { useNewsId } from '@/features/news/hooks/use-news-id';
-import { useGetNewsById } from '@/features/news/api/use-get-new';
-import { DetailPageSkeleton } from '@/components/skeletons';
-import { sanitizeHtml } from '@/lib/sanitizer';
-import { getRelativeTime } from '@/lib/relative-time';
-import { useToast } from '@/hooks/use-toast';
-import { useShareLink } from '@/hooks/use-share-link';
+const getNews = cache(async (slugOrId: string) => {
+  return db.news.findFirst({
+    where: { OR: [{ slug: slugOrId }, { id: slugOrId }], isActive: true },
+    include: { image: true },
+  });
+});
 
-import { Back } from '@/components/buttons';
+const siteUrl = getSiteUrl();
 
-const NewsIdPage = () => {
-  const newsId = useNewsId();
-  const { isArabic, isEnglish } = useLanguage();
-  const t = useTranslations('News');
-  const { toast } = useToast();
-  const { data: news, isLoading, isPending } = useGetNewsById(newsId);
+function deriveNewsSeo(news: any, locale: string) {
+  const isAr = locale === 'ar';
+  const title =
+    news.metaTitle ??
+    (isAr ? news.title : (news.titleEn ?? news.title));
 
-  if (isLoading || isPending) {
-    return (
-      <div className="min-h-screen bg-gray-50/50 py-12 px-4">
-        <DetailPageSkeleton />
-      </div>
-    );
+  const description =
+    news.metaDescription ??
+    (isAr ? (news.excerpt ?? stripHtml(news.content)).slice(0, 160)
+          : (news.excerptEn ?? stripHtml(news.contentEn ?? news.content)).slice(0, 160));
+
+  let ogImage = news.image?.url ?? '/images/placeholders/news-placeholder.jpg';
+  if (ogImage.startsWith('/')) {
+    ogImage = `${siteUrl}${ogImage}`;
   }
+
+  return { title, description, ogImage };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; newsId: string }>;
+}): Promise<Metadata> {
+  const { locale, newsId } = await params;
+  const news = await getNews(newsId);
+  const tMeta = await getTranslations({ locale, namespace: 'Meta' });
+  const isAr = locale === 'ar';
 
   if (!news) {
-    return (
-      <div className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-500 text-lg">News not found</p>
-        </div>
-      </div>
-    );
+    return { title: tMeta('news.title'), description: tMeta('news.description') };
   }
 
-  const title = isEnglish ? (news.titleEn ?? news.title) : news.title;
-  const description = isEnglish
-    ? (news.contentEn ?? news.content)
-    : news.content;
-  const date = getRelativeTime(news.updatedAt, isArabic ? 'ar' : 'en');
-  const image = news.image?.url || '/images/placeholders/news-placeholder.jpg';
+  const { title, description, ogImage } = deriveNewsSeo(news, locale);
+  const url = `${siteUrl}/${locale}/News/${news.slug ?? news.id}`;
 
-  // Determine actual content direction based on what's being displayed
-  const titleDir =
-    isEnglish && news.titleEn ? 'ltr' : news.title ? 'rtl' : 'ltr';
-  const contentDir =
-    isEnglish && news.contentEn ? 'ltr' : news.content ? 'rtl' : 'ltr';
+  return {
+    title: `${title} | ${tMeta('siteName')}`,
+    description,
+    alternates: {
+      canonical: url,
+      languages: {
+        ar: `${siteUrl}/ar/News/${news.slug ?? news.id}`,
+        en: `${siteUrl}/en/News/${news.slug ?? news.id}`,
+        'x-default': `${siteUrl}/News/${news.slug ?? news.id}`,
+      },
+    },
+    openGraph: {
+      type: 'article',
+      title,
+      description,
+      url,
+      siteName: tMeta('siteName'),
+      locale: isAr ? 'ar_LY' : 'en_US',
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
+      publishedTime: news.publishedAt?.toISOString(),
+      modifiedTime: news.updatedAt.toISOString(),
+      tags: news.tags?.split(',').map(t => t.trim()),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
-  // Parse tags
-  let tags: string[] = [];
-  if (news.tags) {
-    tags = news.tags
-      .split(',')
-      .map((tag) => tag.trim())
-      .filter(Boolean);
-  } else {
-    // Fallback or empty
-    tags = [];
-  }
+export default async function NewsArticlePage({
+  params,
+}: {
+  params: Promise<{ locale: string; newsId: string }>;
+}) {
+  const { newsId, locale } = await params;
+  const news = await getNews(newsId);
+  if (!news) notFound();
+  
+  const { title, description, ogImage } = deriveNewsSeo(news, locale);
+  const tMeta = await getTranslations({ locale, namespace: 'Meta' });
+  const isAr = locale === 'ar';
 
-  const { share: handleShare } = useShareLink({
-    title: title || 'News',
-    isArabic,
-    toast,
-  });
+  const publisherLogo = `${siteUrl}/images/logo.png`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": title,
+    "image": [ogImage],
+    "datePublished": news.publishedAt?.toISOString(),
+    "dateModified": news.updatedAt.toISOString(),
+    "author": { "@type": "Organization", "name": tMeta('siteName') },
+    "publisher": {
+      "@type": "Organization",
+      "name": tMeta('siteName'),
+      "logo": { "@type": "ImageObject", "url": publisherLogo }
+    },
+    "description": description,
+    "inLanguage": isAr ? 'ar' : 'en'
+  };
 
   return (
-    <div
-      className="min-h-screen bg-gray-50/50 py-12 px-4 sm:px-6 lg:px-8"
-      dir={isArabic ? 'rtl' : 'ltr'}
-    >
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Navigation Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex items-center justify-between"
-        >
-          <Back />
-          <div className="flex gap-2">
-            <button
-              onClick={handleShare}
-              className="p-2 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-full transition-colors"
-              aria-label="Share"
-            >
-              <Share2 className="w-5 h-5" />
-            </button>
-          </div>
-        </motion.div>
-
-        {/* Main Content Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="bg-white rounded-[2rem] shadow-xl shadow-gray-100 border border-gray-100 overflow-hidden"
-        >
-          {/* Hero Image */}
-          <div className="relative h-[300px] md:h-[450px] w-full group overflow-hidden">
-            <Image
-              src={image}
-              alt={title || 'News Image'}
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
-
-            {/* Overlay Title for Mobile/Tablet impact */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 text-white">
-              <div className="flex items-center gap-4 text-sm md:text-base font-medium mb-3 opacity-90 flex-wrap">
-                <span className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
-                  <Calendar className="w-4 h-4" />
-                  {date}
-                </span>
-              </div>
-              <h1
-                className="text-2xl md:text-4xl lg:text-5xl font-bold font-almarai leading-tight max-w-4xl shadow-sm"
-                dir={titleDir}
-              >
-                {title}
-              </h1>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 p-6 md:p-10">
-            {/* Article Content - Takes up 8 columns */}
-            <div className="lg:col-span-8 space-y-6">
-              <div
-                className="prose prose-lg prose-gray max-w-none text-gray-600 font-outfit"
-                dir={contentDir}
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(description) }}
-              />
-            </div>
-
-            {/* Sidebar / Gallery - Takes up 4 columns */}
-            <div className="lg:col-span-4 space-y-8">
-              {/* Gallery Widget (Hidden if no gallery) */}
-              {/* Note: Database schema needs galleryIds or similar logic. For now, we hide if empty */}
-              {news.galleryIds && (
-                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                  <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold text-lg font-almarai">
-                    <ImageIcon className="w-5 h-5 text-primary" />
-                    <span>{t('photoGallery')}</span>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-xl text-center">
-                    <p className="text-sm text-gray-500">
-                      {t('galleryPlaceholder')}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Related Tags or Info (Placeholder for sidebar balance) */}
-              <div className="p-6 border border-gray-100 rounded-2xl">
-                <h3 className="font-bold text-gray-900 mb-3 font-almarai">
-                  {t('tags')}
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {tags.length > 0 ? (
-                    tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-3 py-1 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600 hover:border-primary hover:text-primary transition-colors cursor-pointer"
-                      >
-                        #{tag}
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-400 italic">
-                      {t('noTags')}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </div>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(jsonLd) }}
+      />
+      <NewsClient news={news} locale={locale} />
+    </>
   );
-};
-
-export default NewsIdPage;
+}

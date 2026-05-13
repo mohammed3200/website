@@ -863,5 +863,57 @@
         "error": "Failed to save FAQ"
       }
     }
+  },
+  "Meta": {
+    "siteName": "EBIC Misrata",
+    "defaultDescription": "An integrative platform supporting innovation, entrepreneurship, and technical development in Misrata.",
+    "home": {
+      "title": "EBIC Misrata — Entrepreneurship, Incubators & Tech Center",
+      "description": "An integrative platform supporting innovation, entrepreneurship, and technical development in Misrata."
+    },
+    "about": {
+      "title": "About | EBIC Misrata",
+      "description": "The Misrata center for entrepreneurship, incubators, and technical development — goals, partners, and cooperation agreements."
+    },
+    "entrepreneurship": {
+      "title": "Entrepreneurship | Turning ideas into ventures",
+      "description": "Spreading entrepreneurship awareness and supporting startups by college students, graduates, and the community."
+    },
+    "incubators": {
+      "title": "Incubators | Incubating and developing projects",
+      "description": "Project incubation, mentoring, training and consulting, and support for upgrading existing factories."
+    },
+    "news": {
+      "title": "News & Events | EBIC Misrata",
+      "description": "Latest center news, events, partner visits, and new cooperation agreements."
+    },
+    "strategicPlans": {
+      "title": "Strategic Plans | EBIC Misrata",
+      "description": "The center's strategic plans, KPIs, and industrial development priorities."
+    },
+    "faq": {
+      "title": "FAQ | EBIC Misrata",
+      "description": "Answers to common questions about project acceptance, incubation criteria, and supported sectors."
+    },
+    "contact": {
+      "title": "Contact Us | EBIC Misrata",
+      "description": "Reach the Entrepreneurship, Incubators & Tech Development Center at the College of Industrial Technology — Misrata."
+    },
+    "innovators": {
+      "title": "Innovator Registration | Submit a project idea",
+      "description": "Register your project idea and apply to join the business incubator and receive support services."
+    },
+    "collaborators": {
+      "title": "Collaborators & Partners | EBIC Misrata",
+      "description": "Industrial and academic entities collaborating with the center through agreements and joint programs."
+    },
+    "privacy": {
+      "title": "Privacy Policy | EBIC Misrata",
+      "description": "How the center handles your personal data and registration information."
+    },
+    "terms": {
+      "title": "Terms of Use | EBIC Misrata",
+      "description": "Legal terms for using the Entrepreneurship, Incubators & Tech Development Center platform."
+    }
   }
 }

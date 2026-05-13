@@ -49,6 +49,7 @@ const SECTIONS_BY_PAGE: Record<Page, { value: string; label: string }[]> = {
   entrepreneurship: [
     { value: 'hero', label: 'Hero' },
     { value: 'goals', label: 'Goals' },
+    { value: 'approach', label: 'Approach' },
     { value: 'cta', label: 'CTA' },
   ],
   incubators: [
@@ -61,6 +62,8 @@ const SECTIONS_BY_PAGE: Record<Page, { value: string; label: string }[]> = {
     { value: 'goals', label: 'Goals' },
     { value: 'platform', label: 'Platform' },
     { value: 'news', label: 'News' },
+    { value: 'partners', label: 'Partners' },
+    { value: 'agreements', label: 'Agreements' },
   ],
 };
 

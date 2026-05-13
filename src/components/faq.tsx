@@ -8,13 +8,14 @@ import { Faqs } from '@/features/faqs';
 
 import { HelpCircle } from 'lucide-react';
 import { useGetPublicFaqs } from '@/features/faqs/api/use-get-public-faqs';
+import { Faq as FaqType } from '@/features/faqs/types';
 
 import { HomeFaqSkeleton } from '@/components/skeletons';
 
-export const Faq = () => {
+export const Faq = ({ initialData }: { initialData?: FaqType[] }) => {
   const t = useTranslations('Faq');
   const { isArabic } = useLanguage();
-  const { data: faqs, isLoading } = useGetPublicFaqs();
+  const { data: faqs, isLoading } = useGetPublicFaqs(initialData);
 
   const faqData = faqs || [];
 

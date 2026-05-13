@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import {
     Megaphone,
@@ -14,6 +13,7 @@ import {
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import type { PageContent } from '@prisma/client';
+import { ApproachPillars } from './approach-pillars';
 
 interface Props {
     locale: string;
@@ -42,6 +42,7 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
 
     const heroContent = getSection('hero')[0];
     const goalsContent = getSection('goals');
+    const approachContent = getSection('approach');
     const ctaContent = getSection('cta')[0];
 
     const localized = (item: PageContent | undefined, field: 'title' | 'content') => {
@@ -106,6 +107,11 @@ export default function EntrepreneurshipClient({ locale, content }: Props) {
                             {t('emptyState')}
                         </p>
                     </div>
+                )}
+
+                {/* Approach */}
+                {approachContent.length > 0 && (
+                    <ApproachPillars locale={locale} items={approachContent} />
                 )}
 
                 {/* CTA */}
