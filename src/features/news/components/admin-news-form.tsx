@@ -39,6 +39,8 @@ export const AdminNewsForm = ({ initialData, onSubmit, isLoading, onCancel }: Ne
         defaultValues: initialData ? {
             ...initialData,
             tags: initialData.tags || '',
+            metaTitle: initialData.metaTitle || '',
+            metaDescription: initialData.metaDescription || '',
             publishedAt: initialData.publishedAt ? new Date(initialData.publishedAt) : new Date(),
         } : {
             title: '',
@@ -48,6 +50,8 @@ export const AdminNewsForm = ({ initialData, onSubmit, isLoading, onCancel }: Ne
             slug: '',
             excerpt: '',
             excerptEn: '',
+            metaTitle: '',
+            metaDescription: '',
             tags: '',
             isActive: true,
             isFeatured: false,
@@ -212,6 +216,34 @@ export const AdminNewsForm = ({ initialData, onSubmit, isLoading, onCancel }: Ne
                                     <FormLabel>{t('form.tags')}</FormLabel>
                                     <FormControl>
                                         <Input placeholder="tag1, tag2, tag3" {...(field as any)} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="metaTitle"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Meta Title</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="SEO Title" {...(field as any)} />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="metaDescription"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Meta Description</FormLabel>
+                                    <FormControl>
+                                        <Textarea placeholder="SEO Description" {...(field as any)} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

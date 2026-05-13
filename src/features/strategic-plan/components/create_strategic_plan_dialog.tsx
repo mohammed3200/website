@@ -294,6 +294,30 @@ export function CreateStrategicPlanDialog({
               </p>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="metaTitle">Meta Title</Label>
+              <Input
+                id="metaTitle"
+                value={formData.metaTitle || ''}
+                onChange={(e) =>
+                  setFormData({ ...formData, metaTitle: e.target.value || null })
+                }
+                placeholder="SEO Title"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="metaDescription">Meta Description</Label>
+              <Textarea
+                id="metaDescription"
+                value={formData.metaDescription || ''}
+                onChange={(e) =>
+                  setFormData({ ...formData, metaDescription: e.target.value || null })
+                }
+                placeholder="SEO Description"
+              />
+            </div>
+
             <div className="space-y-2 flex items-center">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input

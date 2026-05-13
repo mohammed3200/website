@@ -1,17 +1,42 @@
-"use client";
+import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import type { Metadata } from 'next';
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import useLanguage from "@/hooks/use-language";
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const tMeta = await getTranslations({ locale, namespace: 'Meta' });
+  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/${locale}/innovators/registration`;
 
-export default function RegistrationPage() {
-  const router = useRouter();
-  const { lang } = useLanguage();
+  return {
+    title: tMeta('innovators.title'),
+    description: tMeta('innovators.description'),
+    alternates: {
+      canonical: url,
+      languages: {
+        ar: `${process.env.NEXT_PUBLIC_SITE_URL}/ar/innovators/registration`,
+        en: `${process.env.NEXT_PUBLIC_SITE_URL}/en/innovators/registration`,
+        'x-default': url,
+      },
+    },
+    openGraph: {
+      title: tMeta('innovators.title'),
+      description: tMeta('innovators.description'),
+      url,
+      locale: locale === 'ar' ? 'ar_LY' : 'en_US',
+    },
+  };
+}
 
-  useEffect(() => {
-    // Redirect to multi-step form step 1
-    router.replace(`/${lang}/innovators/registration/personal-info`);
-  }, [router, lang]);
-
-  return null;
+export default async function RegistrationPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  // Redirect to multi-step form step 1
+  redirect(`/${locale}/innovators/registration/personal-info`);
 }

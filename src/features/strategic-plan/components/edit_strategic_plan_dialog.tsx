@@ -287,6 +287,30 @@ export function EditStrategicPlanDialog({
               </p>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="edit-metaTitle">Meta Title</Label>
+              <Input
+                id="edit-metaTitle"
+                value={formData.metaTitle || ''}
+                onChange={(e) =>
+                  setFormData({ ...formData, metaTitle: e.target.value || null })
+                }
+                placeholder="SEO Title"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-metaDescription">Meta Description</Label>
+              <Textarea
+                id="edit-metaDescription"
+                value={formData.metaDescription || ''}
+                onChange={(e) =>
+                  setFormData({ ...formData, metaDescription: e.target.value || null })
+                }
+                placeholder="SEO Description"
+              />
+            </div>
+
             <div className="space-y-2 flex items-center">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
