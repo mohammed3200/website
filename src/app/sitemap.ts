@@ -21,31 +21,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
-  const news = await db.news.findMany({
-    where: { isActive: true },
-    select: { slug: true, id: true, updatedAt: true },
-  });
-  const newsEntries = news.flatMap(n =>
-    ['ar', 'en'].map(loc => ({
-      url: `${SITE}/${loc}/News/${n.slug ?? n.id}`,
-      lastModified: n.updatedAt,
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    })),
-  );
+  try {
+    const news = await db.news.findMany({
+      where: { isActive: true },
+      select: { slug: true, id: true, updatedAt: true },
+    });
+    const newsEntries = news.flatMap(n =>
+      ['ar', 'en'].map(loc => ({
+        url: `${SITE}/${loc}/News/${n.slug ?? n.id}`,
+        lastModified: n.updatedAt,
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+      })),
+    );
 
-  const plans = await db.strategicPlan.findMany({
-    where: { isActive: true },
-    select: { slug: true, updatedAt: true },
-  });
-  const planEntries = plans.flatMap(p =>
-    ['ar', 'en'].map(loc => ({
-      url: `${SITE}/${loc}/strategic-plan/${p.slug}`,
-      lastModified: p.updatedAt,
-      changeFrequency: 'yearly' as const,
-      priority: 0.6,
-    })),
-  );
+    const plans = await db.strategicPlan.findMany({
+      where: { isActive: true },
+      select: { slug: true, updatedAt: true },
+    });
+    const planEntries = plans.flatMap(p =>
+      ['ar', 'en'].map(loc => ({
+        url: `${SITE}/${loc}/strategic-plan/${p.slug}`,
+        lastModified: p.updatedAt,
+        changeFrequency: 'yearly' as const,
+        priority: 0.6,
+      })),
+    );
 
-  return [...staticEntries, ...newsEntries, ...planEntries];
+    return [...staticEntries, ...newsEntries, ...planEntries];
+  } catch (error) {
+    console.error('Failed to fetch dynamic sitemap entries:', error);
+    return staticEntries;
+  }
 }

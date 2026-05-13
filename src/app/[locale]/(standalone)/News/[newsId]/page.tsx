@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { getTranslations } from 'next-intl/server';
 import { NewsClient } from './news-client';
 import { notFound } from 'next/navigation';
+import { sanitizeJsonForScript } from '@/lib/utils';
 
 function stripHtml(html: string) {
   return html.replace(/<[^>]*>?/gm, '');
@@ -109,7 +110,7 @@ export default async function NewsArticlePage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(jsonLd) }}
       />
       <NewsClient news={news} locale={locale} />
     </>

@@ -4,7 +4,7 @@ import { isBuildPhase } from './env-utils';
 
 const connectionString =
   process.env.DATABASE_URL ||
-  (isBuildPhase ? 'mysql://localhost:3306/placeholder' : '');
+  (isBuildPhase ? 'mysql://127.0.0.1:3307/citcoder_eitdc' : '');
 
 if (!connectionString && !isBuildPhase) {
   throw new Error('DATABASE_URL is not defined in environment variables');

@@ -2,6 +2,7 @@ import { Faq } from "@/components/faq";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import type { Metadata } from "next";
+import { sanitizeJsonForScript } from "@/lib/utils";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;
@@ -53,7 +54,7 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
         <main className="min-h-screen pt-20">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(jsonLd) }}
             />
             <Faq />
         </main>

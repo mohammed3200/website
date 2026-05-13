@@ -198,3 +198,14 @@ export function isValidDate(date: any): boolean {
   const d = new Date(date);
   return !isNaN(d.getTime());
 }
+
+/**
+ * Safely stringifies JSON for inclusion in a <script> tag.
+ * Escapes characters that could be used for script injection or breakout.
+ */
+export function sanitizeJsonForScript(json: any): string {
+  return JSON.stringify(json)
+    .replace(/</g, '\\u003c')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}

@@ -1,6 +1,7 @@
 import { Hero } from "@/components";
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { sanitizeJsonForScript } from '@/lib/utils';
 
 export async function generateMetadata({
   params,
@@ -19,7 +20,7 @@ export async function generateMetadata({
       languages: {
         ar: `${process.env.NEXT_PUBLIC_SITE_URL}/ar`,
         en: `${process.env.NEXT_PUBLIC_SITE_URL}/en`,
-        'x-default': url,
+        'x-default': process.env.NEXT_PUBLIC_SITE_URL,
       },
     },
     openGraph: {
@@ -56,7 +57,7 @@ export default async function HomePage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(jsonLd) }}
       />
       <Hero />
     </>
