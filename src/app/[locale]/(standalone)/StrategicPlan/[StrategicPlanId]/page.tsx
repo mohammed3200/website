@@ -5,9 +5,13 @@ import { StrategicPlanClient } from './strategic-plan-client';
 import { notFound } from 'next/navigation';
 import { sanitizeJsonForScript } from '@/lib/server-utils';
 import { cache } from 'react';
+import { getSiteUrl } from '@/lib/env-utils';
 
 function stripHtml(html: string) {
-  return html.replace(/<[^>]*>?/gm, '');
+  return html
+    .replace(/<[^>]*>?/gm, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 const getStrategicPlan = cache(async (slugOrId: string) => {
@@ -16,7 +20,7 @@ const getStrategicPlan = cache(async (slugOrId: string) => {
   });
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+const SITE_URL = getSiteUrl();
 
 function deriveStrategicPlanSeo(plan: any, locale: string) {
   const isAr = locale === 'ar';

@@ -3,11 +3,12 @@ import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import type { Metadata } from "next";
 import { sanitizeJsonForScript } from "@/lib/server-utils";
+import { getSiteUrl } from "@/lib/env-utils";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;
     const tMeta = await getTranslations({ locale, namespace: "Meta" });
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const siteUrl = getSiteUrl();
     const url = `${siteUrl}/${locale}/faq`;
 
     return {

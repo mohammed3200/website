@@ -5,9 +5,13 @@ import { NewsClient } from './news-client';
 import { notFound } from 'next/navigation';
 import { sanitizeJsonForScript } from '@/lib/server-utils';
 import { cache } from 'react';
+import { getSiteUrl } from '@/lib/env-utils';
 
 function stripHtml(html: string) {
-  return html.replace(/<[^>]*>?/gm, '');
+  return html
+    .replace(/<[^>]*>?/gm, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 const getNews = cache(async (slugOrId: string) => {
@@ -17,7 +21,7 @@ const getNews = cache(async (slugOrId: string) => {
   });
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+const siteUrl = getSiteUrl();
 
 function deriveNewsSeo(news: any, locale: string) {
   const isAr = locale === 'ar';

@@ -2,6 +2,7 @@ import { Hero } from "@/components";
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { sanitizeJsonForScript } from '@/lib/server-utils';
+import { getSiteUrl } from '@/lib/env-utils';
 
 export async function generateMetadata({
   params,
@@ -10,7 +11,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const tMeta = await getTranslations({ locale, namespace: 'Meta' });
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/${locale}`;
+  const siteUrl = getSiteUrl();
+  const url = `${siteUrl}/${locale}`;
 
   return {
     title: tMeta('home.title'),
@@ -18,9 +20,9 @@ export async function generateMetadata({
     alternates: {
       canonical: url,
       languages: {
-        ar: `${process.env.NEXT_PUBLIC_SITE_URL}/ar`,
-        en: `${process.env.NEXT_PUBLIC_SITE_URL}/en`,
-        'x-default': process.env.NEXT_PUBLIC_SITE_URL,
+        ar: `${siteUrl}/ar`,
+        en: `${siteUrl}/en`,
+        'x-default': siteUrl,
       },
     },
     openGraph: {
@@ -40,12 +42,14 @@ export default async function HomePage({
   const { locale } = await params;
   const tMeta = await getTranslations({ locale, namespace: 'Meta' });
 
+  const siteUrl = getSiteUrl();
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: tMeta('siteName'),
-    url: process.env.NEXT_PUBLIC_SITE_URL,
-    logo: `${process.env.NEXT_PUBLIC_SITE_URL}/images/logo.png`,
+    url: siteUrl,
+    logo: `${siteUrl}/images/logo.png`,
     contactPoint: {
       '@type': 'ContactPoint',
       telephone: '+218-XX-XXXXXXX',
