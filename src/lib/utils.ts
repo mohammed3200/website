@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
+import serialize from 'serialize-javascript';
 import { mediaTypes } from '@/constants';
 import { fileTypeFromBuffer } from 'file-type';
 import { twMerge } from 'tailwind-merge';
@@ -201,11 +202,8 @@ export function isValidDate(date: any): boolean {
 
 /**
  * Safely stringifies JSON for inclusion in a <script> tag.
- * Escapes characters that could be used for script injection or breakout.
+ * Uses serialize-javascript for comprehensive escaping.
  */
-export function sanitizeJsonForScript(json: any): string {
-  return JSON.stringify(json)
-    .replace(/</g, '\\u003c')
-    .replace(/\u2028/g, '\\u2028')
-    .replace(/\u2029/g, '\\u2029');
+export function sanitizeJsonForScript(json: unknown): string {
+  return serialize(json, { isJSON: true });
 }

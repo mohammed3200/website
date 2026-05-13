@@ -7,7 +7,8 @@ import { sanitizeJsonForScript } from "@/lib/utils";
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;
     const tMeta = await getTranslations({ locale, namespace: "Meta" });
-    const url = `${process.env.NEXT_PUBLIC_SITE_URL}/${locale}/faq`;
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const url = `${siteUrl}/${locale}/faq`;
 
     return {
         title: tMeta("faq.title"),
@@ -15,9 +16,9 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         alternates: {
             canonical: url,
             languages: {
-                ar: `${process.env.NEXT_PUBLIC_SITE_URL}/ar/faq`,
-                en: `${process.env.NEXT_PUBLIC_SITE_URL}/en/faq`,
-                'x-default': url,
+                ar: `${siteUrl}/ar/faq`,
+                en: `${siteUrl}/en/faq`,
+                'x-default': `${siteUrl}/faq`,
             },
         },
         openGraph: {

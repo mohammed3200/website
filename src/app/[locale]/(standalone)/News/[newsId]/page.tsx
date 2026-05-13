@@ -16,6 +16,27 @@ async function getNews(slugOrId: string) {
   });
 }
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+function deriveNewsSeo(news: any, locale: string) {
+  const isAr = locale === 'ar';
+  const title =
+    news.metaTitle ??
+    (isAr ? news.title : (news.titleEn ?? news.title));
+
+  const description =
+    news.metaDescription ??
+    (isAr ? (news.excerpt ?? stripHtml(news.content)).slice(0, 160)
+          : (news.excerptEn ?? stripHtml(news.contentEn ?? news.content)).slice(0, 160));
+
+  let ogImage = news.image?.url ?? '/images/placeholders/news-placeholder.jpg';
+  if (ogImage.startsWith('/')) {
+    ogImage = `${siteUrl}${ogImage}`;
+  }
+
+  return { title, description, ogImage };
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -30,17 +51,8 @@ export async function generateMetadata({
     return { title: tMeta('news.title'), description: tMeta('news.description') };
   }
 
-  const title =
-    news.metaTitle ??
-    (isAr ? news.title : (news.titleEn ?? news.title));
-
-  const description =
-    news.metaDescription ??
-    (isAr ? (news.excerpt ?? stripHtml(news.content)).slice(0, 160)
-          : (news.excerptEn ?? stripHtml(news.contentEn ?? news.content)).slice(0, 160));
-
-  const ogImage = news.image?.url ?? '/images/placeholders/news-placeholder.jpg';
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/${locale}/News/${news.slug ?? news.id}`;
+  const { title, description, ogImage } = deriveNewsSeo(news, locale);
+  const url = `${siteUrl}/${locale}/News/${news.slug ?? news.id}`;
 
   return {
     title: `${title} | ${tMeta('siteName')}`,
@@ -48,9 +60,9 @@ export async function generateMetadata({
     alternates: {
       canonical: url,
       languages: {
-        ar: `${process.env.NEXT_PUBLIC_SITE_URL}/ar/News/${news.slug ?? news.id}`,
-        en: `${process.env.NEXT_PUBLIC_SITE_URL}/en/News/${news.slug ?? news.id}`,
-        'x-default': url,
+        ar: `${siteUrl}/ar/News/${news.slug ?? news.id}`,
+        en: `${siteUrl}/en/News/${news.slug ?? news.id}`,
+        'x-default': `${siteUrl}/News/${news.slug ?? news.id}`,
       },
     },
     openGraph: {
@@ -83,11 +95,11 @@ export default async function NewsArticlePage({
   const news = await getNews(newsId);
   if (!news) notFound();
   
-  const isAr = locale === 'ar';
-  const title = news.metaTitle ?? (isAr ? news.title : (news.titleEn ?? news.title));
-  const description = news.metaDescription ?? (isAr ? (news.excerpt ?? stripHtml(news.content)).slice(0, 160) : (news.excerptEn ?? stripHtml(news.contentEn ?? news.content)).slice(0, 160));
-  const ogImage = news.image?.url ?? '/images/placeholders/news-placeholder.jpg';
+  const { title, description, ogImage } = deriveNewsSeo(news, locale);
   const tMeta = await getTranslations({ locale, namespace: 'Meta' });
+  const isAr = locale === 'ar';
+
+  const publisherLogo = `${siteUrl}/images/logo.png`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -100,7 +112,7 @@ export default async function NewsArticlePage({
     "publisher": {
       "@type": "Organization",
       "name": tMeta('siteName'),
-      "logo": { "@type": "ImageObject", "url": "/images/logo.png" }
+      "logo": { "@type": "ImageObject", "url": publisherLogo }
     },
     "description": description,
     "inLanguage": isAr ? 'ar' : 'en'

@@ -15,6 +15,22 @@ async function getStrategicPlan(slugOrId: string) {
   });
 }
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+function deriveStrategicPlanSeo(plan: any, locale: string) {
+  const isAr = locale === 'ar';
+  const title =
+    plan.metaTitle ??
+    (isAr ? plan.titleAr || plan.title : plan.title);
+
+  const description =
+    plan.metaDescription ??
+    (isAr ? (plan.excerptAr || plan.excerpt || stripHtml(plan.contentAr || plan.content)).slice(0, 160)
+          : (plan.excerpt || stripHtml(plan.content)).slice(0, 160));
+
+  return { title, description };
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -26,19 +42,14 @@ export async function generateMetadata({
   const isAr = locale === 'ar';
 
   if (!plan) {
-    return { title: tMeta('siteName'), description: tMeta('siteName') };
+    return { 
+      title: tMeta('strategicPlan.title'), 
+      description: tMeta('strategicPlan.description') 
+    };
   }
 
-  const title =
-    plan.metaTitle ??
-    (isAr ? plan.titleAr || plan.title : plan.title);
-
-  const description =
-    plan.metaDescription ??
-    (isAr ? (plan.excerptAr || plan.excerpt || stripHtml(plan.contentAr || plan.content)).slice(0, 160)
-          : (plan.excerpt || stripHtml(plan.content)).slice(0, 160));
-
-  const url = `${process.env.NEXT_PUBLIC_SITE_URL}/${locale}/StrategicPlan/${plan.slug ?? plan.id}`;
+  const { title, description } = deriveStrategicPlanSeo(plan, locale);
+  const url = `${SITE_URL}/${locale}/StrategicPlan/${plan.slug ?? plan.id}`;
 
   return {
     title: `${title} | ${tMeta('siteName')}`,
@@ -46,9 +57,9 @@ export async function generateMetadata({
     alternates: {
       canonical: url,
       languages: {
-        ar: `${process.env.NEXT_PUBLIC_SITE_URL}/ar/StrategicPlan/${plan.slug ?? plan.id}`,
-        en: `${process.env.NEXT_PUBLIC_SITE_URL}/en/StrategicPlan/${plan.slug ?? plan.id}`,
-        'x-default': url,
+        ar: `${SITE_URL}/ar/StrategicPlan/${plan.slug ?? plan.id}`,
+        en: `${SITE_URL}/en/StrategicPlan/${plan.slug ?? plan.id}`,
+        'x-default': `${SITE_URL}/StrategicPlan/${plan.slug ?? plan.id}`,
       },
     },
     openGraph: {
@@ -78,10 +89,11 @@ export default async function StrategicPlanArticlePage({
   const plan = await getStrategicPlan(StrategicPlanId);
   if (!plan) notFound();
   
-  const isAr = locale === 'ar';
-  const title = plan.metaTitle ?? (isAr ? plan.titleAr || plan.title : plan.title);
-  const description = plan.metaDescription ?? (isAr ? (plan.excerptAr || plan.excerpt || stripHtml(plan.contentAr || plan.content)).slice(0, 160) : (plan.excerpt || stripHtml(plan.content)).slice(0, 160));
+  const { title, description } = deriveStrategicPlanSeo(plan, locale);
   const tMeta = await getTranslations({ locale, namespace: 'Meta' });
+  const isAr = locale === 'ar';
+
+  const publisherLogo = `${SITE_URL}/images/logo.png`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -93,7 +105,7 @@ export default async function StrategicPlanArticlePage({
     "publisher": {
       "@type": "Organization",
       "name": tMeta('siteName'),
-      "logo": { "@type": "ImageObject", "url": "/images/logo.png" }
+      "logo": { "@type": "ImageObject", "url": publisherLogo }
     },
     "description": description,
     "inLanguage": isAr ? 'ar' : 'en'
