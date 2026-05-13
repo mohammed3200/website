@@ -1,5 +1,4 @@
 import { clsx, type ClassValue } from 'clsx';
-import serialize from 'serialize-javascript';
 import { mediaTypes } from '@/constants';
 import { fileTypeFromBuffer } from 'file-type';
 import { twMerge } from 'tailwind-merge';
@@ -198,12 +197,4 @@ export function isValidDate(date: any): boolean {
   if (date === null || date === undefined) return false;
   const d = new Date(date);
   return !isNaN(d.getTime());
-}
-
-/**
- * Safely stringifies JSON for inclusion in a <script> tag.
- * Uses serialize-javascript for comprehensive escaping.
- */
-export function sanitizeJsonForScript(json: unknown): string {
-  return serialize(json, { isJSON: true });
 }

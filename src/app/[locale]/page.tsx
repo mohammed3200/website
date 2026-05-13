@@ -1,7 +1,7 @@
 import { Hero } from "@/components";
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { sanitizeJsonForScript } from '@/lib/utils';
+import { sanitizeJsonForScript } from '@/lib/server-utils';
 
 export async function generateMetadata({
   params,

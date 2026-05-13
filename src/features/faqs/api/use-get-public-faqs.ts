@@ -3,7 +3,7 @@ import { Faq } from "../types";
 
 import { client } from "@/lib/rpc";
 
-export const useGetPublicFaqs = () => {
+export const useGetPublicFaqs = (initialData?: Faq[]) => {
     const query = useQuery<Faq[], Error>({
         queryKey: ["faqs", "public"],
         queryFn: async () => {
@@ -18,6 +18,7 @@ export const useGetPublicFaqs = () => {
 
             return data as Faq[];
         },
+        initialData,
         staleTime: 10 * 60 * 1000, // 10 minutes (FAQs change infrequently)
         retry: 2,
     });

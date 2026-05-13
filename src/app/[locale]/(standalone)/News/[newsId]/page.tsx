@@ -3,18 +3,19 @@ import { db } from '@/lib/db';
 import { getTranslations } from 'next-intl/server';
 import { NewsClient } from './news-client';
 import { notFound } from 'next/navigation';
-import { sanitizeJsonForScript } from '@/lib/utils';
+import { sanitizeJsonForScript } from '@/lib/server-utils';
+import { cache } from 'react';
 
 function stripHtml(html: string) {
   return html.replace(/<[^>]*>?/gm, '');
 }
 
-async function getNews(slugOrId: string) {
+const getNews = cache(async (slugOrId: string) => {
   return db.news.findFirst({
     where: { OR: [{ slug: slugOrId }, { id: slugOrId }], isActive: true },
     include: { image: true },
   });
-}
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 

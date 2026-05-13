@@ -3,17 +3,18 @@ import { db } from '@/lib/db';
 import { getTranslations } from 'next-intl/server';
 import { StrategicPlanClient } from './strategic-plan-client';
 import { notFound } from 'next/navigation';
-import { sanitizeJsonForScript } from '@/lib/utils';
+import { sanitizeJsonForScript } from '@/lib/server-utils';
+import { cache } from 'react';
 
 function stripHtml(html: string) {
   return html.replace(/<[^>]*>?/gm, '');
 }
 
-async function getStrategicPlan(slugOrId: string) {
+const getStrategicPlan = cache(async (slugOrId: string) => {
   return db.strategicPlan.findFirst({
     where: { OR: [{ slug: slugOrId }, { id: slugOrId }], isActive: true },
   });
-}
+});
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 

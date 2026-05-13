@@ -2,7 +2,7 @@ import { Faq } from "@/components/faq";
 import { getTranslations } from "next-intl/server";
 import { db } from "@/lib/db";
 import type { Metadata } from "next";
-import { sanitizeJsonForScript } from "@/lib/utils";
+import { sanitizeJsonForScript } from "@/lib/server-utils";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;
@@ -51,13 +51,20 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
         }))
     };
 
+    const mappedFaqs = faqs.map((faq) => ({
+        question_ar: faq.questionAr || faq.question,
+        answer_ar: faq.answerAr || faq.answer,
+        question_en: faq.question,
+        answer_en: faq.answer
+    }));
+
     return (
         <main className="min-h-screen pt-20">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(jsonLd) }}
             />
-            <Faq />
+            <Faq initialData={mappedFaqs} />
         </main>
     );
 }
