@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function FaqPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     const isAr = locale === 'ar';
-    const faqs = await db.faq.findMany({
+    const faqs = await db.fAQ.findMany({
         where: { isActive: true },
         orderBy: { order: 'asc' },
     });
@@ -39,7 +39,7 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        "mainEntity": faqs.map(faq => ({
+        "mainEntity": faqs.map((faq) => ({
             "@type": "Question",
             "name": isAr ? faq.questionAr || faq.question : faq.question,
             "acceptedAnswer": {
