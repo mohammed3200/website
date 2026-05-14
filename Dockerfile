@@ -100,6 +100,13 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules/dotenv ./node_module
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/uuid ./node_modules/uuid
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/bcryptjs ./node_modules/bcryptjs
 
+# Source files required by seed scripts (seed-rbac.ts imports src/lib/rbac)
+COPY --from=builder --chown=nextjs:nodejs /app/src/lib/rbac.ts ./src/lib/rbac.ts
+COPY --from=builder --chown=nextjs:nodejs /app/src/lib/rbac-base.ts ./src/lib/rbac-base.ts
+COPY --from=builder --chown=nextjs:nodejs /app/src/lib/db.ts ./src/lib/db.ts
+COPY --from=builder --chown=nextjs:nodejs /app/src/lib/env-utils.ts ./src/lib/env-utils.ts
+COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./tsconfig.json
+
 # Include Prisma artifacts for migrations in entrypoint
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./
