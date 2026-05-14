@@ -69,7 +69,7 @@ export default async function LocaleLayout({
 
     return (
         <html lang={locale} dir={direction} className={almarai.variable}>
-            <body className="font-sans">
+            <body className="font-sans" suppressHydrationWarning>
                 <AppProviders>
                     <QueryProvider>
                         <NextIntlClientProvider

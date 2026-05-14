@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus } from 'lucide-react';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FaqItemProps {
@@ -27,7 +27,7 @@ export const FaqItem = ({ item, index, isOpen, toggle }: FaqItemProps) => {
           {/* Number Badge */}
           <span className={cn(
             "flex items-center justify-center w-10 h-10 rounded-full text-lg font-bold font-mono transition-colors",
-            isOpen ? "bg-primary text-white" : "bg-gray-50 text-gray-400 group-hover:text-primary"
+            isOpen ? "bg-primary text-white" : ""
           )}>
             {(index + 1).toString().padStart(2, '0')}
           </span>
@@ -44,7 +44,7 @@ export const FaqItem = ({ item, index, isOpen, toggle }: FaqItemProps) => {
           "p-2 rounded-full transition-colors shrink-0 ml-4",
           isOpen ? "bg-primary/10 text-primary" : "bg-gray-50 text-gray-400 group-hover:text-primary"
         )}>
-          {isOpen ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+          {isOpen ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
         </div>
       </button>
 

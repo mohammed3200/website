@@ -102,203 +102,212 @@ export const StrategicPlan = () => {
   };
 
   return (
-    <section id="strategic-plan" className="max-w-7xl mx-auto w-full px-4" dir={isArabic ? 'rtl' : 'ltr'}>
-      {/* Section Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="text-center mb-12"
-      >
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full mb-4">
-          <Target className="w-4 h-4 text-primary" />
-          <span className="text-sm font-bold text-primary uppercase tracking-wider">
-            {t('badge')}
-          </span>
-        </div>
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-almarai mb-3">
-          {t('title')}
-        </h2>
-        <p className="text-gray-500 max-w-2xl mx-auto">
-          {t('subtitle')}
-        </p>
-      </motion.div>
+    <section id="strategic-plan" className="relative w-full overflow-hidden py-16 md:py-24" dir={isArabic ? 'rtl' : 'ltr'}>
 
-      {/* Cards Grid */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        {strategics.map((strategic: StrategicPlanItem, index: number) => {
-          const isSelected = selectedIndex === index;
-          const isHovered = hoveredCard === index;
+      {/* 📐 Background: Subtle Grid for "Planning" */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.4]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/90 to-transparent" />
+      </div>
 
-          // Localized content selection
-          const displayTitle = isArabic ? (strategic.titleAr ?? strategic.title) : strategic.title;
-          const displayExcerpt = isArabic ? (strategic.excerptAr ?? strategic.excerpt) : strategic.excerpt;
 
-          // Explicit Slug Mapping for Branding
-          let entityName = '';
-          if (strategic.slug === 'ebic') {
-            entityName = tCommon('centerName');
-          } else if (strategic.slug === 'cit') {
-            entityName = isArabic ? 'كلية التقنية الصناعية - مصراتة' : 'College of Industrial Technology - Misurata';
-          } else {
-            entityName = isArabic 
-              ? (strategic.categoryAr ?? strategic.category ?? t('defaultCategory')) 
-              : (strategic.category ?? t('defaultCategory'));
-          }
+      <div className="relative z-10 max-w-7xl mx-auto w-full px-4">
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-50 rounded-full mb-4">
+            <Target className="w-4 h-4 text-primary" />
+            <span className="text-sm font-bold text-primary uppercase tracking-wider">
+              {t('badge')}
+            </span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 font-almarai mb-3">
+            {t('title')}
+          </h2>
+          <p className="text-gray-500 max-w-2xl mx-auto">
+            {t('subtitle')}
+          </p>
+        </motion.div>
 
-          const isCenter = strategic.slug === 'ebic';
-          const LogoSrc = isCenter ? MainLogo.Logo : MainLogo.LogoCollege;
-          const IconComponent = isCenter ? Sparkles : Building2;
-          
-          const displayImage = strategic.image?.url || LogoSrc;
-          const displayAlt = strategic.image?.alt || (isCenter ? 'Center Logo' : 'College Logo');
+        {/* Cards Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
+          {strategics.map((strategic: StrategicPlanItem, index: number) => {
+            const isSelected = selectedIndex === index;
+            const isHovered = hoveredCard === index;
 
-          // Date logic (UTC)
-          const startDate = strategic.startDate ? new Date(strategic.startDate).getUTCFullYear() : null;
-          const endDate = strategic.endDate ? new Date(strategic.endDate).getUTCFullYear() : null;
-          
-          let displayDate = '';
-          if (startDate && endDate) {
-            displayDate = t('dateRange', { start: startDate, end: endDate });
-          } else if (strategic.publishedAt) {
-            const publishedDate = new Date(strategic.publishedAt);
-            if (!isNaN(publishedDate.getTime())) {
-              displayDate = publishedDate.toLocaleDateString(isArabic ? 'ar-LY' : 'en-US', { 
-                year: 'numeric', 
-                timeZone: 'UTC' 
-              });
+            // Localized content selection
+            const displayTitle = isArabic ? (strategic.titleAr ?? strategic.title) : strategic.title;
+            const displayExcerpt = isArabic ? (strategic.excerptAr ?? strategic.excerpt) : strategic.excerpt;
+
+            // Explicit Slug Mapping for Branding
+            let entityName = '';
+            if (strategic.slug === 'ebic') {
+              entityName = tCommon('centerName');
+            } else if (strategic.slug === 'cit') {
+              entityName = isArabic ? 'كلية التقنية الصناعية - مصراتة' : 'College of Industrial Technology - Misurata';
+            } else {
+              entityName = isArabic
+                ? (strategic.categoryAr ?? strategic.category ?? t('defaultCategory'))
+                : (strategic.category ?? t('defaultCategory'));
             }
-          }
 
-          return (
-            <motion.div
-              key={strategic.id}
-              variants={cardVariants}
-              onClick={() => handleCardClick(index)}
-              onMouseEnter={() => setHoveredCard(index)}
-              onMouseLeave={() => setHoveredCard(null)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleCardClick(index);
-                }
-              }}
-              tabIndex={0}
-              role="button"
-              aria-pressed={isSelected}
-              className={cn(
-                "group relative bg-white rounded-3xl overflow-hidden cursor-pointer",
-                "border-2 transition-all duration-500",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-4",
-                isDesktop || isSelected
-                  ? "border-orange-200 shadow-xl shadow-orange-500/10 hover:shadow-2xl hover:shadow-orange-500/20 hover:border-orange-300"
-                  : "border-gray-100 shadow-md opacity-80 scale-95",
-                "hover:-translate-y-1"
-              )}
-            >
-              {/* Top Accent Bar */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600" />
+            const isCenter = strategic.slug === 'ebic';
+            const LogoSrc = isCenter ? MainLogo.Logo : MainLogo.LogoCollege;
+            const IconComponent = isCenter ? Sparkles : Building2;
 
-              {/* Background Pattern */}
-              <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_100%_100%,_var(--tw-gradient-stops))] from-orange-400 via-transparent to-transparent" />
-              </div>
+            const displayImage = strategic.image?.url || LogoSrc;
+            const displayAlt = strategic.image?.alt || (isCenter ? 'Center Logo' : 'College Logo');
 
-              <div className="relative p-8 md:p-10 h-full flex flex-col min-h-[400px]">
-                {/* Header with Logo - Centered */}
-                <div className="flex flex-col items-center gap-6 mb-8">
-                  {/* Logo Container */}
+            // Date logic (UTC)
+            const startDate = strategic.startDate ? new Date(strategic.startDate).getUTCFullYear() : null;
+            const endDate = strategic.endDate ? new Date(strategic.endDate).getUTCFullYear() : null;
+
+            let displayDate = '';
+            if (startDate && endDate) {
+              displayDate = t('dateRange', { start: startDate, end: endDate });
+            } else if (strategic.publishedAt) {
+              const publishedDate = new Date(strategic.publishedAt);
+              if (!isNaN(publishedDate.getTime())) {
+                displayDate = publishedDate.toLocaleDateString(isArabic ? 'ar-LY' : 'en-US', {
+                  year: 'numeric',
+                  timeZone: 'UTC'
+                });
+              }
+            }
+
+            return (
+              <motion.div
+                key={strategic.id}
+                variants={cardVariants}
+                onClick={() => handleCardClick(index)}
+                onMouseEnter={() => setHoveredCard(index)}
+                onMouseLeave={() => setHoveredCard(null)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleCardClick(index);
+                  }
+                }}
+                tabIndex={0}
+                role="button"
+                aria-pressed={isSelected}
+                className={cn(
+                  "group relative bg-white rounded-3xl overflow-hidden cursor-pointer",
+                  "border-2 transition-all duration-500",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-4",
+                  isDesktop || isSelected
+                    ? "border-orange-200 shadow-xl shadow-orange-500/10 hover:shadow-2xl hover:shadow-orange-500/20 hover:border-orange-300"
+                    : "border-gray-100 shadow-md opacity-80 scale-95",
+                  "hover:-translate-y-1"
+                )}
+              >
+                {/* Top Accent Bar */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600" />
+
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-[0.02] pointer-events-none">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_100%_100%,_var(--tw-gradient-stops))] from-orange-400 via-transparent to-transparent" />
+                </div>
+
+                <div className="relative p-8 md:p-10 h-full flex flex-col min-h-[400px]">
+                  {/* Header with Logo - Centered */}
+                  <div className="flex flex-col items-center gap-6 mb-8">
+                    {/* Logo Container */}
+                    <motion.div
+                      whileHover={{ scale: 1.05, rotate: 2 }}
+                      className={cn(
+                        "relative w-24 h-24 rounded-3xl flex items-center justify-center p-4 shadow-xl transition-shadow",
+                        isCenter
+                          ? "bg-gradient-to-br from-slate-50 to-slate-100 shadow-slate-200"
+                          : "bg-gradient-to-br from-orange-50 to-orange-100 shadow-orange-200"
+                      )}
+                    >
+                      <Image
+                        src={displayImage}
+                        alt={displayAlt}
+                        width={80}
+                        height={80}
+                        className="object-contain w-full h-full"
+                      />
+
+                      {/* Decorative corner accent for center logo */}
+                      {isCenter && (
+                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full border-2 border-orange-200 shadow-md" />
+                      )}
+                    </motion.div>
+
+                    <div className="text-center">
+                      <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-orange-100 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
+                        <IconComponent className="w-3.5 h-3.5" />
+                        {entityName}
+                      </span>
+                      <p className="text-sm text-gray-400 mt-3 font-medium">
+                        {displayDate}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Content - Centered */}
+                  <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
+                    <div>
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-almarai leading-tight group-hover:text-primary transition-colors">
+                        {displayTitle}
+                      </h3>
+                    </div>
+
+                    {displayExcerpt && (
+                      <p className="text-gray-600 leading-relaxed line-clamp-3 font-din-regular max-w-lg">
+                        {displayExcerpt}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Footer Action */}
+                  <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-center">
+                    <motion.button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/${lang}/StrategicPlan/${strategic.slug}`);
+                      }}
+                      whileHover={{ scale: 1.05, x: isArabic ? -4 : 4 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={cn(
+                        "flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all",
+                        "bg-gradient-to-r from-orange-400 to-orange-600 text-white shadow-lg shadow-orange-500/25",
+                        "hover:shadow-xl hover:shadow-orange-500/40 hover:from-orange-500 hover:to-orange-700"
+                      )}
+                    >
+                      <span>{t('viewPlan')}</span>
+                      {isArabic ? (
+                        <ArrowUpLeft className="w-4 h-4" />
+                      ) : (
+                        <ArrowUpRight className="w-4 h-4" />
+                      )}
+                    </motion.button>
+                  </div>
+
+                  {/* Hover Glow Effect */}
                   <motion.div
-                    whileHover={{ scale: 1.05, rotate: 2 }}
-                    className={cn(
-                      "relative w-24 h-24 rounded-3xl flex items-center justify-center p-4 shadow-xl transition-shadow",
-                      isCenter
-                        ? "bg-gradient-to-br from-slate-50 to-slate-100 shadow-slate-200"
-                        : "bg-gradient-to-br from-orange-50 to-orange-100 shadow-orange-200"
-                    )}
-                  >
-                    <Image
-                      src={displayImage}
-                      alt={displayAlt}
-                      width={80}
-                      height={80}
-                      className="object-contain w-full h-full"
-                    />
-
-                    {/* Decorative corner accent for center logo */}
-                    {isCenter && (
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-white rounded-full border-2 border-orange-200 shadow-md" />
-                    )}
-                  </motion.div>
-
-                  <div className="text-center">
-                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 bg-orange-100 text-orange-700 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm">
-                      <IconComponent className="w-3.5 h-3.5" />
-                      {entityName}
-                    </span>
-                    <p className="text-sm text-gray-400 mt-3 font-medium">
-                      {displayDate}
-                    </p>
-                  </div>
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: isHovered ? 1 : 0 }}
+                    className="absolute -inset-px bg-gradient-to-r from-orange-400/20 to-orange-600/20 rounded-3xl blur-xl -z-10"
+                  />
                 </div>
-
-                {/* Content - Centered */}
-                <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
-                  <div>
-                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 font-almarai leading-tight group-hover:text-primary transition-colors">
-                      {displayTitle}
-                    </h3>
-                  </div>
-
-                  {displayExcerpt && (
-                    <p className="text-gray-600 leading-relaxed line-clamp-3 font-din-regular max-w-lg">
-                      {displayExcerpt}
-                    </p>
-                  )}
-                </div>
-
-                {/* Footer Action */}
-                <div className="mt-8 pt-6 border-t border-gray-100 flex items-center justify-center">
-                  <motion.button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(`/${lang}/StrategicPlan/${strategic.slug}`);
-                    }}
-                    whileHover={{ scale: 1.05, x: isArabic ? -4 : 4 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={cn(
-                      "flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all",
-                      "bg-gradient-to-r from-orange-400 to-orange-600 text-white shadow-lg shadow-orange-500/25",
-                      "hover:shadow-xl hover:shadow-orange-500/40 hover:from-orange-500 hover:to-orange-700"
-                    )}
-                  >
-                    <span>{t('viewPlan')}</span>
-                    {isArabic ? (
-                      <ArrowUpLeft className="w-4 h-4" />
-                    ) : (
-                      <ArrowUpRight className="w-4 h-4" />
-                    )}
-                  </motion.button>
-                </div>
-
-                {/* Hover Glow Effect */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: isHovered ? 1 : 0 }}
-                  className="absolute -inset-px bg-gradient-to-r from-orange-400/20 to-orange-600/20 rounded-3xl blur-xl -z-10"
-                />
-              </div>
-            </motion.div>
-          );
-        })}
-      </motion.div>
-
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </div>
     </section>
   );
 };

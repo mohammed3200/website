@@ -14,7 +14,7 @@ export const Faqs = ({ listOfFaq }: FaqProps) => {
   const { isArabic } = useLanguage();
 
   return (
-    <div className="grid grid-cols-1 gap-6">
+    <div className="grid grid-cols-1 gap-4">
       {listOfFaq.map((item, index) => (
         <FaqItem
           key={index}

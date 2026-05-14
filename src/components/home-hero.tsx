@@ -41,7 +41,7 @@ export const HomeHero = () => {
 
   return (
     <section
-      className="relative min-h-[85vh] flex items-center overflow-hidden bg-background"
+      className="relative min-h-[85vh] flex items-center overflow-hidden bg-background pt-24 lg:pt-32"
       dir={isArabic ? 'rtl' : 'ltr'}
     >
       {/* 📐 Background: Subtle Grid for "Planning" */}

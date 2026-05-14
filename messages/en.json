@@ -154,16 +154,28 @@
       "badge": "Our Goals",
       "title": "Entrepreneurship Department Goals",
       "subtitle": "Six goals that guide the Entrepreneurship Department's work in supporting entrepreneurs and innovators."
+    },
+    "approach": {
+      "badge": "Our Approach",
+      "title": "How We Work",
+      "subtitle": "A systematic approach to fostering innovation and supporting entrepreneurs."
+    },
+    "cta": {
+      "buttonText": "Start Your Journey"
     }
   },
   "Incubators": {
     "title": "Incubators Department",
     "subtitle": "Incubating projects and providing guidance, training, consulting, and funding services.",
     "emptyState": "No content available.",
+    "incubatorTasks": "Incubator Department Tasks",
     "tasks": {
       "badge": "Our Tasks",
       "title": "Incubators Department Tasks",
       "subtitle": "Five tasks that frame the Incubators Department's work in incubating projects and developing existing factories."
+    },
+    "cta": {
+      "buttonText": "Apply Now"
     }
   },
   "About": {

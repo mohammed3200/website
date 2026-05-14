@@ -60,7 +60,7 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
     }));
 
     return (
-        <main className="min-h-screen pt-20">
+        <main className="min-h-screen p-20">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: sanitizeJsonForScript(jsonLd) }}
