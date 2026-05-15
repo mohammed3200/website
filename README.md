@@ -35,14 +35,14 @@
 
 ## 📋 Table of Contents
 
-1. [System Architecture](#-system-architecture)
-2. [Features](#-features)
-3. [Tech Stack](#-tech-stack)
-4. [Getting Started (Docker + Manual)](#-getting-started)
-5. [Environment Variables](#-environment-variables)
-6. [Database Seeding](#-database-seeding)
-7. [Production Deployment](#-production-deployment)
-8. [License](#-license)
+1. [System Architecture](#system-architecture)
+2. [Features](#features)
+3. [Tech Stack](#tech-stack)
+4. [Getting Started (Docker + Manual)](#getting-started-docker--manual)
+5. [Environment Variables](#environment-variables)
+6. [Database Seeding](#database-seeding)
+7. [Production Deployment](#production-deployment)
+8. [License](#license)
 
 ---
 
@@ -88,7 +88,7 @@ Internet (HTTPS :443)
 
 ### Admin Features
 
-- **RBAC Dashboard:** Centralized NextAuth-secured dashboard. Roles include Super Admin, Admin, Editor, and Viewer.
+- **RBAC Dashboard:** Centralized NextAuth-secured dashboard. Roles include `super_admin`, `admin`, `news_editor`, `request_reviewer`, and `viewer`.
 - **Submission Review:** Approve/Reject Innovator & Collaborator registrations with integrated email queues.
 - **System Settings:** Notification preferences, legal content management, and metric reporting.
 

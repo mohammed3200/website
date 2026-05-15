@@ -4,12 +4,14 @@ import path from 'path';
 
 const withNextIntl = createNextIntlPlugin();
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline';
+  script-src 'self' ${isProd ? '' : "'unsafe-eval' 'unsafe-inline'"};
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https: http://localhost:9000;
-  font-src 'self' data:;
+  img-src 'self' ${isProd ? 'https:' : 'blob: data: https: http://localhost:9000'};
+  font-src 'self';
   object-src 'none';
   base-uri 'self';
   form-action 'self';

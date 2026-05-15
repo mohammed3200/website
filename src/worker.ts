@@ -15,10 +15,17 @@ const systemWorker = new Worker('system-queue', async (job) => {
 }, { connection: redis });
 
 // Schedule the token cleanup job to run daily at 3 AM
-systemQueue.add('token-cleanup', {}, {
-  repeat: { pattern: '0 3 * * *' },
-  jobId: 'daily-token-cleanup' // Ensure it's not added multiple times
-});
+(async () => {
+  try {
+    await systemQueue.add('token-cleanup', {}, {
+      repeat: { pattern: '0 3 * * *' },
+      jobId: 'daily-token-cleanup' // Ensure it's not added multiple times
+    });
+    console.log(`✅ Successfully scheduled 'token-cleanup' with jobId: 'daily-token-cleanup'`);
+  } catch (err) {
+    console.error(`❌ Failed to schedule 'token-cleanup' with jobId: 'daily-token-cleanup'`, err);
+  }
+})();
 
 console.log('👷 Background worker started...');
 console.log('listening on queues:');
