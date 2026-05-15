@@ -4,6 +4,21 @@ import path from 'path';
 
 const withNextIntl = createNextIntlPlugin();
 
+const isProd = process.env.NODE_ENV === 'production';
+
+const cspHeader = `
+  default-src 'self';
+  script-src 'self' ${isProd ? '' : "'unsafe-eval' 'unsafe-inline'"};
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' ${isProd ? 'https:' : 'blob: data: https: http://localhost:9000'};
+  font-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  form-action 'self';
+  frame-ancestors 'none';
+  upgrade-insecure-requests;
+`.replace(/\s{2,}/g, ' ').trim();
+
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
   output: 'standalone', // Enable standalone output for Docker optimization
@@ -18,6 +33,7 @@ const nextConfig: NextConfig = {
           { key: 'X-DNS-Prefetch-Control', value: 'on' },
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+          { key: 'Content-Security-Policy', value: cspHeader },
         ],
       },
     ];

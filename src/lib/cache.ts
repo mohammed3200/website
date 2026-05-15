@@ -79,12 +79,45 @@ export const cache = {
         fetcher: () => Promise<T>,
         ttl: number = DEFAULT_TTL
     ): Promise<T> {
-        const cached = await this.get<T>(key);
+        let cached = await this.get<T>(key);
         if (cached) return cached;
 
-        const fresh = await fetcher();
-        await this.set(key, fresh, ttl);
-        return fresh;
+        const lockKey = `lock:${key}`;
+        const lockToken = Math.random().toString(36).substring(2);
+        let acquiredLock = false;
+
+        if (process.env.REDIS_URL) {
+            let attempts = 0;
+            while (attempts < 5) {
+                const acquired = await redis.set(lockKey, lockToken, 'EX', 10, 'NX');
+                if (acquired) {
+                    acquiredLock = true;
+                    break;
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 200));
+                cached = await this.get<T>(key);
+                if (cached) return cached;
+                attempts++;
+            }
+        }
+
+        try {
+            const fresh = await fetcher();
+            await this.set(key, fresh, ttl);
+            return fresh;
+        } finally {
+            if (process.env.REDIS_URL && acquiredLock) {
+                const script = `
+                    if redis.call("get", KEYS[1]) == ARGV[1] then
+                        return redis.call("del", KEYS[1])
+                    else
+                        return 0
+                    end
+                `;
+                await redis.eval(script, 1, lockKey, lockToken);
+            }
+        }
     },
 
     /**

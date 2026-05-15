@@ -1,12 +1,38 @@
 import { reportWorker } from '@/lib/queue/report-worker';
 import { emailWorker } from '@/lib/queue/email-worker';
 import { whatsappWorker } from '@/lib/queue/whatsapp-worker';
+import { Queue, Worker } from 'bullmq';
+import { redis } from '@/lib/redis';
+import { cleanupExpiredTokens } from '@/lib/queue/token-cleanup';
+
+// System queue for scheduled maintenance tasks
+const systemQueue = new Queue('system-queue', { connection: redis });
+
+const systemWorker = new Worker('system-queue', async (job) => {
+  if (job.name === 'token-cleanup') {
+    await cleanupExpiredTokens();
+  }
+}, { connection: redis });
+
+// Schedule the token cleanup job to run daily at 3 AM
+(async () => {
+  try {
+    await systemQueue.add('token-cleanup', {}, {
+      repeat: { pattern: '0 3 * * *' },
+      jobId: 'daily-token-cleanup' // Ensure it's not added multiple times
+    });
+    console.log(`✅ Successfully scheduled 'token-cleanup' with jobId: 'daily-token-cleanup'`);
+  } catch (err) {
+    console.error(`❌ Failed to schedule 'token-cleanup' with jobId: 'daily-token-cleanup'`, err);
+  }
+})();
 
 console.log('👷 Background worker started...');
 console.log('listening on queues:');
 console.log(`- ${reportWorker.name}`);
 console.log(`- ${emailWorker.name}`);
 console.log(`- ${whatsappWorker.name}`);
+console.log(`- ${systemWorker.name}`);
 
 // Handle graceful shutdown
 const shutdown = async () => {
@@ -15,6 +41,8 @@ const shutdown = async () => {
     reportWorker.close(),
     emailWorker.close(),
     whatsappWorker.close(),
+    systemWorker.close(),
+    systemQueue.close(),
   ]);
   process.exit(0);
 };

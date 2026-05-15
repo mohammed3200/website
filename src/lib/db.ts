@@ -21,13 +21,10 @@ const prismaClientSingleton = () => {
 declare global {
   // eslint-disable-next-line no-var
   var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
-  // eslint-disable-next-line no-var
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
 }
 
-export const db = globalThis.prismaGlobal ?? globalThis.prisma ?? prismaClientSingleton();
+export const db = globalThis.prismaGlobal ?? prismaClientSingleton();
 
 if (process.env.NODE_ENV !== 'production') {
   globalThis.prismaGlobal = db;
-  globalThis.prisma = db;
 }

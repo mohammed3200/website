@@ -7,7 +7,7 @@ import { db } from '@/lib/db';
 export async function cleanupExpiredTokens() {
     const now = new Date();
 
-    const [twoFactor, verification, passwordReset] = await Promise.all([
+    const [twoFactor, verification, passwordReset, invitations] = await Promise.all([
         db.twoFactorToken.deleteMany({
             where: { expires: { lt: now } },
         }),
@@ -17,14 +17,20 @@ export async function cleanupExpiredTokens() {
         db.passwordResetToken.deleteMany({
             where: { expires: { lt: now } },
         }),
+        db.userInvitation.deleteMany({
+            where: {
+                status: 'PENDING',
+                expiresAt: { lt: now }
+            }
+        })
     ]);
 
-    const total = twoFactor.count + verification.count + passwordReset.count;
+    const total = twoFactor.count + verification.count + passwordReset.count + invitations.count;
 
     console.log(
         `[Token Cleanup] Purged ${total} expired tokens:`,
-        `2FA=${twoFactor.count}, Verification=${verification.count}, PasswordReset=${passwordReset.count}`
+        `2FA=${twoFactor.count}, Verification=${verification.count}, PasswordReset=${passwordReset.count}, Invitations=${invitations.count}`
     );
 
-    return { twoFactor: twoFactor.count, verification: verification.count, passwordReset: passwordReset.count, total };
+    return { twoFactor: twoFactor.count, verification: verification.count, passwordReset: passwordReset.count, invitations: invitations.count, total };
 }
