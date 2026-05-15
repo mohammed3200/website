@@ -1,0 +1,28 @@
+# EBIC Platform AI Assistant Guidelines
+
+These rules dictate how AI agents should interact with, analyze, and modify the EBIC Platform.
+
+## 1. Project Analysis
+- **DO NOT GUESS:** Always use search tools (e.g., `grep_search`) to locate definitions rather than assuming standard Next.js patterns. The project uses a custom Hono API layer under `/api/[[...route]]`.
+- **Database Schema is the Source of Truth:** Before adding fields to any frontend or backend validation schema (Zod), verify the fields against `prisma/schema.prisma`.
+- **Check Environment Constants:** Confirm variables like `NEXT_PUBLIC_SITE_URL` and `S3_ENDPOINT` from `.env.production.example` before writing network-related logic.
+
+## 2. Validating Changes
+- **TypeScript Strictness:** Never use `any` to bypass type errors. The project has strict TS settings. Resolve generic types carefully, especially with `react-hook-form` and `zod` resolvers.
+- **Sanitization Checks:** If modifying any POST/PUT route, ensure `sanitizeHtml` is used on string fields.
+- **File Upload Flows:** S3 uploads must happen *before* database transactions. Do not place external network calls inside `db.$transaction()`. Ensure `Promise.allSettled` is used to clean up orphaned S3 blobs if the DB transaction fails.
+
+## 3. Architecture Preservation
+- **Client vs Server Components:** Keep `use client` directives to the absolute minimum necessary (leaf nodes). Favor React Server Components for data fetching.
+- **Form State:** Multi-step forms (Collaborators, Innovators) use Zustand with `sessionStorage`. Do not refactor these to URL-based state without explicit approval, as it breaks the current wizard pattern.
+- **Dual Caching:** Redis is the primary cache. Do not implement new in-memory caching solutions; extend `src/lib/cache.ts` instead.
+
+## 4. RBAC & API Patterns
+- **API Guarding:** All protected routes must invoke `checkPermission` against the decoded JWT session. Do not just check for a valid session.
+- **Roles:** The system uses `super_admin`, `admin`, `news_editor`, `request_reviewer`, and `viewer`. Do not invent new roles.
+- **Hono Middleware:** Use `zValidator` for payload validation on every endpoint. Return typed JSON responses.
+
+## 5. Respecting Cache & Database Rules
+- **Cache Invalidation:** If you modify a mutative route (POST, PUT, DELETE), you MUST include a call to `cache.del('feature_key')` to prevent stale public data.
+- **Database Singletons:** Import `db` from `@/lib/db`. Do not instantiate `new PrismaClient()` manually.
+- **Idempotent Seeds:** When adding to seed scripts, write upsert logic. Seed scripts must be safe to run multiple times without creating duplicates.

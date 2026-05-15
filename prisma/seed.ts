@@ -556,10 +556,15 @@ export async function main() {
     process.env.INIT_ADMIN_EMAIL ||
     process.env.ADMIN_EMAIL ||
     'ebic@cit.edu.ly';
-  const adminPassword =
-    process.env.INIT_ADMIN_PASSWORD ||
-    process.env.ADMIN_PASSWORD ||
-    'password123';
+
+  const isProd = process.env.NODE_ENV === 'production';
+  const hasProvidedPassword = process.env.INIT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+
+  if (isProd && !hasProvidedPassword) {
+    throw new Error('INIT_ADMIN_PASSWORD must be provided in production environment to avoid default insecure passwords.');
+  }
+
+  const adminPassword = hasProvidedPassword || 'password123';
 
   const passwordHash = await bcrypt.hash(adminPassword, 10);
 

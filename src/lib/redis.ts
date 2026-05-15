@@ -50,13 +50,13 @@ function getRedis(): Redis {
 
   if (!redisUrl) {
     if (process.env.NODE_ENV === 'production' && !isBuildPhase) {
-      console.warn(
-        '⚠️ REDIS_URL is not defined. Using in-memory mock Redis (features like Background Workers will not function properly).',
+      throw new Error(
+        '🚨 REDIS_URL is not defined. Redis is required in production for caching and background workers. Aborting.',
       );
     }
 
-    if (isBuildPhase || process.env.NODE_ENV === 'production') {
-      // Return a mock instance during Next.js static build or in production without Redis
+    if (isBuildPhase) {
+      // Return a mock instance during Next.js static build
       _redis = createMockRedis();
       return _redis;
     }

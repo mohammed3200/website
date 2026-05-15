@@ -79,12 +79,32 @@ export const cache = {
         fetcher: () => Promise<T>,
         ttl: number = DEFAULT_TTL
     ): Promise<T> {
-        const cached = await this.get<T>(key);
+        let cached = await this.get<T>(key);
         if (cached) return cached;
 
-        const fresh = await fetcher();
-        await this.set(key, fresh, ttl);
-        return fresh;
+        const lockKey = `lock:${key}`;
+        if (process.env.REDIS_URL) {
+            let attempts = 0;
+            while (attempts < 5) {
+                const acquired = await redis.set(lockKey, '1', 'EX', 10, 'NX');
+                if (acquired) break;
+                
+                await new Promise(resolve => setTimeout(resolve, 200));
+                cached = await this.get<T>(key);
+                if (cached) return cached;
+                attempts++;
+            }
+        }
+
+        try {
+            const fresh = await fetcher();
+            await this.set(key, fresh, ttl);
+            return fresh;
+        } finally {
+            if (process.env.REDIS_URL) {
+                await redis.del(lockKey);
+            }
+        }
     },
 
     /**
